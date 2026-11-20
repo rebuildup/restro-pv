@@ -118,9 +118,9 @@ function layerControlRefs(layer: LayerSpec, out: Set<number>): void {
     if (node.matchName === "ADBE Layer Control-0001" && typeof node.value === "number") {
       out.add(node.value);
     }
-    if (Array.isArray(node.keyframes)) {
-      for (const k of node.keyframes) {
-        if (typeof k.value === "number") out.add(k.value);
+    if (Array.isArray(node.keys)) {
+      for (const k of node.keys) {
+        if (typeof k.v === "number") out.add(k.v);
       }
     }
     for (const key of ["properties", "children"]) {
@@ -132,36 +132,30 @@ function layerControlRefs(layer: LayerSpec, out: Set<number>): void {
   walk((layer as any).propertyTree);
 }
 
-// Remap Layer Control "Layer" params from legacy stack indices to the new
-// stack indices of the same-named layers.
-function remapLayerControlValues(
-  layers: LayerSpec[],
-  legacyNameByIdx: Map<number, string>,
-  newIndexByName: Map<string, number>,
-): void {
-  const fix = (node: any): void => {
+// Remap Layer Control values from the source master index to the
+// generated stack index. Never silently leave an invalid source index.
+function remapLayerControlValues(layers: LayerSpec[], byOldIndex: Map<number, number>): void {
+  const fix = (node: unknown): void => {
     if (!node || typeof node !== "object") return;
-    if (node.matchName === "ADBE Layer Control-0001") {
-      const mapVal = (v: any): any => {
-        if (typeof v !== "number") return v;
-        const nm = legacyNameByIdx.get(v);
-        const ni = nm !== undefined ? newIndexByName.get(nm) : undefined;
-        return ni !== undefined ? ni : v;
+    const prop = node as {
+      matchName?: string;
+      value?: unknown;
+      keys?: { v: unknown }[];
+      properties?: unknown[];
+    };
+    if (prop.matchName === "ADBE Layer Control-0001") {
+      const mapValue = (value: unknown): unknown => {
+        if (typeof value !== "number" || value === 0) return value;
+        const target = byOldIndex.get(value);
+        if (target === undefined) throw new Error("unresolved source Layer Control index " + value);
+        return target;
       };
-      if (node.value !== undefined) node.value = mapVal(node.value);
-      if (Array.isArray(node.keyframes)) {
-        for (const k of node.keyframes) if (k.value !== undefined) k.value = mapVal(k.value);
-      }
+      if (prop.value !== undefined) prop.value = mapValue(prop.value);
+      for (const k of prop.keys ?? []) k.v = mapValue(k.v);
     }
-    for (const key of ["properties", "children"]) {
-      const kids = node[key];
-      if (Array.isArray(kids)) for (const k of kids) fix(k);
-    }
+    for (const child of prop.properties ?? []) fix(child);
   };
-  for (const l of layers) {
-    fix((l as any).effects);
-    fix((l as any).propertyTree);
-  }
+  for (const layer of layers) fix(layer.effects);
 }
 
 function pvMasterSpec(): CompSpec {
@@ -253,27 +247,26 @@ function pvMasterSpec(): CompSpec {
   const insertAt = layers.findIndex((l) => l.kind === "comp" && l.source === "master");
   layers.splice(insertAt, 0, ...extraNulls);
 
-  // renumber and remap parentIndex (old master index -> new stack index)
-  const oldIndexByName = new Map<string, number>();
-  for (const l of comp_05.layers) oldIndexByName.set(l.name, l.index);
-  const newIndexByName = new Map<string, number>();
-  layers.forEach((l, i) => {
-    l.index = i + 1;
-    newIndexByName.set(l.name, i + 1);
+  // Only source layers carry a positive original AE stack index.
+  // Synthetic scene refs have index 0. This is an identity mapping at the
+  // migration boundary, never a lookup by potentially duplicated names.
+  const byOldIndex = new Map<number, number>();
+  layers.forEach((layer, i) => {
+    if (layer.index > 0) {
+      if (byOldIndex.has(layer.index)) throw new Error("duplicate source layer index " + layer.index);
+      byOldIndex.set(layer.index, i + 1);
+    }
   });
-  for (const l of layers) {
-    if (l.parentIndex === undefined || l.parentIndex === null) continue;
-    const parentName = comp_05.layers.find((x) => x.index === l.parentIndex)?.name;
-    const ni = parentName ? newIndexByName.get(parentName) : undefined;
-    if (ni === undefined) throw new Error("unmapped parent " + parentName + " for " + l.name);
-    l.parentIndex = ni;
+  for (const layer of layers) {
+    if (layer.parentIndex === undefined || layer.parentIndex === null) continue;
+    const mapped = byOldIndex.get(layer.parentIndex);
+    if (mapped === undefined) {
+      throw new Error("unresolved source parent index " + layer.parentIndex + " for " + layer.name);
+    }
+    layer.parentIndex = mapped;
   }
-  // Layer Control "Layer" params still hold legacy stack indices — remap
-  // them to the new indices of the same-named tracker layers.
-  const legacyNameByIdx = new Map<number, string>();
-  for (const l of comp_05.layers) legacyNameByIdx.set(l.index, l.name);
-  remapLayerControlValues(layers, legacyNameByIdx, newIndexByName);
-  void oldIndexByName;
+  remapLayerControlValues(layers, byOldIndex);
+  layers.forEach((layer, i) => { layer.index = i + 1; });
   return {
     name: "PV master",
     width: PV_GRID.width,
