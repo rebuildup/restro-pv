@@ -33,13 +33,18 @@ ticket PR は依存順に自律統合してよい。
 ```sh
 npm ci
 npm run typecheck   # 型検査
-npm test            # ユニットテスト
-npm run build:jsx   # pv/ -> 単一 JSX（実装後）
+npm test            # ユニットテスト（fake AE 含む）
+npm run build:jsx   # pv/ -> 単一 JSX
+npm run doctor      # 環境診断
+npm run jsx:check   # 生成 JSX の静的検査（jsx-toolchain）
+npm run test:ae     # ae-test（fake ホスト）
 ```
 
-`npm run typecheck` / `npm test` は実機 After Effects を必要としない。
-実機検証（JSX 実行・レンダリング・beats 再生成）はローカルの AE が必要で、
-CI では証明しない。実機検証の結果は PR に記録する。
+`npm run typecheck` / `npm test` / `npm run jsx:check` / `npm run test:ae` は
+実機 After Effects を必要としない。実機経路は
+`npm run generate` → `npm run verify` → `npm run render:beats` /
+`npm run release-verify`。所有権・タイムアウト・証跡の規則は
+`docs/ae-pipeline.md` を正本とする。
 
 ## 作業開始
 
