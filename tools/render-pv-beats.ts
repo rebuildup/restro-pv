@@ -109,20 +109,19 @@ async function main(): Promise<void> {
       );
     }
 
-    let comp = options.comp === null ? null : await project.comp(options.comp);
-    if (comp === null) {
-      // pv.aep holds the timeline plus checkpoint duplicates; "master" is
-      // the comp promotion/master.avi is rendered from.
-      const preferred =
-        comps.find((c) => c.name === "master") ??
-        comps.reduce((a, b) => (b.duration > a.duration ? b : a));
-      if (preferred.name !== "master") {
-        console.log(
-          'no --comp given and no "master" comp; using ' + JSON.stringify(preferred.name),
-        );
-      }
-      comp = await project.comp(preferred.name);
+    // Generated projects may contain both the source "master" and the new
+    // "PV master"; silently picking the source invalidates visual QA.
+    const sourceBaseline = options.aep.includes("/legacy/") ||
+      options.aep.includes("\\legacy\\");
+    const targetName = options.comp ?? (sourceBaseline ? "master" : "PV master");
+    const matches = comps.filter((item) => item.name === targetName);
+    if (matches.length !== 1) {
+      throw new Error(
+        "expected exactly one comp " + JSON.stringify(targetName) +
+        " in " + options.aep + ", found " + matches.length,
+      );
     }
+    const comp = await project.comp(targetName);
     const info = await hostQuery("comp.info", () => comp.info());
     console.log(
       `target comp ${JSON.stringify(info.name)} ` +
