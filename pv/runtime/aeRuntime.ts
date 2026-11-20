@@ -606,10 +606,11 @@ function __organizeProject(spec, generatedComps) {
           // to role-based conventions instead of AE's arbitrary defaults.
           if (isGenerated) continue;
           var nm = String(layer.name || "");
-          var category = layer.nullLayer ? 6 :
-            /^(Heading|description|Logo|Ae\\.png|AFTER EFFECTS PLUGIN)$/.test(nm) ? 9 :
-            /\\.(mp3|wav|aif|aiff)$/i.test(nm) ? 10 :
-            /(?:grid|background|solid)/i.test(nm) ? 2 : 13;
+          var category = 13;
+          if (layer.nullLayer) category = 6;
+          else if (/^(Heading|description|Logo|Ae\\.png|AFTER EFFECTS PLUGIN)$/.test(nm)) category = 9;
+          else if (/\\.(mp3|wav|aif|aiff)$/i.test(nm)) category = 10;
+          else if (/(?:grid|background|solid)/i.test(nm)) category = 2;
           layer.label = category;
         } catch (e2) { __err("source layer label failed " + it.name + "/" + li + ": " + __estr(e2)); }
       }
