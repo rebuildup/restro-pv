@@ -154,6 +154,56 @@ function registerFootage(item: DumpItem | undefined, fallbackName: string, srcFu
   return idx;
 }
 
+// ---- hidden/inapplicable property pruning -----------------------------------
+// The dump enumerates AE's full property tree, including properties that are
+// hidden for the layer's current configuration (3D-only transform channels
+// on 2D layers, Vec3D material groups on non-3D layers, the unused side of
+// separated X/Y/Z position). Setting a value on a hidden property is an AE
+// error, so these are pruned here — they carry no visible state anyway.
+const THREE_D_ONLY = new Set([
+  'ADBE Orientation', 'ADBE Rotate X', 'ADBE Rotate Y', 'ADBE Envir Appear in Reflect',
+]);
+
+interface PropNode {
+  matchName?: string; name?: string;
+  properties?: PropNode[]; numProperties?: number;
+  keys?: unknown[]; expression?: string; value?: unknown;
+  separatedPosition?: boolean;
+}
+
+function pruneTree(node: PropNode, threeD: boolean): PropNode {
+  if (!node || typeof node !== 'object') return node;
+  if (Array.isArray(node.properties)) {
+    node.properties = node.properties.filter((ch) => {
+      if (!threeD && THREE_D_ONLY.has(ch.matchName ?? '')) return false;
+      if (!threeD && ch.matchName === 'ADBE Vector Materials Group') return false;
+      return true;
+    }).map((ch) => pruneTree(ch, threeD));
+    if (typeof node.numProperties === 'number') node.numProperties = node.properties.length;
+  }
+  return node;
+}
+
+// Separated X/Y/Z position: AE shows either "Position" (vector) or the three
+// scalar followers, never both. The dump has all four nodes; the active side
+// is the one carrying keys or an expression.
+function applyPositionRule(transform: PropNode): void {
+  const props = transform.properties;
+  if (!Array.isArray(props)) return;
+  const has = (mn: string) => props.some((p) => p.matchName === mn);
+  const active = (mn: string) => props.some((p) =>
+    p.matchName === mn && ((p.keys && p.keys.length > 0) || !!p.expression));
+  if (!has('ADBE Position')) return;
+  const separated = ['ADBE Position_0', 'ADBE Position_1', 'ADBE Position_2'].some(active);
+  if (separated) {
+    transform.properties = props.filter((p) => p.matchName !== 'ADBE Position');
+    transform.separatedPosition = true;
+  } else {
+    transform.properties = props.filter((p) => !/^ADBE Position_[012]$/.test(p.matchName ?? ''));
+  }
+  if (typeof transform.numProperties === 'number') transform.numProperties = transform.properties.length;
+}
+
 // ---- layer conversion -------------------------------------------------------
 function convertLayer(l: DumpLayer, comp: DumpComp): Record<string, unknown> | null {
   if (l.__error__) { warnings.push(`${comp.name}/${l.name}: dump error ${l.__error__}`); return null; }
@@ -216,12 +266,17 @@ function convertLayer(l: DumpLayer, comp: DumpComp): Record<string, unknown> | n
     }
   }
 
-  if (l.transform) spec.transform = l.transform;
-  if (l.masks) spec.masks = l.masks;
-  if (l.effects) spec.effects = l.effects;
-  if (l.shapes) spec.shapes = l.shapes;
-  if (l.text) spec.text = l.text;
-  if (l.timeRemap) spec.timeRemap = l.timeRemap;
+  const threeD = !!l.threeDLayer;
+  if (l.transform) {
+    const t = pruneTree(l.transform as PropNode, threeD);
+    applyPositionRule(t);
+    spec.transform = t;
+  }
+  if (l.masks) spec.masks = pruneTree(l.masks as PropNode, threeD);
+  if (l.effects) spec.effects = pruneTree(l.effects as PropNode, threeD);
+  if (l.shapes) spec.shapes = pruneTree(l.shapes as PropNode, threeD);
+  if (l.text) spec.text = pruneTree(l.text as PropNode, threeD);
+  if (l.timeRemap) spec.timeRemap = pruneTree(l.timeRemap as PropNode, threeD);
   return spec;
 }
 

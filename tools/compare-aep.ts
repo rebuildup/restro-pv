@@ -24,13 +24,16 @@ type Layer = {
 };
 type Comp = { name: string; width: number; height: number; duration: number; frameRate: number; layers: Layer[] };
 
-function load(dir: string): Map<string, Comp> {
-  const map = new Map<string, Comp>();
-  for (const f of readdirSync(dir).filter((x) => /^\d\d-.*\.json$/.test(x)).sort()) {
+// Comps are matched by dump order (the NN- filename prefix), not by name:
+// the project legitimately contains duplicate comp names (three
+// "S4 REC container" comps), so a name-keyed map would silently drop two
+// of them. A name mismatch at the same index is itself reported as a diff.
+function load(dir: string): Comp[] {
+  const files = readdirSync(dir).filter((x) => /^\d\d-.*\.json$/.test(x)).sort();
+  return files.map((f) => {
     const raw = JSON.parse(readFileSync(join(dir, f), 'utf8'));
-    if (raw.comp?.name) map.set(raw.comp.name, raw.comp as Comp);
-  }
-  return map;
+    return raw.comp as Comp;
+  });
 }
 
 function countProps(node: Prop | undefined, acc = { leaves: 0, keys: 0, shapes: 0 }): typeof acc {
@@ -60,28 +63,28 @@ function shapeVertices(node: Prop | undefined): number {
 }
 
 const A = load(dirA), B = load(dirB);
-const namesA = [...A.keys()], namesB = [...B.keys()];
-console.log(`A: ${namesA.length} comps, B: ${namesB.length} comps`);
+console.log(`A: ${A.length} comps, B: ${B.length} comps`);
 
 let diffs = 0;
-for (const n of namesA) {
-  if (!B.has(n)) { console.log(`- comp missing in B: ${n}`); diffs++; continue; }
-}
-for (const n of namesB) {
-  if (!A.has(n)) { console.log(`+ comp only in B: ${n}`); diffs++; }
-}
-for (const n of namesA) {
-  const a = A.get(n)!, b = B.get(n);
-  if (!b) continue;
+const n = Math.max(A.length, B.length);
+for (let i = 0; i < n; i++) {
+  const a = A[i], b = B[i];
+  if (!a || !b) {
+    console.log(`${!a ? '-' : '+'} comp at index ${i}: ${a?.name ?? b?.name ?? '?'}`);
+    diffs++;
+    continue;
+  }
+  const name = a.name === b.name ? a.name : `${a.name} vs ${b.name}`;
   const prob: string[] = [];
+  if (a.name !== b.name) prob.push(`name '${a.name}' vs '${b.name}'`);
   if (a.width !== b.width || a.height !== b.height) prob.push(`size ${a.width}x${a.height} vs ${b.width}x${b.height}`);
   if (Math.abs(a.duration - b.duration) > 1e-6) prob.push(`dur ${a.duration} vs ${b.duration}`);
   if (a.frameRate !== b.frameRate) prob.push(`fps ${a.frameRate} vs ${b.frameRate}`);
   if (a.layers.length !== b.layers.length) prob.push(`layers ${a.layers.length} vs ${b.layers.length}`);
   else {
-    for (let i = 0; i < a.layers.length; i++) {
-      const la = a.layers[i], lb = b.layers[i];
-      if (la.name !== lb.name) prob.push(`layer[${i}] name '${la.name}' vs '${lb.name}'`);
+    for (let li = 0; li < a.layers.length; li++) {
+      const la = a.layers[li], lb = b.layers[li];
+      if (la.name !== lb.name) prob.push(`layer[${li}] name '${la.name}' vs '${lb.name}'`);
       for (const key of ['transform', 'masks', 'effects', 'shapes', 'text', 'timeRemap'] as const) {
         const ca = countProps(la[key] as Prop | undefined);
         const cb = countProps(lb[key] as Prop | undefined);
@@ -96,7 +99,7 @@ for (const n of namesA) {
   }
   if (prob.length) {
     diffs++;
-    console.log(`comp ${n}: ${prob.length} diffs`);
+    console.log(`comp[${i}] ${name}: ${prob.length} diffs`);
     for (const p of prob.slice(0, 10)) console.log('   ' + p);
     if (prob.length > 10) console.log(`   ... +${prob.length - 10}`);
   }

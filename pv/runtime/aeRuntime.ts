@@ -18,8 +18,8 @@ function __estr(e) {
   try { return String(e.description || e.message || e); }
   catch (x) { return "(unprintable error)"; }
 }
-function __warn(msg) { __WARN.push(String(msg)); $.writeln("PV-WARN " + msg); }
-function __err(msg) { __ERR.push(String(msg)); $.writeln("PV-ERR " + msg); }
+function __warn(msg) { __WARN.push(String(msg)); try { if ($.writeln) $.writeln("PV-WARN " + msg); } catch (x) {} }
+function __err(msg) { __ERR.push(String(msg)); try { if ($.writeln) $.writeln("PV-ERR " + msg); } catch (x) {} }
 
 function __isArr(v) { return Object.prototype.toString.call(v) === "[object Array]"; }
 function __isObj(v) { return v !== null && typeof v === "object" && !__isArr(v); }
@@ -131,14 +131,22 @@ function __applyKeys(prop, keys) {
       }
       if (k.inEase || k.outEase) {
         var ie = null, oe = null;
-        if (k.inEase && k.inEase.length) {
-          ie = [];
-          for (var a = 0; a < k.inEase.length; a++) ie.push(new KeyframeEase(__num(k.inEase[a][0]), __num(k.inEase[a][1])));
-        }
-        if (k.outEase && k.outEase.length) {
-          oe = [];
-          for (var b = 0; b < k.outEase.length; b++) oe.push(new KeyframeEase(__num(k.outEase[b][0]), __num(k.outEase[b][1])));
-        }
+        // Dumped ease entries are {speed,influence} objects (older data may
+        // be [speed,influence] pairs). KeyframeEase wants (speed, influence)
+        // and influence must stay within AE's 0.1-100 range.
+        var easeArr = function (list) {
+          var a = [];
+          for (var ei = 0; ei < list.length; ei++) {
+            var e = list[ei], sp, inf;
+            if (__isArr(e)) { sp = __num(e[0]); inf = __num(e[1]); }
+            else { sp = __num(e.speed); inf = __num(e.influence); }
+            if (!(inf >= 0.1 && inf <= 100)) inf = 33.333;
+            a.push(new KeyframeEase(sp, inf));
+          }
+          return a;
+        };
+        if (k.inEase && k.inEase.length) ie = easeArr(k.inEase);
+        if (k.outEase && k.outEase.length) oe = easeArr(k.outEase);
         // setTemporalEaseAtKey requires arrays on both sides.
         if (!ie) ie = oe;
         if (!oe) oe = ie;
@@ -276,7 +284,14 @@ function __importFootage(spec, footageByName) {
   }
   if (!f || !f.exists) { try { f = new File(rel); } catch (e) {} }
   if (!f || !f.exists) { __err("missing footage file: " + rel); return null; }
-  var item = app.project.importFile(new ImportOptions(f));
+  // ImportOptions is absent in minimal ES3 hosts (ae-a8n fake); fall back to
+  // the plain importFile(File) form there.
+  var item = null;
+  try { item = app.project.importFile(new ImportOptions(f)); }
+  catch (ie) {
+    try { item = app.project.importFile(f); }
+    catch (ie2) { __err("importFile failed " + rel + ": " + __estr(ie2)); return null; }
+  }
   if (item) footageByName[spec.name || item.name] = item;
   return item;
 }
@@ -339,6 +354,14 @@ function __applyLayer(L, ls, compLayers) {
         catch (pe) { __err("parent failed on " + ls.name + " -> index " + pi + ": " + __estr(pe)); }
       } else { __err("parentIndex out of range on " + ls.name + ": " + ls.parentIndex); }
     }
+    if (ls.transform && ls.transform.separatedPosition) {
+      // Enable X/Y/Z separated position before children are applied, or the
+      // scalar followers stay hidden and reject setValue.
+      try {
+        var tp = L.property("ADBE Transform Group").property("ADBE Position");
+        if (tp) tp.dimensionsSeparated = true;
+      } catch (spe) { __warn("dimensionsSeparated failed on " + ls.name + ": " + __estr(spe)); }
+    }
     if (ls.transform) __applyGroup(L.property("ADBE Transform Group"), ls.transform, "transform");
     if (ls.masks) __applyGroup(L.property("ADBE Mask Parade"), ls.masks, "masks");
     if (ls.effects) __applyGroup(L.property("ADBE Effect Parade"), ls.effects, "effects");
@@ -396,7 +419,7 @@ function buildProject(spec) {
     for (var li = 0; li < layers.length; li++) {
       if (created[li]) __applyLayer(created[li], layers[li], created);
     }
-    $.writeln("PV comp done: " + compSpec.name + " (" + layers.length + " layers)");
+    try { if ($.writeln) $.writeln("PV comp done: " + compSpec.name + " (" + layers.length + " layers)"); } catch (x) {}
   }
   // drop the scratch comp used to mint solid footage items
   if (__solidHost) {
@@ -429,7 +452,7 @@ function __finish() {
     try {
       var sf = new File(__SAVE_PATH);
       app.project.save(sf);
-      $.writeln("PV saved: " + __SAVE_PATH);
+      try { if ($.writeln) $.writeln("PV saved: " + __SAVE_PATH); } catch (x) {}
     } catch (se) { __err("project save failed: " + __estr(se)); }
   }
   if (__REPORT_PATH) {

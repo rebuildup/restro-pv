@@ -19,7 +19,7 @@ import { copyFileSync, existsSync, mkdirSync, readdirSync, rmSync, writeFileSync
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { hostCall } from './lib/host-retry.ts';
+import { hostCall, hostQuery } from './lib/host-retry.ts';
 import { resolveAe, WINDOWS_SCRIPT_FLAG } from './lib/host.ts';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -36,11 +36,14 @@ type Options = {
 
 function parseArgs(argv: string[]): Options {
   const options: Options = {
-    aep: join(ROOT, 'legacy', 'pv-worktree-20261120.aep'),
+    // Default target is the TypeScript-generated AEP, never a legacy
+    // snapshot: preview/verify must exercise what the pipeline produced.
+    // Use render:baseline for the frozen legacy baseline.
+    aep: join(ROOT, 'dist', 'pv-generated.aep'),
     comp: null,
     bpm: 128,
     offset: 0,
-    out: join(ROOT, 'verification', 'beats'),
+    out: join(ROOT, 'verification', 'generated-beats'),
     probe: false,
     discardUnsaved: false,
   };
@@ -86,7 +89,7 @@ async function main(): Promise<void> {
   try {
     const project = await ae.openProject(options.aep,
       options.discardUnsaved ? { unsavedChanges: 'discard' } : undefined);
-    const comps = await hostCall('comps', () => project.comps());
+    const comps = await hostQuery('comps', () => project.comps());
     if (comps.length === 0) throw new Error('project has no compositions');
     for (const info of comps) {
       console.log(`comp ${JSON.stringify(info.name)} ${info.width}x${info.height} ` +
@@ -104,7 +107,7 @@ async function main(): Promise<void> {
       }
       comp = await project.comp(preferred.name);
     }
-    const info = await hostCall('comp.info', () => comp.info());
+    const info = await hostQuery('comp.info', () => comp.info());
     console.log(`target comp ${JSON.stringify(info.name)} ` +
       `${info.duration.toFixed(3)}s @${info.frameRate}fps`);
 

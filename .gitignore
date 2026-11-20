@@ -13,3 +13,6 @@ Auto-Save/
 # Regenerable render output (master.avi and friends are rebuilt from the
 # TypeScript source, not stored)
 *.avi
+
+# ae-test run artifacts (baselines under __snapshots__ ARE committed)
+.ae-test-results/
