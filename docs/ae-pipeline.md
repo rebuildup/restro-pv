@@ -9,7 +9,7 @@ TypeScript 正本 → 単一 JSX → 実機 AE → 完成 AEP → 検証 の経�
 | --- | --- | --- | --- |
 | 診断 | `npm run doctor` | `tools/doctor.ts`（Node/AE/依存/所有権/成果物 + `ae-devtools doctor` 委譲） | 不要 |
 | 型検査 | `npm run typecheck` / `npm test` | tsc / node --test | 不要 |
-| JSX 静的検査 | `npm run jsx:check` | `jsx-toolchain check dist/pv.jsx`（AE API 型・ES3 構文） | 不要 |
+| JSX 静的検査 | `npm run jsx:check` | `tools/check-jsx.ts`: types-for-adobe 型検査（runtime 抽出）+ `jsx-toolchain lint/check`（ES3・AE API 名）+ catch 連結スキャン | 不要 |
 | ビルド | `npm run build:jsx` | `tools/build-jsx.ts` → `dist/pv.jsx`（ASCII-only） | 不要 |
 | 生成 | `npm run generate` | `tools/generate.ts` → `AfterFX.exe -r` + レポート待機 | **必要** |
 | 構造検証 | `npm run verify` | `tools/verify.ts`（出力同一性 → 再ダンプ → `compare-aep`） | 必要（ダンプ時） |
@@ -82,5 +82,13 @@ ExtendScript は BOM 無し UTF-8 の非 ASCII を誤パースするため（`ev
 - 分離位置（Position_X/Y/Z）は keys/expression の有無で判定。キー無しの静的分離は
   現状検出できず、非分離側として処理される（発生時は convert-warnings ではなく
   実行時エラーとして顕在化する想定）
-- hidden プロパティの刈り込みは 3D 系と Vec3D material が対象。effect 引数など
-  他の hidden 系が残っていれば report の errors で検出して個別対応する
+- hidden プロパティ（point text の path options、variable font spacing、
+  不適用 effect 引数など、レイヤー設定上 AE が値の書き込みを拒否するもの）は
+  実行時に検出して warning に落とす。ソース AEP でも同じく設定不可の休眠値であり、
+  表示状態には影響しない。error に残るのは missing property・型不一致・
+  addProperty 失敗など実害のあるものだけ
+- 初回全量生成（73 comps）では errors=43,399 を記録。内訳はほぼ全て
+  hidden プロパティへの setValue 拒否で、timeRemapEnabled の能力/状態混同
+  （全レイヤーで time remap を有効化してしまう dump バグ）も判明・修正済み。
+  再ダンプ（`.tmp/aep-tree/pv-2dc99e1-v2`）で `L.timeRemapEnabled` の
+  実状態を取得し、pv-2dc99e1.aep では **全レイヤー timeRemap 無効** と確定
