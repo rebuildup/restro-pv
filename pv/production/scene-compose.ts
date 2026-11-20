@@ -19,6 +19,7 @@ export interface SceneContent {
   durationFrames: number;
   hero: FrameRect;
   descriptionFontSize?: number;
+  headingFontSize?: number;
 }
 
 function transform(position: [number, number], scale = 100, anchor: [number, number] = [0, 0]): PropNode {
