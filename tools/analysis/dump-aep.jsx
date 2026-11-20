@@ -153,7 +153,11 @@
     var node = '{"name":' + q(name) + ',"matchName":' + q(matchName) +
       ',"type":' + num(type);
 
-    if (type === PROP_TYPE.PROPERTY || type === PROP_TYPE.INDEXED_PROPERTY) {
+    // AE reports group propertyType values inconsistently across versions
+    // (observed 3, 6213, 6214), so decide leaf vs group by numProperties.
+    var npEarly = safe(function () { return p.numProperties; }) || 0;
+    var isLeaf = (type === PROP_TYPE.PROPERTY || type === PROP_TYPE.INDEXED_PROPERTY) && npEarly === 0;
+    if (isLeaf) {
       node += ',"numKeys":' + num(safe(function () { return p.numKeys; })) +
         ',"value":' + valueJson(safe(function () { return p.value; }));
       var keys = keysJson(p);
@@ -161,8 +165,8 @@
       node += '}';
       return node;
     }
-    if (type === PROP_TYPE.PROPERTY_GROUP) {
-      var np = safe(function () { return p.numProperties; }) || 0;
+    {
+      var np = npEarly;
       var attrs = '';
       var attrNames = ['maskMode', 'active', 'enabled', 'propertyIndex', 'matchName'];
       for (var a = 0; a < attrNames.length; a++) {
