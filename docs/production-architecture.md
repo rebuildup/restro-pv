@@ -56,7 +56,7 @@ Pre-existing source layer names are preserved as long as their expression refere
 
 ## Validation levels
 
-1. Fast in CI: Bun typecheck, production spec preflight/build, JSX static gate, unit and fake-host tests
+1. Fast in CI: Bun typecheck, production spec preflight/build, JSX static gate, unit tests. The expensive AE fake-host roundtrip is a separate `bun run test:fake` lane and is not an implicit ticket gate.
 2. Local during development: render only changed representative frames and scene boundaries from **PV master**, not the imported `master`
 3. Candidate/freeze: real-host AEP import, expressionError scan, FoldLayers interaction, no unexpected video collisions, rendered 20-second output and audio
 
