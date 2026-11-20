@@ -14,7 +14,7 @@
     "generate": "node tools/generate.ts",
     "verify": "node tools/verify.ts",
     "release-verify": "node tools/release-verify.ts",
-    "jsx:check": "jsx-toolchain check dist/pv.jsx",
+    "jsx:check": "node tools/check-jsx.ts",
     "test:ae": "ae-test",
     "build:jsx": "node tools/build-jsx.ts",
     "dump:tree": "node tools/dump-aep-tree.ts",
@@ -28,6 +28,8 @@
     "@ido-bata/ae-devtools-cli": "0.5.0",
     "@ido-bata/ae-test": "1.1.0",
     "@types/node": "24.10.1",
+    "acorn": "^8.19.0",
+    "types-for-adobe": "^7.2.5",
     "typescript": "5.9.3"
   },
   "overrides": {

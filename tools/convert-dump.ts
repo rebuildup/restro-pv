@@ -187,7 +187,7 @@ function pruneTree(node: PropNode, threeD: boolean): PropNode {
 // Separated X/Y/Z position: AE shows either "Position" (vector) or the three
 // scalar followers, never both. The dump has all four nodes; the active side
 // is the one carrying keys or an expression.
-function applyPositionRule(transform: PropNode): void {
+function applyPositionRule(transform: PropNode, threeD: boolean): void {
   const props = transform.properties;
   if (!Array.isArray(props)) return;
   const has = (mn: string) => props.some((p) => p.matchName === mn);
@@ -196,7 +196,12 @@ function applyPositionRule(transform: PropNode): void {
   if (!has('ADBE Position')) return;
   const separated = ['ADBE Position_0', 'ADBE Position_1', 'ADBE Position_2'].some(active);
   if (separated) {
-    transform.properties = props.filter((p) => p.matchName !== 'ADBE Position');
+    transform.properties = props.filter((p) => {
+      if (p.matchName === 'ADBE Position') return false;
+      // Z Position is hidden on 2D layers and rejects setValue.
+      if (!threeD && p.matchName === 'ADBE Position_2') return false;
+      return true;
+    });
     transform.separatedPosition = true;
   } else {
     transform.properties = props.filter((p) => !/^ADBE Position_[012]$/.test(p.matchName ?? ''));
@@ -269,14 +274,17 @@ function convertLayer(l: DumpLayer, comp: DumpComp): Record<string, unknown> | n
   const threeD = !!l.threeDLayer;
   if (l.transform) {
     const t = pruneTree(l.transform as PropNode, threeD);
-    applyPositionRule(t);
+    applyPositionRule(t, threeD);
     spec.transform = t;
   }
   if (l.masks) spec.masks = pruneTree(l.masks as PropNode, threeD);
   if (l.effects) spec.effects = pruneTree(l.effects as PropNode, threeD);
   if (l.shapes) spec.shapes = pruneTree(l.shapes as PropNode, threeD);
   if (l.text) spec.text = pruneTree(l.text as PropNode, threeD);
-  if (l.timeRemap) spec.timeRemap = pruneTree(l.timeRemap as PropNode, threeD);
+  // timeRemapEnabled now records the real L.timeRemapEnabled state (the old
+  // dump recorded canSetTimeRemapEnabled — capability, not state). The
+  // dormant property node is only meaningful while remapping is enabled.
+  if (l.timeRemapEnabled && l.timeRemap) spec.timeRemap = pruneTree(l.timeRemap as PropNode, threeD);
   return spec;
 }
 

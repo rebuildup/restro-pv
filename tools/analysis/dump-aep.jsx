@@ -204,7 +204,8 @@
       ',"outPoint":' + num(safe(function () { return L.outPoint; })) +
       ',"startTime":' + num(safe(function () { return L.startTime; })) +
       ',"stretch":' + num(safe(function () { return L.stretch; })) +
-      ',"timeRemapEnabled":' + (safe(function () { return L.canSetTimeRemapEnabled; }) ? 'true' : 'false');
+      ',"timeRemapEnabled":' + (safe(function () { return L.timeRemapEnabled; }) ? 'true' : 'false') +
+      ',"canTimeRemap":' + (safe(function () { return L.canSetTimeRemapEnabled; }) ? 'true' : 'false');
 
     // source kind
     var srcName = '', srcType = '';

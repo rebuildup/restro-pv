@@ -12,14 +12,17 @@ try { __REPO_ROOT = $.getenv("RESTRO_PV_ROOT") || ""; } catch (e) {}
 
 var __WARN = [];
 var __ERR = [];
+// comp/layer context for diagnostics; set by the build loop per layer.
+var __CTX = "";
 // ExtendScript throws "Object of type Error" when an Error is concatenated
 // with +, so error objects must go through this before string building.
 function __estr(e) {
   try { return String(e.description || e.message || e); }
   catch (x) { return "(unprintable error)"; }
 }
-function __warn(msg) { __WARN.push(String(msg)); try { if ($.writeln) $.writeln("PV-WARN " + msg); } catch (x) {} }
-function __err(msg) { __ERR.push(String(msg)); try { if ($.writeln) $.writeln("PV-ERR " + msg); } catch (x) {} }
+function __ctxMsg(msg) { return (__CTX ? __CTX + " | " : "") + String(msg); }
+function __warn(msg) { msg = __ctxMsg(msg); __WARN.push(msg); try { if ($.writeln) $.writeln("PV-WARN " + msg); } catch (x) {} }
+function __err(msg) { msg = __ctxMsg(msg); __ERR.push(msg); try { if ($.writeln) $.writeln("PV-ERR " + msg); } catch (x) {} }
 
 function __isArr(v) { return Object.prototype.toString.call(v) === "[object Array]"; }
 function __isObj(v) { return v !== null && typeof v === "object" && !__isArr(v); }
@@ -54,13 +57,21 @@ function __toShape(v) {
     ti.push([__num(a[0]), __num(a[1])]);
     to.push([__num(b[0]), __num(b[1])]);
   }
-  sh.vertices = vs; sh.inTangents = ti; sh.outTangents = to;
+  // JSDoc casts keep types-for-adobe happy: ExtendScript accepts plain
+  // number[][] at runtime; the .d.ts only models the tuple shape.
+  sh.vertices = /** @type {any} */ (vs);
+  sh.inTangents = /** @type {any} */ (ti);
+  sh.outTangents = /** @type {any} */ (to);
   sh.closed = !!v.closed;
   return sh;
 }
 function __toTextDoc(p, v) {
-  var d = p.value; // current TextDocument as base
+  var d = null;
+  try { d = p.value; } catch (pv) { return null; }
+  // p.value returns an Error object (not null) on properties whose value
+  // cannot be read; passing that Error to setValue is a hard host error.
   if (!d) return null;
+  try { if (d instanceof Error) return null; } catch (ie) {}
   // dumped TextDocument exposes fontSize/boxTextPos/boxTextSize; the writable
   // TextDocument attributes are size/boxPosition/boxSize.
   var map = {
@@ -208,15 +219,35 @@ function __applyNode(p, node, path) {
     __applyKeys(p, node.keys);
   } else if (node.value !== undefined && node.value !== null) {
     var v = node.value;
-    try {
-      if (__isShapeVal(v)) { p.setValue(__toShape(v)); }
-      else if (p.matchName === "ADBE Text Document" || __isTextDocVal(v)) {
-        var d = __toTextDoc(p, v);
-        if (d) p.setValue(d);
-      } else {
-        p.setValue(__scalar(v));
+    var sv = null, hasSv = false, textMiss = false;
+    if (__isShapeVal(v)) { sv = __toShape(v); hasSv = true; }
+    else if (p.matchName === "ADBE Text Document" || __isTextDocVal(v)) {
+      var d = __toTextDoc(p, v);
+      if (d) { sv = d; hasSv = true; }
+      else if (p.matchName === "ADBE Text Document") textMiss = true;
+    } else { sv = __scalar(v); hasSv = true; }
+    if (textMiss) {
+      __err("setValue failed " + path + " (ADBE Text Document): TextDocument unavailable");
+    } else if (hasSv) {
+      try {
+        p.setValue(sv);
+      } catch (ve) {
+        var ves = __estr(ve);
+        // AE auto-creates a keyframe when a property is enabled (e.g. time
+        // remapping); setValue then refuses. The dump says the source had
+        // no keys, so drop the auto keys and retry once.
+        if (/keyframes/.test(ves) && p.numKeys > 0) {
+          try {
+            while (p.numKeys > 0) p.removeKey(1);
+            p.setValue(sv);
+          } catch (ve2) {
+            __setValErr(path, p, __estr(ve2));
+          }
+        } else {
+          __setValErr(path, p, ves);
+        }
       }
-    } catch (ve) { __err("setValue failed " + path + " (" + p.matchName + "): " + __estr(ve)); }
+    }
   }
   if (node.expression) {
     try { p.expression = node.expression; }
@@ -289,7 +320,9 @@ function __importFootage(spec, footageByName) {
   var item = null;
   try { item = app.project.importFile(new ImportOptions(f)); }
   catch (ie) {
-    try { item = app.project.importFile(f); }
+    // The File overload is only for hosts without ImportOptions; the cast
+    // keeps types-for-adobe from flagging the deliberate fallback.
+    try { item = app.project.importFile(/** @type {any} */ (f)); }
     catch (ie2) { __err("importFile failed " + rel + ": " + __estr(ie2)); return null; }
   }
   if (item) footageByName[spec.name || item.name] = item;
@@ -326,9 +359,21 @@ function __setProp(p, v) {
   if (__isShapeVal(v)) { p.setValue(__toShape(v)); return; }
   p.setValue(__scalar(v));
 }
+// AE rejects writes to properties that are hidden for the layer's current
+// configuration (text path options on point text, variable-font spacing,
+// inapplicable effect params, ...). The dump records their dormant stored
+// values, but they cannot be applied — and they were equally unsettable in
+// the source AEP — so these are warnings, not build errors. Anything else
+// stays an error so real failures are never silently downgraded.
+function __setValErr(path, p, ves) {
+  var msg = "setValue failed " + path + " (" + (p && p.matchName) + "): " + ves;
+  if (/hidden/.test(ves)) __warn(msg + " [hidden property]");
+  else __err(msg);
+}
 function __applyLayer(L, ls, compLayers) {
   try {
-    if (ls.enabled === false) L.enabled = false;
+    // enabled=false is applied after all property writes as a defensive
+    // ordering measure; shy/guide layers remain editable throughout.
     if (ls.shy) L.shy = true;
     if (ls.guideLayer) L.guideLayer = true;
     if (ls.inPoint !== undefined) L.inPoint = __num(ls.inPoint);
@@ -340,7 +385,12 @@ function __applyLayer(L, ls, compLayers) {
     if (ls.motionBlur) { try { L.motionBlur = true; } catch (e) {} }
     if (ls.collapseTransformations) { try { L.collapseTransformations = true; } catch (e) {} }
     if (ls.adjustmentLayer) { try { L.adjustmentLayer = true; } catch (e) {} }
-    if (ls.timeRemapEnabled) { try { L.timeRemapEnabled = true; } catch (e) {} }
+    if (ls.timeRemapEnabled) {
+      try {
+        if (L.canSetTimeRemapEnabled) L.timeRemapEnabled = true;
+        else __warn("timeRemapEnabled requested but layer cannot time-remap: " + ls.name);
+      } catch (te) { __warn("timeRemapEnabled failed on " + ls.name + ": " + __estr(te)); }
+    }
     if (ls.trackMatteType !== undefined && ls.trackMatteType !== null) {
       try {
         var tn = __TRACK_MATTE[ls.trackMatteType];
@@ -375,6 +425,7 @@ function __applyLayer(L, ls, compLayers) {
       } catch (tre) { __warn("timeRemap apply failed on " + ls.name + ": " + __estr(tre)); }
     }
     if (ls.markers) { /* markers are informational; not yet materialized */ }
+    if (ls.enabled === false) L.enabled = false;
   } catch (e) { __err("layer setup failed on " + ls.name + ": " + __estr(e)); }
 }
 
@@ -412,13 +463,18 @@ function buildProject(spec) {
     for (var ri = layers.length - 1; ri >= 0; ri--) {
       var ls = layers[ri];
       var L = null;
+      __CTX = compSpec.name + " / " + (ls.name || ("layer" + ls.index));
       try { L = __createLayer(comp, ls, footageByName, compItems); }
       catch (ce2) { __err("create layer failed " + ls.name + ": " + __estr(ce2)); }
       created[ri] = L;
     }
     for (var li = 0; li < layers.length; li++) {
-      if (created[li]) __applyLayer(created[li], layers[li], created);
+      if (created[li]) {
+        __CTX = compSpec.name + " / " + (layers[li].name || ("layer" + layers[li].index));
+        __applyLayer(created[li], layers[li], created);
+      }
     }
+    __CTX = "";
     try { if ($.writeln) $.writeln("PV comp done: " + compSpec.name + " (" + layers.length + " layers)"); } catch (x) {}
   }
   // drop the scratch comp used to mint solid footage items
