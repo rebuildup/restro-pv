@@ -17,6 +17,7 @@
 
 | restro-pv | Ae_Restro での出所 | 備考 |
 | --- | --- | --- |
+| `legacy/pv-8495026.aep` | `promotion/pv.aep` @ commit `8495026`（83,479,191 B） | **beats 検証済みベースライン**。`verification/beats/` はこの状態から生成された |
 | `legacy/pv-2dc99e1.aep` | `promotion/pv.aep` @ commit `2dc99e1`（blob `ff041d2`、85,815,165 B） | promo HEAD と同一内容。最後に pv.aep を変更したコミットは `2dc99e1` |
 | `legacy/pv-worktree-20261120.aep` | `promotion/pv.aep` 作業ツリー未コミット版（85,751,395 B、2026-11-20 20:24 保存） | `build-a2b.jsx`（commit `4085083` で追加、pv.aep 未更新）適用後の状態と思われる。正常性は Phase 2 の実機解析で判定する |
 | `verification/beats/` | `promotion/beats/`（beat-001..043.png + manifest.json） | 43拍PNG連番。manifest の `layerCount: 266`、`renderedAt: 2026-11-19T15:17:23Z`。beats は `8495026` 時点の pv.aep から生成され、`2dc99e1` 以降の A2/C/E 変更を**含まない**（再レンダリングが必要） |
@@ -45,6 +46,7 @@
 
 | ファイル | MD5 |
 | --- | --- |
+| `legacy/pv-8495026.aep` | `2f6db8baed36cbe88b06e9f989895489` |
 | `legacy/pv-2dc99e1.aep` | `42fb06e9b101e87c4146a5ba4a314218` |
 | `legacy/pv-worktree-20261120.aep` | `9d6a8d9d8df81c6997afc3c5bb1146ca` |
 | `assets/audio/drums-and-somps-background-music-458414.mp3` | `5e52bcbf1f676893b7f34f64be1830db` |
