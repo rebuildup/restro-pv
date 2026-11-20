@@ -34,7 +34,15 @@ var __CTX = "";
 // ExtendScript throws "Object of type Error" when an Error is concatenated
 // with +, so error objects must go through this before string building.
 function __estr(e) {
-  try { return String(e.description || e.message || e); }
+  try {
+    var s = String(e.description || e.message || e);
+    // ExtendScript Error carries .line/.source/.fileName — keep them so a
+    // bare "undefined is not an object" can be traced back to the JSX line.
+    var extra = "";
+    try { if (e.line !== undefined) extra += " @line " + e.line; } catch (x) {}
+    try { if (e.fileName) extra += " (" + e.fileName + ")"; } catch (x) {}
+    return s + extra;
+  }
   catch (x) { return "(unprintable error)"; }
 }
 function __ctxMsg(msg) { return (__CTX ? __CTX + " | " : "") + String(msg); }
@@ -541,7 +549,13 @@ function buildProject(spec) {
       try { app.open(mf); opened = true; }
       catch (oe) { __err("app.open failed: " + __estr(oe)); }
       __prog("material AEP opened=" + opened);
-      if (opened) __relinkFootage();
+      if (opened) {
+        __relinkFootage();
+        // Let AE finish async indexing/conforming of the material project
+        // before we start mutating it (layers.add throws while busy). The
+        // busy window on an ~85MB project can exceed 15s on a cold start.
+        try { if ($.sleep) $.sleep(15000); } catch (sx) {}
+      }
     }
   }
   var footageByName = {};
@@ -581,8 +595,22 @@ function buildProject(spec) {
       var ls = layers[ri];
       var L = null;
       __CTX = compSpec.name + " / " + (ls.name || ("layer" + ls.index));
-      try { L = __createLayer(comp, ls, footageByName, compItems); }
-      catch (ce2) { __err("create layer failed " + ls.name + ": " + __estr(ce2)); }
+      // First open of a large material AEP leaves AE asynchronously
+      // indexing/conforming for tens of seconds; layers.add() on comp
+      // sources throws transiently during that window. Retry with backoff
+      // (~50s coverage) — a persistent failure still lands in the error list.
+      var delays = [0, 5000, 15000, 30000];
+      for (var att = 0; att < delays.length && !L; att++) {
+        if (delays[att] > 0) { try { if ($.sleep) $.sleep(delays[att]); } catch (sx) {} }
+        try {
+          L = __createLayer(comp, ls, footageByName, compItems);
+          if (!L) break; // unresolved source already recorded an error
+        }
+        catch (ce2) {
+          if (att === delays.length - 1) __err("create layer failed " + ls.name + ": " + __estr(ce2));
+          else __warn("create layer retry " + ls.name + " (" + __estr(ce2) + ")");
+        }
+      }
       created[ri] = L;
     }
     for (var li = 0; li < layers.length; li++) {

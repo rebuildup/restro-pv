@@ -22,6 +22,9 @@ const aep = resolve(opt('--aep', join(ROOT, 'dist', 'pv-generated.aep')));
 const compName = opt('--comp', 'PV master');
 const frames = opt('--frames', '0').split(',').map((s) => Number(s.trim())).filter((n) => Number.isFinite(n));
 const out = resolve(opt('--out', join(ROOT, '.tmp', 'frames')));
+// --discard: allow project.open to drop unsaved changes in the currently
+// open project (only for regenerable outputs like dist/pv-generated.aep).
+const discard = args.includes('--discard');
 
 async function main() {
   if (!existsSync(aep)) throw new Error('project not found: ' + aep);
@@ -39,7 +42,7 @@ async function main() {
     sessionRoot, installDir: aeHost.installDir, timeoutMs: 120_000, ...transportOptions,
   });
   try {
-    const project = await ae.openProject(aep);
+    const project = await ae.openProject(aep, discard ? { unsavedChanges: 'discard' } : {});
     const comp = await project.comp(compName);
     if (!comp) throw new Error('comp not found: ' + compName);
     mkdirSync(out, { recursive: true });
