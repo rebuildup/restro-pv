@@ -40,7 +40,7 @@ function transform(position: [number, number], scale = 100, anchor: [number, num
 // Reject obviously overflowing copy before opening AE. This uses a
 // conservative typography envelope, not a replacement for real AE font metrics.
 function assertTextEnvelope(section: Section, content: string, size: number): void {
-  const lines = content.split("\\n");
+  const lines = content.split("\n");
   const lineHeight = size * 1.3;
   if (lines.length * lineHeight > section.rect.height) {
     throw new Error(section.id + " has more text lines than its vertical envelope");
