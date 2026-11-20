@@ -2,9 +2,9 @@
   "name": "restro-pv",
   "private": true,
   "type": "module",
-  "packageManager": "bun@1.3.13",
+  "packageManager": "bun@1.4.5",
   "engines": {
-    "bun": ">=1.3.13"
+    "bun": ">=1.4.5"
   },
   "scripts": {
     "typecheck": "bun tsc -p tsconfig.json --noEmit",
