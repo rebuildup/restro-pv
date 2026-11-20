@@ -17,9 +17,11 @@
 // (spec.materialAep); sourceCompIndex is cleared so name lookup is used.
 
 import { comp_05 } from "../generated/05-master.ts";
+import { withFoldGroups } from "../production/ae-organization.ts";
+import { PV_GRID } from "../production/scene-layout.ts";
 import type { CompSpec, LayerSpec, ProjectSpec } from "../model/types.ts";
 
-const FPS = 24;
+const FPS = PV_GRID.fps;
 const T_C = 191 / FPS; // 7.958333 — scene C start
 const T_D = 281 / FPS; // 11.708333 — scene D start
 const T_E = 371 / FPS; // 15.458333 — scene E start
@@ -274,8 +276,10 @@ function pvMasterSpec(): CompSpec {
   void oldIndexByName;
   return {
     name: "PV master",
-    width: 1080,
-    height: 1080,
+    width: PV_GRID.width,
+    height: PV_GRID.height,
+    label: 13,
+    folder: "01 - PV Output",
     pixelAspect: 1,
     duration: T_END,
     frameRate: FPS,
@@ -285,10 +289,15 @@ function pvMasterSpec(): CompSpec {
 }
 
 export function pvProjectSpec(): ProjectSpec {
+  const master = pvMasterSpec();
+  // FoldLayers sections use real FD-0 Shape Contents markers and preserve
+  // the original stack order. Parent/Layer Control references are remapped.
+  master.layers = withFoldGroups(master.layers, master.duration);
   return {
     name: "restro-pv",
     materialAep: "legacy/pv-2dc99e1.aep",
-    comps: [pvMasterSpec()],
+    organizeProject: true,
+    comps: [master],
     footage: [],
   };
 }
