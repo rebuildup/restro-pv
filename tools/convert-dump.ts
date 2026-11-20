@@ -11,6 +11,9 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { basename, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  THREE_D_ONLY, THREE_D_GROUPS, ALWAYS_DORMANT, isDormantTextNode,
+} from './lib/dormant-props.ts';
 
 const ROOT = resolve(fileURLToPath(new URL('.', import.meta.url)), '..');
 
@@ -79,6 +82,7 @@ interface FootageEntry {
   color?: number[];
   width?: number;
   height?: number;
+  audioOnly?: boolean;
 }
 const footageEntries: FootageEntry[] = [];
 const footageIndexByKey = new Map<string, number>();
@@ -149,21 +153,20 @@ function registerFootage(item: DumpItem | undefined, fallbackName: string, srcFu
   const hit = footageIndexByKey.get(key);
   if (hit !== undefined) return hit;
   const idx = footageEntries.length;
-  footageEntries.push({ name: uniqueFootageName(item?.name || fallbackName), kind: 'file', file: p });
+  footageEntries.push({
+    name: uniqueFootageName(item?.name || fallbackName), kind: 'file', file: p,
+    ...(item?.hasAudio && !item?.hasVideo ? { audioOnly: true } : {}),
+  });
   footageIndexByKey.set(key, idx);
   return idx;
 }
 
-// ---- hidden/inapplicable property pruning -----------------------------------
-// The dump enumerates AE's full property tree, including properties that are
-// hidden for the layer's current configuration (3D-only transform channels
-// on 2D layers, Vec3D material groups on non-3D layers, the unused side of
-// separated X/Y/Z position). Setting a value on a hidden property is an AE
-// error, so these are pruned here — they carry no visible state anyway.
-const THREE_D_ONLY = new Set([
-  'ADBE Orientation', 'ADBE Rotate X', 'ADBE Rotate Y', 'ADBE Envir Appear in Reflect',
-]);
-
+// Hidden/inapplicable property rules live in tools/lib/dormant-props.ts —
+// shared with compare-aep.ts so both sides apply the same documented
+// absorptions. The dump enumerates AE's full property tree, including
+// properties hidden for the layer's configuration (3D-only channels on 2D
+// layers, dormant text-on-path/variable-font props). Setting a value on a
+// hidden property is an AE error, so these are pruned here.
 interface PropNode {
   matchName?: string; name?: string;
   properties?: PropNode[]; numProperties?: number;
@@ -171,12 +174,17 @@ interface PropNode {
   separatedPosition?: boolean;
 }
 
+let dormantTextDrops = 0;
+
 function pruneTree(node: PropNode, threeD: boolean): PropNode {
   if (!node || typeof node !== 'object') return node;
   if (Array.isArray(node.properties)) {
     node.properties = node.properties.filter((ch) => {
-      if (!threeD && THREE_D_ONLY.has(ch.matchName ?? '')) return false;
-      if (!threeD && ch.matchName === 'ADBE Vector Materials Group') return false;
+      const mn = ch.matchName ?? '';
+      if (!threeD && THREE_D_ONLY.has(mn)) return false;
+      if (!threeD && THREE_D_GROUPS.has(mn)) return false;
+      if (ALWAYS_DORMANT.has(mn)) return false;
+      if (isDormantTextNode(ch)) { dormantTextDrops++; return false; }
       return true;
     }).map((ch) => pruneTree(ch, threeD));
     if (typeof node.numProperties === 'number') node.numProperties = node.properties.length;
@@ -213,6 +221,7 @@ function applyPositionRule(transform: PropNode, threeD: boolean): void {
 function convertLayer(l: DumpLayer, comp: DumpComp): Record<string, unknown> | null {
   if (l.__error__) { warnings.push(`${comp.name}/${l.name}: dump error ${l.__error__}`); return null; }
   const spec: Record<string, unknown> = { index: l.index, name: l.name };
+  let footageIdx = -1;
 
   // kind + source resolution
   if (l.nullLayer) {
@@ -233,7 +242,7 @@ function convertLayer(l: DumpLayer, comp: DumpComp): Record<string, unknown> | n
     spec.sourceUid = l.src.id;
     const item = l.src.id !== undefined ? itemById.get(l.src.id) : undefined;
     const fi = registerFootage(item, l.src.name, l.src.fullpath);
-    if (fi >= 0) spec.source = footageEntries[fi].name;
+    if (fi >= 0) { spec.source = footageEntries[fi].name; footageIdx = fi; }
     else spec.source = l.src.name; // unresolved; runtime will error loudly
   } else if (l.shapes) {
     spec.kind = 'shape';
@@ -271,20 +280,26 @@ function convertLayer(l: DumpLayer, comp: DumpComp): Record<string, unknown> | n
     }
   }
 
+  // Audio-only footage layers have no visual property surface in AE: every
+  // transform/mask/effect/shape/text write fails as "hidden". Their dumped
+  // values are dormant, so the visual groups are dropped entirely. Timing
+  // fields (in/out/startTime/stretch) above are kept — they drive audio sync.
+  const audioOnly = footageIdx >= 0 && footageEntries[footageIdx].audioOnly === true;
+
   const threeD = !!l.threeDLayer;
-  if (l.transform) {
+  if (l.transform && !audioOnly) {
     const t = pruneTree(l.transform as PropNode, threeD);
     applyPositionRule(t, threeD);
     spec.transform = t;
   }
-  if (l.masks) spec.masks = pruneTree(l.masks as PropNode, threeD);
-  if (l.effects) spec.effects = pruneTree(l.effects as PropNode, threeD);
-  if (l.shapes) spec.shapes = pruneTree(l.shapes as PropNode, threeD);
-  if (l.text) spec.text = pruneTree(l.text as PropNode, threeD);
+  if (l.masks && !audioOnly) spec.masks = pruneTree(l.masks as PropNode, threeD);
+  if (l.effects && !audioOnly) spec.effects = pruneTree(l.effects as PropNode, threeD);
+  if (l.shapes && !audioOnly) spec.shapes = pruneTree(l.shapes as PropNode, threeD);
+  if (l.text && !audioOnly) spec.text = pruneTree(l.text as PropNode, threeD);
   // timeRemapEnabled now records the real L.timeRemapEnabled state (the old
   // dump recorded canSetTimeRemapEnabled — capability, not state). The
   // dormant property node is only meaningful while remapping is enabled.
-  if (l.timeRemapEnabled && l.timeRemap) spec.timeRemap = pruneTree(l.timeRemap as PropNode, threeD);
+  if (l.timeRemapEnabled && l.timeRemap && !audioOnly) spec.timeRemap = pruneTree(l.timeRemap as PropNode, threeD);
   return spec;
 }
 
@@ -332,6 +347,7 @@ writeFileSync(join(outDir, 'index.ts'), indexBody);
 
 console.log(`converted ${compModules.length} comps -> ${outDir}`);
 console.log(`footage entries: ${footageEntries.length} (${footageEntries.filter((f) => f.kind === 'solid').length} solids)`);
+console.log(`dormant text props pruned: ${dormantTextDrops}`);
 if (warnings.length) {
   writeFileSync(join(ROOT, '.tmp', 'convert-warnings.txt'), warnings.join('\n') + '\n');
   const cats = new Map<string, number>();

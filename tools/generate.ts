@@ -40,6 +40,7 @@ const allowRunningAe = process.argv.includes('--allow-running-ae');
 const reportPath = resolve(ROOT, '.tmp/pv-report.json');
 const donePath = reportPath + '.done';
 const progressPath = resolve(ROOT, '.tmp/pv-progress.log');
+const warningsPath = resolve(ROOT, '.tmp/pv-warnings.jsonl');
 const savePath = resolve(ROOT, 'dist/pv-generated.aep');
 const runRecordPath = resolve(ROOT, '.tmp/generate-run.json');
 
@@ -110,6 +111,7 @@ async function main() {
   rmSync(reportPath, { force: true });
   rmSync(savePath, { force: true });
   rmSync(progressPath, { force: true });
+  rmSync(warningsPath, { force: true });
   let progressOffset = 0;
   const tailProgress = () => {
     if (!existsSync(progressPath)) return;
@@ -164,6 +166,7 @@ async function main() {
     warnings: report.warnings ?? null, errors: report.errors ?? null,
     errList: (report.errList ?? []).slice(0, 50),
     warnList: (report.warnList ?? []).slice(0, 50),
+    warningsLog: existsSync(warningsPath) ? warningsPath : null,
   };
   const errors = report.errors ?? -1;
   const aepOk = existsSync(savePath) && statSync(savePath).size > 0;

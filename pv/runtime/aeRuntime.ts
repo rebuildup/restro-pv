@@ -9,6 +9,7 @@ var __REPO_ROOT = "";
 var __SAVE_PATH = "";
 var __REPORT_PATH = "";
 var __PROGRESS_PATH = "";
+var __WARNINGS_PATH = "";
 var __T0 = new Date().getTime();
 try { __REPO_ROOT = $.getenv("RESTRO_PV_ROOT") || ""; } catch (e) {}
 
@@ -21,7 +22,7 @@ function __prog(msg) {
     var f = new File(__PROGRESS_PATH);
     f.encoding = "UTF-8";
     f.open("a");
-    f.writeln(new Date().getTime() + "\t" + (new Date().getTime() - __T0) + "\t" + msg);
+    f.write(new Date().getTime() + "\t" + (new Date().getTime() - __T0) + "\t" + msg + "\n");
     f.close();
   } catch (x) {}
 }
@@ -89,17 +90,20 @@ function __toTextDoc(p, v) {
   if (!d) return null;
   try { if (d instanceof Error) return null; } catch (ie) {}
   // dumped TextDocument exposes fontSize/boxTextPos/boxTextSize; the writable
-  // TextDocument attributes are size/boxPosition/boxSize.
+  // TextDocument attributes use those same names (fontSize, boxTextPos,
+  // boxTextSize). 'size'/'boxPosition'/'boxSize' are NOT valid attributes —
+  // assigning them silently did nothing, which is why every generated text
+  // layer ended up with AE's default font size.
   var map = {
-    text: "text", font: "font", size: "size", fontSize: "size",
+    text: "text", font: "font", fontSize: "fontSize", size: "fontSize",
     fillColor: "fillColor", strokeColor: "strokeColor", strokeWidth: "strokeWidth",
     tracking: "tracking", leading: "leading", baselineShift: "baselineShift",
     horizontalScale: "horizontalScale", verticalScale: "verticalScale",
     applyFill: "applyFill", applyStroke: "applyStroke",
-    boxText: "boxText", boxPosition: "boxPosition", boxTextPos: "boxPosition",
-    boxSize: "boxSize", boxTextSize: "boxSize",
-    allCaps: "allCaps", fauxBold: "fauxBold", fauxItalic: "fauxItalic",
-    smallCaps: "smallCaps", tsume: "tsume",
+    boxTextPos: "boxTextPos", boxPosition: "boxTextPos",
+    boxTextSize: "boxTextSize", boxSize: "boxTextSize",
+    fauxBold: "fauxBold", fauxItalic: "fauxItalic",
+    tsume: "tsume",
     firstLineIndent: "firstLineIndent", startIndent: "startIndent",
     endIndent: "endIndent", spaceAfter: "spaceAfter", spaceBefore: "spaceBefore",
     autoLeading: "autoLeading", baselineDirection: "baselineDirection",
@@ -125,13 +129,16 @@ function __toTextDoc(p, v) {
     if (!dk) continue;
     try {
       if (k === "font") d.font = String(v[k]);
-      else if (dk === "fillColor" || dk === "strokeColor" || dk === "boxPosition" || dk === "boxSize") {
+      else if (dk === "fillColor" || dk === "strokeColor" || dk === "boxTextPos" || dk === "boxTextSize") {
         if (v[k] !== null) d[dk] = __scalar(v[k]);
       } else if (typeof v[k] === "boolean") d[dk] = !!v[k];
       else if (typeof v[k] === "number") d[dk] = v[k];
       else if (typeof v[k] === "string") d[dk] = v[k];
     } catch (ae) { __warn("textdoc field " + k + ": " + __estr(ae)); }
   }
+  // Setting leading explicitly can flip autoLeading off; re-assert the
+  // dumped state last so the generated doc matches the source.
+  if (v.autoLeading === true) { try { d.autoLeading = true; } catch (al) {} }
   return d;
 }
 
@@ -151,11 +158,6 @@ function __applyKeys(prop, keys) {
     }
     var idx = i + 1;
     try {
-      if (k.inT !== undefined || k.outT !== undefined) {
-        var it = k.inT !== undefined ? __num(k.inT) : __num(k.outT);
-        var ot = k.outT !== undefined ? __num(k.outT) : __num(k.inT);
-        prop.setInterpolationTypeAtKey(idx, it, ot);
-      }
       if (k.inEase || k.outEase) {
         var ie = null, oe = null;
         // Dumped ease entries are {speed,influence} objects (older data may
@@ -180,9 +182,26 @@ function __applyKeys(prop, keys) {
         prop.setTemporalEaseAtKey(idx, ie, oe);
       }
       if (k.spIn || k.spOut) {
-        var si = k.spIn ? [__num(k.spIn[0]), __num(k.spIn[1])] : [0, 0];
-        var so = k.spOut ? [__num(k.spOut[0]), __num(k.spOut[1])] : [0, 0];
+        // Spatial tangents must match the key value's dimension; the dump can
+        // carry 2-element tangents for 3-element (separated) values.
+        var dims = __isArr(val) ? val.length : 1;
+        var tan = function (t) {
+          var a = [];
+          for (var ti = 0; ti < dims; ti++) a.push(t && t[ti] !== undefined ? __num(t[ti]) : 0);
+          return a;
+        };
+        var zero = [];
+        for (var zi = 0; zi < dims; zi++) zero.push(0);
+        var si = k.spIn ? tan(k.spIn) : zero;
+        var so = k.spOut ? tan(k.spOut) : zero;
         prop.setSpatialTangentsAtKey(idx, si, so);
+      }
+      // Interpolation type is applied LAST: setTemporalEaseAtKey on a
+      // linear/hold key makes AE flip the key back to bezier.
+      if (k.inT !== undefined || k.outT !== undefined) {
+        var it = k.inT !== undefined ? __num(k.inT) : __num(k.outT);
+        var ot = k.outT !== undefined ? __num(k.outT) : __num(k.inT);
+        prop.setInterpolationTypeAtKey(idx, it, ot);
       }
     } catch (ee) { __warn("key meta failed on " + prop.name + " #" + idx + ": " + __estr(ee)); }
   }
@@ -206,6 +225,31 @@ function __applyNode(p, node, path) {
   if (!p) { __err("missing property " + path); return; }
   if (node.numProperties && node.properties && node.properties.length) {
     var addMode = __isAddContainer(node.matchName);
+    // Group-level attrs FIRST: a disabled (enabled=false) group hides its
+    // children in AE, so they must be skipped entirely — writing them is a
+    // hard "hidden property" error and they cannot exist in the output.
+    // maskMode lives on the mask atom and must precede child writes too.
+    if (node.maskMode !== undefined) {
+      try { p.maskMode = node.maskMode; }
+      catch (me) { __warn("maskMode failed on " + path + ": " + __estr(me)); }
+    }
+    // Apply enabled/active BEFORE children: some groups (e.g. stroke
+    // Dashes/Taper/Wave) are created disabled by AE and hide their children
+    // until explicitly enabled; a disabled group makes every child write a
+    // hard "hidden property" error, so its subtree is skipped entirely.
+    // Only the disabled state needs an explicit write: groups are enabled by
+    // default, and 'enabled'/'active' are read-only on most parade groups
+    // (mask atoms, vector groups) — true-writes only produce warnings.
+    if (node.enabled === false) {
+      try { p.enabled = false; } catch (ee2) { __warn("enabled failed on " + path); }
+    }
+    if (node.active === false) {
+      try { p.active = false; } catch (ae2) { __warn("active failed on " + path); }
+    }
+    if (node.enabled === false) {
+      __warn("skipping children of disabled group " + path);
+      return;
+    }
     for (var i = 0; i < node.properties.length; i++) {
       var ch = node.properties[i];
       var cp = null;
@@ -217,20 +261,20 @@ function __applyNode(p, node, path) {
       }
       __applyNode(cp, ch, path + "/" + (ch.matchName || ch.name));
     }
-    // group-level attrs (mask mode / enabled live on the atom, not children)
-    if (node.maskMode !== undefined) {
-      try { p.maskMode = node.maskMode; }
-      catch (me) { __warn("maskMode failed on " + path + ": " + __estr(me)); }
-    }
-    if (node.enabled === false) {
-      try { p.enabled = false; } catch (ee2) { __warn("enabled=false failed on " + path); }
-    }
-    if (node.active === false) {
-      try { p.active = false; } catch (ae2) { __warn("active=false failed on " + path); }
-    }
     return;
   }
-  // leaf
+  // leaf: enabled/active first — a disabled leaf is hidden and rejects
+  // setValue/setValueAtTime/expression writes.
+  if (node.enabled === false) {
+    try { p.enabled = false; } catch (lee) { __warn("enabled failed on " + path); }
+  }
+  if (node.active === false) {
+    try { p.active = false; } catch (lae) { __warn("active failed on " + path); }
+  }
+  if (node.enabled === false) {
+    __warn("skipping disabled leaf " + path);
+    return;
+  }
   if (node.keys && node.keys.length) {
     __applyKeys(p, node.keys);
   } else if (node.value !== undefined && node.value !== null) {
@@ -288,7 +332,12 @@ function __applyGroup(root, node, path) {
 }
 
 // ---- layer creation --------------------------------------------------------
-var __TRACK_MATTE = { 0: "NO_TRACK_MATTE", 1: "ALPHA", 2: "ALPHA_INVERTED", 3: "LUMA", 4: "LUMA_INVERTED" };
+// TrackMatteType raw enum values (types-for-adobe): the dump stores these
+// directly. 0-4 aliases kept for hand-authored specs.
+var __TRACK_MATTE = {
+  5012: "NO_TRACK_MATTE", 5013: "ALPHA", 5014: "ALPHA_INVERTED", 5015: "LUMA", 5016: "LUMA_INVERTED",
+  0: "NO_TRACK_MATTE", 1: "ALPHA", 2: "ALPHA_INVERTED", 3: "LUMA", 4: "LUMA_INVERTED"
+};
 function __findComp(name) {
   var items = app.project.items;
   for (var i = 1; i <= items.length; i++) {
@@ -392,10 +441,14 @@ function __applyLayer(L, ls, compLayers) {
     // ordering measure; shy/guide layers remain editable throughout.
     if (ls.shy) L.shy = true;
     if (ls.guideLayer) L.guideLayer = true;
-    if (ls.inPoint !== undefined) L.inPoint = __num(ls.inPoint);
-    if (ls.outPoint !== undefined) L.outPoint = __num(ls.outPoint);
+    // Order matters: startTime/stretct position the layer bar first; setting
+    // inPoint/outPoint afterwards trims the visible range without dragging
+    // the whole layer (verified: inPoint-first ordering shifted generated
+    // layers by exactly -startTime).
     if (ls.startTime !== undefined) L.startTime = __num(ls.startTime);
     if (ls.stretch !== undefined) L.stretch = __num(ls.stretch);
+    if (ls.inPoint !== undefined) L.inPoint = __num(ls.inPoint);
+    if (ls.outPoint !== undefined) L.outPoint = __num(ls.outPoint);
     if (ls.audioEnabled === false) L.audioEnabled = false;
     if (ls.threeDLayer) { try { L.threeDLayer = true; } catch (e) {} }
     if (ls.motionBlur) { try { L.motionBlur = true; } catch (e) {} }
@@ -512,7 +565,9 @@ function buildProject(spec) {
 }
 
 function __jsonStr(s) {
-  return '"' + String(s).replace(/\\/g, "\\\\").replace(/"/g, "\\\"") + '"';
+  return '"' + String(s)
+    .replace(/\\/g, "\\\\").replace(/"/g, "\\\"")
+    .replace(/\n/g, "\\n").replace(/\r/g, "\\r").replace(/\t/g, "\\t") + '"';
 }
 function __writeReport() {
   if (!__REPORT_PATH) return;
@@ -528,6 +583,19 @@ function __writeReport() {
   f.write('{"warnings":' + __WARN.length + ',"errors":' + __ERR.length +
     ',"warnList":[' + wl.join(",") + '],"errList":[' + el.join(",") + ']}');
   f.close();
+  // Uncapped machine-readable log for offline classification. The report's
+  // warnList/errList stay capped at 200 for quick inspection; this file is
+  // the complete record (one JSON object per line: {"k":"w"|"e","m":"..."}).
+  if (__WARNINGS_PATH) {
+    var wf = new File(__WARNINGS_PATH);
+    wf.encoding = "UTF-8";
+    wf.open("w");
+    var wl2 = "";
+    for (i = 0; i < __WARN.length; i++) wl2 += '{"k":"w","m":' + __jsonStr(__WARN[i]) + '}\n';
+    for (i = 0; i < __ERR.length; i++) wl2 += '{"k":"e","m":' + __jsonStr(__ERR[i]) + '}\n';
+    wf.write(wl2);
+    wf.close();
+  }
 }
 function __finish() {
   __prog("buildProject returned; writing report");

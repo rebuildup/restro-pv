@@ -128,7 +128,7 @@ export interface CompSpec {
 }
 
 export type FootageSpec =
-  | { name: string; kind: 'file'; file: string }              // repo-relative path
+  | { name: string; kind: 'file'; file: string; audioOnly?: boolean } // repo-relative path
   | { name: string; kind: 'solid'; color: number[]; width: number; height: number };
 
 export interface ProjectSpec {

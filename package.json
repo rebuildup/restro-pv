@@ -19,6 +19,8 @@
     "build:jsx": "node tools/build-jsx.ts",
     "dump:tree": "node tools/dump-aep-tree.ts",
     "compare": "node tools/compare-aep.ts",
+    "audit:warnings": "node tools/audit-warnings.ts",
+    "diff:frames": "node tools/diff-frames.ts",
     "convert": "node tools/convert-dump.ts"
   },
   "dependencies": {

@@ -26,11 +26,12 @@ function parseArgs(argv: string[]) {
     save: opt.save ? resolve(opt.save) : resolve(repoRoot, 'dist/pv-generated.aep'),
     report: opt.report ? resolve(opt.report) : resolve(repoRoot, '.tmp/pv-report.json'),
     progress: opt.progress ? resolve(opt.progress) : resolve(repoRoot, '.tmp/pv-progress.log'),
+    warnings: opt.warnings ? resolve(opt.warnings) : resolve(repoRoot, '.tmp/pv-warnings.jsonl'),
     spec: opt.spec ?? '',
   };
 }
 
-const { out, save, report, progress, spec: specArg } = parseArgs(process.argv.slice(2));
+const { out, save, report, progress, warnings, spec: specArg } = parseArgs(process.argv.slice(2));
 const spec = specArg
   ? (await import(pathToFileURL(resolve(repoRoot, specArg)).href)).buildSpec()
   : buildSpec();
@@ -43,11 +44,13 @@ const jsx = [
   '  var __SAVE_PATH_BAKED = ' + JSON.stringify(save.replace(/\\/g, '/')) + ';',
   '  var __REPORT_PATH_BAKED = ' + JSON.stringify(report.replace(/\\/g, '/')) + ';',
   '  var __PROGRESS_PATH_BAKED = ' + JSON.stringify(progress.replace(/\\/g, '/')) + ';',
+  '  var __WARNINGS_PATH_BAKED = ' + JSON.stringify(warnings.replace(/\\/g, '/')) + ';',
   AE_RUNTIME,
   '  __REPO_ROOT = __REPO_ROOT_BAKED;',
   '  __SAVE_PATH = __SAVE_PATH_BAKED;',
   '  __REPORT_PATH = __REPORT_PATH_BAKED;',
   '  __PROGRESS_PATH = __PROGRESS_PATH_BAKED;',
+  '  __WARNINGS_PATH = __WARNINGS_PATH_BAKED;',
   specLiteral(spec),
   '  var __hasItems = false;',
   '  for (var __i = 1; __i <= app.project.numItems; __i++) {',
