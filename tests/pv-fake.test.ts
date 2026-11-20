@@ -5,7 +5,7 @@
 
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
 import { test } from "node:test";
 import { createFakeGlobals, FakeApplication, runHostScript } from "@ido-bata/ae-a8n/testing";
@@ -31,6 +31,7 @@ test("smoke.jsx builds a project in the fake AE host", { timeout: 300_000 }, () 
     ],
     { cwd: ROOT, stdio: "pipe" },
   );
+  mkdirSync(resolve(ROOT, ".tmp"), { recursive: true });
   rmSync(REPORT, { force: true });
   rmSync(REPORT + ".done", { force: true });
 
