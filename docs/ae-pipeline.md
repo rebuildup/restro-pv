@@ -18,6 +18,11 @@ TypeScript 正本 → 単一 JSX → 実機 AE → 完成 AEP → 検証 の経�
 | リリース検証 | `npm run release-verify` | `tools/release-verify.ts`（全フレーム + mp4 + beats） | 必要 |
 | ae-test | `npm run test:ae` | fake ホストの runner 契約 spec | fake のみ |
 
+生成中はランタイムが `.tmp/pv-progress.log` に
+`epochMs<TAB>経過ms<TAB>メッセージ` を逐次追記し、`generate` が live 表示する
+（コンポ開始/終了・大規模コンポのレイヤー刻み・AEP 保存時間が分かる）。
+実測のボトルネックは master 系チェックポイントコンポ（1本あたり最大 ~66 秒）。
+
 ## パッケージの役割と検証済み事実
 
 - `@ido-bata/ae-a8n@0.4.0`（npm registry、旧 git pin `b70f329` = 0.1.0-alpha.1 から更新）
@@ -60,6 +65,12 @@ Windows の `AfterFX.exe` はシングルインスタンスで、`-r` は起動�
   **自動再 spawn しない**。AE と `.tmp/pv-report.json*` を人間が確認してから再開する
 - `verify` は `generate-run.json` の `output.sha256` と実 AEP のハッシュを照合し、
   別ビルドの成果物や手作業の AEP を誤って検証しない
+- `compare-aep` のコンポ対応付けは **名前 + 構造シグネチャ**（`S4 REC container`
+  のような同名コンポはシグネチャ順で決定的にペア化）。AE の `project.items`
+  順はプロジェクト間で安定しない（生成側は名前順に並ぶ）ため、ダンプ連番では
+  突き合わせない。Position 系プロパティは軸ごとの実効トラック（キー時刻＋値、
+  定数キーは静的値に畳み込み）で比較する — 分離位置のキーは AE の版・履歴により
+  `ADBE Position` と `ADBE Position_N` のどちらに載るかが変わるが、評価結果は同一
 
 ## 失敗時の証跡
 

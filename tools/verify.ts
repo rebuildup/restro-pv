@@ -9,8 +9,9 @@
 //      recorded by the last successful generate run (stale outputs from an
 //      older build are rejected).
 //   2. structure: dump the generated AEP (resumable, same extractor as the
-//      source) and diff it against the source dump — comps by index,
-//      layers, property trees, key counts, shape vertices.
+//      source) and diff it against the source dump — comps matched by name
+//      (project item order is not stable across projects), layers, property
+//      trees, key counts, shape vertices.
 //   3. report: machine-readable verdict to .tmp/verify-report.json.
 //
 // Visual/render comparison is a separate step (preview / release-verify);
@@ -30,7 +31,9 @@ const opt = (flag: string, dflt: string) => {
 const skipDump = args.includes('--skip-dump');
 
 const aep = opt('--aep', join(ROOT, 'dist', 'pv-generated.aep'));
-const sourceDump = opt('--source-dump', join(ROOT, '.tmp', 'aep-tree', 'pv-2dc99e1'));
+// v2 dump carries the corrected timeRemapEnabled/canTimeRemap fields; the
+// original pv-2dc99e1 dump recorded canSetTimeRemapEnabled by mistake.
+const sourceDump = opt('--source-dump', join(ROOT, '.tmp', 'aep-tree', 'pv-2dc99e1-v2'));
 const genDump = opt('--gen-dump', join(ROOT, '.tmp', 'aep-tree', 'pv-generated'));
 const runRecordPath = join(ROOT, '.tmp', 'generate-run.json');
 const reportPath = join(ROOT, '.tmp', 'verify-report.json');
