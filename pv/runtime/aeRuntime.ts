@@ -12,6 +12,12 @@ try { __REPO_ROOT = $.getenv("RESTRO_PV_ROOT") || ""; } catch (e) {}
 
 var __WARN = [];
 var __ERR = [];
+// ExtendScript throws "Object of type Error" when an Error is concatenated
+// with +, so error objects must go through this before string building.
+function __estr(e) {
+  try { return String(e.description || e.message || e); }
+  catch (x) { return "(unprintable error)"; }
+}
 function __warn(msg) { __WARN.push(String(msg)); $.writeln("PV-WARN " + msg); }
 function __err(msg) { __ERR.push(String(msg)); $.writeln("PV-ERR " + msg); }
 
@@ -55,31 +61,49 @@ function __toShape(v) {
 function __toTextDoc(p, v) {
   var d = p.value; // current TextDocument as base
   if (!d) return null;
+  // dumped TextDocument exposes fontSize/boxTextPos/boxTextSize; the writable
+  // TextDocument attributes are size/boxPosition/boxSize.
   var map = {
-    text: "text", font: "font", size: "size", fillColor: "fillColor",
-    strokeColor: "strokeColor", strokeWidth: "strokeWidth", tracking: "tracking",
-    leading: "leading", baselineShift: "baselineShift",
+    text: "text", font: "font", size: "size", fontSize: "size",
+    fillColor: "fillColor", strokeColor: "strokeColor", strokeWidth: "strokeWidth",
+    tracking: "tracking", leading: "leading", baselineShift: "baselineShift",
     horizontalScale: "horizontalScale", verticalScale: "verticalScale",
-    applyFill: "applyFill", applyStroke: "applyStroke", boxPosition: "boxPosition",
-    boxSize: "boxSize", boxText: "boxText"
+    applyFill: "applyFill", applyStroke: "applyStroke",
+    boxText: "boxText", boxPosition: "boxPosition", boxTextPos: "boxPosition",
+    boxSize: "boxSize", boxTextSize: "boxSize",
+    allCaps: "allCaps", fauxBold: "fauxBold", fauxItalic: "fauxItalic",
+    smallCaps: "smallCaps", tsume: "tsume",
+    firstLineIndent: "firstLineIndent", startIndent: "startIndent",
+    endIndent: "endIndent", spaceAfter: "spaceAfter", spaceBefore: "spaceBefore",
+    autoLeading: "autoLeading", baselineDirection: "baselineDirection",
+    direction: "direction", noBreak: "noBreak"
   };
+  var JUST = { 0: "LEFT", 1: "RIGHT", 2: "CENTER", 3: "FULL" };
   for (var k in v) {
     if (!v.hasOwnProperty(k)) continue;
+    if (k === "justification") {
+      try {
+        var jv = v[k];
+        if (typeof jv === "number" && JUST[jv] !== undefined) {
+          d.justification = eval("ParagraphJustification." + JUST[jv] + "_JUSTIFY");
+        } else if (typeof jv === "string") {
+          d.justification = eval("ParagraphJustification." + jv);
+        } else {
+          d.justification = jv;
+        }
+      } catch (je) { __warn("textdoc justification " + jv + ": " + __estr(je)); }
+      continue;
+    }
     var dk = map[k];
     if (!dk) continue;
     try {
       if (k === "font") d.font = String(v[k]);
-      else if (k === "fillColor" || k === "strokeColor" || k === "boxPosition" || k === "boxSize") {
+      else if (dk === "fillColor" || dk === "strokeColor" || dk === "boxPosition" || dk === "boxSize") {
         if (v[k] !== null) d[dk] = __scalar(v[k]);
       } else if (typeof v[k] === "boolean") d[dk] = !!v[k];
       else if (typeof v[k] === "number") d[dk] = v[k];
-      else if (typeof v[k] === "string") {
-        if (dk === "justification") {
-          try { d.justification = ParagraphJustification[v[k].toUpperCase()]; }
-          catch (je) { try { d.justification = eval("ParagraphJustification." + v[k]); } catch (je2) {} }
-        } else d[dk] = v[k];
-      }
-    } catch (ae) { __warn("textdoc field " + k + ": " + ae); }
+      else if (typeof v[k] === "string") d[dk] = v[k];
+    } catch (ae) { __warn("textdoc field " + k + ": " + __estr(ae)); }
   }
   return d;
 }
@@ -95,13 +119,15 @@ function __applyKeys(prop, keys) {
     try {
       prop.setValueAtTime(__num(k.t), val);
     } catch (ke) {
-      __err("setValueAtTime failed on " + prop.name + " @" + k.t + ": " + ke);
+      __err("setValueAtTime failed on " + prop.name + " @" + k.t + ": " + __estr(ke));
       continue;
     }
     var idx = i + 1;
     try {
       if (k.inT !== undefined || k.outT !== undefined) {
-        prop.setInterpolationTypeAtKey(idx, __num(k.inT), __num(k.outT));
+        var it = k.inT !== undefined ? __num(k.inT) : __num(k.outT);
+        var ot = k.outT !== undefined ? __num(k.outT) : __num(k.inT);
+        prop.setInterpolationTypeAtKey(idx, it, ot);
       }
       if (k.inEase || k.outEase) {
         var ie = null, oe = null;
@@ -113,6 +139,9 @@ function __applyKeys(prop, keys) {
           oe = [];
           for (var b = 0; b < k.outEase.length; b++) oe.push(new KeyframeEase(__num(k.outEase[b][0]), __num(k.outEase[b][1])));
         }
+        // setTemporalEaseAtKey requires arrays on both sides.
+        if (!ie) ie = oe;
+        if (!oe) oe = ie;
         prop.setTemporalEaseAtKey(idx, ie, oe);
       }
       if (k.spIn || k.spOut) {
@@ -120,7 +149,7 @@ function __applyKeys(prop, keys) {
         var so = k.spOut ? [__num(k.spOut[0]), __num(k.spOut[1])] : [0, 0];
         prop.setSpatialTangentsAtKey(idx, si, so);
       }
-    } catch (ee) { __warn("key meta failed on " + prop.name + " #" + idx + ": " + ee); }
+    } catch (ee) { __warn("key meta failed on " + prop.name + " #" + idx + ": " + __estr(ee)); }
   }
 }
 
@@ -147,36 +176,44 @@ function __applyNode(p, node, path) {
       var cp = null;
       if (addMode) {
         try { cp = p.addProperty(ch.matchName); }
-        catch (ae) { __err("addProperty " + ch.matchName + " under " + path + ": " + ae); continue; }
+        catch (ae) { __err("addProperty " + ch.matchName + " under " + path + ": " + __estr(ae)); continue; }
       } else {
         cp = __childProp(p, ch);
       }
       __applyNode(cp, ch, path + "/" + (ch.matchName || ch.name));
     }
-    // group-level attrs (e.g. mask mode lives on the mask atom, not children)
+    // group-level attrs (mask mode / enabled live on the atom, not children)
     if (node.maskMode !== undefined) {
-      try {
-        var mm = { "MaskMode.ADD": 1 };
-        p.maskMode = node.maskMode;
-      } catch (me) {}
+      try { p.maskMode = node.maskMode; }
+      catch (me) { __warn("maskMode failed on " + path + ": " + __estr(me)); }
+    }
+    if (node.enabled === false) {
+      try { p.enabled = false; } catch (ee2) { __warn("enabled=false failed on " + path); }
+    }
+    if (node.active === false) {
+      try { p.active = false; } catch (ae2) { __warn("active=false failed on " + path); }
     }
     return;
   }
   // leaf
   if (node.keys && node.keys.length) {
     __applyKeys(p, node.keys);
-    return;
+  } else if (node.value !== undefined && node.value !== null) {
+    var v = node.value;
+    try {
+      if (__isShapeVal(v)) { p.setValue(__toShape(v)); }
+      else if (p.matchName === "ADBE Text Document" || __isTextDocVal(v)) {
+        var d = __toTextDoc(p, v);
+        if (d) p.setValue(d);
+      } else {
+        p.setValue(__scalar(v));
+      }
+    } catch (ve) { __err("setValue failed " + path + " (" + p.matchName + "): " + __estr(ve)); }
   }
-  if (node.value === undefined || node.value === null) return;
-  var v = node.value;
-  try {
-    if (__isShapeVal(v)) { p.setValue(__toShape(v)); return; }
-    if (p.matchName === "ADBE Text Document" || __isTextDocVal(v)) {
-      var d = __toTextDoc(p, v);
-      if (d) { p.setValue(d); return; }
-    }
-    p.setValue(__scalar(v));
-  } catch (ve) { __err("setValue failed " + path + " (" + p.matchName + "): " + ve); }
+  if (node.expression) {
+    try { p.expression = node.expression; }
+    catch (exe) { __err("expression failed on " + path + ": " + __estr(exe)); }
+  }
 }
 function __applyGroup(root, node, path) {
   if (!node) return;
@@ -187,7 +224,7 @@ function __applyGroup(root, node, path) {
     var cp = null;
     if (addMode) {
       try { cp = root.addProperty(ch.matchName); }
-      catch (ae) { __err("addProperty " + ch.matchName + " under " + path + ": " + ae); continue; }
+      catch (ae) { __err("addProperty " + ch.matchName + " under " + path + ": " + __estr(ae)); continue; }
     } else {
       cp = __childProp(root, ch);
     }
@@ -213,19 +250,37 @@ function __findFootage(name) {
   }
   return null;
 }
-function __importFootage(rel, footageByName) {
+// Solids have no project.items.addSolid; create them through a scratch comp
+// and keep the orphaned footage item (solids survive comp deletion).
+var __solidHost = null;
+function __solidItem(color, name, w, h) {
+  if (!__solidHost) {
+    __solidHost = app.project.items.addComp("__pv_solids__", 4, 4, 1, 1, 1);
+  }
+  var L = __solidHost.layers.addSolid(color, name, __num(w), __num(h), 1, 3600);
+  return L.source;
+}
+function __importFootage(spec, footageByName) {
+  if (spec.kind === "solid") {
+    var si = null;
+    try { si = __solidItem(spec.color || [1, 1, 1], spec.name, spec.width || 100, spec.height || 100); }
+    catch (se) { __err("addSolid failed " + spec.name + ": " + __estr(se)); return null; }
+    footageByName[spec.name] = si;
+    return si;
+  }
+  var rel = spec.file;
   var f = null;
   try { f = new File(__REPO_ROOT + "/" + rel); } catch (e) {}
   if ((!f || !f.exists) && __REPO_ROOT) {
-    try { f = new File(__REPO_ROOT + "/" + rel.replace(/\//g, "\\")); } catch (e) {}
+    try { f = new File(__REPO_ROOT + "/" + rel.split("/").join("\\")); } catch (e) {}
   }
   if (!f || !f.exists) { try { f = new File(rel); } catch (e) {} }
   if (!f || !f.exists) { __err("missing footage file: " + rel); return null; }
   var item = app.project.importFile(new ImportOptions(f));
-  if (item) footageByName[item.name] = item;
+  if (item) footageByName[spec.name || item.name] = item;
   return item;
 }
-function __createLayer(comp, ls, footageByName) {
+function __createLayer(comp, ls, footageByName, compItems) {
   var name = ls.name || ("layer" + ls.index);
   var L = null;
   if (ls.kind === "shape") { L = comp.layers.addShape(); }
@@ -233,8 +288,15 @@ function __createLayer(comp, ls, footageByName) {
   else if (ls.kind === "null") { L = comp.layers.addNull(); }
   else if (ls.kind === "comp" || ls.kind === "footage") {
     var src = null;
-    if (ls.kind === "comp") src = __findComp(ls.source);
-    else src = footageByName[ls.source] || __findFootage(ls.source);
+    if (ls.kind === "comp") {
+      if (ls.sourceCompIndex !== undefined && ls.sourceCompIndex !== null) {
+        var ci = __num(ls.sourceCompIndex);
+        if (ci >= 0 && ci < compItems.length && compItems[ci]) src = compItems[ci];
+      }
+      if (!src) src = __findComp(ls.source);
+    } else {
+      src = footageByName[ls.source] || __findFootage(ls.source);
+    }
     if (!src) { __err("unresolved " + ls.kind + " source '" + ls.source + "' for layer " + name); return null; }
     L = comp.layers.add(src);
   } else {
@@ -268,13 +330,13 @@ function __applyLayer(L, ls, compLayers) {
       try {
         var tn = __TRACK_MATTE[ls.trackMatteType];
         if (tn) L.trackMatteType = eval("TrackMatteType." + tn);
-      } catch (te) { __warn("trackMatteType " + ls.trackMatteType + " on " + ls.name + ": " + te); }
+      } catch (te) { __warn("trackMatteType " + ls.trackMatteType + " on " + ls.name + ": " + __estr(te)); }
     }
     if (ls.parentIndex) {
       var pi = __num(ls.parentIndex);
       if (pi >= 1 && pi <= compLayers.length) {
         try { L.parent = compLayers[pi - 1]; }
-        catch (pe) { __err("parent failed on " + ls.name + " -> index " + pi + ": " + pe); }
+        catch (pe) { __err("parent failed on " + ls.name + " -> index " + pi + ": " + __estr(pe)); }
       } else { __err("parentIndex out of range on " + ls.name + ": " + ls.parentIndex); }
     }
     if (ls.transform) __applyGroup(L.property("ADBE Transform Group"), ls.transform, "transform");
@@ -283,11 +345,14 @@ function __applyLayer(L, ls, compLayers) {
     if (ls.shapes) __applyGroup(L.property("ADBE Root Vectors Group"), ls.shapes, "shapes");
     if (ls.text) __applyGroup(L.property("ADBE Text Properties"), ls.text, "text");
     if (ls.timeRemap) {
-      try { __applyGroup(L.property("ADBE Time Remapping"), ls.timeRemap, "timeRemap"); }
-      catch (tre) { __warn("timeRemap apply failed on " + ls.name + ": " + tre); }
+      try {
+        var trp = L.property("ADBE Time Remapping");
+        if (ls.timeRemap.properties && ls.timeRemap.properties.length) __applyGroup(trp, ls.timeRemap, "timeRemap");
+        else __applyNode(trp, ls.timeRemap, "timeRemap");
+      } catch (tre) { __warn("timeRemap apply failed on " + ls.name + ": " + __estr(tre)); }
     }
     if (ls.markers) { /* markers are informational; not yet materialized */ }
-  } catch (e) { __err("layer setup failed on " + ls.name + ": " + e); }
+  } catch (e) { __err("layer setup failed on " + ls.name + ": " + __estr(e)); }
 }
 
 // ---- project ---------------------------------------------------------------
@@ -295,51 +360,67 @@ function buildProject(spec) {
   var footageByName = {};
   if (spec.footage) {
     for (var fi = 0; fi < spec.footage.length; fi++) {
-      __importFootage(spec.footage[fi].file, footageByName);
+      __importFootage(spec.footage[fi], footageByName);
     }
   }
-  var compByName = {};
+  // create every comp first so precomp layers can reference any of them
+  var compItems = [];
   for (var i = 0; i < spec.comps.length; i++) {
     var cs = spec.comps[i];
     var c = null;
     try {
       c = app.project.items.addComp(cs.name, __num(cs.width), __num(cs.height),
         __num(cs.pixelAspect || 1), __num(cs.duration), __num(cs.frameRate));
-      compByName[cs.name] = c;
-    } catch (ce) { __err("addComp failed " + cs.name + ": " + ce); }
+      if (cs.bgColor) {
+        try { c.bgColor = __scalar(cs.bgColor); } catch (bge) {}
+      }
+      compItems.push(c);
+    } catch (ce) { __err("addComp failed " + cs.name + ": " + __estr(ce)); compItems.push(null); }
   }
   for (i = 0; i < spec.comps.length; i++) {
     var compSpec = spec.comps[i];
-    var comp = compByName[compSpec.name];
+    var comp = compItems[i];
     if (!comp) continue;
     var layers = compSpec.layers || [];
     var created = [];
-    // AE addition order = stacking order: first added ends up on top.
-    for (var li = 0; li < layers.length; li++) {
-      var ls = layers[li];
+    for (var k = 0; k < layers.length; k++) created.push(null);
+    // layers.add* inserts at the TOP of the stack, so iterate the spec
+    // (AE order, [0] = top) in reverse to reproduce the original stacking.
+    for (var ri = layers.length - 1; ri >= 0; ri--) {
+      var ls = layers[ri];
       var L = null;
-      try { L = __createLayer(comp, ls, footageByName); }
-      catch (ce2) { __err("create layer failed " + ls.name + ": " + ce2); }
-      created.push(L);
+      try { L = __createLayer(comp, ls, footageByName, compItems); }
+      catch (ce2) { __err("create layer failed " + ls.name + ": " + __estr(ce2)); }
+      created[ri] = L;
     }
-    for (li = 0; li < layers.length; li++) {
+    for (var li = 0; li < layers.length; li++) {
       if (created[li]) __applyLayer(created[li], layers[li], created);
     }
     $.writeln("PV comp done: " + compSpec.name + " (" + layers.length + " layers)");
   }
+  // drop the scratch comp used to mint solid footage items
+  if (__solidHost) {
+    try { __solidHost.remove(); } catch (se) { __warn("solid host comp cleanup: " + __estr(se)); }
+    __solidHost = null;
+  }
 }
 
+function __jsonStr(s) {
+  return '"' + String(s).replace(/\\/g, "\\\\").replace(/"/g, "\\\"") + '"';
+}
 function __writeReport() {
   if (!__REPORT_PATH) return;
   var f = new File(__REPORT_PATH);
   f.encoding = "UTF-8";
   f.open("w");
+  var wl = [], el = [];
+  var i, n;
+  n = __WARN.length < 200 ? __WARN.length : 200;
+  for (i = 0; i < n; i++) wl.push(__jsonStr(__WARN[i]));
+  n = __ERR.length < 200 ? __ERR.length : 200;
+  for (i = 0; i < n; i++) el.push(__jsonStr(__ERR[i]));
   f.write('{"warnings":' + __WARN.length + ',"errors":' + __ERR.length +
-    ',"warnList":[' + __WARN.slice(0, 200).map(function (s) {
-      return '"' + String(s).replace(/\\/g, "\\\\").replace(/"/g, "\\\"") + '"';
-    }).join(",") + '],"errList":[' + __ERR.slice(0, 200).map(function (s) {
-      return '"' + String(s).replace(/\\/g, "\\\\").replace(/"/g, "\\\"") + '"';
-    }).join(",") + ']}');
+    ',"warnList":[' + wl.join(",") + '],"errList":[' + el.join(",") + ']}');
   f.close();
 }
 function __finish() {
@@ -349,7 +430,7 @@ function __finish() {
       var sf = new File(__SAVE_PATH);
       app.project.save(sf);
       $.writeln("PV saved: " + __SAVE_PATH);
-    } catch (se) { __err("project save failed: " + se); }
+    } catch (se) { __err("project save failed: " + __estr(se)); }
   }
   if (__REPORT_PATH) {
     var d = new File(__REPORT_PATH + ".done");

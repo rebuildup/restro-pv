@@ -43,8 +43,8 @@ const inner: CompSpec = {
         properties: [
           { name: 'Position', matchName: 'ADBE Position',
             keys: [
-              { t: 0, v: [50, 50], outT: 2, outEase: [[0.2, 50]] },
-              { t: 1.5, v: [150, 100], inT: 2, inEase: [[75, 0.5]], outT: 2, outEase: [[0.1, 90]] },
+              { t: 0, v: [50, 50], outT: 6613, outEase: [[0.2, 50]] },
+              { t: 1.5, v: [150, 100], inT: 6613, inEase: [[75, 0.5]], outT: 6613, outEase: [[0.1, 90]] },
               { t: 2, v: [100, 150] },
             ] },
           { name: 'Opacity', matchName: 'ADBE Opacity', value: 100 },
@@ -75,7 +75,7 @@ const master: CompSpec = {
   width: 400, height: 300, duration: 3, frameRate: 24,
   layers: [
     {
-      index: 1, name: 'inner', kind: 'comp', source: 'smoke-inner',
+      index: 1, name: 'inner', kind: 'comp', source: 'smoke-inner', sourceCompIndex: 0,
       inPoint: 0.25, outPoint: 2.25, startTime: 0.25,
       transform: {
         name: 'Transform', matchName: 'ADBE Transform Group',
@@ -187,6 +187,6 @@ export function buildSpec(): ProjectSpec {
   return {
     name: 'pv-smoke',
     comps: [inner, master],
-    footage: [{ file: 'assets/images/Ae.png' }],
+    footage: [{ name: 'Ae.png', kind: 'file', file: 'assets/images/Ae.png' }],
   };
 }

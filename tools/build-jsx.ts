@@ -6,7 +6,7 @@
 //                           [--report .tmp/build-report.json]
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { buildSpec } from '../pv/main.ts';
 import { AE_RUNTIME } from '../pv/runtime/aeRuntime.ts';
 import { specLiteral } from '../pv/emit/spec-literal.ts';
@@ -28,11 +28,11 @@ function parseArgs(argv: string[]) {
 
 const { out, save, report, spec: specArg } = parseArgs(process.argv.slice(2));
 const spec = specArg
-  ? (await import(resolve(repoRoot, specArg))).buildSpec()
+  ? (await import(pathToFileURL(resolve(repoRoot, specArg)).href)).buildSpec()
   : buildSpec();
 
 const jsx = [
-  '// GENERATED FILE — do not edit. Source: pv/ (TypeScript).',
+  '// GENERATED FILE - do not edit. Source: pv/ (TypeScript). ASCII-only on purpose.',
   '// Build: node tools/build-jsx.ts',
   '(function () {',
   '  var __REPO_ROOT_BAKED = ' + JSON.stringify(repoRoot.replace(/\\/g, '/')) + ';',
@@ -54,7 +54,10 @@ const jsx = [
   '    try {',
   '      buildProject(SPEC);',
   '    } catch (fatal) {',
-  '      __err("buildProject fatal: " + fatal);',
+  '      var __fd = "", __fl = "";',
+  '      try { __fd = String(fatal.description || fatal.message || fatal); } catch (x) {}',
+  '      try { __fl = String(fatal.line); } catch (x) {}',
+  '      __err("buildProject fatal: " + __fd + " @line " + __fl);',
   '    }',
   '  }',
   '  __finish();',
