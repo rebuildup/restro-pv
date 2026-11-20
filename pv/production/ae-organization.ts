@@ -104,7 +104,7 @@ export function withFoldGroups(layers: readonly LayerSpec[], duration: number): 
       output.push(foldDivider(role, ordinal, duration));
       previous = role;
     }
-    const layer: LayerSpec = { ...original, role, label: ROLE_LABELS[role] };
+    const layer: LayerSpec = { ...structuredClone(original), role, label: ROLE_LABELS[role] };
     if (oldToNew.has(original.index)) throw new Error("duplicate old layer index " + original.index);
     output.push(layer);
     oldToNew.set(original.index, output.length);
