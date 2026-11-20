@@ -68,7 +68,6 @@ test("overlap is allowed only with a specific active rationale", () => {
 test("trim, main direction and out-of-bounds errors are rejected", () => {
   const scene = example();
   const sections = scene.sections.map((s) => ({ ...s, rect: { ...s.rect } }));
-  sections[0].outPoint = undefined;
   sections[0].toFrame = 500;
   sections[3].rect.y = 290; // makes main direction inverted
   sections[5].rect.x = 2000;
