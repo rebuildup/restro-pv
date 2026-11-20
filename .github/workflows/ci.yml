@@ -18,4 +18,4 @@ jobs:
       - run: bun run build:jsx
       - run: bun tools/build-jsx.ts --spec pv/smoke.ts --out dist/smoke.jsx --save .tmp/fake-smoke.aep --report .tmp/fake-smoke-report.json
       - run: bun run jsx:check
-      - run: bun test tests
+      - run: bun run test:fast
