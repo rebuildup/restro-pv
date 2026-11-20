@@ -106,7 +106,8 @@ export function pvProjectSpec(): ProjectSpec {
     composeScene({
       id: "E",
       title: "Restro / 筆画復元",
-      description: "BOOTHで販売中  361do.booth.pm/items/9029239",
+      description: "BOOTHで販売中\\n361do.booth.pm/items/9029239",
+      descriptionFontSize: 28,
       materialComp: "PV end",
       durationFrames: TOTAL_FRAMES - WORKFLOW_END,
       hero: end,
