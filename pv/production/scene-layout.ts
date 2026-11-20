@@ -95,6 +95,28 @@ export function ascendingMainSlots(count: number, height: number): FrameRect[] {
   }));
 }
 
+// A sequence of large focal images can follow the same diagonal across
+// successive scenes without shrinking to a row of tiny simultaneous tiles.
+export function risingHeroRects(count: number, width: number, height: number): FrameRect[] {
+  const region = PV_GRID.main;
+  if (!Number.isInteger(count) || count < 1 || count > 8) {
+    throw new Error("hero count must be between 1 and 8");
+  }
+  if (
+    !Number.isFinite(width) || !Number.isFinite(height) ||
+    width <= 0 || height <= 0 || width > region.width || height > region.height
+  ) throw new Error("hero must fit in the main region");
+  return Array.from({ length: count }, (_, i) => {
+    const progress = count === 1 ? 0.5 : i / (count - 1);
+    return {
+      x: region.x + progress * (region.width - width),
+      y: region.y + (1 - progress) * (region.height - height),
+      width,
+      height,
+    };
+  });
+}
+
 // Strict by default: overlapping content is invalid unless a named pair has
 // a specific compositing reason. An unused exception also fails the gate.
 export function lintSceneLayouts(scenes: readonly SceneLayout[]): LayoutIssue[] {
