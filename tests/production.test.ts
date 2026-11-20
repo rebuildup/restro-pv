@@ -407,3 +407,101 @@ test("material-layer clones from provided dumps and strips stale identity", () =
   assert.deepEqual(posOf(cloned), [500, 500, 0]);
   assert.throws(() => compileProduction(p), /material comp "PV showreel" not provided/);
 });
+
+// ---- FoldLayers group dividers + labels (issue #15) ----------------------------
+
+function fdGroups(layer: LayerSpec): string[] {
+  return (
+    layer.shapes?.properties
+      ?.map((p) => p.name)
+      .filter((n): n is string => typeof n === "string" && n.startsWith("FD-")) ?? []
+  );
+}
+
+test("every non-empty section emits a FoldLayers divider above its layers", () => {
+  const m = masterOf(compileProduction(demoProject(4)));
+  const dividers = m.layers.filter((l) => l.kind === "shape" && /^[▾▸]\s/.test(l.name));
+  // master has 3 sections -> 3 dividers, inner comp has 1 -> checked separately
+  assert.equal(dividers.length, 3);
+  const inner = compileProduction(demoProject(4)).comps.find((c) => c.name === "demo-inner")!;
+  assert.equal(inner.layers.filter((l) => l.kind === "shape" && /^[▾▸]\s/.test(l.name)).length, 1);
+  for (const d of dividers) {
+    // real vector layer, video off, not shy, label None — plugin contract
+    assert.equal(d.enabled, false);
+    assert.equal(d.shy, false);
+    assert.equal(d.label, 0);
+    const groups = fdGroups(d);
+    assert.ok(groups.includes("FD-0"), `${d.name} lacks FD-0`);
+    assert.ok(
+      groups.some((g) => g.startsWith("FD-H:")),
+      `${d.name} lacks FD-H:*`,
+    );
+    assert.equal(d.shapes?.matchName, "ADBE Root Vectors Group");
+    for (const g of d.shapes!.properties!) {
+      assert.equal(g.matchName, "ADBE Vector Group");
+    }
+  }
+  // hierarchy auto-numbers top-level siblings "1".."3"
+  assert.deepEqual(
+    dividers.map((d) => fdGroups(d).find((g) => g.startsWith("FD-H:"))),
+    ["FD-H:1", "FD-H:2", "FD-H:3"],
+  );
+  // divider sits directly above its section's first layer
+  const stageIdx = m.layers.findIndex((l) => l.name === "▾ (1) stage");
+  assert.ok(stageIdx >= 0);
+  assert.equal(m.layers[stageIdx + 1]!.name, "stage/screen");
+});
+
+test("folded group: FD-1/▸ divider, shy members, hideShyLayers", () => {
+  const p = demoProject(4);
+  p.comps[1].sections[1].group = { folded: true };
+  const spec = compileProduction(p);
+  const m = masterOf(spec);
+  assert.equal(m.hideShyLayers, true);
+  const folded = m.layers.find((l) => l.name.startsWith("▸"));
+  assert.ok(folded, "missing folded divider");
+  assert.ok(fdGroups(folded).includes("FD-1"));
+  assert.ok(!fdGroups(folded).includes("FD-0"));
+  // members between this divider and the next divider are shy
+  const fi = m.layers.indexOf(folded);
+  let shy = 0;
+  let members = 0;
+  for (let i = fi + 1; i < m.layers.length; i++) {
+    const g = fdGroups(m.layers[i]!);
+    if (g.includes("FD-0") || g.includes("FD-1")) break;
+    members++;
+    if (m.layers[i]!.shy) shy++;
+  }
+  assert.ok(members > 0);
+  assert.equal(shy, members);
+});
+
+test("group:false opts out and explicit hierarchy/name are honored", () => {
+  const p = demoProject(4);
+  p.comps[1].sections[0].group = false;
+  p.comps[1].sections[1].group = { folded: false, name: "Identity", hierarchy: "1/A" };
+  const m = masterOf(compileProduction(p));
+  const dividers = m.layers.filter((l) => l.kind === "shape" && /^[▾▸]\s/.test(l.name));
+  assert.equal(dividers.length, 2); // stage opted out, brand + scaffold remain
+  const named = dividers.find((d) => d.name.includes("Identity"))!;
+  assert.ok(named.name.startsWith("▾ (1/A) "));
+  // opted-out section's layers join the preceding group's member range:
+  // they sit between the brand divider above? no — stage is FIRST section,
+  // so its layers precede the first divider entirely.
+  assert.equal(m.layers[0]!.name, "stage/screen");
+});
+
+test("role labels color layers; anchors get the guide color", () => {
+  const m = masterOf(compileProduction(demoProject(4)));
+  const brandMark = m.layers.find((l) => l.name === "brand-mark")!;
+  const screen = m.layers.find((l) => l.name === "stage/screen")!;
+  const origin = m.layers.find((l) => l.name === "anchor:rig.origin")!;
+  assert.equal(brandMark.label, 9); // ROLE_LABEL.brand
+  assert.equal(screen.label, 5); // ROLE_LABEL.stage
+  assert.equal(origin.label, 15); // ANCHOR_LABEL
+  // per-layer override wins over the role default
+  const p = demoProject(4);
+  p.comps[1].sections[1].layers[0].label = 3;
+  const m2 = masterOf(compileProduction(p));
+  assert.equal(m2.layers.find((l) => l.name === "brand-mark")!.label, 3);
+});

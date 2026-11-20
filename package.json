@@ -16,6 +16,7 @@
     "verify": "bun tools/verify.ts",
     "release-verify": "bun tools/release-verify.ts",
     "jsx:check": "bun tools/check-jsx.ts",
+    "lint:pv": "bun tools/lint-pv.ts",
     "test:ae": "ae-test",
     "build:jsx": "bun tools/build-jsx.ts",
     "dump:tree": "bun tools/dump-aep-tree.ts",

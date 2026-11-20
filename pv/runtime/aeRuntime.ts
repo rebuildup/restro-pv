@@ -230,6 +230,16 @@ function __childProp(parent, child) {
   if (!p && child.name) { try { p = parent.property(child.name); } catch (e2) {} }
   return p;
 }
+// Vector content groups (shape-layer Contents) carry functional names:
+// FoldLayers dividers are identified by FD-0/FD-1/FD-H:* group names inside
+// "ADBE Root Vectors Group", and dumped shape groups keep their authored
+// names. addProperty() gives a default name, so rename right after creation.
+// Other property types reject name writes -- restrict to vector groups.
+function __maybeRenameGroup(cp, ch) {
+  if (!cp || !ch || ch.matchName !== "ADBE Vector Group" || !ch.name) return;
+  try { cp.name = ch.name; }
+  catch (ne) { __warn("vector group rename failed '" + ch.name + "': " + __estr(ne)); }
+}
 function __applyNode(p, node, path) {
   if (!p) { __err("missing property " + path); return; }
   if (node.numProperties && node.properties && node.properties.length) {
@@ -265,6 +275,7 @@ function __applyNode(p, node, path) {
       if (addMode) {
         try { cp = p.addProperty(ch.matchName); }
         catch (ae) { __err("addProperty " + ch.matchName + " under " + path + ": " + __estr(ae)); continue; }
+        __maybeRenameGroup(cp, ch);
       } else {
         cp = __childProp(p, ch);
       }
@@ -330,6 +341,7 @@ function __applyGroup(root, node, path) {
     if (addMode) {
       try { cp = root.addProperty(ch.matchName); }
       catch (ae) { __err("addProperty " + ch.matchName + " under " + path + ": " + __estr(ae)); continue; }
+      __maybeRenameGroup(cp, ch);
     } else {
       cp = __childProp(root, ch);
     }
@@ -376,6 +388,7 @@ function __importFootage(spec, footageByName) {
     try { si = __solidItem(spec.color || [1, 1, 1], spec.name, spec.width || 100, spec.height || 100); }
     catch (se) { __err("addSolid failed " + spec.name + ": " + __estr(se)); return null; }
     footageByName[spec.name] = si;
+    if (spec.label !== undefined) { try { si.label = __num(spec.label); } catch (le) {} }
     return si;
   }
   var rel = spec.file;
@@ -397,7 +410,10 @@ function __importFootage(spec, footageByName) {
     try { item = app.project.importFile(/** @type {any} */ (f)); }
     catch (ie2) { __err("importFile failed " + rel + ": " + __estr(ie2)); return null; }
   }
-  if (item) footageByName[spec.name || item.name] = item;
+  if (item) {
+    footageByName[spec.name || item.name] = item;
+    if (spec.label !== undefined) { try { item.label = __num(spec.label); } catch (le) {} }
+  }
   return item;
 }
 function __createLayer(comp, ls, footageByName, compItems) {
@@ -447,6 +463,7 @@ function __applyLayer(L, ls, compLayers) {
     // enabled=false is applied after all property writes as a defensive
     // ordering measure; shy/guide layers remain editable throughout.
     if (ls.shy) L.shy = true;
+    if (ls.label !== undefined) { try { L.label = __num(ls.label); } catch (le) {} }
     if (ls.guideLayer) L.guideLayer = true;
     // Order matters: startTime/stretct position the layer bar first; setting
     // inPoint/outPoint afterwards trims the visible range without dragging
@@ -582,6 +599,10 @@ function buildProject(spec) {
       if (cs.bgColor) {
         try { c.bgColor = __scalar(cs.bgColor); } catch (bge) {}
       }
+      if (cs.label !== undefined) { try { c.label = __num(cs.label); } catch (le) {} }
+      // hideShyLayers is required for shy layers (e.g. FoldLayers-folded
+      // groups) to actually disappear from the comp view and renders.
+      if (cs.hideShyLayers) { try { c.hideShyLayers = true; } catch (hs) {} }
       compItems.push(c);
     } catch (ce) { __err("addComp failed " + cs.name + ": " + __estr(ce)); compItems.push(null); }
   }
@@ -632,6 +653,17 @@ function buildProject(spec) {
     __prog("comp done " + compSpec.name + " (" + layers.length + " layers, " +
       (new Date().getTime() - compT0) + "ms)");
     try { if ($.writeln) $.writeln("PV comp done: " + compSpec.name + " (" + layers.length + " layers)"); } catch (x) {}
+  }
+  // Label every project item (covers material-AEP comps/footage, which have
+  // no spec entry of their own) from the authored name -> color map.
+  if (spec.itemLabels) {
+    for (var li2 = 1; li2 <= app.project.numItems; li2++) {
+      var itm = null;
+      try { itm = app.project.item(li2); } catch (e) {}
+      if (!itm) continue;
+      var lv = spec.itemLabels[itm.name];
+      if (lv !== undefined) { try { itm.label = __num(lv); } catch (le) {} }
+    }
   }
   // drop the scratch comp used to mint solid footage items
   if (__solidHost) {

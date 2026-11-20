@@ -20,6 +20,7 @@
 //   [371,480f)  E           -> material comp "PV end"
 
 import { comp_05 } from "../generated/05-master.ts";
+import { GENERATED_COMPS, GENERATED_FOOTAGE } from "../generated/index.ts";
 import { compileProduction, layerRef } from "../production/compile.ts";
 import type {
   CompProduction,
@@ -27,6 +28,7 @@ import type {
   SectionLayerSpec,
   SectionSpec,
 } from "../production/model.ts";
+import { ITEM_LABEL_SCENE, ITEM_LABEL_WORK, materialCompLabel } from "../production/theme.ts";
 import type { LayerSpec, ProjectSpec, PropNode } from "../spec/types.ts";
 
 const FPS = 24;
@@ -256,6 +258,9 @@ function pvMasterComp(): CompProduction {
     {
       id: "rig-tracker",
       role: "guide",
+      // Pure null rig — safe to fold: shy layers still evaluate, so the
+      // corner quads' tracking keeps working while the timeline declutters.
+      group: { folded: true },
       layers: [
         ...RIG_CLONES.map((n) => cloneSectionLayer(n)),
         // Ancestor-closure nulls the legacy stack carried for the corner
@@ -307,11 +312,12 @@ function pvMasterComp(): CompProduction {
   return {
     id: "pv-master",
     name: "PV master",
+    label: ITEM_LABEL_SCENE,
     sections,
   };
 }
 
-function pvProductionProject(): ProductionProject {
+export function pvProductionProject(): ProductionProject {
   return {
     name: "restro-pv",
     frame: {
@@ -327,6 +333,17 @@ function pvProductionProject(): ProductionProject {
   };
 }
 
+// Material-AEP items have no spec entries; label them by name so the
+// project panel distinguishes shipping scene comps from working/tmp items.
+function materialItemLabels(): Record<string, number> {
+  const labels: Record<string, number> = {};
+  for (const c of GENERATED_COMPS) labels[c.name] = materialCompLabel(c.name);
+  for (const f of GENERATED_FOOTAGE) labels[f.name] = ITEM_LABEL_WORK;
+  return labels;
+}
+
 export function pvProductionSpec(): ProjectSpec {
-  return compileProduction(pvProductionProject());
+  const spec = compileProduction(pvProductionProject());
+  spec.itemLabels = materialItemLabels();
+  return spec;
 }

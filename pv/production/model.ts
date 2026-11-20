@@ -155,6 +155,8 @@ export interface SectionLayerSpec {
   id?: string;
   /** AE layer name override. */
   name?: string;
+  /** AE label color override; defaults to the section role's theme color. */
+  label?: number;
   content: SectionContent;
   layout?: LayoutSpec;
   metrics?: ContentMetrics;
@@ -170,6 +172,18 @@ export interface SectionLayerSpec {
  * "stage", "overlay", "guide", "audio" — carried into layer names, not
  * interpreted by the compiler.
  */
+/**
+ * FoldLayers group divider emitted above the section's layers. When
+ * `folded` is true the divider carries FD-1/▸ and every member layer is
+ * emitted shy (requires comp.hideShyLayers, set automatically).
+ * `hierarchy` defaults to the section's top-level index ("1".."9"+).
+ */
+export interface SectionGroupSpec {
+  folded?: boolean;
+  name?: string;
+  hierarchy?: string;
+}
+
 export interface SectionSpec {
   id: string;
   role: string;
@@ -178,6 +192,9 @@ export interface SectionSpec {
   anchors?: AnchorSpec[];
   /** false keeps the section's layers in the spec but disabled. */
   enabled?: boolean;
+  /** FoldLayers-convention group divider. Default: emitted for every
+   *  non-empty section (divider: false opts out). */
+  group?: SectionGroupSpec | false;
 }
 
 export interface CompProduction {
@@ -192,6 +209,10 @@ export interface CompProduction {
   anchors?: AnchorSpec[];
   /** Front-to-back section order. */
   sections: SectionSpec[];
+  /** comp.hideShyLayers; auto-enabled when any section group is folded. */
+  hideShyLayers?: boolean;
+  /** AE label color for the comp item itself. */
+  label?: number;
 }
 
 /** Footage/solid item declared once and referenced by section layers. */
@@ -200,6 +221,8 @@ export interface ProductionAsset {
   kind: "file" | "solid";
   /** AE item name; defaults to id. */
   name?: string;
+  /** AE label color for the footage item. */
+  label?: number;
   /** Repo-relative path for kind "file". */
   file?: string;
   /** Solid color [r,g,b] 0..1 for kind "solid". */
@@ -228,4 +251,10 @@ export interface CompileOptions {
    * pv/generated itself.
    */
   materialComps?: Record<string, CompSpec>;
+  /**
+   * Observability hook for lint/analysis tools: invoked once per emitted
+   * section layer with the comp name, final AE layer index (1-based), and
+   * owning section id. Does not affect compilation.
+   */
+  onSectionLayer?: (compName: string, layerIndex: number, sectionId: string) => void;
 }

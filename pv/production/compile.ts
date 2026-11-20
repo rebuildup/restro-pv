@@ -36,6 +36,14 @@ import type {
   SectionLayerSpec,
   SectionSpec,
 } from "./model.ts";
+import {
+  ANCHOR_LABEL,
+  DIVIDER_LABEL,
+  dividerHierarchyStream,
+  dividerStateName,
+  dividerStateStream,
+  labelForRole,
+} from "./theme.ts";
 
 // ---- authoring helpers ------------------------------------------------------
 
@@ -275,7 +283,14 @@ function toFootageSpec(asset: ProductionAsset): FootageSpec {
     if (!asset.color || asset.width === undefined || asset.height === undefined) {
       throw new Error(`asset "${asset.id}": solid requires color, width and height`);
     }
-    return { name, kind: "solid", color: asset.color, width: asset.width, height: asset.height };
+    return {
+      name,
+      kind: "solid",
+      color: asset.color,
+      width: asset.width,
+      height: asset.height,
+      ...(asset.label !== undefined ? { label: asset.label } : {}),
+    };
   }
   if (!asset.file) throw new Error(`asset "${asset.id}": file kind requires file`);
   return {
@@ -283,6 +298,7 @@ function toFootageSpec(asset: ProductionAsset): FootageSpec {
     kind: "file",
     file: asset.file,
     ...(asset.audioOnly ? { audioOnly: true } : {}),
+    ...(asset.label !== undefined ? { label: asset.label } : {}),
   };
 }
 
@@ -457,7 +473,50 @@ function anchorToLayer(anchor: AnchorSpec, where: string): PendingLayer {
       name: "anchor:" + anchor.id,
       kind: "null",
       shy: true,
+      label: ANCHOR_LABEL,
       transform: baseTransform({ position, positionKeys: anchor.keys }),
+    },
+  };
+}
+
+// FoldLayers group divider — a real shape layer whose "ADBE Root Vectors
+// Group" holds a vector group named FD-0 (unfolded) or FD-1 (folded), plus
+// FD-H:<hierarchy> for nesting (see pv/production/theme.ts). The plugin's
+// IsDividerLayer() only accepts this vector-layer identity; names alone do
+// not register. Members are the contiguous layers below the divider until
+// the next same-hierarchy divider — sections stay contiguous by construction.
+function groupDividerToLayer(section: SectionSpec, hierarchy: string, where: string): PendingLayer {
+  const group = section.group;
+  if (group === false || group === undefined) {
+    throw new Error(`${where}: group divider requested for section without group spec`);
+  }
+  const folded = group.folded === true;
+  const display = group.name ?? section.id;
+  const stateStream = dividerStateStream(folded);
+  const vectorGroups: PropNode[] = [{ name: stateStream, matchName: "ADBE Vector Group" }];
+  if (hierarchy) {
+    vectorGroups.push({
+      name: dividerHierarchyStream(hierarchy),
+      matchName: "ADBE Vector Group",
+    });
+  }
+  const refId = `divider:${section.id}`;
+  return {
+    refId,
+    spec: {
+      index: 0,
+      name: dividerStateName(folded, hierarchy, display),
+      kind: "shape",
+      enabled: false, // FoldLayers convention: VIDEO OFF, not shy
+      shy: false,
+      label: DIVIDER_LABEL,
+      transform: baseTransform({}),
+      shapes: {
+        name: "Contents",
+        matchName: "ADBE Root Vectors Group",
+        numProperties: vectorGroups.length,
+        properties: vectorGroups,
+      },
     },
   };
 }
@@ -483,7 +542,10 @@ function compileComp(
     usedAssets: new Map(),
   };
 
-  // Unified ref-id table: section layers first (front-to-back), anchors last.
+  // Unified ref-id table: per section a FoldLayers divider (unless opted
+  // out), then the section's layers front-to-back, then comp anchors last.
+  // A section with group:false emits no divider, so its layers join the
+  // preceding group's member range — opt out only when that is intended.
   const pending: PendingLayer[] = [];
   const seenIds = new Set<string>();
   const claimId = (id: string, what: string) => {
@@ -491,8 +553,22 @@ function compileComp(
     seenIds.add(id);
   };
 
+  let dividerCount = 0;
+  let anyFolded = false;
   comp.sections.forEach((section) => {
     const sWhere = `${where} section "${section.id}"`;
+    const group =
+      section.group === false || section.layers.length === 0 ? null : { ...(section.group ?? {}) };
+    const folded = group?.folded === true;
+    if (group) {
+      dividerCount += 1;
+      const hierarchy = group.hierarchy ?? String(dividerCount);
+      claimId(`divider:${section.id}`, sWhere);
+      if (folded) anyFolded = true;
+      pending.push(
+        groupDividerToLayer({ ...section, group: { ...group, folded } }, hierarchy, sWhere),
+      );
+    }
     section.layers.forEach((sl, li) => {
       const refId = sl.id ?? `${section.id}/${li + 1}`;
       claimId(refId, sWhere);
@@ -500,7 +576,11 @@ function compileComp(
       // Display name precedence: explicit name > stable layer id > name
       // carried by the content (e.g. spec/material clones) > section default.
       layer.name = sl.name ?? sl.id ?? (layer.name || defaultLayerName(section, sl, li));
+      layer.label = sl.label ?? labelForRole(section.role);
       if (section.enabled === false) layer.enabled = false;
+      // Folded group members become shy (hidden once comp.hideShyLayers is
+      // on); shy layers still evaluate, so rigs keep working.
+      if (folded) layer.shy = true;
       const timing = sl.timing;
       if (timing) {
         if (timing.inPoint !== undefined) layer.inPoint = timing.inPoint;
@@ -510,6 +590,7 @@ function compileComp(
       }
       applyLayout(layer, sl, comp, grid, `${sWhere} layer "${refId}"`);
       applyPatch(layer, sl.patch);
+      options.onSectionLayer?.(comp.name, pending.length + 1, section.id);
       pending.push({ spec: layer, refId, parent: sl.parent });
     });
   });
@@ -551,6 +632,8 @@ function compileComp(
   };
   if (frame.pixelAspect !== undefined) spec.pixelAspect = frame.pixelAspect;
   if (frame.bgColor !== undefined) spec.bgColor = frame.bgColor;
+  if (comp.label !== undefined) spec.label = comp.label;
+  if (comp.hideShyLayers || anyFolded) spec.hideShyLayers = true;
 
   return { spec, usedAssets: [...ctx.usedAssets.values()] };
 }
