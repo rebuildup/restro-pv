@@ -98,6 +98,7 @@ export function pvProjectSpec(): ProjectSpec {
     composeScene({
       id: "D",
       title: "After Effectsで動かせる",
+      headingFontSize: 50,
       description: "生成した筆画を、そのまま編集。",
       materialComp: "PV ops",
       durationFrames: WORKFLOW_END - EXAMPLES_END,
