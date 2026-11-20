@@ -138,7 +138,7 @@ export function composeScene(content: SceneContent): CompSpec {
   assertSceneLayouts([layout]);
   // AE inserts layers at index 1; order here is already top-to-bottom.
   const layers: LayerSpec[] = [
-    textLayer(head, title, 60, id),
+    textLayer(head, title, content.headingFontSize ?? 60, id),
     textLayer(copy, description, content.descriptionFontSize ?? 35, id),
     { ...materialLayer(id + " / icon", "Logo", icon.rect, durationFrames), role: "information" },
     materialLayer(id + " / main", materialComp, hero, durationFrames),
