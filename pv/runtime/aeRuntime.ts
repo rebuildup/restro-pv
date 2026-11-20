@@ -8,7 +8,23 @@ export const AE_RUNTIME = String.raw`
 var __REPO_ROOT = "";
 var __SAVE_PATH = "";
 var __REPORT_PATH = "";
+var __PROGRESS_PATH = "";
+var __T0 = new Date().getTime();
 try { __REPO_ROOT = $.getenv("RESTRO_PV_ROOT") || ""; } catch (e) {}
+
+// Structured progress: one "epochMs<TAB>elapsedMs<TAB>message" line appended
+// per step so tools/generate.ts can show live timing. ExtendScript Date has
+// no toISOString (ES5), so epoch ms is the portable timestamp.
+function __prog(msg) {
+  if (!__PROGRESS_PATH) return;
+  try {
+    var f = new File(__PROGRESS_PATH);
+    f.encoding = "UTF-8";
+    f.open("a");
+    f.writeln(new Date().getTime() + "\t" + (new Date().getTime() - __T0) + "\t" + msg);
+    f.close();
+  } catch (x) {}
+}
 
 var __WARN = [];
 var __ERR = [];
@@ -431,12 +447,15 @@ function __applyLayer(L, ls, compLayers) {
 
 // ---- project ---------------------------------------------------------------
 function buildProject(spec) {
+  __prog("build start: " + (spec.comps ? spec.comps.length : 0) + " comps, " +
+    (spec.footage ? spec.footage.length : 0) + " footage");
   var footageByName = {};
   if (spec.footage) {
     for (var fi = 0; fi < spec.footage.length; fi++) {
       __importFootage(spec.footage[fi], footageByName);
     }
   }
+  __prog("footage imported");
   // create every comp first so precomp layers can reference any of them
   var compItems = [];
   for (var i = 0; i < spec.comps.length; i++) {
@@ -451,6 +470,7 @@ function buildProject(spec) {
       compItems.push(c);
     } catch (ce) { __err("addComp failed " + cs.name + ": " + __estr(ce)); compItems.push(null); }
   }
+  __prog("comps created");
   for (i = 0; i < spec.comps.length; i++) {
     var compSpec = spec.comps[i];
     var comp = compItems[i];
@@ -458,6 +478,8 @@ function buildProject(spec) {
     var layers = compSpec.layers || [];
     var created = [];
     for (var k = 0; k < layers.length; k++) created.push(null);
+    var compT0 = new Date().getTime();
+    __prog("comp start " + compSpec.name + " (" + layers.length + " layers)");
     // layers.add* inserts at the TOP of the stack, so iterate the spec
     // (AE order, [0] = top) in reverse to reproduce the original stacking.
     for (var ri = layers.length - 1; ri >= 0; ri--) {
@@ -473,8 +495,13 @@ function buildProject(spec) {
         __CTX = compSpec.name + " / " + (layers[li].name || ("layer" + layers[li].index));
         __applyLayer(created[li], layers[li], created);
       }
+      if ((li + 1) % 50 === 0) {
+        __prog("comp " + compSpec.name + " layer " + (li + 1) + "/" + layers.length);
+      }
     }
     __CTX = "";
+    __prog("comp done " + compSpec.name + " (" + layers.length + " layers, " +
+      (new Date().getTime() - compT0) + "ms)");
     try { if ($.writeln) $.writeln("PV comp done: " + compSpec.name + " (" + layers.length + " layers)"); } catch (x) {}
   }
   // drop the scratch comp used to mint solid footage items
@@ -503,11 +530,14 @@ function __writeReport() {
   f.close();
 }
 function __finish() {
+  __prog("buildProject returned; writing report");
   __writeReport();
   if (__SAVE_PATH) {
     try {
       var sf = new File(__SAVE_PATH);
+      __prog("saving AEP: " + __SAVE_PATH);
       app.project.save(sf);
+      __prog("AEP saved");
       try { if ($.writeln) $.writeln("PV saved: " + __SAVE_PATH); } catch (x) {}
     } catch (se) { __err("project save failed: " + __estr(se)); }
   }

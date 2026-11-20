@@ -39,6 +39,7 @@ const timeoutMs = Number(arg('--timeout') ?? 7_200_000);
 const allowRunningAe = process.argv.includes('--allow-running-ae');
 const reportPath = resolve(ROOT, '.tmp/pv-report.json');
 const donePath = reportPath + '.done';
+const progressPath = resolve(ROOT, '.tmp/pv-progress.log');
 const savePath = resolve(ROOT, 'dist/pv-generated.aep');
 const runRecordPath = resolve(ROOT, '.tmp/generate-run.json');
 
@@ -108,6 +109,20 @@ async function main() {
   rmSync(donePath, { force: true });
   rmSync(reportPath, { force: true });
   rmSync(savePath, { force: true });
+  rmSync(progressPath, { force: true });
+  let progressOffset = 0;
+  const tailProgress = () => {
+    if (!existsSync(progressPath)) return;
+    const text = readFileSync(progressPath, 'utf8');
+    const lines = text.slice(progressOffset).split('\n');
+    progressOffset = text.length;
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      const m = line.match(/^\d+\t(\d+)\t(.*)$/);
+      const tag = m ? `+${(Number(m[1]) / 1000).toFixed(1)}s` : '';
+      console.log(`  [progress ${tag}] ${m ? m[2] : line}`);
+    }
+  };
 
   const started = Date.now();
   const child = spawn(ae.executable, ['-r', jsx], { detached: true, stdio: 'ignore' });
@@ -117,6 +132,7 @@ async function main() {
 
   const deadline = started + timeoutMs;
   for (;;) {
+    tailProgress();
     if (existsSync(donePath)) break;
     if (Date.now() > deadline) {
       finish('unknown-timeout', {
