@@ -9,6 +9,8 @@
   "scripts": {
     "typecheck": "bun tsc -p tsconfig.json --noEmit",
     "test": "bun test tests",
+    "test:fast": "bun test tests --path-ignore-patterns \"**/pv-fake.test.ts\"",
+    "test:fake": "bun test ./tests/pv-fake.test.ts",
     "render:beats": "bun tools/render-pv-beats.ts",
     "render:baseline": "bun tools/render-pv-beats.ts --aep legacy/pv-2dc99e1.aep --out verification/baseline-beats",
     "doctor": "bun tools/doctor.ts",
