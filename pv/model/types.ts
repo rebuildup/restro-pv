@@ -3,10 +3,12 @@
 // semantic loss, and the AE runtime can materialize it generically.
 //
 // Contract rules:
-// - References use stable identifiers: comp source = comp name (comps are
-//   unique in a project), layer parent = 1-based layer index within the comp
-//   (AE layer(1) is the top layer), footage source = project item name.
-// - Layer arrays are in AE order: index 0 = top layer (AE layer(1)).
+// - Comps are referenced by `sourceCompIndex` (position in ProjectSpec.comps),
+//   never by name — AE allows duplicate comp names.
+// - Layers are referenced by `parentIndex` (1-based AE layer index, index 0
+//   is the top layer). Layer arrays are in AE order.
+// - Footage sources are referenced by canonical spec name (unique after
+//   deduplication); `sourceUid` keeps the original AE item id for traceability.
 // - Anything the runtime cannot materialize must throw at build time, never
 //   be silently dropped.
 
@@ -14,10 +16,10 @@ export interface Vec2 { x: number; y: number }
 export interface Vec3 { x: number; y: number; z: number }
 
 // Keyframe exactly as dumped from AE. inT/outT are
-// KeyframeInterpolationType enum numbers (1 linear, 2 bezier, 3 hold).
+// KeyframeInterpolationType enum numbers.
 export interface KeySpec {
   t: number;                       // seconds, comp time
-  v: unknown;                      // scalar | number[] | {x,y,z} | Shape-like
+  v: unknown;                      // scalar | number[] | {x,y,z} | Shape-like | TextDoc
   inT?: number;
   outT?: number;
   inEase?: Array<[number, number]>;
@@ -26,18 +28,18 @@ export interface KeySpec {
   spOut?: [number, number];
 }
 
-// Generic property node. `type`: 1 = property, 2 = indexed property,
-// 3+ = property group (AE reports inconsistent group type ids, so the
-// runtime treats "has properties" as a group).
+// Generic property node. A node with `properties` is a group; otherwise it is
+// a leaf (value and/or keys). matchName drives runtime lookup / addProperty.
 export interface PropNode {
   name: string;
   matchName: string;
   type?: number;
-  numKeys?: number;
+  numKeys?: number | null;
   value?: unknown;
   keys?: KeySpec[];
   numProperties?: number;
   properties?: PropNode[];
+  expression?: string;
   maskMode?: unknown;
   active?: unknown;
   enabled?: unknown;
@@ -67,15 +69,15 @@ export interface TextDocSpec {
   verticalScale?: number;
   applyFill?: boolean;
   applyStroke?: boolean;
-  justification?: string;
   boxText?: boolean;
-  boxPosition?: number[];
-  boxSize?: number[];
+  boxPosition?: number[] | null;
+  boxSize?: number[] | null;
+  justification?: string;
 }
 
 export type LayerKind =
-  | 'comp'        // source is a CompItem
-  | 'footage'     // source is a FootageItem (incl. solids)
+  | 'comp'        // source is a CompItem (precomp)
+  | 'footage'     // source is a FootageItem (file, solid, ...)
   | 'shape'       // vector layer, no source
   | 'text'        // text layer, no source
   | 'null';       // null layer
@@ -84,7 +86,9 @@ export interface LayerSpec {
   index: number;                  // AE layer index, 1 = top
   name: string;
   kind: LayerKind;
-  source?: string;                // comp name or footage item name
+  source?: string;                // footage spec name, or comp name (readability)
+  sourceUid?: number;             // original AE item id of the source
+  sourceCompIndex?: number;       // index into ProjectSpec.comps for kind 'comp'
   enabled?: boolean;
   shy?: boolean;
   guideLayer?: boolean;
@@ -109,11 +113,10 @@ export interface LayerSpec {
   text?: PropNode;
   timeRemap?: PropNode;
   markers?: PropNode;
-  // non-property extras discovered during conversion
-  textDoc?: TextDocSpec;
 }
 
 export interface CompSpec {
+  uid?: number;                   // original AE comp item id (traceability)
   name: string;
   width: number;
   height: number;
@@ -124,9 +127,9 @@ export interface CompSpec {
   layers: LayerSpec[];            // AE order: [0] = top
 }
 
-export interface FootageSpec {
-  file: string;                   // repo-relative path imported into the project
-}
+export type FootageSpec =
+  | { name: string; kind: 'file'; file: string }              // repo-relative path
+  | { name: string; kind: 'solid'; color: number[]; width: number; height: number };
 
 export interface ProjectSpec {
   name: string;

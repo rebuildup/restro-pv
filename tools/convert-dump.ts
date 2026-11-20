@@ -4,9 +4,10 @@
 //
 //   node tools/convert-dump.ts <dumpDir> [--out pv/generated]
 //
-// The output is mechanical, lossless-as-possible port data: one module per
-// comp plus index.ts assembling the ProjectSpec. Scene-level authoring
-// happens in pv/scenes/* on top of this data later.
+// The output is mechanical port data: one module per comp plus index.ts
+// assembling the ProjectSpec. References are stable: comp sources use
+// sourceCompIndex (position in ProjectSpec.comps), footage sources use a
+// deduplicated canonical name, parents use 1-based layer indices.
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { basename, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -22,25 +23,25 @@ interface DumpLayer {
   adjustmentLayer?: boolean; threeDLayer?: boolean; audioEnabled?: boolean;
   hasVideo?: boolean; hasAudio?: boolean;
   parent?: string; parentIndex?: number;
-  src?: { type: string; name: string; fullpath?: string } | null;
+  src?: { type: string; name: string; id?: number; fullpath?: string } | null;
   transform?: unknown; masks?: unknown; effects?: unknown;
   shapes?: unknown; text?: unknown; timeRemap?: unknown;
   __error__?: string;
 }
-interface DumpCompFile {
-  schema: string; comp: {
-    name: string; id?: number; width: number; height: number;
-    duration: number; frameRate: number; pixelAspect?: number;
-    bgColor?: unknown; layers: DumpLayer[];
-    __error__?: string; __fatal__?: string;
-  };
+interface DumpComp {
+  name: string; id?: number; width: number; height: number;
+  duration: number; frameRate: number; pixelAspect?: number;
+  bgColor?: unknown; layers: DumpLayer[];
+  __error__?: string; __fatal__?: string;
 }
-interface ItemsFile {
-  items: Array<{
-    type: string; name: string; id: number;
-    fullpath?: string; hasVideo?: boolean; hasAudio?: boolean;
-  }>;
+interface DumpCompFile { schema: string; comp: DumpComp }
+interface DumpItem {
+  type: string; name: string; id: number;
+  fullpath?: string; hasVideo?: boolean; hasAudio?: boolean;
+  duration?: number; frameRate?: number; width?: number; height?: number;
+  solid?: boolean; solidColor?: number[]; solidWidth?: number; solidHeight?: number;
 }
+interface ItemsFile { items: DumpItem[] }
 
 const args = process.argv.slice(2);
 const dumpDir = resolve(args[0] ?? '');
@@ -51,111 +52,190 @@ if (!args[0] || !existsSync(dumpDir)) {
 }
 
 const items = JSON.parse(readFileSync(join(dumpDir, '_items.json'), 'utf8')) as ItemsFile;
-const itemByName = new Map(items.items.map((i) => [i.name, i]));
+const itemById = new Map(items.items.map((i) => [i.id, i]));
 
-// footage item name -> repo-relative or absolute import path
-const footageFiles = new Map<string, string>(); // itemName -> file path for spec
-const footageSrcName = new Map<string, string>(); // itemName -> resolved file key
-function resolveFootage(itemName: string): string {
-  const cached = footageFiles.get(itemName);
-  if (cached !== undefined) return cached;
-  const it = itemByName.get(itemName);
+const compFiles = readdirSync(dumpDir)
+  .filter((f) => /^\d\d-.*\.json$/.test(f) && existsSync(join(dumpDir, f + '.done')))
+  .sort();
+const dumps: Array<{ file: string; comp: DumpComp }> = [];
+for (const file of compFiles) {
+  const raw = JSON.parse(readFileSync(join(dumpDir, file), 'utf8')) as DumpCompFile;
+  if (raw.comp && !raw.comp.__fatal__) dumps.push({ file, comp: raw.comp });
+}
+
+// comp item id -> spec index (spec order = sorted dump order)
+const compIndexById = new Map<number, number>();
+dumps.forEach((d, i) => { if (d.comp.id !== undefined) compIndexById.set(d.comp.id, i); });
+
+const warnings: string[] = [];
+
+// ---- footage registry -------------------------------------------------------
+// One FootageSpec per unique (kind, content) pair. Layer sources reference
+// the canonical spec name; original item ids are kept in sourceUid.
+interface FootageEntry {
+  name: string;
+  kind: 'file' | 'solid';
+  file?: string;
+  color?: number[];
+  width?: number;
+  height?: number;
+}
+const footageEntries: FootageEntry[] = [];
+const footageIndexByKey = new Map<string, number>();
+const footageNameUsed = new Set<string>();
+
+function uniqueFootageName(base: string): string {
+  let n = base, i = 2;
+  while (footageNameUsed.has(n)) { n = base + ' #' + i; i++; }
+  footageNameUsed.add(n);
+  return n;
+}
+
+function registerFootage(item: DumpItem | undefined, fallbackName: string, srcFullpath?: string): number {
+  // returns index into footageEntries, or -1 on failure
+  if (item?.solid) {
+    const key = 'solid:' + (item.solidColor ?? []).join(',') + ':' +
+      (item.solidWidth ?? 0) + 'x' + (item.solidHeight ?? 0) + ':' + item.name;
+    const hit = footageIndexByKey.get(key);
+    if (hit !== undefined) return hit;
+    const idx = footageEntries.length;
+    footageEntries.push({
+      name: uniqueFootageName(item.name), kind: 'solid',
+      color: item.solidColor ?? [1, 1, 1],
+      width: item.solidWidth ?? 100, height: item.solidHeight ?? 100,
+    });
+    footageIndexByKey.set(key, idx);
+    return idx;
+  }
+  // file footage: resolve path
   let p = '';
-  if (it?.fullpath) {
-    const abs = it.fullpath.replace(/\\/g, '/');
+  const full = item?.fullpath || srcFullpath || '';
+  if (full) {
+    const abs = full.replace(/\\/g, '/');
     const rel = relative(ROOT, abs).replace(/\\/g, '/');
-    p = rel.startsWith('..') ? abs : rel;
+    if (!rel.startsWith('..')) p = rel;
+    else {
+      // outside repo: prefer a same-basename file under assets/
+      const bn = basename(abs);
+      const stack = [join(ROOT, 'assets')];
+      while (stack.length && !p) {
+        const dir = stack.pop()!;
+        for (const e of readdirSync(dir, { withFileTypes: true })) {
+          const fp = join(dir, e.name);
+          if (e.isDirectory()) stack.push(fp);
+          else if (e.name === bn) { p = relative(ROOT, fp).replace(/\\/g, '/'); break; }
+        }
+      }
+      if (!p) { p = abs; warnings.push('footage outside repo, absolute path kept: ' + abs); }
+    }
   }
   if (!p) {
-    // no recorded path (e.g. solids): try to find the basename under assets/
+    // no path at all: try basename under assets/
     const stack = [join(ROOT, 'assets')];
     while (stack.length && !p) {
       const dir = stack.pop()!;
       for (const e of readdirSync(dir, { withFileTypes: true })) {
         const fp = join(dir, e.name);
         if (e.isDirectory()) stack.push(fp);
-        else if (e.name === itemName) { p = relative(ROOT, fp).replace(/\\/g, '/'); break; }
+        else if (e.name === fallbackName) { p = relative(ROOT, fp).replace(/\\/g, '/'); break; }
       }
     }
   }
-  footageFiles.set(itemName, p);
-  return p;
-}
-
-function layerKind(l: DumpLayer): { kind: string; source?: string; problems: string[] } {
-  const problems: string[] = [];
-  if (l.nullLayer) return { kind: 'null', problems };
-  if (l.src?.type === 'comp') return { kind: 'comp', source: l.src.name, problems };
-  if (l.src?.type === 'footage') {
-    // solids have no fullpath; flag them — handled as footage with warning
-    if (!l.src.fullpath && l.src.fullpath !== undefined) problems.push('solid-or-no-path:' + l.name);
-    return { kind: 'footage', source: l.src.name, problems };
+  if (!p) {
+    warnings.push('footage unresolved: ' + fallbackName + ' (id ' + (item?.id ?? '?') + ')');
+    return -1;
   }
-  if (l.matchName === 'ADBE Vector Layer' || l.shapes) return { kind: 'shape', problems };
-  if (l.matchName === 'ADBE Text Layer' || l.text) return { kind: 'text', problems };
-  if (l.hasVideo === false && l.hasAudio === true) return { kind: 'footage', source: l.src?.name, problems };
-  problems.push('unresolved-kind:' + l.name + ':' + (l.matchName ?? '?'));
-  return { kind: 'null', problems };
+  const key = 'file:' + p;
+  const hit = footageIndexByKey.get(key);
+  if (hit !== undefined) return hit;
+  const idx = footageEntries.length;
+  footageEntries.push({ name: uniqueFootageName(item?.name || fallbackName), kind: 'file', file: p });
+  footageIndexByKey.set(key, idx);
+  return idx;
 }
 
-const compFiles = readdirSync(dumpDir)
-  .filter((f) => /^\d\d-.*\.json$/.test(f) && existsSync(join(dumpDir, f + '.done')))
-  .sort();
+// ---- layer conversion -------------------------------------------------------
+function convertLayer(l: DumpLayer, comp: DumpComp): Record<string, unknown> | null {
+  if (l.__error__) { warnings.push(`${comp.name}/${l.name}: dump error ${l.__error__}`); return null; }
+  const spec: Record<string, unknown> = { index: l.index, name: l.name };
 
-const warnings: string[] = [];
+  // kind + source resolution
+  if (l.nullLayer) {
+    spec.kind = 'null';
+  } else if (l.src?.type === 'comp') {
+    spec.kind = 'comp';
+    spec.source = l.src.name;
+    if (l.src.id !== undefined) {
+      spec.sourceUid = l.src.id;
+      const ci = compIndexById.get(l.src.id);
+      if (ci === undefined) warnings.push(`${comp.name}/${l.name}: comp source id ${l.src.id} not in dump`);
+      else spec.sourceCompIndex = ci;
+    } else {
+      warnings.push(`${comp.name}/${l.name}: comp source '${l.src.name}' has no id`);
+    }
+  } else if (l.src?.type === 'footage') {
+    spec.kind = 'footage';
+    spec.sourceUid = l.src.id;
+    const item = l.src.id !== undefined ? itemById.get(l.src.id) : undefined;
+    const fi = registerFootage(item, l.src.name, l.src.fullpath);
+    if (fi >= 0) spec.source = footageEntries[fi].name;
+    else spec.source = l.src.name; // unresolved; runtime will error loudly
+  } else if (l.shapes) {
+    spec.kind = 'shape';
+  } else if (l.text) {
+    spec.kind = 'text';
+  } else {
+    spec.kind = 'null';
+    warnings.push(`${comp.name}/${l.name}: no source and no shape/text — emitted as null`);
+  }
+
+  if (l.enabled === false) spec.enabled = false;
+  if (l.shy) spec.shy = true;
+  if (l.guideLayer) spec.guideLayer = true;
+  if (l.inPoint !== undefined) spec.inPoint = l.inPoint;
+  if (l.outPoint !== undefined) spec.outPoint = l.outPoint;
+  if (l.startTime !== undefined) spec.startTime = l.startTime;
+  if (l.stretch !== undefined) spec.stretch = l.stretch;
+  if (l.timeRemapEnabled) spec.timeRemapEnabled = true;
+  if (l.trackMatteType) spec.trackMatteType = l.trackMatteType;
+  if (l.motionBlur) spec.motionBlur = true;
+  if (l.collapseTransformations) spec.collapseTransformations = true;
+  if (l.adjustmentLayer) spec.adjustmentLayer = true;
+  if (l.threeDLayer) spec.threeDLayer = true;
+  if (l.audioEnabled === false) spec.audioEnabled = false;
+  if (l.isTrackMatte) spec.isTrackMatte = true;
+
+  const parentIndex = l.parentIndex
+    ?? (l.parent ? comp.layers.find((x) => x.name === l.parent)?.index : undefined);
+  if (l.parent && parentIndex === undefined) {
+    warnings.push(`${comp.name}/${l.name}: parent '${l.parent}' unresolved`);
+  } else if (parentIndex) {
+    spec.parentIndex = parentIndex;
+    if (!l.parentIndex && comp.layers.filter((x) => x.name === l.parent).length > 1) {
+      warnings.push(`${comp.name}/${l.name}: ambiguous parent name '${l.parent}'`);
+    }
+  }
+
+  if (l.transform) spec.transform = l.transform;
+  if (l.masks) spec.masks = l.masks;
+  if (l.effects) spec.effects = l.effects;
+  if (l.shapes) spec.shapes = l.shapes;
+  if (l.text) spec.text = l.text;
+  if (l.timeRemap) spec.timeRemap = l.timeRemap;
+  return spec;
+}
+
+// ---- emit --------------------------------------------------------------------
+mkdirSync(outDir, { recursive: true });
 const compModules: Array<{ varName: string; file: string; name: string }> = [];
 
-mkdirSync(outDir, { recursive: true });
-
-for (const file of compFiles) {
-  const raw = JSON.parse(readFileSync(join(dumpDir, file), 'utf8')) as DumpCompFile;
-  const c = raw.comp;
-  if (!c || c.__fatal__) { warnings.push(file + ': fatal ' + (c?.__fatal__ ?? 'missing comp')); continue; }
-
-  const layers = (c.layers ?? []).map((l) => {
-    const { kind, source, problems } = layerKind(l);
-    for (const p of problems) warnings.push(`${c.name}/${l.name}: ${p}`);
-    const parentIndex = l.parentIndex
-      ?? (l.parent ? c.layers.find((x) => x.name === l.parent)?.index : undefined);
-    if (l.parent && parentIndex === undefined) {
-      warnings.push(`${c.name}/${l.name}: parent '${l.parent}' unresolved`);
-    }
-    if (l.parent && !l.parentIndex) {
-      const matches = c.layers.filter((x) => x.name === l.parent);
-      if (matches.length > 1) warnings.push(`${c.name}/${l.name}: ambiguous parent name '${l.parent}'`);
-    }
-    const spec: Record<string, unknown> = {
-      index: l.index, name: l.name, kind,
-      ...(source ? { source } : {}),
-      ...(l.enabled === false ? { enabled: false } : {}),
-      ...(l.shy ? { shy: true } : {}),
-      ...(l.guideLayer ? { guideLayer: true } : {}),
-      ...(l.inPoint !== undefined ? { inPoint: l.inPoint } : {}),
-      ...(l.outPoint !== undefined ? { outPoint: l.outPoint } : {}),
-      ...(l.startTime !== undefined ? { startTime: l.startTime } : {}),
-      ...(l.stretch !== undefined ? { stretch: l.stretch } : {}),
-      ...(l.timeRemapEnabled ? { timeRemapEnabled: true } : {}),
-      ...(l.trackMatteType ? { trackMatteType: l.trackMatteType } : {}),
-      ...(l.motionBlur ? { motionBlur: true } : {}),
-      ...(l.collapseTransformations ? { collapseTransformations: true } : {}),
-      ...(l.adjustmentLayer ? { adjustmentLayer: true } : {}),
-      ...(l.threeDLayer ? { threeDLayer: true } : {}),
-      ...(l.audioEnabled === false ? { audioEnabled: false } : {}),
-      ...(parentIndex ? { parentIndex } : {}),
-      ...(l.transform ? { transform: l.transform } : {}),
-      ...(l.masks ? { masks: l.masks } : {}),
-      ...(l.effects ? { effects: l.effects } : {}),
-      ...(l.shapes ? { shapes: l.shapes } : {}),
-      ...(l.text ? { text: l.text } : {}),
-      ...(l.timeRemap ? { timeRemap: l.timeRemap } : {}),
-      ...(l.__error__ ? { __dumpError: l.__error__ } : {}),
-    };
-    return spec;
-  });
-
+for (let di = 0; di < dumps.length; di++) {
+  const { file, comp: c } = dumps[di];
+  const layers = (c.layers ?? []).map((l) => convertLayer(l, c)).filter(Boolean);
   const varName = 'comp_' + file.slice(0, 2);
   const modName = file.replace(/\.json$/, '');
-  const compSpec = {
+  const compSpec: Record<string, unknown> = {
+    ...(c.id !== undefined ? { uid: c.id } : {}),
     name: c.name, width: c.width, height: c.height,
     ...(c.pixelAspect !== undefined ? { pixelAspect: c.pixelAspect } : {}),
     duration: c.duration, frameRate: c.frameRate,
@@ -164,26 +244,13 @@ for (const file of compFiles) {
   };
   const body = `// Generated from AEP dump ${file} — do not edit by hand.
 // Regenerate: node tools/dump-aep-tree.ts <aep> <dir> && node tools/convert-dump.ts <dir>
-import type { CompSpec } from '../../model/types.ts';
+import type { CompSpec } from '../model/types.ts';
 
-export const ${varName}: CompSpec = ${JSON.stringify(compSpec, null, 0)} as CompSpec;
+export const ${varName}: CompSpec = ${JSON.stringify(compSpec)} as CompSpec;
 export default ${varName};
 `;
   writeFileSync(join(outDir, modName + '.ts'), body);
   compModules.push({ varName, file: modName, name: c.name });
-}
-
-// footage: every footage-sourced layer's item name -> resolved path
-const footageSet = new Map<string, string>();
-for (const file of compFiles) {
-  const raw = JSON.parse(readFileSync(join(dumpDir, file), 'utf8')) as DumpCompFile;
-  for (const l of raw.comp?.layers ?? []) {
-    if (l.src?.type === 'footage' && l.src.name) {
-      const p = resolveFootage(l.src.name);
-      if (p) footageSet.set(l.src.name, p);
-      else warnings.push(`footage unresolved: ${l.src.name}`);
-    }
-  }
 }
 
 const indexBody = `// Generated index — do not edit by hand.
@@ -194,17 +261,28 @@ export const GENERATED_COMPS: CompSpec[] = [
 ${compModules.map((m) => `  ${m.varName},`).join('\n')}
 ];
 
-export const GENERATED_FOOTAGE: FootageSpec[] = ${JSON.stringify(
-  [...footageSet.entries()].map(([name, file]) => ({ file })), null, 2)};
+export const GENERATED_FOOTAGE: FootageSpec[] = ${JSON.stringify(footageEntries)};
 
 export const COMP_NAMES = ${JSON.stringify(compModules.map((m) => m.name))};
 `;
 writeFileSync(join(outDir, 'index.ts'), indexBody);
 
 console.log(`converted ${compModules.length} comps -> ${outDir}`);
-console.log(`footage entries: ${footageSet.size}`);
+console.log(`footage entries: ${footageEntries.length} (${footageEntries.filter((f) => f.kind === 'solid').length} solids)`);
 if (warnings.length) {
-  console.log(`warnings: ${warnings.length}`);
+  writeFileSync(join(ROOT, '.tmp', 'convert-warnings.txt'), warnings.join('\n') + '\n');
+  const cats = new Map<string, number>();
+  for (const w of warnings) {
+    const key = w.includes('unresolved') ? 'unresolved'
+      : w.includes('dump error') ? 'dump-error'
+      : w.includes('not in dump') ? 'comp-src-missing'
+      : w.includes('no id') ? 'comp-src-no-id'
+      : w.includes('parent') ? 'parent' : 'other';
+    cats.set(key, (cats.get(key) ?? 0) + 1);
+  }
+  console.log('warning categories:', Object.fromEntries(cats));
+  console.log(`full list: .tmp/convert-warnings.txt`);
   for (const w of warnings.slice(0, 40)) console.log('  ' + w);
-  if (warnings.length > 40) console.log(`  ... and ${warnings.length - 40} more`);
+} else {
+  console.log('no warnings');
 }

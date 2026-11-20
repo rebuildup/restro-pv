@@ -54,29 +54,35 @@
     return parts.join('');
   }
   function isTextDoc(v) {
-    try { return v !== null && typeof v === 'object' && typeof v.text !== 'undefined'
-      && typeof v.font !== 'undefined'; } catch (e) { return false; }
+    try { return v !== null && typeof v === 'object'
+      && typeof v.text !== 'undefined' && typeof v.size !== 'undefined'; }
+    catch (e) { return false; }
   }
   function textDocJson(d) {
     function col(c) { return c === null || typeof c === 'undefined' ? 'null' :
       '[' + num(c[0]) + ',' + num(c[1]) + ',' + num(c[2]) + ']'; }
+    function arr2(a) { return a === null || typeof a === 'undefined' ? 'null' :
+      '[' + num(a[0]) + ',' + num(a[1]) + ']'; }
     var just = '';
     try { just = d.justification !== undefined ? String(d.justification) : ''; } catch (e) {}
-    return '{"text":' + q(d.text === undefined ? '' : d.text) +
-      ',"font":' + q(d.font === undefined ? '' : d.font) +
-      ',"fontFamily":' + q(d.fontFamily === undefined ? '' : d.fontFamily) +
-      ',"fontStyle":' + q(d.fontStyle === undefined ? '' : d.fontStyle) +
-      ',"size":' + num(d.size) +
-      ',"fillColor":' + col(d.fillColor) +
-      ',"strokeColor":' + col(d.strokeColor) +
-      ',"strokeWidth":' + num(d.strokeWidth) +
-      ',"tracking":' + num(d.tracking) +
-      ',"leading":' + num(d.leading) +
-      ',"baselineShift":' + num(d.baselineShift) +
-      ',"horizontalScale":' + num(d.horizontalScale) +
-      ',"verticalScale":' + num(d.verticalScale) +
-      ',"applyFill":' + (d.applyFill ? 'true' : 'false') +
-      ',"applyStroke":' + (d.applyStroke ? 'true' : 'false') +
+    return '{"text":' + q(safe(function () { return d.text; }) || '') +
+      ',"font":' + q(safe(function () { return d.font; }) || '') +
+      ',"fontFamily":' + q(safe(function () { return d.fontFamily; }) || '') +
+      ',"fontStyle":' + q(safe(function () { return d.fontStyle; }) || '') +
+      ',"size":' + num(safe(function () { return d.size; })) +
+      ',"fillColor":' + col(safe(function () { return d.fillColor; })) +
+      ',"strokeColor":' + col(safe(function () { return d.strokeColor; })) +
+      ',"strokeWidth":' + num(safe(function () { return d.strokeWidth; })) +
+      ',"tracking":' + num(safe(function () { return d.tracking; })) +
+      ',"leading":' + num(safe(function () { return d.leading; })) +
+      ',"baselineShift":' + num(safe(function () { return d.baselineShift; })) +
+      ',"horizontalScale":' + num(safe(function () { return d.horizontalScale; })) +
+      ',"verticalScale":' + num(safe(function () { return d.verticalScale; })) +
+      ',"applyFill":' + (safe(function () { return d.applyFill; }) ? 'true' : 'false') +
+      ',"applyStroke":' + (safe(function () { return d.applyStroke; }) ? 'true' : 'false') +
+      ',"boxText":' + (safe(function () { return d.boxText; }) ? 'true' : 'false') +
+      ',"boxPosition":' + arr2(safe(function () { return d.boxPosition; })) +
+      ',"boxSize":' + arr2(safe(function () { return d.boxSize; })) +
       ',"justification":' + q(just) + '}';
   }
   function valueJson(v, depth) {
@@ -163,12 +169,16 @@
     // AE reports group propertyType values inconsistently across versions
     // (observed 3, 6213, 6214), so decide leaf vs group by numProperties.
     var npEarly = safe(function () { return p.numProperties; }) || 0;
-    var isLeaf = (type === PROP_TYPE.PROPERTY || type === PROP_TYPE.INDEXED_PROPERTY) && npEarly === 0;
+    // AE2027 reports leaf propertyType as 6212 and groups as 6213/6214;
+    // numProperties===0 is the reliable leaf signal across versions.
+    var isLeaf = npEarly === 0;
     if (isLeaf) {
       node += ',"numKeys":' + num(safe(function () { return p.numKeys; })) +
         ',"value":' + valueJson(safe(function () { return p.value; }));
       var keys = keysJson(p);
       if (keys) node += ',"keys":' + keys;
+      var ex = safe(function () { return p.expression; });
+      if (ex) node += ',"expression":' + q(ex);
       node += '}';
       return node;
     }
@@ -233,13 +243,15 @@
         else srcType = 'other';
         if (srcType === 'footage') {
           node += ',"src":{"type":"footage","name":' + q(srcName) +
+            ',"id":' + num(safe(function () { return src.id; })) +
             ',"hasVideo":' + (src.hasVideo ? 'true' : 'false') +
             ',"hasAudio":' + (src.hasAudio ? 'true' : 'false') +
             ',"duration":' + num(src.duration) +
             ',"frameRate":' + num(src.frameRate) +
             ',"fullpath":' + q(src.file ? String(src.file.fsName) : '') + '}';
         } else if (srcType === 'comp') {
-          node += ',"src":{"type":"comp","name":' + q(srcName) + '}';
+          node += ',"src":{"type":"comp","name":' + q(srcName) +
+            ',"id":' + num(safe(function () { return src.id; })) + '}';
         } else {
           node += ',"src":{"type":"other","name":' + q(srcName) + '}';
         }
@@ -303,7 +315,6 @@
         lj = errJson(le);
       }
       node += lj;
-      if (i % 10 === 0) { w(node); node = ''; }
     }
     node += ']}';
     return node;
@@ -324,7 +335,20 @@
         ',"hasAudio":' + (it.hasAudio ? 'true' : 'false') +
         ',"duration":' + num(it.duration) +
         ',"frameRate":' + num(it.frameRate) +
-        ',"fullpath":' + q(it.file ? String(it.file.fsName) : '') + '}';
+        ',"width":' + num(safe(function () { return it.width; })) +
+        ',"height":' + num(safe(function () { return it.height; })) +
+        ',"fullpath":' + q(it.file ? String(it.file.fsName) : '');
+      if (!it.file) {
+        try {
+          var ms = it.mainSource;
+          var scol = safe(function () { return ms.color; });
+          if (scol !== undefined && scol !== null) {
+            node += ',"solid":true,"solidColor":' + valueJson(scol) +
+              ',"solidWidth":' + num(it.width) + ',"solidHeight":' + num(it.height);
+          }
+        } catch (se) {}
+      }
+      node += '}';
     } else if (type === 'comp') {
       node += ',"width":' + num(it.width) + ',"height":' + num(it.height) +
         ',"duration":' + num(it.duration) + ',"frameRate":' + num(it.frameRate) + '}';
@@ -336,7 +360,14 @@
 
   // ---- helpers -------------------------------------------------------------
   function sanitize(name) {
-    return String(name).replace(/[\\/:*?"<>|]/g, '_').replace(/^\.+/, '_');
+    var bad = '\\/:*?"<>|';
+    var s = String(name);
+    var out = '';
+    for (var i = 0; i < s.length; i++) {
+      var ch = s.charAt(i);
+      out += (bad.indexOf(ch) >= 0 || (i === 0 && ch === '.')) ? '_' : ch;
+    }
+    return out;
   }
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
   function stamp() {
@@ -364,8 +395,20 @@
   progress.open('a');
 
   try {
-    var target = new File(AEP_PATH);
-    app.open(target);
+    // app.open() defers the actual project switch until after the script
+    // finishes on AE2027, so the caller must open the AEP beforehand and
+    // this script verifies it is the active project before dumping.
+    var cur = '';
+    try { cur = app.project.file ? String(app.project.file.fsName) : ''; } catch (pe) {}
+    cur = cur.replace(/\\/g, '/');
+    var want = String(AEP_PATH).replace(/\\/g, '/');
+    if (cur.toLowerCase() !== want.toLowerCase()) {
+      var mf0 = new File(OUT_DIR + '/_fatal.log');
+      mf0.open('w');
+      mf0.write('wrong project open: ' + cur + ' (expected ' + want + ')');
+      mf0.close();
+      throw new Error('wrong project open: ' + cur);
+    }
     opened = true;
 
     // project items snapshot (small, always rewritten)
@@ -433,7 +476,6 @@
         '","ms":' + num(new Date().getTime() - t0) + '}');
       progress.write(pad2(compCount) + ' ' + cname + ' ' + status + ' ' +
         num(new Date().getTime() - t0) + 'ms\n');
-      progress.flush();
     }
     progress.close();
 
@@ -449,5 +491,6 @@
       mf.open('w'); mf.write(String(e) + ' line=' + e.line); mf.close();
     } catch (e2) {}
   }
-  try { if (opened) app.project.close(CloseOptions.DO_NOT_SAVE_CHANGES); } catch (e) {}
+  // leave the project open: reopening an 85MB AEP costs minutes and
+  // app.open() defers the switch until after the calling script ends.
 })();
