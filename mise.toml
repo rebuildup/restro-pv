@@ -13,4 +13,4 @@ run = "bash scripts/bootstrap.sh"
 
 [tasks.validate]
 description = "Run the deterministic local validation gate"
-run = "bun run typecheck && bun run jsx:check && bun test tests"
+run = "bun run typecheck && bun run jsx:check && bun run test:fast"
