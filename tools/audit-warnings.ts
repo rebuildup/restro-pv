@@ -25,15 +25,15 @@ interface Bucket {
 }
 
 const OP_KINDS: [RegExp, string][] = [
-  [/^setValue failed/, 'setValue'],
-  [/^setValueAtTime failed/, 'setValueAtTime'],
-  [/^key meta failed/, 'keyMeta'],
-  [/^enabled failed/, 'enabled'],
-  [/^active failed/, 'active'],
-  [/^maskMode failed/, 'maskMode'],
-  [/^addProperty/, 'addProperty'],
-  [/^missing property/, 'missingProp'],
-  [/^skipping (children|disabled)/, 'skippedDisabled'],
+  [/setValueAtTime failed/, 'setValueAtTime'],
+  [/setValue failed/, 'setValue'],
+  [/key meta failed/, 'keyMeta'],
+  [/enabled failed/, 'enabled'],
+  [/active failed/, 'active'],
+  [/maskMode failed/, 'maskMode'],
+  [/addProperty/, 'addProperty'],
+  [/missing property/, 'missingProp'],
+  [/skipping (children|disabled)/, 'skippedDisabled'],
   [/expression/i, 'expression'],
 ];
 

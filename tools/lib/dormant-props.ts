@@ -33,6 +33,21 @@ export const ALWAYS_DORMANT = new Set([
   'ADBE Vector Materials Group', 'ADBE Envir Appear in Reflect',
 ]);
 
+// Prune-only dormant nodes: hidden in generated projects so writes always
+// fail, but NOT absorbed by the comparator — generated AEPs auto-create the
+// same nodes with AE defaults, so dump-to-dump value comparison still
+// detects any authored value that could not be reproduced (e.g. the two
+// strokes with non-default dash patterns).
+//   - 'ADBE Vector Stroke Dashes'/'Taper'/'Wave': AE hides every child until
+//     the feature is added in the UI; all values in the source project are
+//     defaults except 12 dash values on 2 layers.
+//   - 'ADBE Vector Star Inner Radius'/'Inner Roundess': hidden while the
+//     star type keeps them inapplicable; observed values equal AE defaults.
+export const PRUNE_ONLY = new Set([
+  'ADBE Vector Stroke Dashes', 'ADBE Vector Stroke Taper', 'ADBE Vector Stroke Wave',
+  'ADBE Vector Star Inner Radius', 'ADBE Vector Star Inner Roundess',
+]);
+
 // Text properties that AE keeps in the tree but hides until the feature is
 // actually used (text-on-a-path, variable fonts). Writing them is a hard
 // "hidden property" failure. They are dropped only when the whole subtree is

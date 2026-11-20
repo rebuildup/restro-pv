@@ -243,9 +243,9 @@ function __applyNode(p, node, path) {
     if (node.enabled === false) {
       try { p.enabled = false; } catch (ee2) { __warn("enabled failed on " + path); }
     }
-    if (node.active === false) {
-      try { p.active = false; } catch (ae2) { __warn("active failed on " + path); }
-    }
+    // 'active' is a derived read-only attribute (effective visibility); AE
+    // rejects writes to it and already reports the correct value once
+    // 'enabled' states match, so it is never written.
     if (node.enabled === false) {
       __warn("skipping children of disabled group " + path);
       return;
@@ -267,9 +267,6 @@ function __applyNode(p, node, path) {
   // setValue/setValueAtTime/expression writes.
   if (node.enabled === false) {
     try { p.enabled = false; } catch (lee) { __warn("enabled failed on " + path); }
-  }
-  if (node.active === false) {
-    try { p.active = false; } catch (lae) { __warn("active failed on " + path); }
   }
   if (node.enabled === false) {
     __warn("skipping disabled leaf " + path);

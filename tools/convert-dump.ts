@@ -12,7 +12,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { basename, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  THREE_D_ONLY, THREE_D_GROUPS, ALWAYS_DORMANT, isDormantTextNode,
+  THREE_D_ONLY, THREE_D_GROUPS, ALWAYS_DORMANT, PRUNE_ONLY, isDormantTextNode,
 } from './lib/dormant-props.ts';
 
 const ROOT = resolve(fileURLToPath(new URL('.', import.meta.url)), '..');
@@ -184,6 +184,7 @@ function pruneTree(node: PropNode, threeD: boolean): PropNode {
       if (!threeD && THREE_D_ONLY.has(mn)) return false;
       if (!threeD && THREE_D_GROUPS.has(mn)) return false;
       if (ALWAYS_DORMANT.has(mn)) return false;
+      if (PRUNE_ONLY.has(mn)) return false;
       if (isDormantTextNode(ch)) { dormantTextDrops++; return false; }
       return true;
     }).map((ch) => pruneTree(ch, threeD));
