@@ -9,6 +9,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { specLiteral } from "../pv/emit/spec-literal.ts";
 import { buildSpec } from "../pv/main.ts";
+import { assertProductionProject } from "../pv/production/project-lint.ts";
 import { AE_RUNTIME } from "../pv/runtime/aeRuntime.ts";
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -35,6 +36,10 @@ const { out, save, report, progress, warnings, spec: specArg } = parseArgs(proce
 const spec = specArg
   ? (await import(pathToFileURL(resolve(repoRoot, specArg)).href)).buildSpec()
   : buildSpec();
+
+// This validates the exact model serialized into the JSX; fixture builds
+// without production metadata keep their own smoke contracts.
+if (spec.organizeProject) assertProductionProject(spec);
 
 const jsx = [
   "// GENERATED FILE - do not edit. Source: pv/ (TypeScript). ASCII-only on purpose.",
