@@ -428,7 +428,7 @@ function __createLayer(comp, ls, footageByName, compItems) {
 }
 
 // FoldLayers AEGP identifies groups through hidden vector groups, not by
-// looking at the ▾ prefix alone. Do NOT call locale-dependent menu commands.
+// looking at the fold-state arrow alone. Do NOT call locale-dependent menu commands.
 function __applyFoldDivider(L, desc) {
   var root = L.property("ADBE Root Vectors Group");
   if (!root) { __err("FoldLayers root group missing on " + L.name); return; }
