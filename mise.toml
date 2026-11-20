@@ -2,7 +2,7 @@
 # Bun is the only JS runtime/package manager for this repository.
 
 [tools]
-bun = "1.3.13"
+bun = "1.4.5"
 
 [settings]
 task.run_auto_install = false
@@ -13,4 +13,4 @@ run = "bash scripts/bootstrap.sh"
 
 [tasks.validate]
 description = "Run the deterministic local validation gate"
-run = "bun run typecheck && bun run jsx:check && bun test tests"
+run = "bun run typecheck && bun run jsx:check && bun run test:fast"

@@ -2,13 +2,15 @@
   "name": "restro-pv",
   "private": true,
   "type": "module",
-  "packageManager": "bun@1.3.13",
+  "packageManager": "bun@1.4.5",
   "engines": {
-    "bun": ">=1.3.13"
+    "bun": ">=1.4.5"
   },
   "scripts": {
     "typecheck": "bun tsc -p tsconfig.json --noEmit",
     "test": "bun test tests",
+    "test:fast": "bun test tests --path-ignore-patterns \"**/pv-fake.test.ts\"",
+    "test:fake": "bun test ./tests/pv-fake.test.ts",
     "render:beats": "bun tools/render-pv-beats.ts",
     "render:baseline": "bun tools/render-pv-beats.ts --aep legacy/pv-2dc99e1.aep --out verification/baseline-beats",
     "doctor": "bun tools/doctor.ts",

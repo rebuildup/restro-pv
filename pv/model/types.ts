@@ -93,6 +93,11 @@ export interface LayerSpec {
   index: number; // AE layer index, 1 = top
   name: string;
   kind: LayerKind;
+  // Production metadata: AE label colors use the user's 1..16 label slots.
+  role?: "information" | "content" | "overlay" | "rig" | "background" | "audio" | "divider";
+  label?: number;
+  // A FoldLayers divider is a real shape layer with FD-0/FD-H identity.
+  foldDivider?: { folded: boolean; hierarchy?: string };
   source?: string; // footage spec name, or comp name (readability)
   sourceUid?: number; // original AE item id of the source
   sourceCompIndex?: number; // index into ProjectSpec.comps for kind 'comp'
@@ -127,6 +132,8 @@ export interface CompSpec {
   name: string;
   width: number;
   height: number;
+  label?: number;
+  folder?: string;
   pixelAspect?: number;
   duration: number;
   frameRate: number;
@@ -147,4 +154,7 @@ export interface ProjectSpec {
   // Material comps/footage resolve by name; the opened project is saved to
   // savePath, leaving the material file untouched.
   materialAep?: string;
+  // AEP Project panel organization is deterministic and safe for original
+  // source project: only the output AEP is saved after app.open.
+  organizeProject?: boolean;
 }

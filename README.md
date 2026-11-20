@@ -25,7 +25,7 @@ JSX パッチは主経路ではない（実行・レンダリング・検証に�
 ## セットアップ
 
 ```sh
-bun install --frozen-lockfile          # 依存導入（Bun >= 1.3.13。mise install で toolchain を固定）
+bun install --frozen-lockfile          # 依存導入（Bun >= 1.4.5。mise install で toolchain を固定）
 bun run typecheck
 ```
 
@@ -39,7 +39,7 @@ AE が見つからない場合は環境変数 `AE_EXECUTABLE` に実行ファイ
 | `bun run typecheck` | TypeScript 型検査 |
 | `bun test` | ユニットテスト |
 | `bun run build:jsx` | `pv/` を単一 JSX にバンドル（Phase 3 で追加） |
-| `bun run render:beats` | `master` コンポを拍ごとに PNG レンダリングして `verification/beats/` を更新 |
+| `bun run render:beats` | `PV master` コンポを拍ごとに PNG レンダリングして `verification/beats/` を更新 |
 
 ## 移管元
 
