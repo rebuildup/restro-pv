@@ -1,6 +1,6 @@
 // Generated from AEP dump 22-kai-zoom [checkpoint before foldgroups].json — do not edit by hand.
 // Regenerate: bun tools/dump-aep-tree.ts <aep> <dir> && bun tools/convert-dump.ts <dir>
-import type { CompSpec } from "../model/types.ts";
+import type { CompSpec } from "../spec/types.ts";
 
 export const comp_22: CompSpec = {
   uid: 5094,

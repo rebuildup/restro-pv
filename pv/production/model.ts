@@ -1,0 +1,231 @@
+// Production model — the authoring surface for the PV (ADR-0002).
+//
+// Humans edit this model; compile.ts lowers it to the AE materialization
+// spec (pv/spec/types.ts) that pv/runtime/aeRuntime.ts consumes. All
+// cross-references use stable string ids and are resolved to AE layer
+// indices / comp indices at compile time only. Raw layer indices, comp
+// indices and AE layer names must never appear in this model.
+
+import type { CompSpec, KeySpec, LayerSpec, Vec2, Vec3 } from "../spec/types.ts";
+
+/** Canvas + timeline shared by the project and inheritable per comp. */
+export interface FrameSpec {
+  width: number;
+  height: number;
+  pixelAspect?: number;
+  frameRate: number;
+  duration: number; // seconds
+  bgColor?: unknown;
+}
+
+/** Pixel rect in comp space (top-left origin, y down — AE coordinates). */
+export interface Rect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/** Where the layer's anchor point lands inside the target rect. */
+export type Align =
+  | "top-left"
+  | "top"
+  | "top-right"
+  | "left"
+  | "center"
+  | "right"
+  | "bottom-left"
+  | "bottom"
+  | "bottom-right";
+
+/**
+ * Layout grid: `columns` x `rows` cells inside `frame` minus `margin`,
+ * separated by `gutter`. Sections place content into cells/spans/regions;
+ * changing the grid re-flows every dependent placement at compile time.
+ */
+export interface GridSpec {
+  columns: number;
+  rows: number;
+  margin: { x: number; y: number };
+  gutter: { x: number; y: number };
+}
+
+/** Inclusive cell span [c0, r0, c1, r1] on the comp's grid. */
+export type CellSpan = [number, number, number, number];
+
+/** Named layout region resolved against the comp's grid or absolute rect. */
+export type RegionSpec = { span: CellSpan } | { rect: Rect };
+
+/**
+ * Control anchor — a rig null. `at` places it in comp space; `parent` +
+ * `offset` attach it to another anchor (or layer ref) so followers track
+ * the parent. `keys` optionally animates the position (comp time, seconds).
+ */
+export interface AnchorSpec {
+  id: string;
+  at?: Vec3;
+  parent?: string;
+  offset?: Vec3;
+  keys?: KeySpec[];
+}
+
+/**
+ * What a section layer renders:
+ * - `comp`: a comp authored in this project, referenced by comp id
+ * - `material-comp`: a comp inside the material AEP, referenced by name
+ *   (the material AEP is a fixed external contract — names are its ids)
+ * - `material-layer`: a cloned layer subtree from a material comp dump
+ *   (migration measure; parent/Layer-Control remap is the caller's job
+ *   via `patch` — see issue #8)
+ * - `footage`: a project asset id declared in ProductionProject.assets
+ * - `spec`: a fully authored LayerSpec (shape/text/null/custom props)
+ */
+export type SectionContent =
+  | { kind: "comp"; comp: string }
+  | { kind: "material-comp"; comp: string }
+  | { kind: "material-layer"; comp: string; layer: string }
+  | { kind: "footage"; asset: string }
+  | { kind: "spec"; layer: LayerSpec };
+
+/** Source metrics used when a layout needs to reason about the content. */
+export interface ContentMetrics {
+  width?: number;
+  height?: number;
+  /** Anchor point in source pixels; written to ADBE Anchor Point when set. */
+  anchor?: Vec2;
+}
+
+/**
+ * Placement of a section layer. Exactly one of `position` / `rect` /
+ * `region` / `span` applies (`position` wins and needs no metrics):
+ * - `position`: absolute comp-space position of the layer's anchor point
+ * - `rect`/`region`/`span`: target rect; `align` (default "center") picks
+ *   which point of the rect the anchor lands on, `offset` nudges after.
+ */
+export interface LayoutSpec {
+  position?: Vec2;
+  rect?: Rect;
+  region?: string;
+  span?: CellSpan;
+  align?: Align;
+  offset?: Vec2;
+}
+
+export interface SectionTiming {
+  inPoint?: number;
+  outPoint?: number;
+  startTime?: number;
+  stretch?: number;
+}
+
+/**
+ * Extra AE properties merged onto the generated layer. `transform` merges
+ * per-property by matchName (patch wins); masks/effects/shapes/text/
+ * timeRemap/markers replace the generated value wholesale. Identity fields
+ * (index, kind, source fields, parentIndex, name, timing) are not
+ * patchable — use the dedicated model fields so references stay
+ * resolvable.
+ */
+export type LayerPatch = Partial<
+  Pick<
+    LayerSpec,
+    | "enabled"
+    | "shy"
+    | "guideLayer"
+    | "timeRemapEnabled"
+    | "trackMatteType"
+    | "isTrackMatte"
+    | "motionBlur"
+    | "collapseTransformations"
+    | "adjustmentLayer"
+    | "threeDLayer"
+    | "audioEnabled"
+    | "transform"
+    | "masks"
+    | "effects"
+    | "shapes"
+    | "text"
+    | "timeRemap"
+    | "markers"
+  >
+>;
+
+export interface SectionLayerSpec {
+  /** Stable id usable in `parent` / `layerRef` / `{{ref:}}`. Defaults to `${section.id}/${n}`. */
+  id?: string;
+  /** AE layer name override. */
+  name?: string;
+  content: SectionContent;
+  layout?: LayoutSpec;
+  metrics?: ContentMetrics;
+  timing?: SectionTiming;
+  /** Parent ref: an anchor id or another section layer id in the same comp. */
+  parent?: string;
+  patch?: LayerPatch;
+}
+
+/**
+ * A semantic region of a comp (brand column, heading block, stage, ...).
+ * `role` is an authoring label — conventional values: "brand", "copy",
+ * "stage", "overlay", "guide", "audio" — carried into layer names, not
+ * interpreted by the compiler.
+ */
+export interface SectionSpec {
+  id: string;
+  role: string;
+  /** Front-to-back: index 0 renders on top (AE layer order). */
+  layers: SectionLayerSpec[];
+  anchors?: AnchorSpec[];
+  /** false keeps the section's layers in the spec but disabled. */
+  enabled?: boolean;
+}
+
+export interface CompProduction {
+  /** Stable comp id — referenced by `comp` content and `sourceComp`. */
+  id: string;
+  /** AE comp name (display; may differ from id). */
+  name: string;
+  /** Frame overrides merged over the project frame (defined fields only). */
+  frame?: Partial<FrameSpec>;
+  grid?: GridSpec;
+  regions?: Record<string, RegionSpec>;
+  anchors?: AnchorSpec[];
+  /** Front-to-back section order. */
+  sections: SectionSpec[];
+}
+
+/** Footage/solid item declared once and referenced by section layers. */
+export interface ProductionAsset {
+  id: string;
+  kind: "file" | "solid";
+  /** AE item name; defaults to id. */
+  name?: string;
+  /** Repo-relative path for kind "file". */
+  file?: string;
+  /** Solid color [r,g,b] 0..1 for kind "solid". */
+  color?: number[];
+  width?: number;
+  height?: number;
+  audioOnly?: boolean;
+}
+
+export interface ProductionProject {
+  name: string;
+  /** Default frame inherited by comps without their own overrides. */
+  frame: FrameSpec;
+  comps: CompProduction[];
+  assets?: ProductionAsset[];
+  /** Repo-relative material AEP opened before the spec is built. */
+  materialAep?: string;
+}
+
+/** Inputs the compiler needs beyond the authored model. */
+export interface CompileOptions {
+  /**
+   * Material comp dumps for `material-layer` clones, keyed by the comp
+   * name used inside the material AEP. Provided by the caller (e.g. the
+   * legacy dump specs during migration); the compiler never reaches into
+   * pv/generated itself.
+   */
+  materialComps?: Record<string, CompSpec>;
+}

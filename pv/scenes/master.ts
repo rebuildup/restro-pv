@@ -17,7 +17,7 @@
 // (spec.materialAep); sourceCompIndex is cleared so name lookup is used.
 
 import { comp_05 } from "../generated/05-master.ts";
-import type { CompSpec, LayerSpec, ProjectSpec } from "../model/types.ts";
+import type { CompSpec, LayerSpec, ProjectSpec } from "../spec/types.ts";
 
 const FPS = 24;
 const T_C = 191 / FPS; // 7.958333 — scene C start

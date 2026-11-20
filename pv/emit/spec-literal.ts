@@ -1,6 +1,6 @@
 // Serializes a ProjectSpec into an ExtendScript object literal.
 // ES3 has no JSON; we emit `var SPEC = {...}` and let the AE runtime consume it.
-import type { ProjectSpec } from "../model/types.ts";
+import type { ProjectSpec } from "../spec/types.ts";
 
 function num(n: number): string {
   if (!Number.isFinite(n)) throw new Error("non-finite number");

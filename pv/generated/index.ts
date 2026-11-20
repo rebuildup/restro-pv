@@ -1,6 +1,6 @@
 // Generated index — do not edit by hand.
 
-import type { CompSpec, FootageSpec } from "../model/types.ts";
+import type { CompSpec, FootageSpec } from "../spec/types.ts";
 import { comp_01 } from "./01-Baseline.ts";
 import { comp_02 } from "./02-bunkai.ts";
 import { comp_03 } from "./03-description.ts";

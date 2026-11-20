@@ -1,6 +1,9 @@
-// PV project model. The spec mirrors the AEP dump schema
-// (restro-pv.aep-comp-dump.v1) so a dumped comp converts to a spec with no
-// semantic loss, and the AE runtime can materialize it generically.
+// AE materialization spec — the output contract between the production
+// model compiler (pv/production/) and the AE runtime (pv/runtime/). The
+// spec mirrors the AEP dump schema (restro-pv.aep-comp-dump.v1) so a dumped
+// comp converts to a spec with no semantic loss, and the AE runtime can
+// materialize it generically. This is NOT the authoring model: humans edit
+// pv/production/*, which compiles down to this spec (ADR-0002).
 //
 // Contract rules:
 // - Comps are referenced by `sourceCompIndex` (position in ProjectSpec.comps),
