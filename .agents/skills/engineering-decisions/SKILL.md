@@ -1,9 +1,15 @@
 ---
 name: engineering-decisions
 description: 実装・設計・修正方針を自律的に決定する時に、project内の優先順位を確認し、不要なuser escalationを避けるために使用する。
+metadata:
+  requires-skills: system-quality
 ---
 
 # Engineering Decisions
+
+## 品質判断の境界
+
+要求保存・全体構成・改善関係は [system-quality](../system-quality/SKILL.md) に従う。既存慣例、局所性、実装の容易さだけで候補を選ばない。要求の根拠、現状の事実、内部慣例を分離し、要求縮小・無根拠な互換性義務・証拠のすり替えを候補へ適用する。既知違反の不在を最適性と同一視しない。
 
 開発判断は会話上の思いつきや局所的な実装だけで決めない。
 
@@ -117,7 +123,7 @@ significant decisionは必要に応じて:
 
 ## 7. Naming / responsibility
 
-filename / directory / function / class / component等の名前は、その対象が**所有する責務**を表す。
+filename / directory / function / class / component等の名前は、その対象が**所有する責務**を表す。実装・機能追加時にも [code-naming](../code-naming/SKILL.md) を適用し、既存の所有者・兄弟entry・参照箇所を読んでから新規配置を決める。
 
 ancestor path / namespace / ownerも名前の一部として評価し、上位階層ですでに表現されている意味をleafで無意味に繰り返さない。
 
@@ -131,7 +137,7 @@ ancestor path / namespace / ownerも名前の一部として評価し、上位�
 - `misc`
 - `manager`
 
-同一directory階層のparallel entryは**おおむね10以内**をheuristicとする。hard limitではないが大幅に超える場合は複数責務の混在を疑い、domain / feature / responsibility / lifecycle等の実質的境界で分割する。数合わせだけの中間directoryは作らない。
+同一directory階層でparallel entryが**おおむね10を超える**場合は構造を調べるheuristicとする。数は合否条件ではない。類似名の兄弟、責務の重複、親子の語の反復は少数でも問題になり得る。新しいentryが既存の構造を不整合にするなら、その既存側も同じ変更で統合・再配置する。数合わせの中間directoryは作らない。
 
 ## 8. Design-first lifecycle
 

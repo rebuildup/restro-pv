@@ -24,6 +24,7 @@ Restro のプロモーション PV を、**TypeScript を正本**として制作
 | review / 統合 / 検証 evidence | GitHub Pull Requests |
 | 移管元との対応 | `docs/migration/PROVENANCE.md` |
 | 判断の経緯 | `docs/adr/` |
+| 導入 Skill の版・hash | `skills-lock.json` |
 
 `main` への release 統合は明示的なユーザー承認を要する。
 ticket PR は依存順に自律統合してよい。
@@ -64,6 +65,11 @@ npm run test:ae     # ae-test（fake ホスト）
 | recovery | `agent-recovery` | 中断からの再開、checkpoint |
 | quality-gate | `quality-gate` | 検証レベルの決定、完了判定 |
 | engineering-decisions | `engineering-decisions` | 実装判断の優先順位、userへ返す判断の境界 |
+| system-quality | `system-quality` | 新規実装・追加・変更時の全体整合と要求保存 |
+| code-naming | `code-naming` | 責務・階層・識別子の命名 |
+| correctness-assurance | `correctness-assurance` | 不変条件と最小十分な保証手段 |
+| security-maintenance | `security-maintenance` | dependency / 脆弱性情報の取り込みと優先度 |
+| skill-selection | `skill-selection` | Skill の導入・再選定 |
 | design-before-build | `design-refinement` | 非自明な feature / 設計の実装前整理 |
 | host-editing | `host-editing` | AE への編集・自動化・検証を行う前 |
 | debugging | `diagnosing-bugs` | 失敗・壊れた動作の原因特定 |
@@ -71,8 +77,14 @@ npm run test:ae     # ae-test（fake ホスト）
 | prose-artifact | `writing-discipline` | README / ADR / Issue / PR / commit 等を書く前 |
 | prose-japanese | `natural-japanese` | 日本語文書の推敲 |
 | interaction-style | `interaction-discipline` | user への質問・blocker 報告 |
+| promo-video-design | `promotional-video` | PV の hook / brand / message / proof / CTA / audio / safe zone |
+| product-proof | `product-promo-video` | product claim を実 Restro 出力などの evidence へ対応付ける |
+| scene-transition | `transition-design` | シーン境界の連続性・断絶の設計 |
 
 Skill の実体は `.agents/skills/<name>/SKILL.md`（Claude Code は `.claude/skills/`）。
+外部導入分は `skills-lock.json` で source / commit / hash を固定する。
+`host-editing` はこの repository の自作 Skill で、lock 対象外。
+Web UI 向けの motion Skill（例: `motion-system`）はこの repository の対象外とした。
 
 ## House rule
 

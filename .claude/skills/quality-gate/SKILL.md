@@ -1,9 +1,17 @@
 ---
 name: quality-gate
 description: project固有のstack・framework・runtimeに合わせてquality gateと動作確認レベルを設計・実行・更新する時に使用する。
+metadata:
+  requires-skills: system-quality
 ---
 
 # Quality Gate
+
+## 全体品質との接続
+
+[system-quality](../system-quality/SKILL.md) が扱う要求保存、アンチケース排除、改善比較をproject-local gateへ接続する。必要解析と自前コード・script・設定・Skillの適用範囲を照合し、無分類・未実行を成功にしない。違反混入は固有診断による拒否を確認し、crashやtimeoutは検出成功にしない。検査・抑制・対象除外・期待値の変更は信頼された比較元と照合する。候補自身がgateを変更・迂回できるなら独立強制は未成立である。
+
+要求充足、既知違反の排除、実証された改善の取込みを区別する。必須の未成立条件や実証された劣位を残して完了にしない。検査合格は最適性の証明ではない。検査の実行段階は既存のstage契約に従い、早期検証とrelease検証を混同しない。
 
 quality gateは固定bundleではない。
 
@@ -137,6 +145,10 @@ UI/UX、native platform、hardware integration等でautomationが十分でない
 
 manual verificationを暗黙の「見た感じOK」にしない。手順・期待結果・artifactを残す。
 
+UI/native変更で人間レビューが必要な場合は [visual/native review handoff](references/visual-review-handoff.md) に従う。非視覚taskへ一律適用しない。
+
+複数OSで動作する対象は [execution placement](../../organization/execution-placement.md) を適用し、実OS/deviceで検証する。WSL/Windows/macOSは互換ではない。
+
 ### Verification Executor / native environment
 
 verificationはimplementation workerと同じworkspace topologyを必須にしない。ADR-0020に従い、検証対象をimmutable candidate identityへpinし、environment identityとevidence provenanceを記録する。
@@ -183,10 +195,10 @@ unexpectedなtracked source/config mutationが確認されたvalidationは、cur
 | user journey/navigation/auth | integration/contract + E2E |
 | external API adapter | unit + contract/integration + failure-path test |
 | build/package/container | build/package + smoke |
-| release branch | full applicable integration + critical E2E/smoke + release-specific checks |
+| frozen release candidate | full applicable integration + critical E2E/smoke + release-specific checks |
 | security fix | regression test + vulnerable-path verification + applicable integration/E2E + affected `security-audit` coverage revalidation when applicable |
 
-これはfixed universal matrixではない。framework official guidanceとproject architectureでcompileする。
+これはfixed universal matrixではない。framework official guidanceとproject architectureでcompileする。詳細: [stage placement](references/verification-stage-placement.md)（ADR-0036）。
 
 ## 4. Quality profileをproject-localにcompileする
 
@@ -356,7 +368,7 @@ expected CI usage ≈ trigger frequency × started jobs × billed duration × ru
 通常のdefault:
 
 - ticket/feature branch: `pull_request` でintegration gate
-- `main` / release trunk / tag: `push` でpost-mergeまたはrelease-specific gate
+- `main` / tag: post-merge確認。release trunk pushは軽量health、full release gateはfreeze後に実行
 - manual deep verification: `workflow_dispatch`
 - periodic verificationに実際の意味がある場合のみ `schedule`
 
@@ -376,7 +388,7 @@ Windows/macOS/native/device/browser matrix等のexpensive platform verification�
 
 - platform/native関連pathが変更された
 - platform-specific behavior / packaging / process invocationが変更された
-- release candidate / release trunk / tag
+- frozen release candidate / tag
 - explicit label / manual dispatchによるfull verification
 - required compatibility matrixを定期的に再確認する必要がある
 
@@ -470,6 +482,12 @@ budgetはworkflow設計の代替ではない。
 
 quality profileに対象check、入力・環境の識別、最大間隔、強制実行入口、延期結果、測定・撤去条件を残す。状態はworkerごとに隔離し、他の環境へ流用しない。
 
+### 8.12 増分変更の構造品質
+
+新規実装・追加時はformatter・lint・型検査とは別に、[code-naming](../code-naming/SKILL.md) と [system-quality](../system-quality/SKILL.md) に基づき、影響範囲の新旧ファイル・兄弟entry・責務の所有者・import・利用側をコードで評価する。今回の変更が生んだ重複・曖昧な命名・階層不整合は、同じticketで解消する。後日のリファクタリングは受入の代わりにならない。
+
+機械判定可能な違反は低コストのproject-local検査で拒否する。ファイル数や共通prefixだけで意味の良否を決めず、残る意味判断は実コードの差分と周辺構造で確認する。自己申告を独立強制と呼ばず、通常ticketへrelease候補のGUI・full E2Eを追加しない。
+
 ## 9. Worker gate
 
 workerは担当scopeの高速feedbackを得る。
@@ -492,8 +510,8 @@ PR topologyは固定しない:
 最低限:
 
 - acceptance criteriaに対応するverification
-- changed boundaryに必要なunit/smoke/integration/contract/E2E
-- formatter/lint/type/static/build等のapplicable checks
+- changed boundaryに必要なticket-applicable focused unit/contract/targeted integration
+- formatter/lint/type/static/必要なtargeted build等のapplicable checks
 - required CI checks
 - current head SHAまたはcurrent head SHA / snapshotにprovenanceで結び付いたimmutable artifact identityとvalidation evidenceの一致
 - immediate PR base / target release trunkとのstaleness確認
