@@ -18,6 +18,7 @@ export interface SceneContent {
   materialComp: string;
   durationFrames: number;
   hero: FrameRect;
+  descriptionFontSize?: number;
 }
 
 function transform(position: [number, number], scale = 100, anchor: [number, number] = [0, 0]): PropNode {
@@ -36,7 +37,26 @@ function transform(position: [number, number], scale = 100, anchor: [number, num
   };
 }
 
+// Reject obviously overflowing copy before opening AE. This uses a
+// conservative typography envelope, not a replacement for real AE font metrics.
+function assertTextEnvelope(section: Section, content: string, size: number): void {
+  const lines = content.split("\\n");
+  const lineHeight = size * 1.3;
+  if (lines.length * lineHeight > section.rect.height) {
+    throw new Error(section.id + " has more text lines than its vertical envelope");
+  }
+  for (const line of lines) {
+    const advance = Array.from(line).reduce(
+      (width, char) => width + size * (char.codePointAt(0)! > 0x2e80 ? 1 : 0.6), 0,
+    );
+    if (advance > section.rect.width) {
+      throw new Error(section.id + " text exceeds the declared width");
+    }
+  }
+}
+
 function textLayer(section: Section, value: string, fontSize: number, scene: string): LayerSpec {
+  assertTextEnvelope(section, value, fontSize);
   const textDoc: PropNode = {
     name: "Source Text",
     matchName: "ADBE Text Document",
@@ -118,7 +138,7 @@ export function composeScene(content: SceneContent): CompSpec {
   // AE inserts layers at index 1; order here is already top-to-bottom.
   const layers: LayerSpec[] = [
     textLayer(head, title, 60, id),
-    textLayer(copy, description, 35, id),
+    textLayer(copy, description, content.descriptionFontSize ?? 35, id),
     { ...materialLayer(id + " / icon", "Logo", icon.rect, durationFrames), role: "information" },
     materialLayer(id + " / main", materialComp, hero, durationFrames),
   ];
