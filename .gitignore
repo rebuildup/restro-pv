@@ -1,0 +1,15 @@
+# Dependencies / build output
+node_modules/
+dist/
+out/
+.tmp/
+
+# After Effects transient files (autosaves are per-machine recovery data,
+# never migrated; see docs/migration/PROVENANCE.md)
+Auto-Save/
+*.aep.bak
+*.aep~
+
+# Regenerable render output (master.avi and friends are rebuilt from the
+# TypeScript source, not stored)
+*.avi

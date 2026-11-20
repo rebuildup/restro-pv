@@ -1,0 +1,9 @@
+# Vendored Agent Skills stay LF on every platform.
+.agents/skills/** text eol=lf
+.claude/skills/** text eol=lf
+
+# Media binaries: no text conversion, no text diffs.
+*.mp3 binary
+*.mp4 binary
+*.avi binary
+*.png binary

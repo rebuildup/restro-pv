@@ -1,0 +1,274 @@
+{
+  "project": "C:\\Users\\rebui\\Desktop\\Ae_Restro\\promotion\\pv.aep",
+  "comp": {
+    "name": "master",
+    "width": 1080,
+    "height": 1080,
+    "duration": 20,
+    "frameRate": 24,
+    "layerCount": 266
+  },
+  "bpm": 128,
+  "beatOffsetSeconds": 0,
+  "renderedAt": "2026-11-19T15:17:23.201Z",
+  "beats": [
+    {
+      "index": 1,
+      "time": 0,
+      "frame": 0,
+      "file": "beat-001.png"
+    },
+    {
+      "index": 2,
+      "time": 0.46875,
+      "frame": 11,
+      "file": "beat-002.png"
+    },
+    {
+      "index": 3,
+      "time": 0.9375,
+      "frame": 23,
+      "file": "beat-003.png"
+    },
+    {
+      "index": 4,
+      "time": 1.40625,
+      "frame": 34,
+      "file": "beat-004.png"
+    },
+    {
+      "index": 5,
+      "time": 1.875,
+      "frame": 45,
+      "file": "beat-005.png"
+    },
+    {
+      "index": 6,
+      "time": 2.34375,
+      "frame": 56,
+      "file": "beat-006.png"
+    },
+    {
+      "index": 7,
+      "time": 2.8125,
+      "frame": 68,
+      "file": "beat-007.png"
+    },
+    {
+      "index": 8,
+      "time": 3.28125,
+      "frame": 79,
+      "file": "beat-008.png"
+    },
+    {
+      "index": 9,
+      "time": 3.75,
+      "frame": 90,
+      "file": "beat-009.png"
+    },
+    {
+      "index": 10,
+      "time": 4.21875,
+      "frame": 101,
+      "file": "beat-010.png"
+    },
+    {
+      "index": 11,
+      "time": 4.6875,
+      "frame": 113,
+      "file": "beat-011.png"
+    },
+    {
+      "index": 12,
+      "time": 5.15625,
+      "frame": 124,
+      "file": "beat-012.png"
+    },
+    {
+      "index": 13,
+      "time": 5.625,
+      "frame": 135,
+      "file": "beat-013.png"
+    },
+    {
+      "index": 14,
+      "time": 6.09375,
+      "frame": 146,
+      "file": "beat-014.png"
+    },
+    {
+      "index": 15,
+      "time": 6.5625,
+      "frame": 158,
+      "file": "beat-015.png"
+    },
+    {
+      "index": 16,
+      "time": 7.03125,
+      "frame": 169,
+      "file": "beat-016.png"
+    },
+    {
+      "index": 17,
+      "time": 7.5,
+      "frame": 180,
+      "file": "beat-017.png"
+    },
+    {
+      "index": 18,
+      "time": 7.96875,
+      "frame": 191,
+      "file": "beat-018.png"
+    },
+    {
+      "index": 19,
+      "time": 8.4375,
+      "frame": 203,
+      "file": "beat-019.png"
+    },
+    {
+      "index": 20,
+      "time": 8.90625,
+      "frame": 214,
+      "file": "beat-020.png"
+    },
+    {
+      "index": 21,
+      "time": 9.375,
+      "frame": 225,
+      "file": "beat-021.png"
+    },
+    {
+      "index": 22,
+      "time": 9.84375,
+      "frame": 236,
+      "file": "beat-022.png"
+    },
+    {
+      "index": 23,
+      "time": 10.3125,
+      "frame": 248,
+      "file": "beat-023.png"
+    },
+    {
+      "index": 24,
+      "time": 10.78125,
+      "frame": 259,
+      "file": "beat-024.png"
+    },
+    {
+      "index": 25,
+      "time": 11.25,
+      "frame": 270,
+      "file": "beat-025.png"
+    },
+    {
+      "index": 26,
+      "time": 11.71875,
+      "frame": 281,
+      "file": "beat-026.png"
+    },
+    {
+      "index": 27,
+      "time": 12.1875,
+      "frame": 293,
+      "file": "beat-027.png"
+    },
+    {
+      "index": 28,
+      "time": 12.65625,
+      "frame": 304,
+      "file": "beat-028.png"
+    },
+    {
+      "index": 29,
+      "time": 13.125,
+      "frame": 315,
+      "file": "beat-029.png"
+    },
+    {
+      "index": 30,
+      "time": 13.59375,
+      "frame": 326,
+      "file": "beat-030.png"
+    },
+    {
+      "index": 31,
+      "time": 14.0625,
+      "frame": 338,
+      "file": "beat-031.png"
+    },
+    {
+      "index": 32,
+      "time": 14.53125,
+      "frame": 349,
+      "file": "beat-032.png"
+    },
+    {
+      "index": 33,
+      "time": 15,
+      "frame": 360,
+      "file": "beat-033.png"
+    },
+    {
+      "index": 34,
+      "time": 15.46875,
+      "frame": 371,
+      "file": "beat-034.png"
+    },
+    {
+      "index": 35,
+      "time": 15.9375,
+      "frame": 383,
+      "file": "beat-035.png"
+    },
+    {
+      "index": 36,
+      "time": 16.40625,
+      "frame": 394,
+      "file": "beat-036.png"
+    },
+    {
+      "index": 37,
+      "time": 16.875,
+      "frame": 405,
+      "file": "beat-037.png"
+    },
+    {
+      "index": 38,
+      "time": 17.34375,
+      "frame": 416,
+      "file": "beat-038.png"
+    },
+    {
+      "index": 39,
+      "time": 17.8125,
+      "frame": 428,
+      "file": "beat-039.png"
+    },
+    {
+      "index": 40,
+      "time": 18.28125,
+      "frame": 439,
+      "file": "beat-040.png"
+    },
+    {
+      "index": 41,
+      "time": 18.75,
+      "frame": 450,
+      "file": "beat-041.png"
+    },
+    {
+      "index": 42,
+      "time": 19.21875,
+      "frame": 461,
+      "file": "beat-042.png"
+    },
+    {
+      "index": 43,
+      "time": 19.6875,
+      "frame": 473,
+      "file": "beat-043.png"
+    }
+  ]
+}

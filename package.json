@@ -1,0 +1,20 @@
+{
+  "name": "restro-pv",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --test tests/*.test.ts",
+    "render:beats": "node tools/render-pv-beats.ts"
+  },
+  "dependencies": {
+    "@ido-bata/ae-a8n": "github:ido-bata/ae-a8n#b70f329fb74607c61ad71d59ec41197fcb3d71be"
+  },
+  "devDependencies": {
+    "@types/node": "24.10.1",
+    "typescript": "5.9.3"
+  }
+}
