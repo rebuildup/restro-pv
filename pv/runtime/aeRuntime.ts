@@ -426,6 +426,22 @@ function __createLayer(comp, ls, footageByName, compItems) {
   try { L.name = name; } catch (ne) {}
   return L;
 }
+
+// FoldLayers AEGP identifies groups through hidden vector groups, not by
+// looking at the ▾ prefix alone. Do NOT call locale-dependent menu commands.
+function __applyFoldDivider(L, desc) {
+  var root = L.property("ADBE Root Vectors Group");
+  if (!root) { __err("FoldLayers root group missing on " + L.name); return; }
+  try {
+    var state = root.addProperty("ADBE Vector Group");
+    state.name = desc.folded ? "FD-1" : "FD-0";
+    if (desc.hierarchy) {
+      var hierarchy = root.addProperty("ADBE Vector Group");
+      hierarchy.name = "FD-H:" + desc.hierarchy;
+    }
+  } catch (e) { __err("FoldLayers identity failed on " + L.name + ": " + __estr(e)); }
+}
+
 function __setProp(p, v) {
   if (v === undefined || v === null) return;
   if (__isShapeVal(v)) { p.setValue(__toShape(v)); return; }
@@ -446,6 +462,11 @@ function __applyLayer(L, ls, compLayers) {
   try {
     // enabled=false is applied after all property writes as a defensive
     // ordering measure; shy/guide layers remain editable throughout.
+    if (ls.label !== undefined) {
+      if (ls.label < 1 || ls.label > 16) __err("invalid AE label slot on " + ls.name);
+      else { try { L.label = ls.label; } catch (le) { __err("layer label failed " + ls.name + ": " + __estr(le)); } }
+    }
+    if (ls.foldDivider) __applyFoldDivider(L, ls.foldDivider);
     if (ls.shy) L.shy = true;
     if (ls.guideLayer) L.guideLayer = true;
     // Order matters: startTime/stretct position the layer bar first; setting
@@ -538,6 +559,109 @@ function __relinkFootage() {
   __prog("footage relink: fixed=" + fixed + " missing=" + missing.length);
   for (var m = 0; m < missing.length && m < 20; m++) __warn("offline footage: " + missing[m]);
 }
+
+// Organize only the generated AEP in memory. The source material .aep is
+// never saved; project item names are preserved because old expressions may
+// reference them via comp("name").
+function __organizeProject(spec, generatedComps) {
+  if (!spec.organizeProject) return;
+  var folders = {};
+  function folder(name) {
+    if (!folders[name]) {
+      folders[name] = app.project.items.addFolder(name);
+      try { folders[name].label = 4; } catch (e) {}
+    }
+    return folders[name];
+  }
+  var output = folder("01 - PV Output");
+  var material = folder("02 - Restro Materials");
+  var media = folder("03 - Media");
+  var audio = folder("04 - Audio");
+  var originals = [];
+  for (var i = 1; i <= app.project.numItems; i++) {
+    var item = app.project.item(i);
+    if (!(item instanceof FolderItem) && item) originals.push(item);
+  }
+  for (var j = 0; j < originals.length; j++) {
+    var it = originals[j], isGenerated = false;
+    for (var k = 0; k < generatedComps.length; k++) {
+      if (it === generatedComps[k]) { isGenerated = true; break; }
+    }
+    try {
+      if (it instanceof CompItem) {
+        it.parentFolder = isGenerated ? output : material;
+        it.label = isGenerated ? 13 : 5;
+      } else {
+        var n = String(it.name || "");
+        var isAudio = /\\.(mp3|wav|aif|aiff)$/i.test(n);
+        it.parentFolder = isAudio ? audio : media;
+        it.label = isAudio ? 10 : 8;
+      }
+    } catch (e) { __err("Project panel organizing failed " + it.name + ": " + __estr(e)); }
+    if (it instanceof CompItem) {
+      for (var li = 1; li <= it.numLayers; li++) {
+        var layer = it.layer(li);
+        try {
+          // Generated labels are set from LayerSpec; source labels fall back
+          // to role-based conventions instead of AE's arbitrary defaults.
+          if (isGenerated) continue;
+          var nm = String(layer.name || "");
+          var category = layer.nullLayer ? 6 :
+            /^(Heading|description|Logo|Ae\\.png|AFTER EFFECTS PLUGIN)$/.test(nm) ? 9 :
+            /\\.(mp3|wav|aif|aiff)$/i.test(nm) ? 10 :
+            /(?:grid|background|solid)/i.test(nm) ? 2 : 13;
+          layer.label = category;
+        } catch (e2) { __err("source layer label failed " + it.name + "/" + li + ": " + __estr(e2)); }
+      }
+    }
+  }
+  __prog("organized Project panel: " + originals.length + " items");
+}
+
+// Check generated comps and all reachable nested comps, including material
+// precomps. A syntactically valid expression can still fail in AE, so this
+// must run on the real host before a build is accepted.
+function __validateExpressionTree(p, path) {
+  if (!p) return;
+  var can = false;
+  try { can = !!p.canSetExpression; } catch (e) {}
+  if (can) {
+    try {
+      if (p.expressionEnabled) {
+        var err = String(p.expressionError || "");
+        if (err) __err("expressionError " + path + ": " + err);
+      }
+    } catch (e2) { __err("expression inspection failed " + path + ": " + __estr(e2)); }
+  }
+  var count = 0;
+  try { count = p.numProperties || 0; } catch (e3) {}
+  for (var i = 1; i <= count; i++) {
+    var child = null;
+    try { child = p.property(i); }
+    catch (e4) { __err("expression property enumeration failed " + path + "/" + i + ": " + __estr(e4)); }
+    if (child) __validateExpressionTree(child, path + "/" + i);
+  }
+}
+function __validateReachableExpressions(generatedComps) {
+  var seen = [];
+  function visit(comp) {
+    if (!comp) return;
+    for (var k = 0; k < seen.length; k++) if (seen[k] === comp) return;
+    seen.push(comp);
+    try {
+      for (var li = 1; li <= comp.numLayers; li++) {
+        var layer = comp.layer(li);
+        __validateExpressionTree(layer, comp.name + "/" + layer.name);
+        var source = null;
+        try { source = layer.source; } catch (e) {}
+        if (source && source instanceof CompItem) visit(source);
+      }
+    } catch (e2) { __err("expression scan failed for " + comp.name + ": " + __estr(e2)); }
+  }
+  for (var i = 0; i < generatedComps.length; i++) visit(generatedComps[i]);
+  __prog("expression scan: " + seen.length + " reachable comps");
+}
+
 // ---- project ---------------------------------------------------------------
 function buildProject(spec) {
   // The -r script can start while AE is still finishing plugin/media
@@ -638,6 +762,8 @@ function buildProject(spec) {
     try { __solidHost.remove(); } catch (se) { __warn("solid host comp cleanup: " + __estr(se)); }
     __solidHost = null;
   }
+  __organizeProject(spec, compItems);
+  __validateReachableExpressions(compItems);
 }
 
 function __jsonStr(s) {
@@ -674,8 +800,7 @@ function __writeReport() {
   }
 }
 function __finish() {
-  __prog("buildProject returned; writing report");
-  __writeReport();
+  __prog("buildProject returned; saving project before final report");
   if (__SAVE_PATH) {
     try {
       var sf = new File(__SAVE_PATH);
@@ -685,6 +810,7 @@ function __finish() {
       try { if ($.writeln) $.writeln("PV saved: " + __SAVE_PATH); } catch (x) {}
     } catch (se) { __err("project save failed: " + __estr(se)); }
   }
+  __writeReport();
   if (__REPORT_PATH) {
     var d = new File(__REPORT_PATH + ".done");
     d.open("w"); d.write("done"); d.close();
