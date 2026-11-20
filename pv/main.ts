@@ -4,9 +4,10 @@
 // Production path: open the material AEP (legacy/pv-2dc99e1.aep), add the
 // TS-authored "PV master" comp wiring material scene comps, save as the
 // generated AEP. Scene content itself is edited in pv/scenes/*.
-import type { ProjectSpec } from "./model/types.ts";
-import { pvProjectSpec } from "./scenes/master.ts";
+
+import { pvProductionSpec } from "./scenes/production.ts";
+import type { ProjectSpec } from "./spec/types.ts";
 
 export function buildSpec(): ProjectSpec {
-  return pvProjectSpec();
+  return pvProductionSpec();
 }
