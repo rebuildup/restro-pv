@@ -106,14 +106,20 @@ export function composeScene(content: SceneContent): CompSpec {
     id: "main", role: "main", rect: hero,
     fromFrame: 0, toFrame: durationFrames, mainOrder: 0,
   };
+  const icon: Section = {
+    id: "icon", role: "icon",
+    rect: { x: 880, y: 48, width: 152, height: 152 },
+    fromFrame: 0, toFrame: durationFrames,
+  };
   const layout: SceneLayout = {
-    id, fromFrame: 0, toFrame: durationFrames, sections: [head, copy, main],
+    id, fromFrame: 0, toFrame: durationFrames, sections: [head, copy, icon, main],
   };
   assertSceneLayouts([layout]);
   // AE inserts layers at index 1; order here is already top-to-bottom.
   const layers: LayerSpec[] = [
     textLayer(head, title, 60, id),
     textLayer(copy, description, 35, id),
+    { ...materialLayer(id + " / icon", "Logo", icon.rect, durationFrames), role: "information" },
     materialLayer(id + " / main", materialComp, hero, durationFrames),
   ];
   layers.forEach((layer, index) => { layer.index = index + 1; });
