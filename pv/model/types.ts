@@ -136,4 +136,8 @@ export interface ProjectSpec {
   comps: CompSpec[];
   footage: FootageSpec[];
   savePath?: string;              // AEP output path; empty = don't save
+  // Repo-relative path to a material AEP opened before the spec is built.
+  // Material comps/footage resolve by name; the opened project is saved to
+  // savePath, leaving the material file untouched.
+  materialAep?: string;
 }

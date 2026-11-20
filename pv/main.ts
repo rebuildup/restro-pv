@@ -1,16 +1,12 @@
-// PV project entry point. Assembles the full ProjectSpec.
+// PV project entry point. Assembles the production ProjectSpec.
 // Executed by Node (type stripping) at build time — never inside After Effects.
 //
-// pv/generated/* is the mechanical port of legacy/pv-2dc99e1.aep.
-// Hand-authored scene definitions live in pv/scenes/* and are layered on top
-// of the generated data (see docs/analysis/STRUCTURE.md).
+// Production path: open the material AEP (legacy/pv-2dc99e1.aep), add the
+// TS-authored "PV master" comp wiring material scene comps, save as the
+// generated AEP. Scene content itself is edited in pv/scenes/*.
 import type { ProjectSpec } from './model/types.ts';
-import { GENERATED_COMPS, GENERATED_FOOTAGE } from './generated/index.ts';
+import { pvProjectSpec } from './scenes/master.ts';
 
 export function buildSpec(): ProjectSpec {
-  return {
-    name: 'pv',
-    comps: GENERATED_COMPS,
-    footage: GENERATED_FOOTAGE,
-  };
+  return pvProjectSpec();
 }

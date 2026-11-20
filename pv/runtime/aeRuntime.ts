@@ -495,10 +495,55 @@ function __applyLayer(L, ls, compLayers) {
   } catch (e) { __err("layer setup failed on " + ls.name + ": " + __estr(e)); }
 }
 
+// Relink footage whose recorded path no longer exists (assets moved into
+// this repo). Searches assets/{rec,footage,images,audio} by basename.
+function __relinkFootage() {
+  var dirs = ["assets/rec", "assets/footage", "assets/images", "assets/audio"];
+  var fixed = 0;
+  var missing = [];
+  for (var i = 1; i <= app.project.numItems; i++) {
+    var it = null;
+    try { it = app.project.item(i); } catch (e) { continue; }
+    if (!it || it instanceof CompItem || it instanceof FolderItem) continue;
+    var f = null;
+    try {
+      var src = it.mainSource;
+      if (src && src.file) f = src.file;
+    } catch (e2) {}
+    if (!f) continue;               // solids / placeholders have no file
+    if (f.exists) continue;
+    var base = f.fsName || f.name;
+    base = base.substring(base.lastIndexOf("\\") + 1);
+    base = base.substring(base.lastIndexOf("/") + 1);
+    var done = false;
+    for (var d = 0; d < dirs.length && !done; d++) {
+      var cand = new File(__REPO_ROOT + "/" + dirs[d] + "/" + base);
+      if (cand.exists) {
+        try { it.replace(cand); fixed++; done = true; }
+        catch (re) { __warn("relink replace failed " + it.name + ": " + __estr(re)); }
+      }
+    }
+    if (!done) missing.push(it.name);
+  }
+  __prog("footage relink: fixed=" + fixed + " missing=" + missing.length);
+  for (var m = 0; m < missing.length && m < 20; m++) __warn("offline footage: " + missing[m]);
+}
 // ---- project ---------------------------------------------------------------
 function buildProject(spec) {
   __prog("build start: " + (spec.comps ? spec.comps.length : 0) + " comps, " +
     (spec.footage ? spec.footage.length : 0) + " footage");
+  if (spec.materialAep) {
+    var mf = new File(__REPO_ROOT + "/" + spec.materialAep);
+    if (!mf.exists) { __err("material AEP missing: " + spec.materialAep); }
+    else {
+      __prog("opening material AEP: " + spec.materialAep);
+      var opened = false;
+      try { app.open(mf); opened = true; }
+      catch (oe) { __err("app.open failed: " + __estr(oe)); }
+      __prog("material AEP opened=" + opened);
+      if (opened) __relinkFootage();
+    }
+  }
   var footageByName = {};
   if (spec.footage) {
     for (var fi = 0; fi < spec.footage.length; fi++) {
