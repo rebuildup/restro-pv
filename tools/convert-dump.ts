@@ -420,7 +420,7 @@ for (let di = 0; di < dumps.length; di++) {
   };
   const body = `// Generated from AEP dump ${file} — do not edit by hand.
 // Regenerate: bun tools/dump-aep-tree.ts <aep> <dir> && bun tools/convert-dump.ts <dir>
-import type { CompSpec } from '../model/types.ts';
+import type { CompSpec } from '../spec/types.ts';
 
 export const ${varName}: CompSpec = ${JSON.stringify(compSpec)} as CompSpec;
 export default ${varName};
@@ -431,7 +431,7 @@ export default ${varName};
 
 const indexBody = `// Generated index — do not edit by hand.
 ${compModules.map((m) => `import { ${m.varName} } from './${m.file}.ts';`).join("\n")}
-import type { CompSpec, FootageSpec } from '../model/types.ts';
+import type { CompSpec, FootageSpec } from '../spec/types.ts';
 
 export const GENERATED_COMPS: CompSpec[] = [
 ${compModules.map((m) => `  ${m.varName},`).join("\n")}

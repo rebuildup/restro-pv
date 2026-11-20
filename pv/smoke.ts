@@ -1,7 +1,7 @@
 // Smoke-test spec: exercises every runtime path (comps, shape paths,
 // keyframes+eases, masks, text, parenting, footage, track matte).
 // Build: bun tools/build-jsx.ts --spec pv/smoke.ts --out dist/smoke.jsx
-import type { CompSpec, ProjectSpec } from "./model/types.ts";
+import type { CompSpec, ProjectSpec } from "./spec/types.ts";
 
 const TRI = {
   vertices: [
