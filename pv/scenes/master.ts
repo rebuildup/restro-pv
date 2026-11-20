@@ -162,7 +162,7 @@ function remapLayerControlValues(
   }
 }
 
-export function pvMasterSpec(): CompSpec {
+function pvMasterSpec(): CompSpec {
   // AE layer order: index 1 = top. Parent chains are cloned as null layers;
   // parentIndex is remapped after the stack is assembled.
   const layers: LayerSpec[] = [

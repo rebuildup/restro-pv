@@ -1,5 +1,5 @@
 // Generated from AEP dump 33-master [checkpoint before S4 slots v2].json — do not edit by hand.
-// Regenerate: node tools/dump-aep-tree.ts <aep> <dir> && node tools/convert-dump.ts <dir>
+// Regenerate: bun tools/dump-aep-tree.ts <aep> <dir> && bun tools/convert-dump.ts <dir>
 import type { CompSpec } from "../model/types.ts";
 
 export const comp_33: CompSpec = {

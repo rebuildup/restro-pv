@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 // Deep structural comparison between two per-comp dump directories
 // (tools/dump-aep-tree.ts output). Compares everything that can affect the
 // rendered result: comp settings, layer timing/flags/parenting/source refs,

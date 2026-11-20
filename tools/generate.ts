@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 // Generate the PV project: run the built single JSX in After Effects and
 // wait for the runtime's own report marker. This is the ONLY supported way
 // to produce dist/pv-generated.aep — never resend a timed-out run.

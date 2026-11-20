@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 // Release-candidate verification: full-length render of the generated AEP.
 // ONLY for frozen candidates — this renders every frame and is slow.
 //
@@ -65,7 +65,7 @@ if (existsSync(verifyReport)) {
   step("verify.prereq", v.status === "ok", `verify-report status=${v.status}`);
   if (v.status !== "ok") finish("fail-verify-prereq");
 } else {
-  step("verify.prereq", false, "no verify-report.json — run npm run verify first");
+  step("verify.prereq", false, "no verify-report.json — run bun run verify first");
   finish("fail-verify-prereq");
 }
 step("aep.identity", true, `sha256 ${sha256(aep).slice(0, 16)}…`);
@@ -129,7 +129,7 @@ try {
 
   // 43-beat stills of the same comp for visual review
   const beat = spawnSync(
-    "node",
+    process.execPath,
     [
       "tools/render-pv-beats.ts",
       "--aep",

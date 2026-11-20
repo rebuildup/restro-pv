@@ -25,7 +25,7 @@ JSX パッチは主経路ではない（実行・レンダリング・検証に�
 ## セットアップ
 
 ```sh
-bun install --frozen-lockfile          # 依存導入（Node >= 24）
+bun install --frozen-lockfile          # 依存導入（Bun >= 1.3.13。mise install で toolchain を固定）
 bun run typecheck
 ```
 

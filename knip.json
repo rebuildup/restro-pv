@@ -1,6 +1,17 @@
 {
   "$schema": "https://unpkg.com/knip@6/schema.json",
-  "ignore": ["pv/generated/**", "dist/**", ".tmp/**"],
+  "entry": ["tools/**/*.ts", "pv/smoke.ts"],
+  "ignore": [
+    "pv/generated/**",
+    "dist/**",
+    ".tmp/**",
+    "legacy/**",
+    "verification/**",
+    "specs/**",
+    "tools/analysis/**",
+    ".agents/**",
+    ".claude/**"
+  ],
   "ignoreDependencies": [
     "@ido-bata/ae-devtools-cli",
     "@ido-bata/ae-test",

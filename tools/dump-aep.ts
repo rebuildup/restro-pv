@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 // Dump an AEP's full structure to JSON by running tools/analysis/dump-aep.jsx
 // inside After Effects.
 //

@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 // Converts per-comp AEP dumps (.tmp/aep-tree/<slug>/) into typed
 // TypeScript data modules under pv/generated/.
 //

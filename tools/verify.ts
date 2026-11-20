@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 // Verify a generated AEP against the legacy source dump.
 //
 //   bun tools/verify.ts [--aep dist/pv-generated.aep] [--source-dump .tmp/aep-tree/pv-2dc99e1]
@@ -72,7 +72,7 @@ if (existsSync(runRecordPath)) {
   expectedSha = (run.output as { sha256?: string } | null)?.sha256 ?? null;
   check("generate.runStatus", run.status === "ok", `generate-run status=${run.status}`);
 } else {
-  check("generate.runStatus", false, "no .tmp/generate-run.json — run npm run generate first");
+  check("generate.runStatus", false, "no .tmp/generate-run.json — run bun run generate first");
 }
 if (expectedSha) {
   const actual = sha256(aep);
@@ -102,10 +102,14 @@ check("source.dump", true, "source dump manifest present");
 if (!skipDump) {
   console.log("dumping generated AEP (resumable)...");
   try {
-    execFileSync("node", ["tools/dump-aep-tree.ts", aep, genDump, "--timeout", "7200000"], {
-      cwd: ROOT,
-      stdio: "inherit",
-    });
+    execFileSync(
+      process.execPath,
+      ["tools/dump-aep-tree.ts", aep, genDump, "--timeout", "7200000"],
+      {
+        cwd: ROOT,
+        stdio: "inherit",
+      },
+    );
   } catch (error) {
     check("gen.dump", false, String(error));
     finish("fail-gen-dump");
@@ -120,7 +124,7 @@ check("gen.dump", true, "generated dump manifest present");
 // --- 3. structural diff ---------------------------------------------------------
 // compare-aep exits 0 on STRUCTURE MATCH, 1 on any difference.
 try {
-  const out = execFileSync("node", ["tools/compare-aep.ts", sourceDump, genDump], {
+  const out = execFileSync(process.execPath, ["tools/compare-aep.ts", sourceDump, genDump], {
     cwd: ROOT,
     encoding: "utf8",
   });

@@ -7,9 +7,9 @@ TypeScript 正本 → 単一 JSX → 実機 AE → 完成 AEP → 検証 の経�
 
 | 段階 | コマンド | 実体 | 実機 AE |
 | --- | --- | --- | --- |
-| 診断 | `bun run doctor` | `tools/doctor.ts`（Node/AE/依存/所有権/成果物 + `ae-devtools doctor` 委譲） | 不要 |
+| 診断 | `bun run doctor` | `tools/doctor.ts`（Bun/AE/依存/所有権/成果物 + `ae-devtools doctor` 委譲） | 不要 |
 | 型検査 | `bun run typecheck` / `bun test` | tsc / bun test | 不要 |
-| JSX 静的検査 | `bun run jsx:check` | `tools/check-jsx.ts`: types-for-adobe 型検査（runtime 抽出）+ `jsx-toolchain lint/check`（ES3・AE API 名）+ catch 連結スキャン | 不要 |
+| JSX 静的検査 | `bun run jsx:check` | `tools/check-jsx.ts`: types-for-adobe 型検査（runtime 抽出）+ `jsx-toolchain lint/check`（ES5/ES3・AE API 名）+ `tools/lib/es3-check.ts`（Babel helper・`&&`/`||` 混在）+ catch 連結スキャン | 不要 |
 | ビルド | `bun run build:jsx` | `tools/build-jsx.ts` → `dist/pv.jsx`（ASCII-only） | 不要 |
 | 生成 | `bun run generate` | `tools/generate.ts` → `AfterFX.exe -r` + レポート待機 | **必要** |
 | 構造検証 | `bun run verify` | `tools/verify.ts`（出力同一性 → 再ダンプ → `compare-aep`） | 必要（ダンプ時） |
@@ -17,6 +17,23 @@ TypeScript 正本 → 単一 JSX → 実機 AE → 完成 AEP → 検証 の経�
 | ベースライン | `bun run render:baseline` | 同上、`legacy/pv-2dc99e1.aep` 固定 | 必要 |
 | リリース検証 | `bun run release-verify` | `tools/release-verify.ts`（全フレーム + mp4 + beats） | 必要 |
 | ae-test | `bun run test:ae` | fake ホストの runner 契約 spec | fake のみ |
+
+## TS → JSX の変換と静的解析
+
+`pv/` の TypeScript が正本で、`tools/build-jsx.ts` が spec をリテラル化して
+`pv/runtime/aeRuntime.ts`（ExtendScript 互換の ES3 記法で書かれた実行時）と
+結合し、ASCII-only の単一 JSX を `dist/` に出力する。`types-for-adobe` は
+AE DOM の型定義として使い、`check-jsx` が生成物に対して次を offline で検査する:
+
+1. 抽出した runtime を `typescript` + `types-for-adobe/AfterEffects/24.6` で型検査
+   （API 名・引数形状の誤りを検出）
+2. `jsx-toolchain lint/check` による ES5/ES3 構文と AE API 名の lint
+3. `tools/lib/es3-check.ts` による AST 走査（Babel/helper 由来 identifier、
+   `&&`/`||` の非明示的混在を拒否）と acorn による catch 連結スキャン
+
+この構成は `rebuildup/Aulymo_v04` の AE スクリプト pipeline（types-for-adobe +
+ES5/ES3 変換 + 静的解析）を参考にしたもので、変換器ではなく「TS 正本 →
+決定的 JSX 生成 → 生成物の静的 gate」という責務分担を採る。
 
 生成中はランタイムが `.tmp/pv-progress.log` に
 `epochMs<TAB>経過ms<TAB>メッセージ` を逐次追記し、`generate` が live 表示する
@@ -27,7 +44,7 @@ TypeScript 正本 → 単一 JSX → 実機 AE → 完成 AEP → 検証 の経�
 
 - `@ido-bata/ae-a8n@0.4.0`（bun registry、旧 git pin `b70f329` = 0.1.0-alpha.1 から更新）
   - `AfterEffects.launch()` / `ScriptInvocationTransport` / `openProject` / `comp.renderFrame`
-  - `dist/testing` の `FakeApplication` + `runHostScript` で生成 JSX を Node 内 ES3 エンジンで実行可能（`tests/pv-fake.test.ts`）
+  - `dist/testing` の `FakeApplication` + `runHostScript` で生成 JSX を JS エンジン内 ES3 環境で実行可能（`tests/pv-fake.test.ts`）
   - あいまいだった所有権を `HostOwnership`（owned/attached/unknown）と launch provenance で明示
 - `@ido-bata/ae-devtools-cli@0.5.0`
   - `ae-devtools doctor|discover|inspect|execute|verify|diagnose`、`jsx-toolchain check|lint|resolve`
@@ -41,8 +58,9 @@ TypeScript 正本 → 単一 JSX → 実機 AE → 完成 AEP → 検証 の経�
 ## 依存の単一化
 
 `ae-devtools-cli@0.5.0` と `ae-test@1.1.0` は内部で `ae-a8n@0.2.0` を完全一致 pin する。
-`package.json` の `overrides` で `@ido-bata/ae-a8n: 0.4.0` に統一し、
-`bun pm ls` で単一インスタンスを確認する（`doctor` の `deps.ae-a8n.dedup` が監視）。
+`package.json` の `overrides` で `@ido-bata/ae-a8n: 0.4.0` に統一する。
+`doctor` の `deps.ae-a8n.dedup` が `node_modules` を走査して単一インスタンスを監視する
+（`bun pm ls` の JSON 出力は安定契約ではないため直接走査）。
 
 ## AE 実行の所有権
 

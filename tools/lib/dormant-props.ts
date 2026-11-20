@@ -56,7 +56,7 @@ export const PRUNE_ONLY = new Set([
 // dormant: no keyframes, no expression, and every leaf still holds the AE
 // default observed in the source dump. A non-default value keeps the node so
 // the runtime reports it instead of silently losing authored state.
-export const TEXT_DORMANT_DEFAULTS: Record<string, unknown> = {
+const TEXT_DORMANT_DEFAULTS: Record<string, unknown> = {
   "ADBE Text Path": 0,
   "ADBE Text Reverse Path": 0,
   "ADBE Text Perpendicular To Path": 1,
@@ -65,9 +65,9 @@ export const TEXT_DORMANT_DEFAULTS: Record<string, unknown> = {
   "ADBE Text Last Margin": 0,
   "ADBE Text Variable Font Spacing": 1,
 };
-export const TEXT_DORMANT_GROUPS = new Set(["ADBE Text Path Options"]);
+const TEXT_DORMANT_GROUPS = new Set(["ADBE Text Path Options"]);
 
-export function subtreeDormant(node: DormantPropNode): boolean {
+function subtreeDormant(node: DormantPropNode): boolean {
   if (node.keys && node.keys.length > 0) return false;
   if (node.expression) return false;
   const kids = node.properties ?? [];

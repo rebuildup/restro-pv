@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 // Dump an AEP into per-comp JSON files (resumable) by running
 // tools/analysis/dump-comp.jsx inside After Effects.
 //

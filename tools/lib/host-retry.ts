@@ -20,7 +20,7 @@ const STALL = /did not answer|timed out/i;
 const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** How long to wait before asking AE again. */
-export const STALL_RETRY_DELAY_MS = 5_000;
+const STALL_RETRY_DELAY_MS = 5_000;
 
 /** A stalled mutation may or may not have landed; the outcome is unknown. */
 export class HostOutcomeUnknownError extends Error {

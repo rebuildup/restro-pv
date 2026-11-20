@@ -26,7 +26,7 @@ async function explicitExecutable(): Promise<string | null> {
 }
 
 /** `<install>\Support Files\AfterFX.exe` belongs to `<install>`. */
-export function windowsInstallDirOf(executable: string): string {
+function windowsInstallDirOf(executable: string): string {
   const support = dirname(executable);
   if (basename(support) !== "Support Files") {
     throw new Error('AfterFX.exe is expected inside a "Support Files" folder: ' + executable);

@@ -1,11 +1,11 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 // Environment diagnostic for the PV pipeline. Reports each check as ok /
 // warn / fail with a concrete remedy; exits non-zero when a hard blocker
 // (no AE install, broken ae-a8n contract) is present.
 //
 //   bun tools/doctor.ts [--json]
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -61,28 +61,23 @@ add(
   aeTestInstalled ? undefined : "bun install",
 );
 
-// duplicate ae-a8n instances (ae-devtools-cli / ae-test pin 0.2.0; the root
-// override must keep a single resolved copy)
+// duplicate ae-a8n instances (ae-devtools-cli / ae-test pin older versions; the
+// root override must keep a single resolved copy). Scan node_modules directly
+// because `bun pm ls` output is not a stable JSON contract.
 try {
-  const ls = execFileSync("bun", ["pm", "ls", "@ido-bata/ae-a8n", "--all", "--json"], {
-    cwd: ROOT,
-    encoding: "utf8",
-    stdio: ["ignore", "pipe", "ignore"],
-  });
   const versions = new Set<string>();
-  const walk = (node: unknown) => {
-    if (Array.isArray(node)) {
-      node.forEach(walk);
-      return;
+  const scan = (dir: string, depth: number) => {
+    if (depth > 8 || !existsSync(dir)) return;
+    const base = dir.replace(/\\/g, "/");
+    if (base.endsWith("/@ido-bata/ae-a8n")) {
+      const v = readVersion(resolve(dir, "package.json"));
+      if (v) versions.add(v);
     }
-    if (node && typeof node === "object") {
-      const n = node as Record<string, unknown>;
-      const deps = n.dependencies as Record<string, { version?: string }> | undefined;
-      if (deps?.["@ido-bata/ae-a8n"]?.version) versions.add(deps["@ido-bata/ae-a8n"].version!);
-      Object.values(n).forEach(walk);
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      if (entry.isDirectory()) scan(resolve(dir, entry.name), depth + 1);
     }
   };
-  walk(JSON.parse(ls));
+  scan(resolve(ROOT, "node_modules"), 0);
   add(
     "deps.ae-a8n.dedup",
     versions.size <= 1 ? "ok" : "warn",
@@ -90,7 +85,7 @@ try {
     versions.size <= 1 ? undefined : "check package.json overrides",
   );
 } catch {
-  add("deps.ae-a8n.dedup", "warn", "bun pm ls failed; dedup unverified");
+  add("deps.ae-a8n.dedup", "warn", "node_modules scan failed; dedup unverified");
 }
 
 // --- After Effects install --------------------------------------------------
@@ -164,7 +159,7 @@ try {
     "devtools.doctor",
     "warn",
     `ae-devtools doctor failed: ${error instanceof Error ? error.message : error}`,
-    "npx ae-devtools doctor",
+    "bun x ae-devtools doctor",
   );
 }
 

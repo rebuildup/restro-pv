@@ -1,5 +1,5 @@
 // Generated from AEP dump 23-master [checkpoint before 4s step matte rebuild].json — do not edit by hand.
-// Regenerate: node tools/dump-aep-tree.ts <aep> <dir> && node tools/convert-dump.ts <dir>
+// Regenerate: bun tools/dump-aep-tree.ts <aep> <dir> && bun tools/convert-dump.ts <dir>
 import type { CompSpec } from "../model/types.ts";
 
 export const comp_23: CompSpec = {

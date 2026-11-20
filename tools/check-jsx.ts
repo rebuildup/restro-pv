@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 // Static gate for the generated JSX pipeline (Issue #6).
 //
 //   bun tools/check-jsx.ts [jsx ...]

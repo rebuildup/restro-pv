@@ -1,5 +1,5 @@
 // Generated from AEP dump 37-master [checkpoint matte + bg strokes + text32 baseline].json — do not edit by hand.
-// Regenerate: node tools/dump-aep-tree.ts <aep> <dir> && node tools/convert-dump.ts <dir>
+// Regenerate: bun tools/dump-aep-tree.ts <aep> <dir> && bun tools/convert-dump.ts <dir>
 import type { CompSpec } from "../model/types.ts";
 
 export const comp_37: CompSpec = {

@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 // Runs a generated JSX inside After Effects and waits for its report marker.
 //
 //   bun tools/run-jsx.ts <script.jsx> [--timeout 3600000]
