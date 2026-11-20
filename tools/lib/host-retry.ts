@@ -27,9 +27,11 @@ export class HostOutcomeUnknownError extends Error {
   readonly what: string;
   readonly cause: unknown;
   constructor(what: string, cause: unknown) {
-    super(`AE call "${what}" stalled; side effects are UNKNOWN — inspect ` +
-      `host state before retrying or assuming failure`);
-    this.name = 'HostOutcomeUnknownError';
+    super(
+      `AE call "${what}" stalled; side effects are UNKNOWN — inspect ` +
+        `host state before retrying or assuming failure`,
+    );
+    this.name = "HostOutcomeUnknownError";
     this.what = what;
     this.cause = cause;
   }
@@ -46,9 +48,12 @@ function isStall(error: unknown): boolean {
  * `onStall` is called with the description when the second attempt succeeded.
  * A second failure is thrown: the run really could not continue.
  */
-export async function hostCall<T>(what: string, call: () => Promise<T>,
-                                  onStall?: (what: string, message: string) => void,
-                                  delayMs = STALL_RETRY_DELAY_MS): Promise<T> {
+export async function hostCall<T>(
+  what: string,
+  call: () => Promise<T>,
+  onStall?: (what: string, message: string) => void,
+  delayMs = STALL_RETRY_DELAY_MS,
+): Promise<T> {
   try {
     return await call();
   } catch (error) {

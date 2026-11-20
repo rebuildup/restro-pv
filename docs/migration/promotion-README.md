@@ -55,7 +55,7 @@ C と E を **実Restro出力そのもの**で作り直した。`Baseline` は�
 - E：3シーンの小窓（0〜0.95秒）→ 復元された「筆」（0.90〜2.40秒）→ 商品カード（2.40秒〜、
   枠560×500の中に Restro / 筆画復元 / After Effects プラグイン / BOOTHで販売中 / URL 全部）
 - 動画 `pv-review.mp4` は `master` を 480 フレーム（1080×1080）でレンダーして 20.00 秒
-  h264/aac にしたもの。拍画像43枚も同じ `master` から `npm run render:pv-beats` で生成。
+  h264/aac にしたもの。拍画像43枚も同じ `master` から `bun run render:pv-beats` で生成。
 - **保護の証拠**: 追跡済み拍画像との md5 比較で拍1〜17（A1・A2・B）が完全一致。差分は
   拍18〜25（シーンC）と拍35〜43（シーンE）のみ、シーンD（拍26〜34）は差分なし。
 - `manifest.json` の `layerCount` は実測 266。`pv.aep` の `master` は 266 レイヤー。
@@ -102,7 +102,7 @@ PV の構成（読み取れる範囲でのレイヤー名）:
 ## beats/ の再生成
 
 ```sh
-npm run render:pv-beats
+bun run render:pv-beats
 ```
 
 `scripts/render-pv-beats.ts` が ae-a8n 経由で After Effects を起動し、`pv.aep` の

@@ -1,0 +1,16 @@
+# Project-local toolchain and task entry points.
+# Bun is the only JS runtime/package manager for this repository.
+
+[tools]
+bun = "1.3.13"
+
+[settings]
+task.run_auto_install = false
+
+[tasks.bootstrap]
+description = "Install the project toolchain and dependencies"
+run = "bash scripts/bootstrap.sh"
+
+[tasks.validate]
+description = "Run the deterministic local validation gate"
+run = "bun run typecheck && bun run jsx:check && bun test tests"

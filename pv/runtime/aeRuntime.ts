@@ -36,7 +36,7 @@ var __CTX = "";
 function __estr(e) {
   try {
     var s = String(e.description || e.message || e);
-    // ExtendScript Error carries .line/.source/.fileName — keep them so a
+    // ExtendScript Error carries .line/.source/.fileName -- keep them so a
     // bare "undefined is not an object" can be traced back to the JSX line.
     var extra = "";
     try { if (e.line !== undefined) extra += " @line " + e.line; } catch (x) {}
@@ -70,7 +70,8 @@ function __isShapeVal(v) {
   return __isObj(v) && v.vertices !== undefined && v.inTangents !== undefined && v.outTangents !== undefined;
 }
 function __isTextDocVal(v) {
-  return __isObj(v) && v.text !== undefined && (v.font !== undefined || v.fontFamily !== undefined);
+  if (!__isObj(v) || v.text === undefined) return false;
+  return v.font !== undefined || v.fontFamily !== undefined;
 }
 function __toShape(v) {
   var sh = new Shape();
@@ -99,7 +100,7 @@ function __toTextDoc(p, v) {
   try { if (d instanceof Error) return null; } catch (ie) {}
   // dumped TextDocument exposes fontSize/boxTextPos/boxTextSize; the writable
   // TextDocument attributes use those same names (fontSize, boxTextPos,
-  // boxTextSize). 'size'/'boxPosition'/'boxSize' are NOT valid attributes —
+  // boxTextSize). 'size'/'boxPosition'/'boxSize' are NOT valid attributes --
   // assigning them silently did nothing, which is why every generated text
   // layer ended up with AE's default font size.
   var map = {
@@ -234,7 +235,7 @@ function __applyNode(p, node, path) {
   if (node.numProperties && node.properties && node.properties.length) {
     var addMode = __isAddContainer(node.matchName);
     // Group-level attrs FIRST: a disabled (enabled=false) group hides its
-    // children in AE, so they must be skipped entirely — writing them is a
+    // children in AE, so they must be skipped entirely -- writing them is a
     // hard "hidden property" error and they cannot exist in the output.
     // maskMode lives on the mask atom and must precede child writes too.
     if (node.maskMode !== undefined) {
@@ -247,7 +248,7 @@ function __applyNode(p, node, path) {
     // hard "hidden property" error, so its subtree is skipped entirely.
     // Only the disabled state needs an explicit write: groups are enabled by
     // default, and 'enabled'/'active' are read-only on most parade groups
-    // (mask atoms, vector groups) — true-writes only produce warnings.
+    // (mask atoms, vector groups) -- true-writes only produce warnings.
     if (node.enabled === false) {
       try { p.enabled = false; } catch (ee2) { __warn("enabled failed on " + path); }
     }
@@ -271,7 +272,7 @@ function __applyNode(p, node, path) {
     }
     return;
   }
-  // leaf: enabled/active first — a disabled leaf is hidden and rejects
+  // leaf: enabled/active first -- a disabled leaf is hidden and rejects
   // setValue/setValueAtTime/expression writes.
   if (node.enabled === false) {
     try { p.enabled = false; } catch (lee) { __warn("enabled failed on " + path); }
@@ -380,7 +381,8 @@ function __importFootage(spec, footageByName) {
   var rel = spec.file;
   var f = null;
   try { f = new File(__REPO_ROOT + "/" + rel); } catch (e) {}
-  if ((!f || !f.exists) && __REPO_ROOT) {
+  var __missingRepo = !f || !f.exists;
+  if (__missingRepo && __REPO_ROOT) {
     try { f = new File(__REPO_ROOT + "/" + rel.split("/").join("\\")); } catch (e) {}
   }
   if (!f || !f.exists) { try { f = new File(rel); } catch (e) {} }
@@ -432,8 +434,8 @@ function __setProp(p, v) {
 // AE rejects writes to properties that are hidden for the layer's current
 // configuration (text path options on point text, variable-font spacing,
 // inapplicable effect params, ...). The dump records their dormant stored
-// values, but they cannot be applied — and they were equally unsettable in
-// the source AEP — so these are warnings, not build errors. Anything else
+// values, but they cannot be applied -- and they were equally unsettable in
+// the source AEP -- so these are warnings, not build errors. Anything else
 // stays an error so real failures are never silently downgraded.
 function __setValErr(path, p, ves) {
   var msg = "setValue failed " + path + " (" + (p && p.matchName) + "): " + ves;
@@ -538,6 +540,10 @@ function __relinkFootage() {
 }
 // ---- project ---------------------------------------------------------------
 function buildProject(spec) {
+  // The -r script can start while AE is still finishing plugin/media
+  // initialization; layers.add*() throws "undefined is not an object" during
+  // that window (observed flaky on ~85MB material projects). Settle first.
+  try { if ($.sleep) $.sleep(20000); } catch (sx) {}
   __prog("build start: " + (spec.comps ? spec.comps.length : 0) + " comps, " +
     (spec.footage ? spec.footage.length : 0) + " footage");
   if (spec.materialAep) {
@@ -598,7 +604,7 @@ function buildProject(spec) {
       // First open of a large material AEP leaves AE asynchronously
       // indexing/conforming for tens of seconds; layers.add() on comp
       // sources throws transiently during that window. Retry with backoff
-      // (~50s coverage) — a persistent failure still lands in the error list.
+      // (~50s coverage) -- a persistent failure still lands in the error list.
       var delays = [0, 5000, 15000, 30000];
       for (var att = 0; att < delays.length && !L; att++) {
         if (delays[att] > 0) { try { if ($.sleep) $.sleep(delays[att]); } catch (sx) {} }

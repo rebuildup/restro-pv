@@ -2,36 +2,41 @@
   "name": "restro-pv",
   "private": true,
   "type": "module",
+  "packageManager": "bun@1.3.13",
   "engines": {
-    "node": ">=24"
+    "bun": ">=1.3.13"
   },
   "scripts": {
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "node --test tests/*.test.ts",
-    "render:beats": "node tools/render-pv-beats.ts",
-    "render:baseline": "node tools/render-pv-beats.ts --aep legacy/pv-2dc99e1.aep --out verification/baseline-beats",
-    "doctor": "node tools/doctor.ts",
-    "generate": "node tools/generate.ts",
-    "verify": "node tools/verify.ts",
-    "release-verify": "node tools/release-verify.ts",
-    "jsx:check": "node tools/check-jsx.ts",
+    "typecheck": "bun tsc -p tsconfig.json --noEmit",
+    "test": "bun test tests",
+    "render:beats": "bun tools/render-pv-beats.ts",
+    "render:baseline": "bun tools/render-pv-beats.ts --aep legacy/pv-2dc99e1.aep --out verification/baseline-beats",
+    "doctor": "bun tools/doctor.ts",
+    "generate": "bun tools/generate.ts",
+    "verify": "bun tools/verify.ts",
+    "release-verify": "bun tools/release-verify.ts",
+    "jsx:check": "bun tools/check-jsx.ts",
     "test:ae": "ae-test",
-    "build:jsx": "node tools/build-jsx.ts",
-    "dump:tree": "node tools/dump-aep-tree.ts",
-    "compare": "node tools/compare-aep.ts",
-    "audit:warnings": "node tools/audit-warnings.ts",
-    "diff:frames": "node tools/diff-frames.ts",
-    "convert": "node tools/convert-dump.ts"
+    "build:jsx": "bun tools/build-jsx.ts",
+    "dump:tree": "bun tools/dump-aep-tree.ts",
+    "compare": "bun tools/compare-aep.ts",
+    "audit:warnings": "bun tools/audit-warnings.ts",
+    "diff:frames": "bun tools/diff-frames.ts",
+    "convert": "bun tools/convert-dump.ts",
+    "lint": "biome check .",
+    "knip": "knip --include files,dependencies,unlisted,exports,types,nsExports,duplicates --no-exit-code"
   },
   "dependencies": {
     "@ido-bata/ae-a8n": "0.4.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.6.3",
     "@ido-bata/ae-devtools-cli": "0.5.0",
     "@ido-bata/ae-test": "1.1.0",
-    "@types/node": "24.10.1",
-    "acorn": "^8.19.0",
-    "types-for-adobe": "^7.2.5",
+    "@types/bun": "1.4.4",
+    "acorn": "8.19.0",
+    "knip": "6.43.0",
+    "types-for-adobe": "7.2.6",
     "typescript": "5.9.3"
   },
   "overrides": {

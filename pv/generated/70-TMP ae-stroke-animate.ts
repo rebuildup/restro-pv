@@ -1,6 +1,77 @@
 // Generated from AEP dump 70-TMP ae-stroke-animate.json — do not edit by hand.
 // Regenerate: node tools/dump-aep-tree.ts <aep> <dir> && node tools/convert-dump.ts <dir>
-import type { CompSpec } from '../model/types.ts';
+import type { CompSpec } from "../model/types.ts";
 
-export const comp_70: CompSpec = {"uid":14996,"name":"TMP ae-stroke-animate","width":1920,"height":1080,"pixelAspect":1,"duration":75,"frameRate":24,"bgColor":[0,0,0],"layers":[{"index":1,"name":"ae-stroke-animate.mp4","kind":"footage","sourceUid":14908,"source":"ae-stroke-animate.mp4","inPoint":0,"outPoint":75,"startTime":0,"stretch":100,"trackMatteType":5012,"transform":{"name":"Transform","matchName":"ADBE Transform Group","type":6213,"active":true,"enabled":true,"propertyIndex":6,"numProperties":5,"properties":[{"name":"Anchor Point","matchName":"ADBE Anchor Point","type":6212,"numKeys":0,"value":[960,540,0]},{"name":"Position","matchName":"ADBE Position","type":6212,"numKeys":0,"value":[960,540,0]},{"name":"Scale","matchName":"ADBE Scale","type":6212,"numKeys":0,"value":[100,100,100]},{"name":"Rotation","matchName":"ADBE Rotate Z","type":6212,"numKeys":0,"value":0},{"name":"Opacity","matchName":"ADBE Opacity","type":6212,"numKeys":0,"value":100}]},"masks":{"name":"Masks","matchName":"ADBE Mask Parade","type":6214,"numKeys":null,"value":null},"effects":{"name":"Effects","matchName":"ADBE Effect Parade","type":6214,"numKeys":null,"value":null}}]} as CompSpec;
+export const comp_70: CompSpec = {
+  uid: 14996,
+  name: "TMP ae-stroke-animate",
+  width: 1920,
+  height: 1080,
+  pixelAspect: 1,
+  duration: 75,
+  frameRate: 24,
+  bgColor: [0, 0, 0],
+  layers: [
+    {
+      index: 1,
+      name: "ae-stroke-animate.mp4",
+      kind: "footage",
+      sourceUid: 14908,
+      source: "ae-stroke-animate.mp4",
+      inPoint: 0,
+      outPoint: 75,
+      startTime: 0,
+      stretch: 100,
+      trackMatteType: 5012,
+      transform: {
+        name: "Transform",
+        matchName: "ADBE Transform Group",
+        type: 6213,
+        active: true,
+        enabled: true,
+        propertyIndex: 6,
+        numProperties: 5,
+        properties: [
+          {
+            name: "Anchor Point",
+            matchName: "ADBE Anchor Point",
+            type: 6212,
+            numKeys: 0,
+            value: [960, 540, 0],
+          },
+          {
+            name: "Position",
+            matchName: "ADBE Position",
+            type: 6212,
+            numKeys: 0,
+            value: [960, 540, 0],
+          },
+          {
+            name: "Scale",
+            matchName: "ADBE Scale",
+            type: 6212,
+            numKeys: 0,
+            value: [100, 100, 100],
+          },
+          { name: "Rotation", matchName: "ADBE Rotate Z", type: 6212, numKeys: 0, value: 0 },
+          { name: "Opacity", matchName: "ADBE Opacity", type: 6212, numKeys: 0, value: 100 },
+        ],
+      },
+      masks: {
+        name: "Masks",
+        matchName: "ADBE Mask Parade",
+        type: 6214,
+        numKeys: null,
+        value: null,
+      },
+      effects: {
+        name: "Effects",
+        matchName: "ADBE Effect Parade",
+        type: 6214,
+        numKeys: null,
+        value: null,
+      },
+    },
+  ],
+} as CompSpec;
 export default comp_70;

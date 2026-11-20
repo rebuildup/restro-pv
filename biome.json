@@ -1,0 +1,29 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.6.3/schema.json",
+  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+  "files": {
+    "includes": [
+      "tools/**/*.ts",
+      "pv/**/*.ts",
+      "tests/**/*.ts",
+      "scripts/**/*.ts",
+      "package.json",
+      "tsconfig.json",
+      "biome.json",
+      "knip.json",
+      "skills-lock.json",
+      "!pv/generated",
+      "!tools/analysis"
+    ]
+  },
+  "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 2, "lineWidth": 100 },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "correctness": { "noUnusedVariables": "off" },
+      "style": { "useTemplate": "off" }
+    }
+  },
+  "javascript": { "formatter": { "quoteStyle": "double" } }
+}

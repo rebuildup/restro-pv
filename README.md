@@ -25,8 +25,8 @@ JSX パッチは主経路ではない（実行・レンダリング・検証に�
 ## セットアップ
 
 ```sh
-npm ci          # 依存導入（Node >= 24）
-npm run typecheck
+bun install --frozen-lockfile          # 依存導入（Node >= 24）
+bun run typecheck
 ```
 
 After Effects を使うツール（`tools/`）には実機の After Effects が必要。
@@ -36,10 +36,10 @@ AE が見つからない場合は環境変数 `AE_EXECUTABLE` に実行ファイ
 
 | コマンド | 内容 |
 | --- | --- |
-| `npm run typecheck` | TypeScript 型検査 |
-| `npm test` | ユニットテスト |
-| `npm run build:jsx` | `pv/` を単一 JSX にバンドル（Phase 3 で追加） |
-| `npm run render:beats` | `master` コンポを拍ごとに PNG レンダリングして `verification/beats/` を更新 |
+| `bun run typecheck` | TypeScript 型検査 |
+| `bun test` | ユニットテスト |
+| `bun run build:jsx` | `pv/` を単一 JSX にバンドル（Phase 3 で追加） |
+| `bun run render:beats` | `master` コンポを拍ごとに PNG レンダリングして `verification/beats/` を更新 |
 
 ## 移管元
 

@@ -12,14 +12,21 @@
 // - Anything the runtime cannot materialize must throw at build time, never
 //   be silently dropped.
 
-export interface Vec2 { x: number; y: number }
-export interface Vec3 { x: number; y: number; z: number }
+export interface Vec2 {
+  x: number;
+  y: number;
+}
+export interface Vec3 {
+  x: number;
+  y: number;
+  z: number;
+}
 
 // Keyframe exactly as dumped from AE. inT/outT are
 // KeyframeInterpolationType enum numbers.
 export interface KeySpec {
-  t: number;                       // seconds, comp time
-  v: unknown;                      // scalar | number[] | {x,y,z} | Shape-like | TextDoc
+  t: number; // seconds, comp time
+  v: unknown; // scalar | number[] | {x,y,z} | Shape-like | TextDoc
   inT?: number;
   outT?: number;
   inEase?: Array<[number, number]>;
@@ -76,19 +83,19 @@ export interface TextDocSpec {
 }
 
 export type LayerKind =
-  | 'comp'        // source is a CompItem (precomp)
-  | 'footage'     // source is a FootageItem (file, solid, ...)
-  | 'shape'       // vector layer, no source
-  | 'text'        // text layer, no source
-  | 'null';       // null layer
+  | "comp" // source is a CompItem (precomp)
+  | "footage" // source is a FootageItem (file, solid, ...)
+  | "shape" // vector layer, no source
+  | "text" // text layer, no source
+  | "null"; // null layer
 
 export interface LayerSpec {
-  index: number;                  // AE layer index, 1 = top
+  index: number; // AE layer index, 1 = top
   name: string;
   kind: LayerKind;
-  source?: string;                // footage spec name, or comp name (readability)
-  sourceUid?: number;             // original AE item id of the source
-  sourceCompIndex?: number;       // index into ProjectSpec.comps for kind 'comp'
+  source?: string; // footage spec name, or comp name (readability)
+  sourceUid?: number; // original AE item id of the source
+  sourceCompIndex?: number; // index into ProjectSpec.comps for kind 'comp'
   enabled?: boolean;
   shy?: boolean;
   guideLayer?: boolean;
@@ -97,14 +104,14 @@ export interface LayerSpec {
   startTime?: number;
   stretch?: number;
   timeRemapEnabled?: boolean;
-  trackMatteType?: number;        // TrackMatteType enum
+  trackMatteType?: number; // TrackMatteType enum
   isTrackMatte?: boolean;
   motionBlur?: boolean;
   collapseTransformations?: boolean;
   adjustmentLayer?: boolean;
   threeDLayer?: boolean;
   audioEnabled?: boolean;
-  parentIndex?: number;           // AE layer index of parent, 0/undefined = none
+  parentIndex?: number; // AE layer index of parent, 0/undefined = none
   // property trees exactly as dumped; runtime applies generically
   transform?: PropNode;
   masks?: PropNode;
@@ -116,7 +123,7 @@ export interface LayerSpec {
 }
 
 export interface CompSpec {
-  uid?: number;                   // original AE comp item id (traceability)
+  uid?: number; // original AE comp item id (traceability)
   name: string;
   width: number;
   height: number;
@@ -124,18 +131,18 @@ export interface CompSpec {
   duration: number;
   frameRate: number;
   bgColor?: unknown;
-  layers: LayerSpec[];            // AE order: [0] = top
+  layers: LayerSpec[]; // AE order: [0] = top
 }
 
 export type FootageSpec =
-  | { name: string; kind: 'file'; file: string; audioOnly?: boolean } // repo-relative path
-  | { name: string; kind: 'solid'; color: number[]; width: number; height: number };
+  | { name: string; kind: "file"; file: string; audioOnly?: boolean } // repo-relative path
+  | { name: string; kind: "solid"; color: number[]; width: number; height: number };
 
 export interface ProjectSpec {
   name: string;
   comps: CompSpec[];
   footage: FootageSpec[];
-  savePath?: string;              // AEP output path; empty = don't save
+  savePath?: string; // AEP output path; empty = don't save
   // Repo-relative path to a material AEP opened before the spec is built.
   // Material comps/footage resolve by name; the opened project is saved to
   // savePath, leaving the material file untouched.

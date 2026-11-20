@@ -7,16 +7,16 @@ TypeScript 正本 → 単一 JSX → 実機 AE → 完成 AEP → 検証 の経�
 
 | 段階 | コマンド | 実体 | 実機 AE |
 | --- | --- | --- | --- |
-| 診断 | `npm run doctor` | `tools/doctor.ts`（Node/AE/依存/所有権/成果物 + `ae-devtools doctor` 委譲） | 不要 |
-| 型検査 | `npm run typecheck` / `npm test` | tsc / node --test | 不要 |
-| JSX 静的検査 | `npm run jsx:check` | `tools/check-jsx.ts`: types-for-adobe 型検査（runtime 抽出）+ `jsx-toolchain lint/check`（ES3・AE API 名）+ catch 連結スキャン | 不要 |
-| ビルド | `npm run build:jsx` | `tools/build-jsx.ts` → `dist/pv.jsx`（ASCII-only） | 不要 |
-| 生成 | `npm run generate` | `tools/generate.ts` → `AfterFX.exe -r` + レポート待機 | **必要** |
-| 構造検証 | `npm run verify` | `tools/verify.ts`（出力同一性 → 再ダンプ → `compare-aep`） | 必要（ダンプ時） |
-| プレビュー | `npm run render:beats` | `tools/render-pv-beats.ts`（生成 AEP が既定） | 必要 |
-| ベースライン | `npm run render:baseline` | 同上、`legacy/pv-2dc99e1.aep` 固定 | 必要 |
-| リリース検証 | `npm run release-verify` | `tools/release-verify.ts`（全フレーム + mp4 + beats） | 必要 |
-| ae-test | `npm run test:ae` | fake ホストの runner 契約 spec | fake のみ |
+| 診断 | `bun run doctor` | `tools/doctor.ts`（Node/AE/依存/所有権/成果物 + `ae-devtools doctor` 委譲） | 不要 |
+| 型検査 | `bun run typecheck` / `bun test` | tsc / bun test | 不要 |
+| JSX 静的検査 | `bun run jsx:check` | `tools/check-jsx.ts`: types-for-adobe 型検査（runtime 抽出）+ `jsx-toolchain lint/check`（ES3・AE API 名）+ catch 連結スキャン | 不要 |
+| ビルド | `bun run build:jsx` | `tools/build-jsx.ts` → `dist/pv.jsx`（ASCII-only） | 不要 |
+| 生成 | `bun run generate` | `tools/generate.ts` → `AfterFX.exe -r` + レポート待機 | **必要** |
+| 構造検証 | `bun run verify` | `tools/verify.ts`（出力同一性 → 再ダンプ → `compare-aep`） | 必要（ダンプ時） |
+| プレビュー | `bun run render:beats` | `tools/render-pv-beats.ts`（生成 AEP が既定） | 必要 |
+| ベースライン | `bun run render:baseline` | 同上、`legacy/pv-2dc99e1.aep` 固定 | 必要 |
+| リリース検証 | `bun run release-verify` | `tools/release-verify.ts`（全フレーム + mp4 + beats） | 必要 |
+| ae-test | `bun run test:ae` | fake ホストの runner 契約 spec | fake のみ |
 
 生成中はランタイムが `.tmp/pv-progress.log` に
 `epochMs<TAB>経過ms<TAB>メッセージ` を逐次追記し、`generate` が live 表示する
@@ -25,7 +25,7 @@ TypeScript 正本 → 単一 JSX → 実機 AE → 完成 AEP → 検証 の経�
 
 ## パッケージの役割と検証済み事実
 
-- `@ido-bata/ae-a8n@0.4.0`（npm registry、旧 git pin `b70f329` = 0.1.0-alpha.1 から更新）
+- `@ido-bata/ae-a8n@0.4.0`（bun registry、旧 git pin `b70f329` = 0.1.0-alpha.1 から更新）
   - `AfterEffects.launch()` / `ScriptInvocationTransport` / `openProject` / `comp.renderFrame`
   - `dist/testing` の `FakeApplication` + `runHostScript` で生成 JSX を Node 内 ES3 エンジンで実行可能（`tests/pv-fake.test.ts`）
   - あいまいだった所有権を `HostOwnership`（owned/attached/unknown）と launch provenance で明示
@@ -42,7 +42,7 @@ TypeScript 正本 → 単一 JSX → 実機 AE → 完成 AEP → 検証 の経�
 
 `ae-devtools-cli@0.5.0` と `ae-test@1.1.0` は内部で `ae-a8n@0.2.0` を完全一致 pin する。
 `package.json` の `overrides` で `@ido-bata/ae-a8n: 0.4.0` に統一し、
-`npm ls` で単一インスタンスを確認する（`doctor` の `deps.ae-a8n.dedup` が監視）。
+`bun pm ls` で単一インスタンスを確認する（`doctor` の `deps.ae-a8n.dedup` が監視）。
 
 ## AE 実行の所有権
 

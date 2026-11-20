@@ -32,19 +32,19 @@ ticket PR は依存順に自律統合してよい。
 ## Bootstrap / validation
 
 ```sh
-npm ci
-npm run typecheck   # 型検査
-npm test            # ユニットテスト（fake AE 含む）
-npm run build:jsx   # pv/ -> 単一 JSX
-npm run doctor      # 環境診断
-npm run jsx:check   # 生成 JSX の静的検査（jsx-toolchain）
-npm run test:ae     # ae-test（fake ホスト）
+bun install --frozen-lockfile
+bun run typecheck   # 型検査
+bun test            # ユニットテスト（fake AE 含む）
+bun run build:jsx   # pv/ -> 単一 JSX
+bun run doctor      # 環境診断
+bun run jsx:check   # 生成 JSX の静的検査（jsx-toolchain）
+bun run test:ae     # ae-test（fake ホスト）
 ```
 
-`npm run typecheck` / `npm test` / `npm run jsx:check` / `npm run test:ae` は
+`bun run typecheck` / `bun test` / `bun run jsx:check` / `bun run test:ae` は
 実機 After Effects を必要としない。実機経路は
-`npm run generate` → `npm run verify` → `npm run render:beats` /
-`npm run release-verify`。所有権・タイムアウト・証跡の規則は
+`bun run generate` → `bun run verify` → `bun run render:beats` /
+`bun run release-verify`。所有権・タイムアウト・証跡の規則は
 `docs/ae-pipeline.md` を正本とする。
 
 ## 作業開始
@@ -90,7 +90,7 @@ Web UI 向けの motion Skill（例: `motion-system`）はこの repository の�
 
 - source code / commit message は英語、internal docs・Issue・PR・review は日本語
 - commit message: `<work-prefix>: <短い title>`
-- package manager は npm。text search は `rg`
+- package manager は Bun（mise で固定）。text search は `rg`
 - 新規 script を `.py` で追加しない。Node 側 script は TypeScript
 - TypeScript ソースは `pv/` に構造化し、実行時は単一 JSX にバンドルする。
   外部素材を除き、既存 AEP や既存コンポへの実行時依存を持たせない

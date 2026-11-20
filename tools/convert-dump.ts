@@ -2,73 +2,122 @@
 // Converts per-comp AEP dumps (.tmp/aep-tree/<slug>/) into typed
 // TypeScript data modules under pv/generated/.
 //
-//   node tools/convert-dump.ts <dumpDir> [--out pv/generated]
+//   bun tools/convert-dump.ts <dumpDir> [--out pv/generated]
 //
 // The output is mechanical port data: one module per comp plus index.ts
 // assembling the ProjectSpec. References are stable: comp sources use
 // sourceCompIndex (position in ProjectSpec.comps), footage sources use a
 // deduplicated canonical name, parents use 1-based layer indices.
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { basename, join, relative, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { basename, join, relative, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
-  THREE_D_ONLY, THREE_D_GROUPS, ALWAYS_DORMANT, PRUNE_ONLY, isDormantTextNode,
-} from './lib/dormant-props.ts';
+  ALWAYS_DORMANT,
+  isDormantTextNode,
+  PRUNE_ONLY,
+  THREE_D_GROUPS,
+  THREE_D_ONLY,
+} from "./lib/dormant-props.ts";
 
-const ROOT = resolve(fileURLToPath(new URL('.', import.meta.url)), '..');
+const ROOT = resolve(fileURLToPath(new URL(".", import.meta.url)), "..");
 
 interface DumpLayer {
-  index: number; name: string; matchName?: string;
-  enabled?: boolean; shy?: boolean; guideLayer?: boolean; nullLayer?: boolean;
-  inPoint?: number; outPoint?: number; startTime?: number; stretch?: number;
-  timeRemapEnabled?: boolean; trackMatteType?: number; isTrackMatte?: boolean;
-  motionBlur?: boolean; collapseTransformations?: boolean;
-  adjustmentLayer?: boolean; threeDLayer?: boolean; audioEnabled?: boolean;
-  hasVideo?: boolean; hasAudio?: boolean;
-  parent?: string; parentIndex?: number;
+  index: number;
+  name: string;
+  matchName?: string;
+  enabled?: boolean;
+  shy?: boolean;
+  guideLayer?: boolean;
+  nullLayer?: boolean;
+  inPoint?: number;
+  outPoint?: number;
+  startTime?: number;
+  stretch?: number;
+  timeRemapEnabled?: boolean;
+  trackMatteType?: number;
+  isTrackMatte?: boolean;
+  motionBlur?: boolean;
+  collapseTransformations?: boolean;
+  adjustmentLayer?: boolean;
+  threeDLayer?: boolean;
+  audioEnabled?: boolean;
+  hasVideo?: boolean;
+  hasAudio?: boolean;
+  parent?: string;
+  parentIndex?: number;
   src?: { type: string; name: string; id?: number; fullpath?: string } | null;
-  transform?: unknown; masks?: unknown; effects?: unknown;
-  shapes?: unknown; text?: unknown; timeRemap?: unknown;
+  transform?: unknown;
+  masks?: unknown;
+  effects?: unknown;
+  shapes?: unknown;
+  text?: unknown;
+  timeRemap?: unknown;
   __error__?: string;
 }
 interface DumpComp {
-  name: string; id?: number; width: number; height: number;
-  duration: number; frameRate: number; pixelAspect?: number;
-  bgColor?: unknown; layers: DumpLayer[];
-  __error__?: string; __fatal__?: string;
+  name: string;
+  id?: number;
+  width: number;
+  height: number;
+  duration: number;
+  frameRate: number;
+  pixelAspect?: number;
+  bgColor?: unknown;
+  layers: DumpLayer[];
+  __error__?: string;
+  __fatal__?: string;
 }
-interface DumpCompFile { schema: string; comp: DumpComp }
+interface DumpCompFile {
+  schema: string;
+  comp: DumpComp;
+}
 interface DumpItem {
-  type: string; name: string; id: number;
-  fullpath?: string; hasVideo?: boolean; hasAudio?: boolean;
-  duration?: number; frameRate?: number; width?: number; height?: number;
-  solid?: boolean; solidColor?: number[]; solidWidth?: number; solidHeight?: number;
+  type: string;
+  name: string;
+  id: number;
+  fullpath?: string;
+  hasVideo?: boolean;
+  hasAudio?: boolean;
+  duration?: number;
+  frameRate?: number;
+  width?: number;
+  height?: number;
+  solid?: boolean;
+  solidColor?: number[];
+  solidWidth?: number;
+  solidHeight?: number;
 }
-interface ItemsFile { items: DumpItem[] }
+interface ItemsFile {
+  items: DumpItem[];
+}
 
 const args = process.argv.slice(2);
-const dumpDir = resolve(args[0] ?? '');
-const outDir = resolve(args.includes('--out') ? args[args.indexOf('--out') + 1] : join(ROOT, 'pv', 'generated'));
+const dumpDir = resolve(args[0] ?? "");
+const outDir = resolve(
+  args.includes("--out") ? args[args.indexOf("--out") + 1] : join(ROOT, "pv", "generated"),
+);
 if (!args[0] || !existsSync(dumpDir)) {
-  console.error('usage: node tools/convert-dump.ts <dumpDir> [--out dir]');
+  console.error("usage: bun tools/convert-dump.ts <dumpDir> [--out dir]");
   process.exit(1);
 }
 
-const items = JSON.parse(readFileSync(join(dumpDir, '_items.json'), 'utf8')) as ItemsFile;
+const items = JSON.parse(readFileSync(join(dumpDir, "_items.json"), "utf8")) as ItemsFile;
 const itemById = new Map(items.items.map((i) => [i.id, i]));
 
 const compFiles = readdirSync(dumpDir)
-  .filter((f) => /^\d\d-.*\.json$/.test(f) && existsSync(join(dumpDir, f + '.done')))
+  .filter((f) => /^\d\d-.*\.json$/.test(f) && existsSync(join(dumpDir, f + ".done")))
   .sort();
 const dumps: Array<{ file: string; comp: DumpComp }> = [];
 for (const file of compFiles) {
-  const raw = JSON.parse(readFileSync(join(dumpDir, file), 'utf8')) as DumpCompFile;
+  const raw = JSON.parse(readFileSync(join(dumpDir, file), "utf8")) as DumpCompFile;
   if (raw.comp && !raw.comp.__fatal__) dumps.push({ file, comp: raw.comp });
 }
 
 // comp item id -> spec index (spec order = sorted dump order)
 const compIndexById = new Map<number, number>();
-dumps.forEach((d, i) => { if (d.comp.id !== undefined) compIndexById.set(d.comp.id, i); });
+dumps.forEach((d, i) => {
+  if (d.comp.id !== undefined) compIndexById.set(d.comp.id, i);
+});
 
 const warnings: string[] = [];
 
@@ -77,7 +126,7 @@ const warnings: string[] = [];
 // the canonical spec name; original item ids are kept in sourceUid.
 interface FootageEntry {
   name: string;
-  kind: 'file' | 'solid';
+  kind: "file" | "solid";
   file?: string;
   color?: number[];
   width?: number;
@@ -89,72 +138,100 @@ const footageIndexByKey = new Map<string, number>();
 const footageNameUsed = new Set<string>();
 
 function uniqueFootageName(base: string): string {
-  let n = base, i = 2;
-  while (footageNameUsed.has(n)) { n = base + ' #' + i; i++; }
+  let n = base,
+    i = 2;
+  while (footageNameUsed.has(n)) {
+    n = base + " #" + i;
+    i++;
+  }
   footageNameUsed.add(n);
   return n;
 }
 
-function registerFootage(item: DumpItem | undefined, fallbackName: string, srcFullpath?: string): number {
+function registerFootage(
+  item: DumpItem | undefined,
+  fallbackName: string,
+  srcFullpath?: string,
+): number {
   // returns index into footageEntries, or -1 on failure
   if (item?.solid) {
-    const key = 'solid:' + (item.solidColor ?? []).join(',') + ':' +
-      (item.solidWidth ?? 0) + 'x' + (item.solidHeight ?? 0) + ':' + item.name;
+    const key =
+      "solid:" +
+      (item.solidColor ?? []).join(",") +
+      ":" +
+      (item.solidWidth ?? 0) +
+      "x" +
+      (item.solidHeight ?? 0) +
+      ":" +
+      item.name;
     const hit = footageIndexByKey.get(key);
     if (hit !== undefined) return hit;
     const idx = footageEntries.length;
     footageEntries.push({
-      name: uniqueFootageName(item.name), kind: 'solid',
+      name: uniqueFootageName(item.name),
+      kind: "solid",
       color: item.solidColor ?? [1, 1, 1],
-      width: item.solidWidth ?? 100, height: item.solidHeight ?? 100,
+      width: item.solidWidth ?? 100,
+      height: item.solidHeight ?? 100,
     });
     footageIndexByKey.set(key, idx);
     return idx;
   }
   // file footage: resolve path
-  let p = '';
-  const full = item?.fullpath || srcFullpath || '';
+  let p = "";
+  const full = item?.fullpath || srcFullpath || "";
   if (full) {
-    const abs = full.replace(/\\/g, '/');
-    const rel = relative(ROOT, abs).replace(/\\/g, '/');
-    if (!rel.startsWith('..')) p = rel;
+    const abs = full.replace(/\\/g, "/");
+    const rel = relative(ROOT, abs).replace(/\\/g, "/");
+    if (!rel.startsWith("..")) p = rel;
     else {
       // outside repo: prefer a same-basename file under assets/
       const bn = basename(abs);
-      const stack = [join(ROOT, 'assets')];
+      const stack = [join(ROOT, "assets")];
       while (stack.length && !p) {
         const dir = stack.pop()!;
         for (const e of readdirSync(dir, { withFileTypes: true })) {
           const fp = join(dir, e.name);
           if (e.isDirectory()) stack.push(fp);
-          else if (e.name === bn) { p = relative(ROOT, fp).replace(/\\/g, '/'); break; }
+          else if (e.name === bn) {
+            p = relative(ROOT, fp).replace(/\\/g, "/");
+            break;
+          }
         }
       }
-      if (!p) { p = abs; warnings.push('footage outside repo, absolute path kept: ' + abs); }
+      if (!p) {
+        p = abs;
+        warnings.push("footage outside repo, absolute path kept: " + abs);
+      }
     }
   }
   if (!p) {
     // no path at all: try basename under assets/
-    const stack = [join(ROOT, 'assets')];
+    const stack = [join(ROOT, "assets")];
     while (stack.length && !p) {
       const dir = stack.pop()!;
       for (const e of readdirSync(dir, { withFileTypes: true })) {
         const fp = join(dir, e.name);
         if (e.isDirectory()) stack.push(fp);
-        else if (e.name === fallbackName) { p = relative(ROOT, fp).replace(/\\/g, '/'); break; }
+        else if (e.name === fallbackName) {
+          p = relative(ROOT, fp).replace(/\\/g, "/");
+          break;
+        }
       }
     }
   }
   if (!p) {
-    warnings.push('footage unresolved: ' + fallbackName + ' (id ' + (item?.id ?? '?') + ')');
+    warnings.push("footage unresolved: " + fallbackName + " (id " + (item?.id ?? "?") + ")");
     return -1;
   }
-  const key = 'file:' + p;
+  const key = "file:" + p;
   const hit = footageIndexByKey.get(key);
   if (hit !== undefined) return hit;
   const idx = footageEntries.length;
   footageEntries.push({
-    name: uniqueFootageName(item?.name || fallbackName), kind: 'file', file: p,
+    name: uniqueFootageName(item?.name || fallbackName),
+    kind: "file",
+    file: p,
     ...(item?.hasAudio && !item?.hasVideo ? { audioOnly: true } : {}),
   });
   footageIndexByKey.set(key, idx);
@@ -168,27 +245,36 @@ function registerFootage(item: DumpItem | undefined, fallbackName: string, srcFu
 // layers, dormant text-on-path/variable-font props). Setting a value on a
 // hidden property is an AE error, so these are pruned here.
 interface PropNode {
-  matchName?: string; name?: string;
-  properties?: PropNode[]; numProperties?: number;
-  keys?: unknown[]; expression?: string; value?: unknown;
+  matchName?: string;
+  name?: string;
+  properties?: PropNode[];
+  numProperties?: number;
+  keys?: unknown[];
+  expression?: string;
+  value?: unknown;
   separatedPosition?: boolean;
 }
 
 let dormantTextDrops = 0;
 
 function pruneTree(node: PropNode, threeD: boolean): PropNode {
-  if (!node || typeof node !== 'object') return node;
+  if (!node || typeof node !== "object") return node;
   if (Array.isArray(node.properties)) {
-    node.properties = node.properties.filter((ch) => {
-      const mn = ch.matchName ?? '';
-      if (!threeD && THREE_D_ONLY.has(mn)) return false;
-      if (!threeD && THREE_D_GROUPS.has(mn)) return false;
-      if (ALWAYS_DORMANT.has(mn)) return false;
-      if (PRUNE_ONLY.has(mn)) return false;
-      if (isDormantTextNode(ch)) { dormantTextDrops++; return false; }
-      return true;
-    }).map((ch) => pruneTree(ch, threeD));
-    if (typeof node.numProperties === 'number') node.numProperties = node.properties.length;
+    node.properties = node.properties
+      .filter((ch) => {
+        const mn = ch.matchName ?? "";
+        if (!threeD && THREE_D_ONLY.has(mn)) return false;
+        if (!threeD && THREE_D_GROUPS.has(mn)) return false;
+        if (ALWAYS_DORMANT.has(mn)) return false;
+        if (PRUNE_ONLY.has(mn)) return false;
+        if (isDormantTextNode(ch)) {
+          dormantTextDrops++;
+          return false;
+        }
+        return true;
+      })
+      .map((ch) => pruneTree(ch, threeD));
+    if (typeof node.numProperties === "number") node.numProperties = node.properties.length;
   }
   return node;
 }
@@ -200,57 +286,64 @@ function applyPositionRule(transform: PropNode, threeD: boolean): void {
   const props = transform.properties;
   if (!Array.isArray(props)) return;
   const has = (mn: string) => props.some((p) => p.matchName === mn);
-  const active = (mn: string) => props.some((p) =>
-    p.matchName === mn && ((p.keys && p.keys.length > 0) || !!p.expression));
-  if (!has('ADBE Position')) return;
-  const separated = ['ADBE Position_0', 'ADBE Position_1', 'ADBE Position_2'].some(active);
+  const active = (mn: string) =>
+    props.some((p) => p.matchName === mn && ((p.keys && p.keys.length > 0) || !!p.expression));
+  if (!has("ADBE Position")) return;
+  const separated = ["ADBE Position_0", "ADBE Position_1", "ADBE Position_2"].some(active);
   if (separated) {
     transform.properties = props.filter((p) => {
-      if (p.matchName === 'ADBE Position') return false;
+      if (p.matchName === "ADBE Position") return false;
       // Z Position is hidden on 2D layers and rejects setValue.
-      if (!threeD && p.matchName === 'ADBE Position_2') return false;
+      if (!threeD && p.matchName === "ADBE Position_2") return false;
       return true;
     });
     transform.separatedPosition = true;
   } else {
-    transform.properties = props.filter((p) => !/^ADBE Position_[012]$/.test(p.matchName ?? ''));
+    transform.properties = props.filter((p) => !/^ADBE Position_[012]$/.test(p.matchName ?? ""));
   }
-  if (typeof transform.numProperties === 'number') transform.numProperties = transform.properties.length;
+  if (typeof transform.numProperties === "number")
+    transform.numProperties = transform.properties.length;
 }
 
 // ---- layer conversion -------------------------------------------------------
 function convertLayer(l: DumpLayer, comp: DumpComp): Record<string, unknown> | null {
-  if (l.__error__) { warnings.push(`${comp.name}/${l.name}: dump error ${l.__error__}`); return null; }
+  if (l.__error__) {
+    warnings.push(`${comp.name}/${l.name}: dump error ${l.__error__}`);
+    return null;
+  }
   const spec: Record<string, unknown> = { index: l.index, name: l.name };
   let footageIdx = -1;
 
   // kind + source resolution
   if (l.nullLayer) {
-    spec.kind = 'null';
-  } else if (l.src?.type === 'comp') {
-    spec.kind = 'comp';
+    spec.kind = "null";
+  } else if (l.src?.type === "comp") {
+    spec.kind = "comp";
     spec.source = l.src.name;
     if (l.src.id !== undefined) {
       spec.sourceUid = l.src.id;
       const ci = compIndexById.get(l.src.id);
-      if (ci === undefined) warnings.push(`${comp.name}/${l.name}: comp source id ${l.src.id} not in dump`);
+      if (ci === undefined)
+        warnings.push(`${comp.name}/${l.name}: comp source id ${l.src.id} not in dump`);
       else spec.sourceCompIndex = ci;
     } else {
       warnings.push(`${comp.name}/${l.name}: comp source '${l.src.name}' has no id`);
     }
-  } else if (l.src?.type === 'footage') {
-    spec.kind = 'footage';
+  } else if (l.src?.type === "footage") {
+    spec.kind = "footage";
     spec.sourceUid = l.src.id;
     const item = l.src.id !== undefined ? itemById.get(l.src.id) : undefined;
     const fi = registerFootage(item, l.src.name, l.src.fullpath);
-    if (fi >= 0) { spec.source = footageEntries[fi].name; footageIdx = fi; }
-    else spec.source = l.src.name; // unresolved; runtime will error loudly
+    if (fi >= 0) {
+      spec.source = footageEntries[fi].name;
+      footageIdx = fi;
+    } else spec.source = l.src.name; // unresolved; runtime will error loudly
   } else if (l.shapes) {
-    spec.kind = 'shape';
+    spec.kind = "shape";
   } else if (l.text) {
-    spec.kind = 'text';
+    spec.kind = "text";
   } else {
-    spec.kind = 'null';
+    spec.kind = "null";
     warnings.push(`${comp.name}/${l.name}: no source and no shape/text — emitted as null`);
   }
 
@@ -270,8 +363,8 @@ function convertLayer(l: DumpLayer, comp: DumpComp): Record<string, unknown> | n
   if (l.audioEnabled === false) spec.audioEnabled = false;
   if (l.isTrackMatte) spec.isTrackMatte = true;
 
-  const parentIndex = l.parentIndex
-    ?? (l.parent ? comp.layers.find((x) => x.name === l.parent)?.index : undefined);
+  const parentIndex =
+    l.parentIndex ?? (l.parent ? comp.layers.find((x) => x.name === l.parent)?.index : undefined);
   if (l.parent && parentIndex === undefined) {
     warnings.push(`${comp.name}/${l.name}: parent '${l.parent}' unresolved`);
   } else if (parentIndex) {
@@ -300,7 +393,8 @@ function convertLayer(l: DumpLayer, comp: DumpComp): Record<string, unknown> | n
   // timeRemapEnabled now records the real L.timeRemapEnabled state (the old
   // dump recorded canSetTimeRemapEnabled — capability, not state). The
   // dormant property node is only meaningful while remapping is enabled.
-  if (l.timeRemapEnabled && l.timeRemap && !audioOnly) spec.timeRemap = pruneTree(l.timeRemap as PropNode, threeD);
+  if (l.timeRemapEnabled && l.timeRemap && !audioOnly)
+    spec.timeRemap = pruneTree(l.timeRemap as PropNode, threeD);
   return spec;
 }
 
@@ -311,58 +405,69 @@ const compModules: Array<{ varName: string; file: string; name: string }> = [];
 for (let di = 0; di < dumps.length; di++) {
   const { file, comp: c } = dumps[di];
   const layers = (c.layers ?? []).map((l) => convertLayer(l, c)).filter(Boolean);
-  const varName = 'comp_' + file.slice(0, 2);
-  const modName = file.replace(/\.json$/, '');
+  const varName = "comp_" + file.slice(0, 2);
+  const modName = file.replace(/\.json$/, "");
   const compSpec: Record<string, unknown> = {
     ...(c.id !== undefined ? { uid: c.id } : {}),
-    name: c.name, width: c.width, height: c.height,
+    name: c.name,
+    width: c.width,
+    height: c.height,
     ...(c.pixelAspect !== undefined ? { pixelAspect: c.pixelAspect } : {}),
-    duration: c.duration, frameRate: c.frameRate,
+    duration: c.duration,
+    frameRate: c.frameRate,
     ...(c.bgColor !== undefined ? { bgColor: c.bgColor } : {}),
     layers,
   };
   const body = `// Generated from AEP dump ${file} — do not edit by hand.
-// Regenerate: node tools/dump-aep-tree.ts <aep> <dir> && node tools/convert-dump.ts <dir>
+// Regenerate: bun tools/dump-aep-tree.ts <aep> <dir> && bun tools/convert-dump.ts <dir>
 import type { CompSpec } from '../model/types.ts';
 
 export const ${varName}: CompSpec = ${JSON.stringify(compSpec)} as CompSpec;
 export default ${varName};
 `;
-  writeFileSync(join(outDir, modName + '.ts'), body);
+  writeFileSync(join(outDir, modName + ".ts"), body);
   compModules.push({ varName, file: modName, name: c.name });
 }
 
 const indexBody = `// Generated index — do not edit by hand.
-${compModules.map((m) => `import { ${m.varName} } from './${m.file}.ts';`).join('\n')}
+${compModules.map((m) => `import { ${m.varName} } from './${m.file}.ts';`).join("\n")}
 import type { CompSpec, FootageSpec } from '../model/types.ts';
 
 export const GENERATED_COMPS: CompSpec[] = [
-${compModules.map((m) => `  ${m.varName},`).join('\n')}
+${compModules.map((m) => `  ${m.varName},`).join("\n")}
 ];
 
 export const GENERATED_FOOTAGE: FootageSpec[] = ${JSON.stringify(footageEntries)};
 
 export const COMP_NAMES = ${JSON.stringify(compModules.map((m) => m.name))};
 `;
-writeFileSync(join(outDir, 'index.ts'), indexBody);
+writeFileSync(join(outDir, "index.ts"), indexBody);
 
 console.log(`converted ${compModules.length} comps -> ${outDir}`);
-console.log(`footage entries: ${footageEntries.length} (${footageEntries.filter((f) => f.kind === 'solid').length} solids)`);
+console.log(
+  `footage entries: ${footageEntries.length} (${footageEntries.filter((f) => f.kind === "solid").length} solids)`,
+);
 console.log(`dormant text props pruned: ${dormantTextDrops}`);
 if (warnings.length) {
-  writeFileSync(join(ROOT, '.tmp', 'convert-warnings.txt'), warnings.join('\n') + '\n');
+  writeFileSync(join(ROOT, ".tmp", "convert-warnings.txt"), warnings.join("\n") + "\n");
   const cats = new Map<string, number>();
   for (const w of warnings) {
-    const key = w.includes('unresolved') ? 'unresolved'
-      : w.includes('dump error') ? 'dump-error'
-      : w.includes('not in dump') ? 'comp-src-missing'
-      : w.includes('no id') ? 'comp-src-no-id'
-      : w.includes('parent') ? 'parent' : 'other';
+    const key = w.includes("unresolved")
+      ? "unresolved"
+      : w.includes("dump error")
+        ? "dump-error"
+        : w.includes("not in dump")
+          ? "comp-src-missing"
+          : w.includes("no id")
+            ? "comp-src-no-id"
+            : w.includes("parent")
+              ? "parent"
+              : "other";
     cats.set(key, (cats.get(key) ?? 0) + 1);
   }
-  console.log('warning categories:', Object.fromEntries(cats));
+  console.log("warning categories:", Object.fromEntries(cats));
   console.log(`full list: .tmp/convert-warnings.txt`);
-  for (const w of warnings.slice(0, 40)) console.log('  ' + w);
+  for (const w of warnings.slice(0, 40)) console.log("  " + w);
 } else {
-  console.log('no warnings');
+  console.log("no warnings");
 }

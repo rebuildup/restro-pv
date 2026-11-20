@@ -2,32 +2,32 @@
 // materializes the whole PV project inside After Effects, optionally saves
 // the AEP, and writes a machine-readable build report.
 //
-//   node tools/build-jsx.ts [--out dist/pv.jsx] [--save dist/pv.aep]
+//   bun tools/build-jsx.ts [--out dist/pv.jsx] [--save dist/pv.aep]
 //                           [--report .tmp/build-report.json]
-import { mkdirSync, writeFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
-import { buildSpec } from '../pv/main.ts';
-import { AE_RUNTIME } from '../pv/runtime/aeRuntime.ts';
-import { specLiteral } from '../pv/emit/spec-literal.ts';
+import { mkdirSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { specLiteral } from "../pv/emit/spec-literal.ts";
+import { buildSpec } from "../pv/main.ts";
+import { AE_RUNTIME } from "../pv/runtime/aeRuntime.ts";
 
-const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 function parseArgs(argv: string[]) {
   const opt: Record<string, string> = {};
   for (let i = 0; i < argv.length; i += 2) {
-    if (argv[i].startsWith('--')) opt[argv[i].slice(2)] = argv[i + 1];
+    if (argv[i].startsWith("--")) opt[argv[i].slice(2)] = argv[i + 1];
   }
   return {
-    out: opt.out ? resolve(opt.out) : resolve(repoRoot, 'dist/pv.jsx'),
+    out: opt.out ? resolve(opt.out) : resolve(repoRoot, "dist/pv.jsx"),
     // Production contract: the generated JSX must save the AEP and write the
     // report marker that tools/generate.ts waits for. Smoke/fixture builds
     // override all three via --save/--report/--progress.
-    save: opt.save ? resolve(opt.save) : resolve(repoRoot, 'dist/pv-generated.aep'),
-    report: opt.report ? resolve(opt.report) : resolve(repoRoot, '.tmp/pv-report.json'),
-    progress: opt.progress ? resolve(opt.progress) : resolve(repoRoot, '.tmp/pv-progress.log'),
-    warnings: opt.warnings ? resolve(opt.warnings) : resolve(repoRoot, '.tmp/pv-warnings.jsonl'),
-    spec: opt.spec ?? '',
+    save: opt.save ? resolve(opt.save) : resolve(repoRoot, "dist/pv-generated.aep"),
+    report: opt.report ? resolve(opt.report) : resolve(repoRoot, ".tmp/pv-report.json"),
+    progress: opt.progress ? resolve(opt.progress) : resolve(repoRoot, ".tmp/pv-progress.log"),
+    warnings: opt.warnings ? resolve(opt.warnings) : resolve(repoRoot, ".tmp/pv-warnings.jsonl"),
+    spec: opt.spec ?? "",
   };
 }
 
@@ -37,43 +37,45 @@ const spec = specArg
   : buildSpec();
 
 const jsx = [
-  '// GENERATED FILE - do not edit. Source: pv/ (TypeScript). ASCII-only on purpose.',
-  '// Build: node tools/build-jsx.ts',
-  '(function () {',
-  '  var __REPO_ROOT_BAKED = ' + JSON.stringify(repoRoot.replace(/\\/g, '/')) + ';',
-  '  var __SAVE_PATH_BAKED = ' + JSON.stringify(save.replace(/\\/g, '/')) + ';',
-  '  var __REPORT_PATH_BAKED = ' + JSON.stringify(report.replace(/\\/g, '/')) + ';',
-  '  var __PROGRESS_PATH_BAKED = ' + JSON.stringify(progress.replace(/\\/g, '/')) + ';',
-  '  var __WARNINGS_PATH_BAKED = ' + JSON.stringify(warnings.replace(/\\/g, '/')) + ';',
+  "// GENERATED FILE - do not edit. Source: pv/ (TypeScript). ASCII-only on purpose.",
+  "// Build: bun tools/build-jsx.ts",
+  "(function () {",
+  "  var __REPO_ROOT_BAKED = " + JSON.stringify(repoRoot.replace(/\\/g, "/")) + ";",
+  "  var __SAVE_PATH_BAKED = " + JSON.stringify(save.replace(/\\/g, "/")) + ";",
+  "  var __REPORT_PATH_BAKED = " + JSON.stringify(report.replace(/\\/g, "/")) + ";",
+  "  var __PROGRESS_PATH_BAKED = " + JSON.stringify(progress.replace(/\\/g, "/")) + ";",
+  "  var __WARNINGS_PATH_BAKED = " + JSON.stringify(warnings.replace(/\\/g, "/")) + ";",
   AE_RUNTIME,
-  '  __REPO_ROOT = __REPO_ROOT_BAKED;',
-  '  __SAVE_PATH = __SAVE_PATH_BAKED;',
-  '  __REPORT_PATH = __REPORT_PATH_BAKED;',
-  '  __PROGRESS_PATH = __PROGRESS_PATH_BAKED;',
-  '  __WARNINGS_PATH = __WARNINGS_PATH_BAKED;',
+  "  __REPO_ROOT = __REPO_ROOT_BAKED;",
+  "  __SAVE_PATH = __SAVE_PATH_BAKED;",
+  "  __REPORT_PATH = __REPORT_PATH_BAKED;",
+  "  __PROGRESS_PATH = __PROGRESS_PATH_BAKED;",
+  "  __WARNINGS_PATH = __WARNINGS_PATH_BAKED;",
   specLiteral(spec),
-  '  var __hasItems = false;',
-  '  for (var __i = 1; __i <= app.project.numItems; __i++) {',
-  '    var __it = app.project.item(__i);',
-  '    if (__it && !(__it instanceof FolderItem)) { __hasItems = true; break; }',
-  '  }',
-  '  if (__hasItems) {',
+  "  var __hasItems = false;",
+  "  for (var __i = 1; __i <= app.project.numItems; __i++) {",
+  "    var __it = app.project.item(__i);",
+  "    if (__it && !(__it instanceof FolderItem)) { __hasItems = true; break; }",
+  "  }",
+  "  if (__hasItems) {",
   '    __err("refusing to build: current project is not empty");',
-  '  } else {',
-  '    try {',
-  '      buildProject(SPEC);',
-  '    } catch (fatal) {',
+  "  } else {",
+  "    try {",
+  "      buildProject(SPEC);",
+  "    } catch (fatal) {",
   '      var __fd = "", __fl = "";',
-  '      try { __fd = String(fatal.description || fatal.message || fatal); } catch (x) {}',
-  '      try { __fl = String(fatal.line); } catch (x) {}',
+  "      try { __fd = String(fatal.description || fatal.message || fatal); } catch (x) {}",
+  "      try { __fl = String(fatal.line); } catch (x) {}",
   '      __err("buildProject fatal: " + __fd + " @line " + __fl);',
-  '    }',
-  '  }',
-  '  __finish();',
-  '})();',
-  '',
-].join('\n');
+  "    }",
+  "  }",
+  "  __finish();",
+  "})();",
+  "",
+].join("\n");
 
 mkdirSync(dirname(out), { recursive: true });
 writeFileSync(out, jsx);
-console.log(`wrote ${out} (${(jsx.length / 1024 / 1024).toFixed(1)} MiB, ${spec.comps.length} comps)`);
+console.log(
+  `wrote ${out} (${(jsx.length / 1024 / 1024).toFixed(1)} MiB, ${spec.comps.length} comps)`,
+);
