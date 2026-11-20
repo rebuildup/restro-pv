@@ -12,8 +12,13 @@
 //     shy propagation for folded groups
 
 import { GENERATED_COMPS } from "../pv/generated/index.ts";
+import { INTENDED_OVERLAPS } from "../pv/production/theme.ts";
 import { compileProduction } from "../pv/production/compile.ts";
-import { pvProductionProject, pvProductionSpec } from "../pv/scenes/production.ts";
+import {
+  materialCompsByName,
+  pvProductionProject,
+  pvProductionSpec,
+} from "../pv/scenes/production.ts";
 import type { CompSpec, FootageSpec, LayerSpec, ProjectSpec, PropNode } from "../pv/spec/types.ts";
 
 const STRICT = process.argv.includes("--strict");
@@ -120,10 +125,37 @@ interface Bounds {
   y1: number;
 }
 
+interface LayerBox {
+  bounds: Bounds;
+  t0: number;
+  t1: number;
+}
+
 const materialDims = new Map<string, { w: number; h: number }>();
 for (const c of GENERATED_COMPS) materialDims.set(c.name, { w: c.width, h: c.height });
 
-function layerBounds(comp: CompSpec, layer: LayerSpec): Bounds | null {
+// Position key values -> conservative motion envelope. Keyframe extremes
+// bound the trajectory for the eased moves used here; scale/rotation are
+// not modeled (documented limitation — flagged UNVERIFIED where relevant).
+function positionSamples(node: PropNode | undefined): Array<[number, number, number]> {
+  const out: Array<[number, number, number]> = [];
+  const walk = (n: PropNode | undefined): void => {
+    if (!n) return;
+    if (n.matchName === "ADBE Position") {
+      const push = (v: unknown) => {
+        const p = vec3(v);
+        if (p) out.push(p);
+      };
+      push(n.value);
+      for (const k of n.keys ?? []) push(k.v);
+    }
+    for (const c of n.properties ?? []) walk(c);
+  };
+  walk(node);
+  return out;
+}
+
+function layerBounds(comp: CompSpec, layer: LayerSpec): LayerBox | null {
   // Source dimensions: project comps by index, material comps by name.
   let w = 0;
   let h = 0;
@@ -148,16 +180,33 @@ function layerBounds(comp: CompSpec, layer: LayerSpec): Bounds | null {
     return null; // shape/text/null carry no reliable static bounds
   }
   if (w <= 0 || h <= 0) return null;
-  const t = layer.transform;
-  const posNode = propByMatch(t, "ADBE Position");
-  const anchorNode = propByMatch(t, "ADBE Anchor Point");
-  const pos = posNode ? vec3(posNode.value ?? posNode.keys?.[0]?.v) : null;
-  const anchor = anchorNode ? vec3(anchorNode.value ?? anchorNode.keys?.[0]?.v) : null;
-  if (!pos) return null;
+  const samples = positionSamples(layer.transform);
+  if (!samples.length) return null;
+  const anchorNode = propByMatch(layer.transform, "ADBE Anchor Point");
+  const anchor = anchorNode
+    ? vec3(anchorNode.value ?? anchorNode.keys?.[0]?.v)
+    : null;
   // AE default anchor for comp/footage layers is the source center.
   const ax = anchor ? anchor[0] : w / 2;
   const ay = anchor ? anchor[1] : h / 2;
-  return { x0: pos[0] - ax, y0: pos[1] - ay, x1: pos[0] - ax + w, y1: pos[1] - ay + h };
+  let b: Bounds | null = null;
+  for (const [px, py] of samples) {
+    const cand = { x0: px - ax, y0: py - ay, x1: px - ax + w, y1: py - ay + h };
+    b = b
+      ? {
+          x0: Math.min(b.x0, cand.x0),
+          y0: Math.min(b.y0, cand.y0),
+          x1: Math.max(b.x1, cand.x1),
+          y1: Math.max(b.y1, cand.y1),
+        }
+      : cand;
+  }
+  if (!b) return null;
+  return {
+    bounds: b,
+    t0: layer.inPoint ?? 0,
+    t1: layer.outPoint ?? comp.duration,
+  };
 }
 
 let compIndexToSpec = new Map<number, CompSpec>();
@@ -165,19 +214,42 @@ let footageByName = new Map<string, FootageSpec>();
 // compName -> sectionId -> AE layer indices, via the compiler's hook
 const sectionLayers = new Map<string, Map<string, number[]>>();
 
+interface SectionBox {
+  bounds: Bounds;
+  t0: number;
+  t1: number;
+  unbounded: number; // visible-kind members with no static bounds
+}
+
 function auditOverlap(spec: ProjectSpec) {
   compIndexToSpec = new Map(spec.comps.map((c, i) => [i, c]));
   footageByName = new Map(spec.footage.map((f) => [f.name, f]));
+  const intendedUsed = new Set<string>();
   for (const comp of spec.comps) {
     const bySection = sectionLayers.get(comp.name);
     if (!bySection) continue;
     const compArea = comp.width * comp.height;
-    const sectionBounds = new Map<string, Bounds | null>();
+    const sectionBoxes = new Map<string, SectionBox>();
     for (const [sid, indices] of bySection) {
       let u: Bounds | null = null;
+      let t0 = Infinity;
+      let t1 = -Infinity;
+      let unbounded = 0;
       for (const idx of indices) {
-        const b = layerBounds(comp, comp.layers[idx - 1]!);
-        if (!b) continue;
+        const layer = comp.layers[idx - 1]!;
+        const box = layerBounds(comp, layer);
+        if (!box) {
+          const audioOnly = /\.(mp3|wav|aiff?|aac|m4a)$/i.test(layer.source ?? layer.name ?? "");
+          if (
+            !audioOnly &&
+            ["comp", "footage", "text", "shape"].includes(layer.kind) &&
+            layer.enabled !== false
+          ) {
+            unbounded++;
+          }
+          continue;
+        }
+        const b = box.bounds;
         u = u
           ? {
               x0: Math.min(u.x0, b.x0),
@@ -186,23 +258,45 @@ function auditOverlap(spec: ProjectSpec) {
               y1: Math.max(u.y1, b.y1),
             }
           : b;
+        t0 = Math.min(t0, box.t0);
+        t1 = Math.max(t1, box.t1);
       }
-      sectionBounds.set(sid, u);
+      if (unbounded > 0) {
+        add(
+          "overlap",
+          "info",
+          `comp "${comp.name}" section "${sid}"`,
+          `${unbounded} visible member(s) have no static bounds (file footage/shape/text) — overlap unverifiable, needs render check`,
+        );
+      }
+      if (u && Number.isFinite(t0)) sectionBoxes.set(sid, { bounds: u, t0, t1, unbounded });
     }
-    const ids = [...sectionBounds.keys()];
+    const ids = [...sectionBoxes.keys()];
     for (let i = 0; i < ids.length; i++) {
       for (let j = i + 1; j < ids.length; j++) {
-        const a = sectionBounds.get(ids[i]!)!;
-        const b = sectionBounds.get(ids[j]!)!;
-        if (!a || !b) continue;
-        const ix = Math.max(0, Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0));
-        const iy = Math.max(0, Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0));
+        const a = sectionBoxes.get(ids[i]!)!;
+        const b = sectionBoxes.get(ids[j]!)!;
+        // Time gate: sections that never coexist cannot visually overlap.
+        if (a.t1 <= b.t0 || b.t1 <= a.t0) continue;
+        const key = [comp.name, ids[i], ids[j]].sort().join("");
+        const intended = INTENDED_OVERLAPS.find(
+          (o) => o.comp === comp.name && ((o.a === ids[i] && o.b === ids[j]) || (o.a === ids[j] && o.b === ids[i])),
+        );
+        if (intended) {
+          intendedUsed.add(key);
+          continue; // documented intentional overlap — not a finding
+        }
+        const A = a.bounds;
+        const B = b.bounds;
+        const ix = Math.max(0, Math.min(A.x1, B.x1) - Math.max(A.x0, B.x0));
+        const iy = Math.max(0, Math.min(A.y1, B.y1) - Math.max(A.y0, B.y0));
         const area = ix * iy;
         if (area <= 0) continue;
-        const smaller = Math.min((a.x1 - a.x0) * (a.y1 - a.y0), (b.x1 - b.x0) * (b.y1 - b.y0));
+        const smaller = Math.min((A.x1 - A.x0) * (A.y1 - A.y0), (B.x1 - B.x0) * (B.y1 - B.y0));
         const pct = smaller > 0 ? (area / smaller) * 100 : 0;
-        const fullA = (a.x1 - a.x0) * (a.y1 - a.y0) >= compArea * 0.9;
-        const fullB = (b.x1 - b.x0) * (b.y1 - b.y0) >= compArea * 0.9;
+        const tOverlap = Math.min(a.t1, b.t1) - Math.max(a.t0, b.t0);
+        const fullA = (A.x1 - A.x0) * (A.y1 - A.y0) >= compArea * 0.9;
+        const fullB = (B.x1 - B.x0) * (B.y1 - B.y0) >= compArea * 0.9;
         // Overlap against a full-frame section is the intended design
         // (overlay on scene); two partial sections colliding is suspect.
         const severity: Finding["severity"] = fullA || fullB ? "info" : "warn";
@@ -210,11 +304,19 @@ function auditOverlap(spec: ProjectSpec) {
           "overlap",
           severity,
           `comp "${comp.name}" sections "${ids[i]}" x "${ids[j]}"`,
-          `intersection ${Math.round(ix)}x${Math.round(iy)}px (${pct.toFixed(1)}% of smaller)${
+          `intersection ${Math.round(ix)}x${Math.round(iy)}px (${pct.toFixed(1)}% of smaller) during ${tOverlap.toFixed(2)}s${
             fullA || fullB ? " [vs full-frame section]" : ""
           }`,
         );
       }
+    }
+  }
+  // Stale allowlist entries are lint failures: an intended overlap that no
+  // longer occurs means the exception outlived its reason.
+  for (const o of INTENDED_OVERLAPS) {
+    const key = [o.comp, o.a, o.b].sort().join("");
+    if (!intendedUsed.has(key)) {
+      add("overlap", "warn", `comp "${o.comp}"`, `stale intended-overlap entry "${o.a}" x "${o.b}": ${o.reason}`);
     }
   }
 }
@@ -274,6 +376,7 @@ function auditDividers(spec: ProjectSpec) {
 // ---- run ------------------------------------------------------------------------
 
 const spec = compileProduction(pvProductionProject(), {
+  materialComps: materialCompsByName(),
   onSectionLayer: (compName, layerIndex, sectionId) => {
     let m = sectionLayers.get(compName);
     if (!m) {

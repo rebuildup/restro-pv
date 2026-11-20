@@ -64,3 +64,17 @@ export function materialCompLabel(name: string): number {
   }
   return ITEM_LABEL_WORK;
 }
+
+// ---- intended overlaps ---------------------------------------------------------
+// Section pairs allowed to overlap, each with a written reason. The lint
+// (tools/lint-pv.ts) skips exactly these pairs and fails on stale entries,
+// so exceptions cannot silently outlive their justification.
+
+export interface IntendedOverlap {
+  comp: string;
+  a: string;
+  b: string;
+  reason: string;
+}
+
+export const INTENDED_OVERLAPS: IntendedOverlap[] = [];

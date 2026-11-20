@@ -158,4 +158,11 @@ export interface ProjectSpec {
   materialAep?: string;
   /** Project-item label colors by item name (covers material-AEP items too). */
   itemLabels?: Record<string, number>;
+  /**
+   * Material-AEP pruning: after the project is built, remove material
+   * comps/footage whose names are not in these keep lists (transitive
+   * dependency closure computed by the authoring side). Items created by
+   * this spec are never pruned.
+   */
+  pruneMaterial?: { keepComps: string[]; keepFootage: string[] };
 }

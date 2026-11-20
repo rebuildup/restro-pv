@@ -189,6 +189,15 @@ export interface SectionSpec {
   role: string;
   /** Front-to-back: index 0 renders on top (AE layer order). */
   layers: SectionLayerSpec[];
+  /**
+   * Expand every layer of a material comp into this section at `offset`
+   * seconds of comp time. Internal parent/expression/Layer-Control indices
+   * are remapped to stable ref ids; key times and in/out/start are shifted
+   * by `offset`. Use for thin wrapper comps (borders, mattes, titles)
+   * whose content is already material — the section becomes real TS
+   * structure instead of one opaque precomp reference.
+   */
+  expand?: { comp: string; offset: number };
   anchors?: AnchorSpec[];
   /** false keeps the section's layers in the spec but disabled. */
   enabled?: boolean;

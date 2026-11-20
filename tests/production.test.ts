@@ -491,6 +491,72 @@ test("group:false opts out and explicit hierarchy/name are honored", () => {
   assert.equal(m.layers[0]!.name, "stage/screen");
 });
 
+test("expand flattens a material comp with remapped refs and shifted time", () => {
+  const material: CompSpec = {
+    name: "wrap-comp",
+    width: 1080,
+    height: 1080,
+    duration: 2,
+    frameRate: 24,
+    layers: [
+      {
+        index: 1,
+        name: "inner",
+        kind: "null",
+        transform: {
+          name: "Transform",
+          matchName: "ADBE Transform Group",
+          properties: [
+            {
+              name: "Position",
+              matchName: "ADBE Position",
+              expression: "thisComp.layer(2).transform.position",
+            },
+          ],
+        },
+      },
+      {
+        index: 2,
+        name: "anchor-null",
+        kind: "null",
+        inPoint: 0.5,
+        outPoint: 1.5,
+        startTime: 0,
+        transform: {
+          name: "Transform",
+          matchName: "ADBE Transform Group",
+          properties: [
+            { name: "Position", matchName: "ADBE Position", value: [100, 200, 0], keys: [{ t: 0.5, v: [100, 200, 0] }, { t: 1.5, v: [300, 400, 0] }] },
+          ],
+        },
+      },
+    ],
+  };
+  material.layers[0]!.parentIndex = 2;
+  const p = demoProject(4);
+  p.comps[1].sections[0] = {
+    id: "wrap",
+    role: "scene",
+    layers: [],
+    expand: { comp: "wrap-comp", offset: 5 },
+  };
+  const m = masterOf(compileProduction(p, { materialComps: { "wrap-comp": material } }));
+  const inner = m.layers.find((l) => l.name === "inner")!;
+  const anchor = m.layers.find((l) => l.name === "anchor-null")!;
+  // time shifted by offset
+  assert.equal(anchor.inPoint, 5.5);
+  assert.equal(anchor.outPoint, 6.5);
+  // parentIndex remapped to the expanded sibling's new index
+  assert.equal(inner.parentIndex, anchor.index);
+  // expression rewritten through the stable ref -> resolved to new index
+  const pos = propOf(inner, "ADBE Position")!;
+  assert.equal(pos.expression, `thisComp.layer(${anchor.index}).transform.position`);
+  // key times shifted
+  const keys = propOf(anchor, "ADBE Position")!.keys!;
+  assert.equal(keys[0]!.t, 5.5);
+  assert.equal(keys[1]!.t, 6.5);
+});
+
 test("role labels color layers; anchors get the guide color", () => {
   const m = masterOf(compileProduction(demoProject(4)));
   const brandMark = m.layers.find((l) => l.name === "brand-mark")!;

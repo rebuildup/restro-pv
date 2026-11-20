@@ -654,6 +654,49 @@ function buildProject(spec) {
       (new Date().getTime() - compT0) + "ms)");
     try { if ($.writeln) $.writeln("PV comp done: " + compSpec.name + " (" + layers.length + " layers)"); } catch (x) {}
   }
+  // Expression audit: AE reports per-property evaluation errors through
+  // Property.expressionError. Scan every property of every layer we built;
+  // any non-empty error is a hard failure — a generated project with broken
+  // expressions must not count as successful (issue #14).
+  var exprErrCount = 0;
+  function __scanExprNode(p, path) {
+    var expr = "";
+    try { expr = p.expression; } catch (e) {}
+    if (expr) {
+      var ee = "";
+      try { ee = p.expressionError; } catch (e2) {}
+      if (ee) {
+        exprErrCount++;
+        __err("expressionError " + path + ": " + ee);
+      }
+    }
+    var n = 0;
+    try { n = p.numProperties; } catch (e3) {}
+    for (var pi = 1; pi <= n; pi++) {
+      var cp = null;
+      try { cp = p.property(pi); } catch (e4) { continue; }
+      if (cp) __scanExprNode(cp, path + "/" + pi);
+    }
+  }
+  function __scanExprLayer(L, cname, lname) {
+    var roots = ["ADBE Transform Group", "ADBE Mask Parade", "ADBE Effect Parade",
+      "ADBE Root Vectors Group", "ADBE Text Properties", "ADBE Time Remapping"];
+    for (var ri = 0; ri < roots.length; ri++) {
+      var root = null;
+      try { root = L.property(roots[ri]); } catch (e) {}
+      if (root) __scanExprNode(root, cname + "/" + lname + "/" + roots[ri]);
+    }
+  }
+  for (var sci = 0; sci < compItems.length; sci++) {
+    var scomp = compItems[sci];
+    if (!scomp) continue;
+    for (var sli = 1; sli <= scomp.numLayers; sli++) {
+      var slayer = null;
+      try { slayer = scomp.layer(sli); } catch (e) {}
+      if (slayer) __scanExprLayer(slayer, scomp.name, slayer.name);
+    }
+  }
+  __prog("expression audit done, errors=" + exprErrCount);
   // Label every project item (covers material-AEP comps/footage, which have
   // no spec entry of their own) from the authored name -> color map.
   if (spec.itemLabels) {
@@ -664,6 +707,28 @@ function buildProject(spec) {
       var lv = spec.itemLabels[itm.name];
       if (lv !== undefined) { try { itm.label = __num(lv); } catch (le) {} }
     }
+  }
+  // Prune material-AEP items outside the authored keep lists so the saved
+  // project contains only what the generated comp actually references.
+  // Iterate backwards: remove() shifts later indices.
+  if (spec.pruneMaterial) {
+    var keepC = {}, keepF = {}, ourC = {}, ourF = {};
+    var pk;
+    for (pk = 0; pk < spec.pruneMaterial.keepComps.length; pk++) keepC[spec.pruneMaterial.keepComps[pk]] = 1;
+    for (pk = 0; pk < spec.pruneMaterial.keepFootage.length; pk++) keepF[spec.pruneMaterial.keepFootage[pk]] = 1;
+    for (pk = 0; pk < spec.comps.length; pk++) ourC[spec.comps[pk].name] = 1;
+    for (pk = 0; pk < spec.footage.length; pk++) ourF[spec.footage[pk].name] = 1;
+    var pruned = 0;
+    for (var pi3 = app.project.numItems; pi3 >= 1; pi3--) {
+      var it3 = null;
+      try { it3 = app.project.item(pi3); } catch (e) {}
+      if (!it3 || it3 instanceof FolderItem) continue;
+      var drop = false;
+      if (it3 instanceof CompItem) drop = !ourC[it3.name] && !keepC[it3.name];
+      else if (it3 instanceof FootageItem) drop = !ourF[it3.name] && !keepF[it3.name];
+      if (drop) { try { it3.remove(); pruned++; } catch (re) {} }
+    }
+    __prog("material prune: removed=" + pruned);
   }
   // drop the scratch comp used to mint solid footage items
   if (__solidHost) {
