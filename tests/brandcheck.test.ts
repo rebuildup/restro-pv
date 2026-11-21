@@ -139,6 +139,40 @@ describe("brand-check kg grid layout", () => {
     expect(vec3(child(icon.transform!, "ADBE Anchor Point"))).toEqual([0, 234, 0]);
   });
 
+  test("AFTER EFFECTS PLUGIN reproduces the flattened original transform", () => {
+    const plugin = byName("AFTER EFFECTS PLUGIN");
+    expect(plugin.kind).toBe("text");
+    // Effective world transform: P2(12%) -> P-6(100%) -> leaf(861.78%/744.81%)
+    // composes to scale ~1.034/0.894, anchor (283.99,-28.19), pos (448,196).
+    const pp = vec3(child(plugin.transform!, "ADBE Position"))!;
+    expect(pp[0]).toBeCloseTo(448, 3);
+    expect(pp[1]).toBeCloseTo(196, 3);
+    const sc = vec3(child(plugin.transform!, "ADBE Scale"))!;
+    expect(sc[0] / 100).toBeCloseTo(1.0341391726471534, 6);
+    expect(sc[1] / 100).toBeCloseTo(0.893776595270394, 6);
+    expect(vec3(child(plugin.transform!, "ADBE Anchor Point"))).toEqual([
+      283.989589793885, -28.1887405184073, 0,
+    ]);
+    // Verbatim TextDocument fields (master idx16).
+    const doc = plugin.text!.properties!.find(
+      (p) => p.matchName === "ADBE Text Document",
+    )!.value as Record<string, unknown>;
+    expect(doc.text).toBe("AFTER EFFECTS\rPLUGIN");
+    expect(doc.font).toBe("MeiryoUI");
+    expect(doc.fontSize).toBe(34);
+    expect(doc.tracking).toBe(42);
+    expect(doc.leading).toBeCloseTo(40.8, 3);
+    expect(doc.fillColor).toEqual([0, 0, 0]);
+    // Sits directly above Icon (Ae) in the front-to-back stack.
+    const names = comp.layers.map((l) => l.name);
+    expect(names.indexOf("AFTER EFFECTS PLUGIN")).toBeLessThan(
+      names.indexOf("Icon (Ae)"),
+    );
+    expect(names.indexOf("AFTER EFFECTS PLUGIN")).toBeGreaterThan(
+      names.indexOf("Heading"),
+    );
+  });
+
   test("drift anchors keep grid base + offset keys (counter-phase)", () => {
     const hd = byName("anchor:heading-drift").transform!;
     const ld = byName("anchor:logo-drift").transform!;
@@ -225,7 +259,10 @@ describe("layoutCheck — swept-rect constraints", () => {
     desc.allowOverlap = { reason: "wrong pair", with: ["Logo"] };
     expect(checkProjectLayout(p).violations.some((v) => v.kind === "overlap")).toBe(true);
     // Naming the actual counterparts suppresses exactly those pairs.
-    desc.allowOverlap = { reason: "icon+logo band overlap", with: ["Icon (Ae)", "Logo"] };
+    desc.allowOverlap = {
+      reason: "icon+logo+plugin band overlap",
+      with: ["Icon (Ae)", "Logo", "AFTER EFFECTS PLUGIN"],
+    };
     const ok = checkProjectLayout(p);
     expect(ok.violations.filter((v) => v.kind === "overlap")).toEqual([]);
     // Restoring the authored layout is clean again.

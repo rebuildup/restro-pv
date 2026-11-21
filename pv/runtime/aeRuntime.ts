@@ -660,6 +660,48 @@ function buildProject(spec) {
     var goy = __findComp(gname);
     if (goy) { __err("comp name collision: material project already has comp '" + gname + "'"); }
   }
+  // Project-panel folders: materialize the declared tree, then assign
+  // items. Spec comps/footage carry folder paths resolved to FolderItems;
+  // itemFolders covers material-AEP items by name (ambiguous names are
+  // skipped with a warning — never guessed).
+  var __folderByPath = {};
+  if (spec.folders && spec.folders.length) {
+    for (var fdi = 0; fdi < spec.folders.length; fdi++) {
+      var fs = spec.folders[fdi];
+      var fpath = String(fs.path || "");
+      var fparts = fpath.split("/");
+      var fparent = null;
+      var fprefix = "";
+      var fok = true;
+      for (var fpi = 0; fpi < fparts.length; fpi++) {
+        var fpname = fparts[fpi];
+        var fkey = fprefix ? fprefix + "/" + fpname : fpname;
+        var fexist = __folderByPath[fkey];
+        if (!fexist) {
+          try {
+            fexist = fparent
+              ? fparent.items.addFolder(fpname)
+              : app.project.items.addFolder(fpname);
+            __folderByPath[fkey] = fexist;
+          } catch (fe) {
+            __err("addFolder failed " + fkey + ": " + __estr(fe));
+            fok = false;
+            break;
+          }
+        }
+        fparent = fexist;
+        fprefix = fkey;
+      }
+      if (fok && fparent) __prog("folder " + fpath);
+    }
+  }
+  function __assignFolder(item, fpath) {
+    if (!item || !fpath) return;
+    var fo = __folderByPath[String(fpath)];
+    if (!fo) { __warn("folder not materialized for '" + fpath + "'"); return; }
+    try { item.parentFolder = fo; }
+    catch (fe) { __warn("parentFolder failed for " + item.name + ": " + __estr(fe)); }
+  }
   // create every comp first so precomp layers can reference any of them
   var compItems = [];
   for (var i = 0; i < spec.comps.length; i++) {
@@ -679,6 +721,31 @@ function buildProject(spec) {
     } catch (ce) { __err("addComp failed " + cs.name + ": " + __estr(ce)); compItems.push(null); }
   }
   __prog("comps created");
+  for (var fci = 0; fci < spec.comps.length; fci++) {
+    if (compItems[fci] && spec.comps[fci].folder) __assignFolder(compItems[fci], spec.comps[fci].folder);
+  }
+  if (spec.footage) {
+    for (var ffi = 0; ffi < spec.footage.length; ffi++) {
+      var fst = spec.footage[ffi];
+      var fit = footageByName[fst.name];
+      if (fit && fst.folder) __assignFolder(fit, fst.folder);
+    }
+  }
+  if (spec.itemFolders) {
+    for (var ifn in spec.itemFolders) {
+      if (!spec.itemFolders.hasOwnProperty(ifn)) continue;
+      var ifpath = spec.itemFolders[ifn];
+      var ifmatches = 0, ifitem = null;
+      for (var iii = 1; iii <= app.project.numItems; iii++) {
+        var iit = null;
+        try { iit = app.project.item(iii); } catch (e) {}
+        if (iit && !(iit instanceof FolderItem) && iit.name === ifn) { ifmatches++; ifitem = iit; }
+      }
+      if (ifmatches === 1) __assignFolder(ifitem, ifpath);
+      else if (ifmatches > 1) __warn("itemFolders '" + ifn + "' ambiguous (" + ifmatches + " items), skipped");
+      else __warn("itemFolders '" + ifn + "' not found");
+    }
+  }
   for (i = 0; i < spec.comps.length; i++) {
     var compSpec = spec.comps[i];
     var comp = compItems[i];
@@ -830,14 +897,68 @@ function buildProject(spec) {
         }
       }
     }
+    // Expression + usedIn retention: name-keyed lists alone cannot see
+    // references inside expression text (comp("x"), footage("x")) or
+    // AVItem.usedIn consumers outside the layer-source walk. Anything
+    // still referenced after this pass is kept — unknown references are
+    // preserved, never guessed away.
+    function __scanExprProps(prop, depth) {
+      if (!prop || depth > 12) return;
+      try {
+        var ex = prop.expression;
+        if (ex) __exprText.push(String(ex));
+      } catch (exx) {}
+      try {
+        if (prop.numProperties > 0 && prop instanceof PropertyGroup) {
+          for (var ei = 1; ei <= prop.numProperties; ei++) {
+            var ep = null;
+            try { ep = prop.property(ei); } catch (eep) {}
+            if (ep) __scanExprProps(ep, depth + 1);
+          }
+        }
+      } catch (epg) {}
+    }
+    var __exprText = [];
+    for (var sci = 1; sci <= app.project.numItems; sci++) {
+      var sit = null;
+      try { sit = app.project.item(sci); } catch (e) {}
+      var sitKeep = false;
+      if (sit instanceof CompItem) {
+        sitKeep = !!(keepC[sit.name] || ourC[sit.name]);
+      }
+      if (sitKeep) {
+        var sitC = /** @type {any} */ (sit);
+        for (var sli = 1; sli <= sitC.numLayers; sli++) {
+          var slay = null;
+          try { slay = sitC.layer(sli); } catch (e) {}
+          if (!slay) continue;
+          __scanExprProps(slay, 0);
+          try {
+            var effs = slay.property("ADBE Effect Parade");
+            if (effs) __scanExprProps(effs, 0);
+          } catch (ee) {}
+        }
+      }
+    }
+    var exprBlob = __exprText.join("\n");
+    function __exprKeep(name) {
+      if (!name) return false;
+      var esc = name.replace(/[.*+?^{}$()|[\]\\]/g, "\\$&");
+      return new RegExp("(comp|footage)\\(\\s*[\"']" + esc + "[\"']").test(exprBlob);
+    }
     var pruned = 0;
     for (var pi3 = app.project.numItems; pi3 >= 1; pi3--) {
       var it3 = null;
       try { it3 = app.project.item(pi3); } catch (e) {}
       if (!it3 || it3 instanceof FolderItem) continue;
       var drop = false;
-      if (it3 instanceof CompItem) drop = !ourC[it3.name] && !keepC[it3.name];
-      else if (it3 instanceof FootageItem) drop = !ourF[it3.name] && !keepF[it3.name];
+      var exprHit = false;
+      try { exprHit = __exprKeep(it3.name); } catch (xk) { exprHit = true; }
+      var usedHit = false;
+      try { var uin = /** @type {any} */ (it3).usedIn; if (uin && uin.length) usedHit = true; } catch (xu) {}
+      if (exprHit) { __prog("prune keep: expression/usedIn references '" + it3.name + "'"); }
+      if (it3 instanceof CompItem) drop = !ourC[it3.name] && !keepC[it3.name] && !exprHit && !usedHit;
+      else if (it3 instanceof FootageItem) drop = !ourF[it3.name] && !keepF[it3.name] && !exprHit && !usedHit;
       if (drop) {
         var nl0 = -1, iname = "?";
         try { if (compItems[0]) nl0 = compItems[0].numLayers; } catch (x) {}
@@ -852,6 +973,16 @@ function buildProject(spec) {
       }
     }
     __prog("material prune: removed=" + pruned);
+    // Empty folders are never meaningful output — remove them after the
+    // item sweep so authored trees stay free of husks.
+    var removedFolders = 0;
+    for (var pfi = app.project.numItems; pfi >= 1; pfi--) {
+      var fitem = null;
+      try { fitem = app.project.item(pfi); } catch (e) {}
+      if (!fitem || !(fitem instanceof FolderItem)) continue;
+      try { if (fitem.numItems === 0) { fitem.remove(); removedFolders++; } } catch (fe) {}
+    }
+    if (removedFolders) __prog("empty folders removed=" + removedFolders);
   }
   if (compItems[0]) __prog("post-prune " + compItems[0].name + " aeLayers=" + compItems[0].numLayers);
   // drop the scratch comp used to mint solid footage items

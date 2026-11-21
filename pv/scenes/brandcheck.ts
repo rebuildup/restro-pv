@@ -22,19 +22,21 @@
 //   Ae.png   P 3(12%,pos26,268) → P-11(100%,anchor0,100) → Ae.png(330%)
 //            world anchor (32,262), world scale 0.396
 //   description: no parent, pos (32,585) — a grid intersection itself
+//   PLUGIN   P 2(12%,anchor50,pos454/190) → P-6(100%) → text(861.78%/744.81%)
+//            world anchor (448,196), world scale ~1.034/0.894
+//            TextDocument verbatim: "AFTER EFFECTS\rPLUGIN", MeiryoUI
+//            Regular 34, tracking 42, leading 40.8, point text, left
+//            justified, fill black, no stroke, 0-20s, no effects.
+//            Sits directly above Ae.png in the master (idx16 vs lower),
+//            forming one icon+label info block at y~170-260.
 //
 // Drift is anchor-relative: heading-drift / logo-drift nulls sit on grid
 // intersections; key values are comp-space OFFSETS (+155 / -155, same
 // times and ease speeds as legacy P 9 / P 5). A grid change re-places
 // the base AND the whole trajectory.
 //
-// PLUGIN ("AFTER EFFECTS\rPLUGIN", MeiryoUI, effective ~103%x89% text at
-// world anchor ~(448,196) = col~4.9 x row3) is intentionally NOT a
-// layer yet: its TextDocument is a separate material-extraction task.
-// Its placement rule is recorded as region "zone-plugin" below.
-//
 // Z-order (front-to-back), matching the original backdrop role:
-//   stage > description > Heading > Icon(Ae) > Logo > bg-white
+//   stage > description > Heading > PLUGIN > Icon(Ae) > Logo > bg-white
 //
 // Build: bun tools/build-jsx.ts --spec pv/scenes/brandcheck.ts \
 //          --out dist/brandcheck.jsx --save .tmp/probe/brandcheck.aep
@@ -85,6 +87,9 @@ const comp: CompProduction = {
   id: "brand-check",
   name: "brand-check",
   label: ITEM_LABEL_WORK,
+  // Verification-only comp: never lands in the production AEP. It lives
+  // in its own folder so the Project panel stays self-describing.
+  folder: "_Verification",
   // kg_LayoutGrid verified parameters (Adjustment Layer 5 dump).
   grid: { columns: 12, rows: 24, margin: { x: 32, y: 80 }, gutter: { x: 12, y: 12 } },
   regions: {
@@ -99,9 +104,10 @@ const comp: CompProduction = {
     // Ae.png's original rig (P 3, pos [26,268]) was NOT grid-derived;
     // its anchor lands ~12px above the row5 line — preserved via offset.
     "anchor-icon": { span: [0, 5, 0, 5] }, // (32, ~274) + offset -> (32,262)
-    // PLUGIN text placement rule (layer deferred — see header):
-    // original world anchor ~(448,196) -> between col4/5 x row3.
-    "zone-plugin": { span: [5, 3, 7, 5] },
+    // PLUGIN's original rig (P 2, pos [454,190]) was NOT grid-derived;
+    // its anchor lands ~(448,196) — between col4/5 x row3 — preserved
+    // via offset from the (col5,row3) intersection like the icon.
+    "anchor-plugin": { span: [5, 3, 5, 3] }, // (460.3,196.5) + offset -> (448,196)
   },
   anchors: [
     {
@@ -174,6 +180,63 @@ const comp: CompProduction = {
           },
         },
         {
+          id: "plugin",
+          name: "AFTER EFFECTS PLUGIN",
+          // Verbatim TextDocument from pv/generated/05-master.ts (master
+          // idx16). Effective world transform flattens the P2(12%) → P-6 →
+          // leaf(861.78%/744.81%) chain to scale ~1.034/0.894, anchor
+          // (283.99,-28.19) preserved in text space, world anchor (448,196).
+          content: {
+            kind: "spec",
+            layer: {
+              index: 0,
+              name: "AFTER EFFECTS PLUGIN",
+              kind: "text",
+              text: {
+                name: "Text",
+                matchName: "ADBE Text Properties",
+                properties: [
+                  {
+                    name: "Source Text",
+                    matchName: "ADBE Text Document",
+                    value: {
+                      text: "AFTER EFFECTS\rPLUGIN",
+                      font: "MeiryoUI",
+                      fontSize: 34,
+                      tracking: 42,
+                      leading: 40.8,
+                      fillColor: [0, 0, 0],
+                      applyFill: true,
+                      applyStroke: false,
+                      horizontalScale: 1,
+                      verticalScale: 1,
+                      autoLeading: true,
+                      justification: "LEFT_JUSTIFY",
+                    },
+                  },
+                ],
+              },
+            },
+          },
+          layout: {
+            region: "anchor-plugin",
+            align: "top-left",
+            offset: { x: -12.3333, y: -0.5 },
+          },
+          metrics: {
+            width: 360,
+            height: 84,
+            anchor: { x: 283.989589793885, y: -28.1887405184073 },
+            bounds: { x: 0, y: -30, width: 360, height: 85 },
+            scale: { x: 1.0341391726471534, y: 0.893776595270394 },
+          },
+          allowOverlap: {
+            reason:
+              "plugin label sits on the stage backdrop, as in the original master",
+            with: ["Main (stage)"],
+          },
+        },
+        {
           id: "icon",
           name: "Icon (Ae)",
           content: { kind: "footage", asset: "ae-icon" },
@@ -242,6 +305,7 @@ const project: ProductionProject = {
       id: "main-panel",
       kind: "solid",
       name: "Main panel",
+      folder: "03_Materials/Solids",
       color: [0.93, 0.93, 0.93],
       width: 588,
       height: 920,
@@ -250,6 +314,7 @@ const project: ProductionProject = {
       id: "bg-white",
       kind: "solid",
       name: "White Ground",
+      folder: "03_Materials/Solids",
       color: [1, 1, 1],
       width: 1080,
       height: 1080,
@@ -258,7 +323,17 @@ const project: ProductionProject = {
       id: "ae-icon",
       kind: "file",
       name: "Ae.png",
+      folder: "03_Materials/Images",
       file: "assets/images/Ae.png",
+    },
+  ],
+  // Semantic project-panel tree. Only folders that hold items are
+  // emitted — see flattenFolders/compileProduction.
+  folders: [
+    { name: "_Verification" },
+    {
+      name: "03_Materials",
+      children: [{ name: "Brand" }, { name: "Images" }, { name: "Solids" }],
     },
   ],
   // Minimal material AEP: extracted once from legacy (only the comps this
@@ -271,6 +346,14 @@ export function brandCheckSpec(): ProjectSpec {
   const spec = compileProduction(project, { materialComps: materialCompsByName() });
   spec.itemLabels = materialItemLabels();
   spec.pruneMaterial = materialKeepSet(spec);
+  // Material-AEP comps are not created by this spec, so their folder
+  // assignment goes through the name-keyed itemFolders map (unique names
+  // only — the runtime skips ambiguous ones with a warning).
+  spec.itemFolders = {
+    Heading: "03_Materials/Brand",
+    Logo: "03_Materials/Brand",
+    description: "03_Materials/Brand",
+  };
   return spec;
 }
 

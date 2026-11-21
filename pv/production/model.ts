@@ -263,6 +263,8 @@ export interface CompProduction {
   id: string;
   /** AE comp name (display; may differ from id). */
   name: string;
+  /** Project-panel folder path (e.g. "02_Design/Brand"); must exist in `folders`. */
+  folder?: string;
   /** Frame overrides merged over the project frame (defined fields only). */
   frame?: Partial<FrameSpec>;
   grid?: GridSpec;
@@ -276,6 +278,16 @@ export interface CompProduction {
   label?: number;
 }
 
+/**
+ * Project-panel folder tree node. `name` is the display name; nesting via
+ * `children` produces slash paths ("Material/Brand"). Comps and assets
+ * reference the leaf path through their `folder` field.
+ */
+export interface FolderNode {
+  name: string;
+  children?: FolderNode[];
+}
+
 /** Footage/solid item declared once and referenced by section layers. */
 export interface ProductionAsset {
   id: string;
@@ -284,6 +296,8 @@ export interface ProductionAsset {
   name?: string;
   /** AE label color for the footage item. */
   label?: number;
+  /** Project-panel folder path; must exist in `folders`. */
+  folder?: string;
   /** Repo-relative path for kind "file". */
   file?: string;
   /** Solid color [r,g,b] 0..1 for kind "solid". */
@@ -299,6 +313,12 @@ export interface ProductionProject {
   frame: FrameSpec;
   comps: CompProduction[];
   assets?: ProductionAsset[];
+  /**
+   * Project-panel folder tree. Only declare folders that actually hold
+   * items — empty formal folders are not emitted. Item `folder` fields
+   * must reference a path present in this tree.
+   */
+  folders?: FolderNode[];
   /** Repo-relative material AEP opened before the spec is built. */
   materialAep?: string;
 }

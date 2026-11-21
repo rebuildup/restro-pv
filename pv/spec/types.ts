@@ -149,16 +149,37 @@ export interface CompSpec {
   label?: number;
   /** comp.hideShyLayers — required for shy layers (e.g. folded groups) to hide. */
   hideShyLayers?: boolean;
+  /** Project-panel folder path (see ProjectSpec.folders). */
+  folder?: string;
 }
 
 export type FootageSpec =
-  | { name: string; kind: "file"; file: string; audioOnly?: boolean; label?: number } // repo-relative path
-  | { name: string; kind: "solid"; color: number[]; width: number; height: number; label?: number };
+  | { name: string; kind: "file"; file: string; audioOnly?: boolean; label?: number; folder?: string } // repo-relative path
+  | { name: string; kind: "solid"; color: number[]; width: number; height: number; label?: number; folder?: string };
+
+/**
+ * Project-panel folder. `path` is the slash-separated location from the
+ * project root ("Material/Brand"); `name` is the leaf folder name. The
+ * runtime materializes the tree with FolderItems and assigns each item
+ * via AVItem.parentFolder.
+ */
+export interface FolderSpec {
+  name: string;
+  path: string;
+}
 
 export interface ProjectSpec {
   name: string;
   comps: CompSpec[];
   footage: FootageSpec[];
+  /** Project-panel folder tree (flattened paths). Items reference `path`. */
+  folders?: FolderSpec[];
+  /**
+   * Item name -> folder path, for items the spec does not create directly
+   * (material-AEP comps/footage). Names must resolve uniquely; ambiguous
+   * names are skipped with a warning rather than guessed.
+   */
+  itemFolders?: Record<string, string>;
   savePath?: string; // AEP output path; empty = don't save
   // Repo-relative path to a material AEP opened before the spec is built.
   // Material comps/footage resolve by name; the opened project is saved to

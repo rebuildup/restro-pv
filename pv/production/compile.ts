@@ -34,6 +34,7 @@ import type {
   CellSpan,
   CompileOptions,
   CompProduction,
+  FolderNode,
   FrameSpec,
   LayoutSpec,
   ProductionAsset,
@@ -893,12 +894,27 @@ function compileComp(
   if (frame.pixelAspect !== undefined) spec.pixelAspect = frame.pixelAspect;
   if (frame.bgColor !== undefined) spec.bgColor = frame.bgColor;
   if (comp.label !== undefined) spec.label = comp.label;
+  if (comp.folder !== undefined) spec.folder = comp.folder;
   if (comp.hideShyLayers || anyFolded) spec.hideShyLayers = true;
 
   return { spec, usedAssets: [...ctx.usedAssets.values()] };
 }
 
 // ---- project ---------------------------------------------------------------------
+
+/** Flatten a FolderNode tree into {name, path} entries (parents before children). */
+export function flattenFolders(nodes: FolderNode[], prefix = ""): { name: string; path: string }[] {
+  const out: { name: string; path: string }[] = [];
+  for (const n of nodes) {
+    if (!n.name || n.name.includes("/")) {
+      throw new Error(`folder name must be non-empty and contain no "/": "${n.name}"`);
+    }
+    const path = prefix ? `${prefix}/${n.name}` : n.name;
+    out.push({ name: n.name, path });
+    if (n.children) out.push(...flattenFolders(n.children, path));
+  }
+  return out;
+}
 
 export function compileProduction(
   project: ProductionProject,
@@ -940,6 +956,7 @@ export function compileProduction(
   const footageNames = new Set<string>();
   const footage: FootageSpec[] = usedAssets.map((a) => {
     const f = toFootageSpec(a);
+    if (a.folder !== undefined) f.folder = a.folder;
     if (footageNames.has(f.name)) {
       throw new Error(`project "${project.name}": duplicate footage name "${f.name}"`);
     }
@@ -947,7 +964,29 @@ export function compileProduction(
     return f;
   });
 
+  // Project-panel folders: flatten the authored tree, keep only paths that
+  // actually hold items (plus their ancestors), and validate every item
+  // folder reference against the declared tree.
+  const folderPaths = flattenFolders(project.folders ?? []);
+  const validPaths = new Set(folderPaths.map((f) => f.path));
+  const usedPaths = new Set<string>();
+  const claimFolder = (path: string | undefined, what: string) => {
+    if (path === undefined) return;
+    if (!validPaths.has(path)) {
+      throw new Error(
+        `project "${project.name}": ${what} references undeclared folder "${path}"`,
+      );
+    }
+    // Ancestors must exist as materialized folders too.
+    const parts = path.split("/");
+    for (let i = 1; i <= parts.length; i++) usedPaths.add(parts.slice(0, i).join("/"));
+  };
+  for (const c of project.comps) claimFolder(c.folder, `comp "${c.name}"`);
+  for (const a of usedAssets) claimFolder(a.folder, `asset "${a.id}"`);
+  const folders = folderPaths.filter((f) => usedPaths.has(f.path));
+
   const out: ProjectSpec = { name: project.name, comps, footage };
+  if (folders.length) out.folders = folders;
   if (project.materialAep !== undefined) out.materialAep = project.materialAep;
   return out;
 }
