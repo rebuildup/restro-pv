@@ -12,7 +12,7 @@ import { existsSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { aeIsRunning, resolveAe } from "./lib/host.ts";
+import { aeIsRunning, aeProbeOnce, resolveAe } from "./lib/host.ts";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -42,6 +42,21 @@ async function main() {
     await sleep(15_000);
   } else {
     console.log("After Effects already running");
+  }
+
+  // Readiness gate: process existence is not enough — a -r script delivered
+  // while AE is still initializing fails inside layers.add* with
+  // "undefined is not an object". Probe the DOM write path and resend until
+  // AE actually answers (bounded; never assumed from a timer).
+  {
+    const probeDeadline = Date.now() + 300_000;
+    let ready = false;
+    while (Date.now() < probeDeadline && !ready) {
+      ready = await aeProbeOnce(ae, ROOT, 60_000);
+      if (!ready) console.log("AE probe not ready yet, retrying...");
+    }
+    if (!ready) throw new Error("After Effects did not become script-ready within 5min");
+    console.log("AE script-ready probe passed");
   }
 
   // report marker: derive from script name under .tmp/run/

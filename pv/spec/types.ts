@@ -115,6 +115,8 @@ export interface LayerSpec {
   threeDLayer?: boolean;
   audioEnabled?: boolean;
   parentIndex?: number; // AE layer index of parent, 0/undefined = none
+  /** AE label color index (0=None, 1-16 preset colors). */
+  label?: number;
   // property trees exactly as dumped; runtime applies generically
   transform?: PropNode;
   masks?: PropNode;
@@ -135,11 +137,15 @@ export interface CompSpec {
   frameRate: number;
   bgColor?: unknown;
   layers: LayerSpec[]; // AE order: [0] = top
+  /** AE label color index for the comp item itself. */
+  label?: number;
+  /** comp.hideShyLayers — required for shy layers (e.g. folded groups) to hide. */
+  hideShyLayers?: boolean;
 }
 
 export type FootageSpec =
-  | { name: string; kind: "file"; file: string; audioOnly?: boolean } // repo-relative path
-  | { name: string; kind: "solid"; color: number[]; width: number; height: number };
+  | { name: string; kind: "file"; file: string; audioOnly?: boolean; label?: number } // repo-relative path
+  | { name: string; kind: "solid"; color: number[]; width: number; height: number; label?: number };
 
 export interface ProjectSpec {
   name: string;
@@ -150,4 +156,13 @@ export interface ProjectSpec {
   // Material comps/footage resolve by name; the opened project is saved to
   // savePath, leaving the material file untouched.
   materialAep?: string;
+  /** Project-item label colors by item name (covers material-AEP items too). */
+  itemLabels?: Record<string, number>;
+  /**
+   * Material-AEP pruning: after the project is built, remove material
+   * comps/footage whose names are not in these keep lists (transitive
+   * dependency closure computed by the authoring side). Items created by
+   * this spec are never pruned.
+   */
+  pruneMaterial?: { keepComps: string[]; keepFootage: string[] };
 }

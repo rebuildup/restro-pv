@@ -23,7 +23,7 @@ import { existsSync, readFileSync, rmSync, statSync, writeFileSync } from "node:
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { AfterEffects } from "@ido-bata/ae-a8n";
-import { aeIsRunning, resolveAe } from "./lib/host.ts";
+import { aeIsRunning, aeProbeOnce, resolveAe } from "./lib/host.ts";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -109,6 +109,24 @@ async function main() {
       finish("refused-attach-failed", { reason: String(error) });
       process.exit(2);
     }
+  }
+
+  // Readiness gate: a freshly launched AE executes -r scripts while plugins
+  // and media are still initializing; layers.add* then fails with
+  // "undefined is not an object". Probe the DOM write path (addComp +
+  // addNull + remove, zero residue) until AE actually answers.
+  {
+    const probeDeadline = Date.now() + 300_000;
+    let ready = false;
+    while (Date.now() < probeDeadline && !ready) {
+      ready = await aeProbeOnce(ae, ROOT, 60_000);
+      if (!ready) console.log("generate: AE probe not ready yet, retrying...");
+    }
+    if (!ready) {
+      finish("ae-not-ready", { reason: "AE did not answer the DOM probe within 5min" });
+      process.exit(3);
+    }
+    console.log("generate: AE script-ready probe passed");
   }
 
   // Fresh markers: stale .done files must never be mistaken for this run.

@@ -20,6 +20,7 @@
 //   [371,480f)  E           -> material comp "PV end"
 
 import { comp_05 } from "../generated/05-master.ts";
+import { GENERATED_COMPS, GENERATED_FOOTAGE } from "../generated/index.ts";
 import { compileProduction, layerRef } from "../production/compile.ts";
 import type {
   CompProduction,
@@ -27,7 +28,8 @@ import type {
   SectionLayerSpec,
   SectionSpec,
 } from "../production/model.ts";
-import type { LayerSpec, ProjectSpec, PropNode } from "../spec/types.ts";
+import { ITEM_LABEL_SCENE, ITEM_LABEL_WORK, materialCompLabel } from "../production/theme.ts";
+import type { CompSpec, LayerSpec, ProjectSpec, PropNode } from "../spec/types.ts";
 
 const FPS = 24;
 const T_C = 191 / FPS; // 7.958333 — scene C start
@@ -53,10 +55,12 @@ function legacyLayer(name: string): LayerSpec {
 // ---- emitted ref ids ---------------------------------------------------------
 //
 // Ref ids ARE the legacy layer names during migration (they are already
-// unique and stable inside the material comp). Scene comp refs get explicit
-// ids so tracker nulls can parent/reference them by name.
+// unique and stable inside the material comp).
 
-const SCENE_REF_IDS = ["PV end", "PV ops", "PV reel C", "master"] as const;
+// Ref ids that cloned layers may target but which are not clone names
+// themselves: the scene-ab precomp layer. C/D/E wrapper comps are expanded
+// into real sections (SectionSpec.expand), so they no longer need ids.
+const SCENE_REF_IDS = ["master"] as const;
 
 // Explicit clone lists in legacy z-order (index 0 = top).
 const COPY_CLONES = ["description"];
@@ -223,13 +227,13 @@ function cloneSectionLayer(name: string, time?: (c: LayerSpec) => void): Section
 
 // ---- comp + project ------------------------------------------------------------
 
-function sceneRefContent(compName: string, inPoint: number, outPoint: number): SectionLayerSpec {
-  return {
-    id: compName,
-    content: { kind: "material-comp", comp: compName },
-    timing: { inPoint, outPoint, startTime: inPoint, stretch: 100 },
-    patch: { trackMatteType: 5012 },
-  };
+// Material comp dumps keyed by comp name for SectionSpec.expand. Names that
+// collide inside the material AEP (e.g. duplicated "S4 REC container") keep
+// the last entry — expand targets are unique scene wrappers.
+export function materialCompsByName(): Record<string, CompSpec> {
+  const map: Record<string, CompSpec> = {};
+  for (const c of GENERATED_COMPS) map[c.name] = c;
+  return map;
 }
 
 function pvMasterComp(): CompProduction {
@@ -239,14 +243,27 @@ function pvMasterComp(): CompProduction {
       role: "copy",
       layers: COPY_CLONES.map((n) => cloneSectionLayer(n, brandTiming)),
     },
+    // C/D/E wrapper comps are flattened into real sections: their thin
+    // wrapper layers (window borders, mattes, titles) become direct members
+    // of "PV master" with internal refs remapped to stable ids, while the
+    // inner content comps/footage stay material references.
     {
-      id: "scenes-cde",
+      id: "scene-e",
       role: "scene",
-      layers: [
-        sceneRefContent("PV end", T_E, T_END),
-        sceneRefContent("PV ops", T_D, T_E),
-        sceneRefContent("PV reel C", T_C, T_D),
-      ],
+      expand: { comp: "PV end", offset: T_E },
+      layers: [],
+    },
+    {
+      id: "scene-d",
+      role: "scene",
+      expand: { comp: "PV ops", offset: T_D },
+      layers: [],
+    },
+    {
+      id: "scene-c",
+      role: "scene",
+      expand: { comp: "PV reel C", offset: T_C },
+      layers: [],
     },
     {
       id: "brand",
@@ -256,6 +273,9 @@ function pvMasterComp(): CompProduction {
     {
       id: "rig-tracker",
       role: "guide",
+      // Pure null rig — safe to fold: shy layers still evaluate, so the
+      // corner quads' tracking keeps working while the timeline declutters.
+      group: { folded: true },
       layers: [
         ...RIG_CLONES.map((n) => cloneSectionLayer(n)),
         // Ancestor-closure nulls the legacy stack carried for the corner
@@ -307,11 +327,12 @@ function pvMasterComp(): CompProduction {
   return {
     id: "pv-master",
     name: "PV master",
+    label: ITEM_LABEL_SCENE,
     sections,
   };
 }
 
-function pvProductionProject(): ProductionProject {
+export function pvProductionProject(): ProductionProject {
   return {
     name: "restro-pv",
     frame: {
@@ -327,6 +348,63 @@ function pvProductionProject(): ProductionProject {
   };
 }
 
+// Material-AEP items have no spec entries; label them by name so the
+// project panel distinguishes shipping scene comps from working/tmp items.
+function materialItemLabels(): Record<string, number> {
+  const labels: Record<string, number> = {};
+  for (const c of GENERATED_COMPS) labels[c.name] = materialCompLabel(c.name);
+  for (const f of GENERATED_FOOTAGE) labels[f.name] = ITEM_LABEL_WORK;
+  return labels;
+}
+
+// Transitive keep-set for material pruning: every material comp/footage the
+// generated project can reach, computed from the compiled spec's own
+// references plus the dump's internal layer sources. Names (not indices)
+// because the material AEP resolves sources by name.
+export function materialKeepSet(spec: ProjectSpec): {
+  keepComps: string[];
+  keepFootage: string[];
+} {
+  const compByName = new Map<string, CompSpec[]>();
+  for (const c of GENERATED_COMPS) {
+    const arr = compByName.get(c.name) ?? [];
+    arr.push(c);
+    compByName.set(c.name, arr);
+  }
+  const keepComps = new Set<string>();
+  const keepFootage = new Set<string>();
+  const queue: string[] = [];
+  const seed = (name: string | undefined) => {
+    // Keep every referenced comp name even when the dump lacks it — pruning
+    // something we cannot analyze is worse than keeping an extra comp.
+    if (!name || keepComps.has(name)) return;
+    keepComps.add(name);
+    if (compByName.has(name)) queue.push(name);
+  };
+  for (const comp of spec.comps) {
+    for (const l of comp.layers) {
+      if (l.kind === "comp" && l.sourceCompIndex === undefined) seed(l.source);
+      if (l.kind === "footage") keepFootage.add(l.source ?? "");
+    }
+  }
+  while (queue.length) {
+    const name = queue.pop()!;
+    for (const c of compByName.get(name) ?? []) {
+      for (const l of c.layers) {
+        if (l.kind === "comp") seed(l.source);
+        if (l.kind === "footage" && l.source) keepFootage.add(l.source);
+      }
+    }
+  }
+  keepFootage.delete("");
+  return { keepComps: [...keepComps].sort(), keepFootage: [...keepFootage].sort() };
+}
+
 export function pvProductionSpec(): ProjectSpec {
-  return compileProduction(pvProductionProject());
+  const spec = compileProduction(pvProductionProject(), {
+    materialComps: materialCompsByName(),
+  });
+  spec.itemLabels = materialItemLabels();
+  spec.pruneMaterial = materialKeepSet(spec);
+  return spec;
 }

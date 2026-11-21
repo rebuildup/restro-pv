@@ -34,16 +34,22 @@ var __CTX = "";
 // ExtendScript throws "Object of type Error" when an Error is concatenated
 // with +, so error objects must go through this before string building.
 function __estr(e) {
-  try {
-    var s = String(e.description || e.message || e);
-    // ExtendScript Error carries .line/.source/.fileName -- keep them so a
-    // bare "undefined is not an object" can be traced back to the JSX line.
-    var extra = "";
-    try { if (e.line !== undefined) extra += " @line " + e.line; } catch (x) {}
-    try { if (e.fileName) extra += " (" + e.fileName + ")"; } catch (x) {}
-    return s + extra;
-  }
-  catch (x) { return "(unprintable error)"; }
+  // NEVER String()/concatenate a raw catch value: ExtendScript throws
+  // "Object of type Error found where a Number, Array, or Property is
+  // needed" for Error-typed operands, which would kill the error path
+  // itself. Read known string fields with typeof guards instead.
+  var s = "";
+  try { var d = e.description; if (typeof d === "string" && d) s = d; } catch (x) {}
+  if (!s) { try { var m = e.message; if (typeof m === "string" && m) s = m; } catch (x) {} }
+  if (!s) { try { if (typeof e === "string") s = e; } catch (x) {} }
+  if (!s) { try { var n = e.name; if (typeof n === "string" && n) s = n; } catch (x) {} }
+  if (!s) s = "[unprintable thrown value]";
+  // ExtendScript Error carries .line/.source/.fileName -- keep them so a
+  // bare "undefined is not an object" can be traced back to the JSX line.
+  var extra = "";
+  try { if (e.line !== undefined) extra += " @line " + e.line; } catch (x) {}
+  try { if (e.fileName) extra += " (" + e.fileName + ")"; } catch (x) {}
+  return s + extra;
 }
 function __ctxMsg(msg) { return (__CTX ? __CTX + " | " : "") + String(msg); }
 function __warn(msg) { msg = __ctxMsg(msg); __WARN.push(msg); try { if ($.writeln) $.writeln("PV-WARN " + msg); } catch (x) {} }
@@ -230,6 +236,16 @@ function __childProp(parent, child) {
   if (!p && child.name) { try { p = parent.property(child.name); } catch (e2) {} }
   return p;
 }
+// Vector content groups (shape-layer Contents) carry functional names:
+// FoldLayers dividers are identified by FD-0/FD-1/FD-H:* group names inside
+// "ADBE Root Vectors Group", and dumped shape groups keep their authored
+// names. addProperty() gives a default name, so rename right after creation.
+// Other property types reject name writes -- restrict to vector groups.
+function __maybeRenameGroup(cp, ch) {
+  if (!cp || !ch || ch.matchName !== "ADBE Vector Group" || !ch.name) return;
+  try { cp.name = ch.name; }
+  catch (ne) { __warn("vector group rename failed '" + ch.name + "': " + __estr(ne)); }
+}
 function __applyNode(p, node, path) {
   if (!p) { __err("missing property " + path); return; }
   if (node.numProperties && node.properties && node.properties.length) {
@@ -265,6 +281,7 @@ function __applyNode(p, node, path) {
       if (addMode) {
         try { cp = p.addProperty(ch.matchName); }
         catch (ae) { __err("addProperty " + ch.matchName + " under " + path + ": " + __estr(ae)); continue; }
+        __maybeRenameGroup(cp, ch);
       } else {
         cp = __childProp(p, ch);
       }
@@ -330,6 +347,7 @@ function __applyGroup(root, node, path) {
     if (addMode) {
       try { cp = root.addProperty(ch.matchName); }
       catch (ae) { __err("addProperty " + ch.matchName + " under " + path + ": " + __estr(ae)); continue; }
+      __maybeRenameGroup(cp, ch);
     } else {
       cp = __childProp(root, ch);
     }
@@ -376,6 +394,7 @@ function __importFootage(spec, footageByName) {
     try { si = __solidItem(spec.color || [1, 1, 1], spec.name, spec.width || 100, spec.height || 100); }
     catch (se) { __err("addSolid failed " + spec.name + ": " + __estr(se)); return null; }
     footageByName[spec.name] = si;
+    if (spec.label !== undefined) { try { si.label = __num(spec.label); } catch (le) {} }
     return si;
   }
   var rel = spec.file;
@@ -397,7 +416,10 @@ function __importFootage(spec, footageByName) {
     try { item = app.project.importFile(/** @type {any} */ (f)); }
     catch (ie2) { __err("importFile failed " + rel + ": " + __estr(ie2)); return null; }
   }
-  if (item) footageByName[spec.name || item.name] = item;
+  if (item) {
+    footageByName[spec.name || item.name] = item;
+    if (spec.label !== undefined) { try { item.label = __num(spec.label); } catch (le) {} }
+  }
   return item;
 }
 function __createLayer(comp, ls, footageByName, compItems) {
@@ -426,6 +448,26 @@ function __createLayer(comp, ls, footageByName, compItems) {
   try { L.name = name; } catch (ne) {}
   return L;
 }
+// Read-only state snapshot attached to a create-layer failure so the report
+// distinguishes API misuse, dead references and host-state problems without
+// needing a rerun. Never mutates the project.
+function __createDiag(comp, ls) {
+  var parts = [];
+  try { parts.push("kind=" + ls.kind); } catch (x) {}
+  try { parts.push("src=" + (ls.source === undefined ? "-" : ls.source)); } catch (x) {}
+  try { parts.push("sci=" + ls.sourceCompIndex); } catch (x) {}
+  try { parts.push("layers=" + comp.layers.length); } catch (x) { parts.push("layers=?"); }
+  try {
+    var m = "add";
+    if (ls.kind === "shape") m = "addShape";
+    else if (ls.kind === "text") m = "addText";
+    else if (ls.kind === "null") m = "addNull";
+    parts.push("fn." + m + "=" + typeof comp.layers[m]);
+  } catch (x) { parts.push("fn=?"); }
+  try { parts.push("items=" + app.project.numItems); } catch (x) {}
+  try { parts.push("compOk=" + (comp instanceof CompItem)); } catch (x) {}
+  return parts.join(" ");
+}
 function __setProp(p, v) {
   if (v === undefined || v === null) return;
   if (__isShapeVal(v)) { p.setValue(__toShape(v)); return; }
@@ -447,6 +489,7 @@ function __applyLayer(L, ls, compLayers) {
     // enabled=false is applied after all property writes as a defensive
     // ordering measure; shy/guide layers remain editable throughout.
     if (ls.shy) L.shy = true;
+    if (ls.label !== undefined) { try { L.label = __num(ls.label); } catch (le) {} }
     if (ls.guideLayer) L.guideLayer = true;
     // Order matters: startTime/stretct position the layer bar first; setting
     // inPoint/outPoint afterwards trims the visible range without dragging
@@ -582,6 +625,10 @@ function buildProject(spec) {
       if (cs.bgColor) {
         try { c.bgColor = __scalar(cs.bgColor); } catch (bge) {}
       }
+      if (cs.label !== undefined) { try { c.label = __num(cs.label); } catch (le) {} }
+      // hideShyLayers is required for shy layers (e.g. FoldLayers-folded
+      // groups) to actually disappear from the comp view and renders.
+      if (cs.hideShyLayers) { try { c.hideShyLayers = true; } catch (hs) {} }
       compItems.push(c);
     } catch (ce) { __err("addComp failed " + cs.name + ": " + __estr(ce)); compItems.push(null); }
   }
@@ -597,25 +644,18 @@ function buildProject(spec) {
     __prog("comp start " + compSpec.name + " (" + layers.length + " layers)");
     // layers.add* inserts at the TOP of the stack, so iterate the spec
     // (AE order, [0] = top) in reverse to reproduce the original stacking.
+    // A failed add is a hard error with a state snapshot — never retried:
+    // blind retries hid the real failure mode for tens of minutes.
     for (var ri = layers.length - 1; ri >= 0; ri--) {
       var ls = layers[ri];
       var L = null;
       __CTX = compSpec.name + " / " + (ls.name || ("layer" + ls.index));
-      // First open of a large material AEP leaves AE asynchronously
-      // indexing/conforming for tens of seconds; layers.add() on comp
-      // sources throws transiently during that window. Retry with backoff
-      // (~50s coverage) -- a persistent failure still lands in the error list.
-      var delays = [0, 5000, 15000, 30000];
-      for (var att = 0; att < delays.length && !L; att++) {
-        if (delays[att] > 0) { try { if ($.sleep) $.sleep(delays[att]); } catch (sx) {} }
-        try {
-          L = __createLayer(comp, ls, footageByName, compItems);
-          if (!L) break; // unresolved source already recorded an error
-        }
-        catch (ce2) {
-          if (att === delays.length - 1) __err("create layer failed " + ls.name + ": " + __estr(ce2));
-          else __warn("create layer retry " + ls.name + " (" + __estr(ce2) + ")");
-        }
+      try {
+        L = __createLayer(comp, ls, footageByName, compItems);
+      }
+      catch (ce2) {
+        __err("create layer failed " + ls.name + ": " + __estr(ce2) +
+          " [diag " + __createDiag(comp, ls) + "]");
       }
       created[ri] = L;
     }
@@ -632,6 +672,82 @@ function buildProject(spec) {
     __prog("comp done " + compSpec.name + " (" + layers.length + " layers, " +
       (new Date().getTime() - compT0) + "ms)");
     try { if ($.writeln) $.writeln("PV comp done: " + compSpec.name + " (" + layers.length + " layers)"); } catch (x) {}
+  }
+  // Expression audit: AE reports per-property evaluation errors through
+  // Property.expressionError. Scan every property of every layer we built;
+  // any non-empty error is a hard failure — a generated project with broken
+  // expressions must not count as successful (issue #14).
+  var exprErrCount = 0;
+  function __scanExprNode(p, path) {
+    var expr = "";
+    try { expr = p.expression; } catch (e) {}
+    if (expr) {
+      var ee = "";
+      try { ee = p.expressionError; } catch (e2) {}
+      if (ee) {
+        exprErrCount++;
+        __err("expressionError " + path + ": " + __estr(ee));
+      }
+    }
+    var n = 0;
+    try { n = p.numProperties; } catch (e3) {}
+    for (var pi = 1; pi <= n; pi++) {
+      var cp = null;
+      try { cp = p.property(pi); } catch (e4) { continue; }
+      if (cp) __scanExprNode(cp, path + "/" + pi);
+    }
+  }
+  function __scanExprLayer(L, cname, lname) {
+    var roots = ["ADBE Transform Group", "ADBE Mask Parade", "ADBE Effect Parade",
+      "ADBE Root Vectors Group", "ADBE Text Properties", "ADBE Time Remapping"];
+    for (var ri = 0; ri < roots.length; ri++) {
+      var root = null;
+      try { root = L.property(roots[ri]); } catch (e) {}
+      if (root) __scanExprNode(root, cname + "/" + lname + "/" + roots[ri]);
+    }
+  }
+  for (var sci = 0; sci < compItems.length; sci++) {
+    var scomp = compItems[sci];
+    if (!scomp) continue;
+    for (var sli = 1; sli <= scomp.numLayers; sli++) {
+      var slayer = null;
+      try { slayer = scomp.layer(sli); } catch (e) {}
+      if (slayer) __scanExprLayer(slayer, scomp.name, slayer.name);
+    }
+  }
+  __prog("expression audit done, errors=" + exprErrCount);
+  // Label every project item (covers material-AEP comps/footage, which have
+  // no spec entry of their own) from the authored name -> color map.
+  if (spec.itemLabels) {
+    for (var li2 = 1; li2 <= app.project.numItems; li2++) {
+      var itm = null;
+      try { itm = app.project.item(li2); } catch (e) {}
+      if (!itm) continue;
+      var lv = spec.itemLabels[itm.name];
+      if (lv !== undefined) { try { itm.label = __num(lv); } catch (le) {} }
+    }
+  }
+  // Prune material-AEP items outside the authored keep lists so the saved
+  // project contains only what the generated comp actually references.
+  // Iterate backwards: remove() shifts later indices.
+  if (spec.pruneMaterial) {
+    var keepC = {}, keepF = {}, ourC = {}, ourF = {};
+    var pk;
+    for (pk = 0; pk < spec.pruneMaterial.keepComps.length; pk++) keepC[spec.pruneMaterial.keepComps[pk]] = 1;
+    for (pk = 0; pk < spec.pruneMaterial.keepFootage.length; pk++) keepF[spec.pruneMaterial.keepFootage[pk]] = 1;
+    for (pk = 0; pk < spec.comps.length; pk++) ourC[spec.comps[pk].name] = 1;
+    for (pk = 0; pk < spec.footage.length; pk++) ourF[spec.footage[pk].name] = 1;
+    var pruned = 0;
+    for (var pi3 = app.project.numItems; pi3 >= 1; pi3--) {
+      var it3 = null;
+      try { it3 = app.project.item(pi3); } catch (e) {}
+      if (!it3 || it3 instanceof FolderItem) continue;
+      var drop = false;
+      if (it3 instanceof CompItem) drop = !ourC[it3.name] && !keepC[it3.name];
+      else if (it3 instanceof FootageItem) drop = !ourF[it3.name] && !keepF[it3.name];
+      if (drop) { try { it3.remove(); pruned++; } catch (re) {} }
+    }
+    __prog("material prune: removed=" + pruned);
   }
   // drop the scratch comp used to mint solid footage items
   if (__solidHost) {
