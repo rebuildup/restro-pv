@@ -1,8 +1,9 @@
-// Contract tests for the grid-driven brand verification comp
-// (pv/scenes/brandcheck.ts): placement must come from GridSpec + named
-// regions + anchor-relative motion — never from absolute coordinates —
-// and pv/production/layoutCheck.ts must prove rest AND drifted display
-// rects stay inside the frame.
+// Contract tests for the kg_LayoutGrid-driven brand verification comp
+// (pv/scenes/brandcheck.ts): placement must come from the original
+// 12x24 grid + named regions + anchor-relative motion — never from
+// absolute coordinates — and pv/production/layoutCheck.ts must prove
+// rest AND drifted display rects, with bleed/overlap declarations
+// scoped to specific pairs and reasons.
 
 import { describe, expect, test } from "bun:test";
 import { brandCheckProject, brandCheckSpec } from "../pv/scenes/brandcheck.ts";
@@ -14,7 +15,9 @@ import { materialCompsByName } from "../pv/scenes/production.ts";
 
 const spec = brandCheckSpec();
 const comp = spec.comps[0] as CompSpec;
-const GRID = { columns: 12, rows: 16, margin: { x: 48, y: 48 }, gutter: { x: 16, y: 16 } };
+// kg_LayoutGrid verified parameters (master / Adjustment Layer 5).
+const GRID = { columns: 12, rows: 24, margin: { x: 32, y: 80 }, gutter: { x: 12, y: 12 } };
+const FRAME = { width: 1080, height: 1080 };
 
 function byName(name: string): LayerSpec {
   const l = comp.layers.find((x) => x.name === name);
@@ -48,7 +51,7 @@ function recompile(mutate: (c: typeof brandCheckProject.comps[0]) => void): Proj
   return compileProduction(p, { materialComps: materialCompsByName() });
 }
 
-describe("brand-check grid layout", () => {
+describe("brand-check kg grid layout", () => {
   test("frame matches the master; brand materials + assets survive", () => {
     expect(spec.comps).toHaveLength(1);
     expect(comp.name).toBe("brand-check");
@@ -86,32 +89,52 @@ describe("brand-check grid layout", () => {
     expect(names.filter((n) => /guide|grid/i.test(n))).toEqual([]);
   });
 
-  test("parent wiring: brand layers ride their drift anchors", () => {
+  test("anchor bases land on the original grid intersections", () => {
+    const grid = createGrid(GRID, FRAME);
+    const restPos = (l: LayerSpec): number[] => {
+      const k = child(l.transform!, "ADBE Position")!.keys![0].v as number[];
+      return [k[0], k[1]];
+    };
+    // Original toComp measurements: Heading (32,740), Logo (32,429),
+    // description top-left (32,585). Grid intersections are within 1px.
+    const hd = restPos(byName("anchor:heading-drift"));
+    const ld = restPos(byName("anchor:logo-drift"));
+    const desc = positionOf(byName("description"));
+    expect(hd[0]).toBeCloseTo(grid.columnX(0), 5);
+    expect(hd[1]).toBeCloseTo(grid.rowY(17), 5);
+    expect(hd[1]).toBeCloseTo(740, 0);
+    expect(ld[0]).toBeCloseTo(grid.columnX(0), 5);
+    expect(ld[1]).toBeCloseTo(grid.rowY(9), 5);
+    expect(ld[1]).toBeCloseTo(429, 0);
+    expect(desc[0]).toBeCloseTo(32, 5);
+    expect(desc[1]).toBeCloseTo(585, 0);
+  });
+
+  test("parent wiring: brand layers ride their drift anchors at offset 0", () => {
     const heading = byName("Heading");
     const logo = byName("Logo");
     const hd = byName("anchor:heading-drift");
     const ld = byName("anchor:logo-drift");
     expect(heading.parentIndex).toBe(hd.index);
     expect(logo.parentIndex).toBe(ld.index);
-    const grid = createGrid(GRID, { width: 1080, height: 1080 });
-    const restPos = (l: LayerSpec): number[] => {
-      const k = child(l.transform!, "ADBE Position")!.keys![0].v as number[];
-      return [k[0], k[1]];
-    };
-    const headingTarget = grid.span([0, 12, 4, 15]); // top-left
-    const logoZone = grid.span([0, 3, 4, 6]);
-    const logoTarget = {
-      x: logoZone.x + logoZone.width / 2,
-      y: logoZone.y + logoZone.height / 2,
-    };
-    const eff = (l: LayerSpec, a: LayerSpec, tx: number, ty: number) => {
-      const [ax, ay] = restPos(a);
-      const [cx, cy] = positionOf(l);
-      expect(ax + cx).toBeCloseTo(tx, 3);
-      expect(ay + cy).toBeCloseTo(ty, 3);
-    };
-    eff(heading, hd, headingTarget.x, headingTarget.y);
-    eff(logo, ld, logoTarget.x, logoTarget.y);
+    // Child layout targets equal the anchor bases -> parent-local pos 0,
+    // so effective world pos == anchor pos (as in the original rig).
+    expect(positionOf(heading)[0]).toBeCloseTo(0, 5);
+    expect(positionOf(heading)[1]).toBeCloseTo(0, 5);
+    expect(positionOf(logo)[0]).toBeCloseTo(0, 5);
+    expect(positionOf(logo)[1]).toBeCloseTo(0, 5);
+  });
+
+  test("original 833% brand scale and anchors are preserved verbatim", () => {
+    for (const name of ["Heading", "Logo"]) {
+      const l = byName(name);
+      expect(vec3(child(l.transform!, "ADBE Scale"))).toEqual([833.3333333333, 833.3333333333, 100]);
+      expect(vec3(child(l.transform!, "ADBE Anchor Point"))).toEqual([0, 0, 0]);
+    }
+    // Icon: 330% scale, bottom-left anchor (240x234 source).
+    const icon = byName("Icon (Ae)");
+    expect(vec3(child(icon.transform!, "ADBE Scale"))).toEqual([330, 330, 100]);
+    expect(vec3(child(icon.transform!, "ADBE Anchor Point"))).toEqual([0, 234, 0]);
   });
 
   test("drift anchors keep grid base + offset keys (counter-phase)", () => {
@@ -130,41 +153,21 @@ describe("brand-check grid layout", () => {
     expect(speed(ly[0].outEase?.[0])).toBe(-248);
   });
 
-  test("zones are disjoint and inside the rail; stage takes the right side", () => {
-    const grid = createGrid(GRID, { width: 1080, height: 1080 });
-    const rail = grid.span([0, 0, 4, 15]);
-    const stage = grid.span([5, 0, 11, 15]);
-    const icon = grid.span([0, 0, 4, 2]);
-    const logo = grid.span([0, 3, 4, 6]);
-    const copy = grid.span([0, 7, 4, 11]);
-    const heading = grid.span([0, 12, 4, 15]);
+  test("stage takes the right columns; brand rail is cols 0-4", () => {
+    const grid = createGrid(GRID, FRAME);
+    const rail = grid.span([0, 0, 4, 23]);
+    const stage = grid.span([5, 0, 11, 23]);
+    expect(rail.x).toBeCloseTo(32, 5);
     expect(rail.width).toBeGreaterThan(400);
     expect(rail.width).toBeLessThan(450);
     expect(stage.x).toBeGreaterThanOrEqual(rail.x + rail.width);
     expect(stage.x + stage.width).toBeLessThanOrEqual(1080);
-    const zones = [icon, logo, copy, heading];
-    for (let i = 0; i < zones.length; i++) {
-      for (let j = i + 1; j < zones.length; j++) {
-        const a = zones[i];
-        const b = zones[j];
-        const overlap =
-          a.x < b.x + b.width && b.x < a.x + a.width &&
-          a.y < b.y + b.height && b.y < a.y + a.height;
-        expect(overlap).toBe(false);
-      }
-    }
-  });
-
-  test("icon scale comes from metrics, not a patch transform", () => {
-    const icon = byName("Icon (Ae)");
-    const scale = child(icon.transform!, "ADBE Scale");
-    expect(vec3(scale)).toEqual([70, 70, 100]);
   });
 
   test("grid change re-flows placements and keeps layout valid", () => {
     const base = positionOf(byName("description"));
     const wide = recompile((c) => {
-      c.grid = { ...c.grid!, margin: { x: 40, y: 48 } };
+      c.grid = { ...c.grid!, margin: { x: 40, y: 80 } };
     });
     const wideComp = wide.comps[0] as CompSpec;
     const moved = wideComp.layers.find((l) => l.name === "description")!;
@@ -179,40 +182,53 @@ describe("brand-check grid layout", () => {
     expect(kWide).not.toEqual(kBase);
     // And the re-flowed layout still satisfies every constraint.
     const p = structuredClone(brandCheckProject);
-    p.comps[0].grid = { ...p.comps[0].grid!, margin: { x: 40, y: 48 } };
-    expect(checkProjectLayout(p)).toEqual([]);
+    p.comps[0].grid = { ...p.comps[0].grid!, margin: { x: 40, y: 80 } };
+    const report = checkProjectLayout(p);
+    expect(report.violations).toEqual([]);
   });
 });
 
 describe("layoutCheck — swept-rect constraints", () => {
   test("authored brand-check project has zero violations", () => {
-    expect(checkProjectLayout(brandCheckProject)).toEqual([]);
+    const report = checkProjectLayout(brandCheckProject);
+    expect(report.violations).toEqual([]);
+    // Bleeding brand elements are reported as unverified-by-design notes,
+    // never silently skipped.
+    expect(report.unverified.some((u) => u.layer === "Heading")).toBe(true);
+    expect(report.unverified.some((u) => u.layer === "Logo")).toBe(true);
   });
 
-  test("reproduces the off-frame bug: bottom-row zone + drift is rejected", () => {
-    // The pre-fix layout put zone-heading on the last row; the +155px
-    // drift then carried the display rect past the frame bottom.
+  test("undeclared bleed is rejected as off-frame", () => {
     const p = structuredClone(brandCheckProject);
-    p.comps[0].regions!["zone-heading"] = { span: [0, 15, 4, 15] };
-    const violations = checkProjectLayout(p);
-    const offFrame = violations.filter((v) => v.kind === "off-frame");
-    expect(offFrame.length).toBeGreaterThan(0);
-    expect(offFrame.some((v) => v.layer.includes("Heading"))).toBe(true);
+    const heading = p.comps[0].sections
+      .flatMap((s) => s.layers)
+      .find((l) => l.name === "Heading")!;
+    delete heading.allowBleed;
+    const report = checkProjectLayout(p);
+    expect(report.violations.some((v) => v.kind === "off-frame" && v.layer.includes("Heading"))).toBe(
+      true,
+    );
   });
 
-  test("undeclared rest overlap is rejected; declared overlap passes", () => {
+  test("undeclared rest overlap is rejected; scoped declaration passes", () => {
     const p = structuredClone(brandCheckProject);
-    // Move description up into the icon zone without declaring overlap
-    // (logo's allowOverlap only covers the logo<->copy pair, so the
-    // icon<->description collision must still be reported).
+    // Move description up into the icon band without a matching
+    // declaration (its allowOverlap names only "Heading").
     const desc = p.comps[0].sections
       .flatMap((s) => s.layers)
       .find((l) => l.name === "description")!;
-    desc.layout = { region: "zone-icon", align: "top-left" };
-    const violations = checkProjectLayout(p);
-    expect(violations.some((v) => v.kind === "overlap")).toBe(true);
+    desc.layout = { region: "anchor-icon", align: "top-left" };
+    const report = checkProjectLayout(p);
+    expect(report.violations.some((v) => v.kind === "overlap")).toBe(true);
+    // Declaring the overlap against the WRONG counterpart must not help.
+    desc.allowOverlap = { reason: "wrong pair", with: ["Logo"] };
+    expect(checkProjectLayout(p).violations.some((v) => v.kind === "overlap")).toBe(true);
+    // Naming the actual counterpart suppresses exactly that pair.
+    desc.allowOverlap = { reason: "icon band overlap", with: ["Icon (Ae)"] };
+    const ok = checkProjectLayout(p);
+    expect(ok.violations.filter((v) => v.kind === "overlap")).toEqual([]);
     // Restoring the authored layout is clean again.
-    expect(checkProjectLayout(brandCheckProject)).toEqual([]);
+    expect(checkProjectLayout(brandCheckProject).violations).toEqual([]);
   });
 
   test("unresolvable parent is rejected", () => {
@@ -221,7 +237,17 @@ describe("layoutCheck — swept-rect constraints", () => {
       .flatMap((s) => s.layers)
       .find((l) => l.name === "Heading")!;
     heading.parent = "no-such-anchor";
-    const violations = checkProjectLayout(p);
-    expect(violations.some((v) => v.kind === "bad-parent")).toBe(true);
+    const report = checkProjectLayout(p);
+    expect(report.violations.some((v) => v.kind === "bad-parent")).toBe(true);
+  });
+
+  test("missing metrics are reported unverified, not skipped", () => {
+    const p = structuredClone(brandCheckProject);
+    const icon = p.comps[0].sections
+      .flatMap((s) => s.layers)
+      .find((l) => l.name === "Icon (Ae)")!;
+    delete icon.metrics;
+    const report = checkProjectLayout(p);
+    expect(report.unverified.some((u) => u.layer === "Icon (Ae)")).toBe(true);
   });
 });

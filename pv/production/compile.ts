@@ -464,7 +464,9 @@ function applyLayout(
   if (anchor) setTransformValue(transform, "ADBE Anchor Point", [anchor.x, anchor.y, 0]);
   const scale = layerSpec.metrics?.scale;
   if (scale !== undefined) {
-    setTransformValue(transform, "ADBE Scale", [scale * 100, scale * 100, 100]);
+    const sx = typeof scale === "number" ? scale : scale.x;
+    const sy = typeof scale === "number" ? scale : scale.y;
+    setTransformValue(transform, "ADBE Scale", [sx * 100, sy * 100, 100]);
   }
 }
 

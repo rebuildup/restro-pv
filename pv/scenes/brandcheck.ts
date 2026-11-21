@@ -1,37 +1,36 @@
-// Brand verification comp — grid-driven layout of the brand block
-// (Step 2 layout-system work on Issue #19).
+// Brand verification comp — original kg_LayoutGrid-driven brand layout
+// (Phase B of the scene-structure rebuild on Issue #19).
 //
-// Goal: establish the production layout system — GridSpec + named regions
-// + anchor-relative motion — and place Icon / Logo / Description / Heading
-// / Main from those rules. Absolute coordinates appear nowhere; every
-// placement is a region + align rule, and every motion is an offset key on
-// a grid-anchored null.
+// Grid: the master comp's kg_LayoutGrid effect parameters, verified by
+// direct property-tree dump (Adjustment Layer 5):
+//   12 columns x 24 rows, margin L/R 32, T/B 80, gutter 12/12.
+//   -> cell 73.67 x 26.83px; grid lines x32..1048 step 85.67,
+//      y80..1000 step 38.83. See tests/grid-original.test.ts.
 //
-// Composition read from the original master (verified renders + dumps):
-//   - left ~40% column carries the brand stack, bottom-weighted
-//   - Logo sits above Description/Heading; description overlays lower area
-//   - scene content occupies the right ~60% ("Main" stage)
-//   - brand drift: Heading moves down / Logo moves up during 4.5-15.5s
+// The original brand elements are NOT neat cell occupants — they are
+// oversized comps anchored on grid intersections and cropped by the
+// frame (declared via allowBleed). Decoded from the legacy master dumps
+// (P-null rig: anchor[50,50] scale12% -> world = parentPos + 0.12*(child
+// - 50)) and confirmed by toComp measurement:
 //
-// Grid: 12x16 cells, margin 48, gutter 16 -> cell pitch ~83.3x62.5px.
-//   rail  cols 0-4  (~417px) — brand column, matches material width 416
-//   stage cols 5-11 (~567px) — main content area
+//   element      anchor world pos      grid point        display size
+//   Heading      (32, 740) -> +155     col0 x row17      3466x550  (833%)
+//   Logo         (32, 429) -> -155     col0 x row9       3466x2166 (833%)
+//   description  top-left (32, 585)    col0 x row13      416x298   (100%)
+//   Ae.png       anchor BL ~(32, 391)  col0 x row8       792x772   (330%)
 //
-// Vertical budget (the reason for 16 rows): the drift amplitudes are
-// fixed at +/-155px, so each zone must leave that clearance INSIDE the
-// frame at both rest and peak:
-//   zone-icon    rows 0-2   y 48-235    Ae.png app icon (~70% scale)
-//   zone-logo    rows 3-6   y 235-485   Logo 416x260, drifts UP 155
-//   zone-copy    rows 7-11  y 485-798   description 416x298, static
-//   zone-heading rows12-15  y 798-1032  Heading 416x66, drifts DOWN 155
-//                                       -> peak bottom 1019.5 <= 1032
+// Drift is anchor-relative: heading-drift / logo-drift nulls sit on grid
+// intersections; key values are comp-space OFFSETS (+155 / -155, same
+// times and ease speeds as legacy P 9 / P 5). A grid change re-places
+// the base AND the whole trajectory.
 //
-// Motion is anchor-relative: two shy null anchors sit on their layout
-// zones; key values are Vec3 OFFSETS from the grid-derived base, so a
-// grid change re-places both the rest position and the whole trajectory.
-// pv/production/layoutCheck.ts verifies statically that rest AND swept
-// (all key deltas) display rects stay inside the frame — the heading
-// zone used to sit on the last row, which put its +155px drift off-screen.
+// PLUGIN ("AFTER EFFECTS\rPLUGIN", MeiryoUI ~861%/745% near grid
+// col6-7 x row3) is intentionally NOT a layer yet: its TextDocument
+// dump is a separate material-extraction task. Its placement rule is
+// recorded in docs as region "zone-plugin" below.
+//
+// Z-order (front-to-back), matching the original backdrop role:
+//   stage > description > Heading > Icon(Ae) > Logo > bg-white
 //
 // Build: bun tools/build-jsx.ts --spec pv/scenes/brandcheck.ts \
 //          --out dist/brandcheck.jsx --save .tmp/probe/brandcheck.aep
@@ -53,10 +52,9 @@ const FRAME = {
 };
 
 // ---- drift keys -------------------------------------------------------------
-// Original counter-phase move reproduced as comp-space offsets: Heading
-// +155px down, Logo -155px up, same key times and ease speeds as the
-// legacy P 9 / P 5 rig (the 12% rig compresses 155px of travel into its
-// own units; in comp space the amplitude is simply 155px).
+// Original counter-phase move as comp-space offsets: Heading +155px down,
+// Logo -155px up. Key times/eases verbatim from the legacy P 9 / P 5 dump
+// (3.875->4.5 move, 15.5->16.1667 return; ease speeds +/-248 / -/+232.5).
 
 function driftKeys(direction: 1 | -1): KeySpec[] {
   const amp = 155 * direction;
@@ -82,29 +80,36 @@ const comp: CompProduction = {
   id: "brand-check",
   name: "brand-check",
   label: ITEM_LABEL_WORK,
-  grid: { columns: 12, rows: 16, margin: { x: 48, y: 48 }, gutter: { x: 16, y: 16 } },
+  // kg_LayoutGrid verified parameters (Adjustment Layer 5 dump).
+  grid: { columns: 12, rows: 24, margin: { x: 32, y: 80 }, gutter: { x: 12, y: 12 } },
   regions: {
-    stage: { span: [5, 0, 11, 15] },
-    // Brand rail zones, top->bottom (see header for the drift budget).
-    "zone-icon": { span: [0, 0, 4, 2] },
-    "zone-logo": { span: [0, 3, 4, 6] },
-    "zone-copy": { span: [0, 7, 4, 11] },
-    "zone-heading": { span: [0, 12, 4, 15] },
+    // Right ~55% content stage (original scene comps occupy this area).
+    stage: { span: [5, 0, 11, 23] },
+    // Brand rail: material comps are 416px wide -> cols 0-4 (428px).
+    "zone-copy": { span: [0, 13, 4, 21] }, // description top-left @ row13
+    // Single-cell spans below resolve to exact grid intersections —
+    // the original anchor positions sit ON grid lines, not inside cells.
+    "anchor-heading": { span: [0, 17, 0, 17] }, // (32, ~740)
+    "anchor-logo": { span: [0, 9, 0, 9] }, // (32, ~429)
+    "anchor-icon": { span: [0, 8, 0, 8] }, // (32, ~391) bottom-left
+    // PLUGIN text placement rule (layer deferred — see header):
+    // original ~(554,202) -> cols 6-7 x rows 3-5.
+    "zone-plugin": { span: [6, 3, 8, 5] },
   },
   anchors: [
     {
       id: "heading-drift",
-      layout: { region: "zone-heading", align: "top-left" },
+      layout: { region: "anchor-heading", align: "top-left" },
       keys: driftKeys(1),
     },
     {
       id: "logo-drift",
-      layout: { region: "zone-logo", align: "center" },
+      layout: { region: "anchor-logo", align: "top-left" },
       keys: driftKeys(-1),
     },
   ],
-  // Front-to-back like the original: scene content on top, the brand
-  // stack as backdrop, the white ground last.
+  // Front-to-back like the original: scene content on top, brand stack
+  // as backdrop, the white ground last.
   sections: [
     {
       id: "stage",
@@ -115,7 +120,7 @@ const comp: CompProduction = {
           name: "Main (stage)",
           content: { kind: "footage", asset: "main-panel" },
           layout: { region: "stage", align: "center" },
-          metrics: { width: 567, height: 984, anchor: { x: 283.5, y: 492 } },
+          metrics: { width: 588, height: 920, anchor: { x: 294, y: 460 } },
         },
       ],
     },
@@ -128,56 +133,86 @@ const comp: CompProduction = {
           name: "description",
           content: { kind: "material-comp", comp: "description" },
           layout: { region: "zone-copy", align: "top-left" },
-          // Content bbox measured from material renders (fills the comp).
+          // Original top-left (32,585) == grid point (col0,row13).
+          // Content bbox measured from material renders (fills comp).
           metrics: {
             width: 416,
             height: 298,
             anchor: { x: 0, y: 0 },
             bounds: { x: 0, y: 0, width: 416, height: 298 },
           },
+          // description renders above Heading in the original (idx 10
+          // vs 15); their rects overlap y740-883 like the master.
+          allowOverlap: {
+            reason: "description overlays the heading brush band, as in master",
+            with: ["Heading"],
+          },
         },
         {
           id: "heading",
           name: "Heading",
           content: { kind: "material-comp", comp: "Heading" },
-          layout: { region: "zone-heading", align: "top-left" },
-          // Alpha bbox: glyphs occupy x0-328 of the 416px comp.
+          layout: { region: "anchor-heading", align: "top-left" },
+          parent: "heading-drift",
+          // Verbatim original: 416x66 comp, anchor [0,0], scale 833.333%.
+          // Alpha bbox: glyphs occupy x0-329 of the 416px comp.
           metrics: {
             width: 416,
             height: 66,
             anchor: { x: 0, y: 0 },
             bounds: { x: 0, y: 0, width: 329, height: 66 },
+            scale: 8.333333333333,
           },
-          parent: "heading-drift",
-        },
-        {
-          id: "logo",
-          name: "Logo",
-          content: { kind: "material-comp", comp: "Logo" },
-          layout: { region: "zone-logo", align: "center" },
-          metrics: {
-            width: 416,
-            height: 260,
-            anchor: { x: 208, y: 130 },
-            bounds: { x: 0, y: 0, width: 416, height: 260 },
+          // 3466x550 display rect anchored at (32,740) — mostly off-frame
+          // by design, exactly like the master crop. +155 drift extends
+          // the bleed further; both are the original behavior.
+          allowBleed: "833% brand brush comp cropped by frame, as in master",
+          allowOverlap: {
+            reason: "heading band renders below stage panel, as backdrop",
+            with: ["Main (stage)"],
           },
-          parent: "logo-drift",
-          // Backdrop like the original: its bottom edge tucks 5px under
-          // the description zone; the description renders above it.
-          allowOverlap: "backdrop edge tucks under description zone top",
         },
         {
           id: "icon",
           name: "Icon (Ae)",
           content: { kind: "footage", asset: "ae-icon" },
-          layout: { region: "zone-icon", align: "center" },
-          // 240x234 PNG at 70% -> 168x164 display, centered in the slot.
+          layout: { region: "anchor-icon", align: "bottom-left" },
+          // Original: 240x234 PNG at 330%, anchor bottom-left, visible
+          // band y0-~368. Bottom-left of cell (0,8) ~= (32,391).
           metrics: {
             width: 240,
             height: 234,
-            anchor: { x: 120, y: 117 },
+            anchor: { x: 0, y: 234 },
             bounds: { x: 0, y: 0, width: 240, height: 234 },
-            scale: 0.7,
+            scale: 3.3,
+          },
+          allowBleed: "330% icon extends above frame top, as in master",
+          allowOverlap: {
+            reason: "icon top band overlaps stage region edge; renders below scene",
+            with: ["Main (stage)"],
+          },
+        },
+        {
+          id: "logo",
+          name: "Logo",
+          content: { kind: "material-comp", comp: "Logo" },
+          layout: { region: "anchor-logo", align: "top-left" },
+          parent: "logo-drift",
+          // Verbatim original: 416x260 comp, anchor [0,0], scale 833.333%.
+          metrics: {
+            width: 416,
+            height: 260,
+            anchor: { x: 0, y: 0 },
+            bounds: { x: 0, y: 0, width: 416, height: 260 },
+            scale: 8.333333333333,
+          },
+          // 3466x2166 backdrop anchored at (32,429) — the master crops it
+          // to the left ~2/3 of frame; -155 drift lifts it further.
+          allowBleed: "833% logo backdrop cropped right/bottom, as in master",
+          // Deepest backdrop: sits under every other layer by design.
+          allowOverlap: {
+            reason: "giant logo brush backdrop renders under all content",
+            with: ["*"],
           },
         },
       ],
@@ -194,7 +229,10 @@ const comp: CompProduction = {
           // part of the authored structure and survives bgColor changes.
           layout: { rect: { x: 0, y: 0, width: 1080, height: 1080 } },
           metrics: { width: 1080, height: 1080, anchor: { x: 540, y: 540 } },
-          allowOverlap: "full-frame ground sits under every layer",
+          allowOverlap: {
+            reason: "full-frame ground sits under every layer",
+            with: ["*"],
+          },
         },
       ],
     },
@@ -211,8 +249,8 @@ const project: ProductionProject = {
       kind: "solid",
       name: "Main panel",
       color: [0.93, 0.93, 0.93],
-      width: 567,
-      height: 984,
+      width: 588,
+      height: 920,
     },
     {
       id: "bg-white",

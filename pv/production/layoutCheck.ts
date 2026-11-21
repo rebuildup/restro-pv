@@ -4,20 +4,23 @@
 //   - the REST display rect: layout position (grid/region/span/align/
 //     offset) -> comp-space anchor point -> content bounds via
 //     metrics.{anchor,bounds,scale}
-//   - the MOTION envelope: position-key deltas of the anchor parent chain
-//     (translation only; scale/rotation inside material comps are invisible
-//     here and must be checked on real renders)
+//   - the MOTION envelope: position-key deltas (with times) of the anchor
+//     parent chain — translation only; scale/rotation/internal animation
+//     inside material comps are invisible here and must be checked on
+//     real renders (reported via `unverified`, never silently assumed).
 //
-// Violations:
-//   - "off-frame": the swept rect (rest + every key delta) leaves the comp
-//     frame — this is the check that catches e.g. a bottom-row zone plus a
-//     +155px drift pushing content off screen.
-//   - "overlap": two layers' REST display rects intersect and neither
-//     declares `allowOverlap` with a reason.
-//   - "bad-parent": a parent ref that resolves to nothing.
+// Results are split into:
+//   - violations: "off-frame" (swept rect leaves the comp frame),
+//     "overlap" (display rects intersect without a scoped declaration),
+//     "bad-parent" (unresolvable parent ref)
+//   - unverified: layers whose content size is unknown — the lint cannot
+//     reason about them and says so instead of skipping quietly.
 //
-// Layers without enough metrics to reason about (unknown content size)
-// are skipped — the lint never guesses.
+// Declarations are scoped, never blanket:
+//   - allowBleed: reason string permitting frame overflow (crop).
+//   - allowOverlap {reason, with, during}: permits overlap only with the
+//     named counterpart layers ("*" = any, for grounds) and only inside
+//     the comp-time window `during` (rest pose counts as t=0).
 
 import type { Vec2, Vec3 } from "../spec/types.ts";
 import { layoutPosition, mergeFrame } from "./compile.ts";
@@ -37,16 +40,34 @@ export interface LayoutViolation {
   layer: string;
   kind: LayoutViolationKind;
   detail: string;
-  /** Offending rect in comp space (rest rect for overlap, swept for off-frame). */
   rect?: Rect;
+}
+
+export interface LayoutUnverified {
+  comp: string;
+  layer: string;
+  reason: string;
+}
+
+export interface LayoutReport {
+  violations: LayoutViolation[];
+  unverified: LayoutUnverified[];
 }
 
 interface PlacedLayer {
   id: string;
   name: string;
   rect: Rect;
-  swept: Rect;
-  allowOverlap?: string;
+  /** Display rects at rest (treat as pose at comp time 0) and at each anchor key time. */
+  poses: { t: number; rect: Rect }[];
+  allowOverlap?: SectionLayerSpec["allowOverlap"];
+  allowBleed?: string;
+}
+
+interface AnchorCtx {
+  byId: Map<string, AnchorSpec>;
+  comp: CompProduction;
+  grid: ReturnType<typeof createGrid> | null;
 }
 
 const EPS = 0.5;
@@ -80,6 +101,10 @@ function insideFrame(r: Rect, frame: { width: number; height: number }): boolean
   );
 }
 
+function translate(r: Rect, dx: number, dy: number): Rect {
+  return { x: r.x + dx, y: r.y + dy, width: r.width, height: r.height };
+}
+
 function unionRect(rs: Rect[]): Rect {
   let x0 = Infinity;
   let y0 = Infinity;
@@ -94,22 +119,10 @@ function unionRect(rs: Rect[]): Rect {
   return { x: x0, y: y0, width: x1 - x0, height: y1 - y0 };
 }
 
-function translate(r: Rect, dx: number, dy: number): Rect {
-  return { x: r.x + dx, y: r.y + dy, width: r.width, height: r.height };
-}
-
-interface AnchorCtx {
-  byId: Map<string, AnchorSpec>;
-  comp: CompProduction;
-  grid: ReturnType<typeof createGrid> | null;
-}
-
-/** Comp-space rest position of an anchor (layout base / at / parent+offset). */
 function anchorBase(anchor: AnchorSpec, ctx: AnchorCtx, depth = 0): Vec2 | null {
   if (depth > 8) return null;
   if (anchor.layout) {
-    const p = layoutPosition(anchor.layout, ctx.comp, ctx.grid, `anchor "${anchor.id}"`);
-    return p ?? null;
+    return layoutPosition(anchor.layout, ctx.comp, ctx.grid, `anchor "${anchor.id}"`) ?? null;
   }
   if (anchor.at) return { x: anchor.at.x, y: anchor.at.y };
   if (anchor.parent) {
@@ -123,29 +136,31 @@ function anchorBase(anchor: AnchorSpec, ctx: AnchorCtx, depth = 0): Vec2 | null 
   return { x: 0, y: 0 };
 }
 
-/** Position deltas (comp space) contributed by an anchor's keys. */
-function anchorDeltas(anchor: AnchorSpec, ctx: AnchorCtx): { dx: number; dy: number }[] {
+/** Motion poses contributed by an anchor's keys: {t, dx, dy} deltas. */
+function anchorPoses(anchor: AnchorSpec, ctx: AnchorCtx): { t: number; dx: number; dy: number }[] {
   if (!anchor.keys?.length) return [];
-  // Layout anchors store key values as OFFSETS from the grid-derived base
-  // (see AnchorSpec.layout); `at`/parented anchors store absolute positions.
   if (anchor.layout) {
     return anchor.keys.map((k) => {
       const v = vec3Of(k.v);
-      return { dx: v.x, dy: v.y };
+      return { t: k.t, dx: v.x, dy: v.y };
     });
   }
   const base = anchorBase(anchor, ctx);
   if (!base) return [];
   return anchor.keys.map((k) => {
     const v = vec3Of(k.v);
-    return { dx: v.x - base.x, dy: v.y - base.y };
+    return { t: k.t, dx: v.x - base.x, dy: v.y - base.y };
   });
 }
 
-/**
- * Rest display rect of a section layer in comp space, or null when the
- * content size is unknown (lint skips rather than guesses).
- */
+function scalePair(scale: number | { x: number; y: number } | undefined): {
+  x: number;
+  y: number;
+} {
+  if (scale === undefined) return { x: 1, y: 1 };
+  return typeof scale === "number" ? { x: scale, y: scale } : scale;
+}
+
 function displayRect(
   layer: SectionLayerSpec,
   pos: Vec2,
@@ -157,17 +172,42 @@ function displayRect(
   if (!srcW || !srcH) return null;
   const b = m?.bounds ?? { x: 0, y: 0, width: srcW, height: srcH };
   const anchor = m?.anchor ?? { x: frame.width / 2, y: frame.height / 2 };
-  const s = m?.scale ?? 1;
+  const s = scalePair(m?.scale);
   return {
-    x: pos.x + (b.x - anchor.x) * s,
-    y: pos.y + (b.y - anchor.y) * s,
-    width: b.width * s,
-    height: b.height * s,
+    x: pos.x + (b.x - anchor.x) * s.x,
+    y: pos.y + (b.y - anchor.y) * s.y,
+    width: b.width * s.x,
+    height: b.height * s.y,
   };
 }
 
-function checkComp(comp: CompProduction, project: ProductionProject): LayoutViolation[] {
-  const out: LayoutViolation[] = [];
+function overlapAllowed(
+  decl: SectionLayerSpec["allowOverlap"],
+  selfName: string,
+  selfId: string,
+  otherName: string,
+  otherId: string,
+  t: number,
+): boolean {
+  if (decl === undefined) return false;
+  const d = typeof decl === "string" ? { reason: decl } : decl;
+  if (d.with && d.with.length > 0) {
+    const ok = d.with.some(
+      (w) => w === "*" || w === selfName || w === selfId || w === otherName || w === otherId,
+    );
+    // `with` names the counterparts this layer may overlap; match either side.
+    const names = new Set([selfName, selfId, otherName, otherId]);
+    const scoped = d.with.some((w) => w === "*" || names.has(w));
+    if (!scoped) return false;
+    void ok;
+  }
+  if (d.during && (t < d.during[0] || t > d.during[1])) return false;
+  return true;
+}
+
+function checkComp(comp: CompProduction, project: ProductionProject): LayoutReport {
+  const violations: LayoutViolation[] = [];
+  const unverified: LayoutUnverified[] = [];
   const frame = mergeFrame(project.frame, comp.frame);
   const grid = comp.grid ? createGrid(comp.grid, frame) : null;
   const anchors = comp.anchors ?? [];
@@ -186,7 +226,7 @@ function checkComp(comp: CompProduction, project: ProductionProject): LayoutViol
       const where = `${comp.name}/${name}`;
 
       if (layer.parent && !anchorById.has(layer.parent) && !layerIds.has(layer.parent)) {
-        out.push({
+        violations.push({
           comp: comp.name,
           layer: name,
           kind: "bad-parent",
@@ -195,39 +235,45 @@ function checkComp(comp: CompProduction, project: ProductionProject): LayoutViol
         return;
       }
 
-      // Rest anchor-point position in comp space. No layout => the compiler
-      // centers the layer on the frame (centeredTransform default).
       const pos =
         (layer.layout ? layoutPosition(layer.layout, comp, grid, `${where} layout`) : null) ??
         { x: frame.width / 2, y: frame.height / 2 };
       const rect = displayRect(layer, pos, frame);
-      if (!rect) return; // insufficient metrics — skipped by design
-
-      // Motion envelope from the parent anchor's position keys.
-      const deltas: { dx: number; dy: number }[] = [];
-      const parentAnchor = layer.parent ? anchorById.get(layer.parent) : undefined;
-      if (parentAnchor) deltas.push(...anchorDeltas(parentAnchor, ctx));
-      const swept = unionRect([rect, ...deltas.map((d) => translate(rect, d.dx, d.dy))]);
-
-      if (!insideFrame(swept, frame)) {
-        out.push({
+      if (!rect) {
+        unverified.push({
           comp: comp.name,
           layer: name,
-          kind: "off-frame",
-          detail:
-            `${where}: swept rect ${fmt(swept)} leaves frame ` +
-            `${frame.width}x${frame.height} (rest ${fmt(rect)}; ` +
-            `${deltas.length} motion deltas)`,
-          rect: swept,
+          reason: `${where}: content size unknown (metrics.width/height or bounds missing)`,
         });
+        return;
       }
-      placed.push({
-        id,
-        name,
-        rect,
-        swept,
-        allowOverlap: layer.allowOverlap,
-      });
+
+      const deltas: { t: number; dx: number; dy: number }[] = [];
+      const parentAnchor = layer.parent ? anchorById.get(layer.parent) : undefined;
+      if (parentAnchor) deltas.push(...anchorPoses(parentAnchor, ctx));
+      const poses = [{ t: 0, rect }, ...deltas.map((d) => ({ t: d.t, rect: translate(rect, d.dx, d.dy) }))];
+      const swept = unionRect(poses.map((p) => p.rect));
+
+      if (!insideFrame(swept, frame)) {
+        if (layer.allowBleed) {
+          unverified.push({
+            comp: comp.name,
+            layer: name,
+            reason: `${where}: bleeds frame by design (${layer.allowBleed}); swept ${fmt(swept)}`,
+          });
+        } else {
+          violations.push({
+            comp: comp.name,
+            layer: name,
+            kind: "off-frame",
+            detail:
+              `${where}: swept rect ${fmt(swept)} leaves frame ` +
+              `${frame.width}x${frame.height} (rest ${fmt(rect)})`,
+            rect: swept,
+          });
+        }
+      }
+      placed.push({ id, name, rect, poses, allowOverlap: layer.allowOverlap, allowBleed: layer.allowBleed });
     });
   }
 
@@ -235,29 +281,48 @@ function checkComp(comp: CompProduction, project: ProductionProject): LayoutViol
     for (let j = i + 1; j < placed.length; j++) {
       const a = placed[i];
       const b = placed[j];
-      if (!rectsIntersect(a.rect, b.rect)) continue;
-      if (a.allowOverlap || b.allowOverlap) continue;
-      out.push({
+      // Check every pose pair; an overlap counts at the pose times involved.
+      let hit: { ta: number; tb: number; ra: Rect; rb: Rect } | null = null;
+      for (const pa of a.poses) {
+        for (const pb of b.poses) {
+          if (rectsIntersect(pa.rect, pb.rect)) {
+            hit = { ta: pa.t, tb: pb.t, ra: pa.rect, rb: pb.rect };
+            break;
+          }
+        }
+        if (hit) break;
+      }
+      if (!hit) continue;
+      const t = Math.max(hit.ta, hit.tb);
+      const aOk = overlapAllowed(a.allowOverlap, a.name, a.id, b.name, b.id, t);
+      const bOk = overlapAllowed(b.allowOverlap, b.name, b.id, a.name, a.id, t);
+      if (aOk || bOk) continue;
+      violations.push({
         comp: comp.name,
         layer: `${a.name} x ${b.name}`,
         kind: "overlap",
         detail:
-          `${comp.name}: rest rects overlap (${fmt(a.rect)} vs ${fmt(b.rect)}); ` +
-          `declare allowOverlap with a reason on one layer to accept`,
-        rect: a.rect,
+          `${comp.name}: display rects overlap at t=${t} ` +
+          `(${fmt(hit.ra)} vs ${fmt(hit.rb)}); declare scoped allowOverlap`,
+        rect: hit.ra,
       });
     }
   }
-  return out;
+  return { violations, unverified };
 }
 
 function fmt(r: Rect): string {
   return `(${r.x.toFixed(1)},${r.y.toFixed(1)} ${r.width.toFixed(1)}x${r.height.toFixed(1)})`;
 }
 
-/** Lint every comp of the project; returns all violations found. */
-export function checkProjectLayout(project: ProductionProject): LayoutViolation[] {
-  const out: LayoutViolation[] = [];
-  for (const comp of project.comps) out.push(...checkComp(comp, project));
-  return out;
+/** Lint every comp of the project. */
+export function checkProjectLayout(project: ProductionProject): LayoutReport {
+  const violations: LayoutViolation[] = [];
+  const unverified: LayoutUnverified[] = [];
+  for (const comp of project.comps) {
+    const r = checkComp(comp, project);
+    violations.push(...r.violations);
+    unverified.push(...r.unverified);
+  }
+  return { violations, unverified };
 }

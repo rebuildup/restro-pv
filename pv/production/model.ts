@@ -108,11 +108,12 @@ export interface ContentMetrics {
    */
   bounds?: Rect;
   /**
-   * Uniform display scale (1 = source pixels). Applied to ADBE Scale at
-   * compile time AND used by layout lint, so the authored value is the
-   * single source of truth — never duplicate it in `patch`.
+   * Display scale vs source pixels. Uniform number or per-axis pair.
+   * Applied to ADBE Scale at compile time AND used by layout lint, so the
+   * authored value is the single source of truth — never duplicate it in
+   * `patch`.
    */
-  scale?: number;
+  scale?: number | { x: number; y: number };
 }
 
 /**
@@ -187,11 +188,22 @@ export interface SectionLayerSpec {
   /** Parent ref: an anchor id or another section layer id in the same comp. */
   parent?: string;
   /**
-   * Declared reason this layer may overlap neighbours at rest (e.g. a
-   * backdrop whose edge tucks under the layer above). Required string —
-   * layout lint rejects undeclared overlaps; a bare flag is not allowed.
+   * Declared rest-overlap allowance, scoped to specific counterpart
+   * layers and optionally a comp-time range — a blanket "may overlap
+   * anything" is not expressible. `with` lists counterpart layer ids or
+   * names ("*" matches all, for full-frame grounds); `during` is a
+   * [start,end] seconds window of comp time in which the overlap may
+   * occur. `reason` is required.
    */
-  allowOverlap?: string;
+  allowOverlap?:
+    | string
+    | { reason: string; with?: string[]; during?: [number, number] };
+  /**
+   * Declared reason this layer's display rect may leave the comp frame
+   * (intentional crop/bleed, e.g. the oversized brand brush elements).
+   * Without it, layout lint rejects off-frame sweeps.
+   */
+  allowBleed?: string;
   patch?: LayerPatch;
 }
 
