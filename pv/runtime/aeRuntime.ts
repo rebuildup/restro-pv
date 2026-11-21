@@ -618,27 +618,56 @@ function buildProject(spec) {
     __prog("comp start " + compSpec.name + " (" + layers.length + " layers)");
     // layers.add* inserts at the TOP of the stack, so iterate the spec
     // (AE order, [0] = top) in reverse to reproduce the original stacking.
+    //
+    // After opening a large material AEP, AE keeps conforming/indexing and
+    // rendering comp previews on its main thread for minutes; DOM mutations
+    // (layers.add*) throw "undefined is not an object" while that work is in
+    // flight, then recover on their own. Per-layer backoff cannot distinguish
+    // that window from a real failure, so creation runs in rounds instead:
+    // one pass over every layer, then retry only the thrown failures after
+    // progressively longer settles. A source that resolves to nothing is a
+    // permanent error (already logged) and is never retried.
+    var pending = [];
     for (var ri = layers.length - 1; ri >= 0; ri--) {
       var ls = layers[ri];
       var L = null;
       __CTX = compSpec.name + " / " + (ls.name || ("layer" + ls.index));
-      // First open of a large material AEP leaves AE asynchronously
-      // indexing/conforming for tens of seconds; layers.add() on comp
-      // sources throws transiently during that window. Retry with backoff
-      // (~50s coverage) -- a persistent failure still lands in the error list.
-      var delays = [0, 5000, 15000, 30000];
-      for (var att = 0; att < delays.length && !L; att++) {
-        if (delays[att] > 0) { try { if ($.sleep) $.sleep(delays[att]); } catch (sx) {} }
-        try {
-          L = __createLayer(comp, ls, footageByName, compItems);
-          if (!L) break; // unresolved source already recorded an error
-        }
-        catch (ce2) {
-          if (att === delays.length - 1) __err("create layer failed " + ls.name + ": " + __estr(ce2));
-          else __warn("create layer retry " + ls.name + " (" + __estr(ce2) + ")");
-        }
+      try {
+        L = __createLayer(comp, ls, footageByName, compItems);
+      }
+      catch (ce2) {
+        __warn("create layer deferred " + ls.name + " (" + __estr(ce2) + ")");
+        pending.push(ri);
       }
       created[ri] = L;
+    }
+    var settle = spec.createSettleMs || [0];
+    for (var round = 0; round < settle.length && pending.length; round++) {
+      try { if ($.sleep) $.sleep(settle[round]); } catch (sx) {}
+      var still = [];
+      for (var pi = 0; pi < pending.length; pi++) {
+        var pri = pending[pi];
+        var pls = layers[pri];
+        __CTX = compSpec.name + " / " + (pls.name || ("layer " + pls.index));
+        try {
+          var pl = __createLayer(comp, pls, footageByName, compItems);
+          created[pri] = pl;
+          if (!pl) continue; // permanent: unresolved source already logged
+        }
+        catch (pe) {
+          still.push(pri);
+          if (round === settle.length - 1) {
+            __err("create layer failed " + pls.name + ": " + __estr(pe));
+          }
+        }
+      }
+      pending = still;
+      __prog("comp " + compSpec.name + " create retry round " + (round + 1) +
+        " pending=" + pending.length);
+    }
+    for (var pi2 = 0; pi2 < pending.length; pi2++) {
+      // Unreachable: the last round already logged each remaining failure.
+      created[pending[pi2]] = null;
     }
     for (var li = 0; li < layers.length; li++) {
       if (created[li]) {
