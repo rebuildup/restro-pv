@@ -82,6 +82,15 @@ describe("brand-check faithful reproduction", () => {
     expect(vec3(child(p33, "ADBE Scale"))).toEqual([100, 100, 100]);
   });
 
+  test("brand layers do not time-remap, matching the original master", () => {
+    // Live AE read on legacy master: timeRemapEnabled=false on both layers.
+    for (const n of ["Heading", "Logo"]) {
+      const l = byName(n);
+      expect(l.timeRemapEnabled).toBeFalsy();
+      expect(l.timeRemap).toBeUndefined();
+    }
+  });
+
   test("rig nulls keep the 12% compressed coordinate system", () => {
     for (const n of ["P 9", "P 5"]) {
       const t = byName(n).transform!;

@@ -20,9 +20,13 @@
 //         423 -> 268 @same times, -> 423 @16.17s                  (idx 136)
 //    └ Logo comp "Logo" 416x260 scale 833.333% pos[100,100]        (idx 18)
 //
-// Effective anchor positions (computed, verified against AE toComp pending):
-//   Heading (38,746)/(38,901)/(38,746) — moves DOWN 155px during 4.5-15.5s
-//   Logo    (38,435)/(38,280)/(38,435) — moves UP   155px, counter-phase
+// Effective anchor positions — measured via AE toComp on both projects
+// (identical to 4 decimals at all sampled times):
+//   Heading (32,740)/(32,895)/(32,740) — moves DOWN 155px during 4.5-15.5s
+//   Logo    (32,429)/(32,274)/(32,429) — moves UP   155px, counter-phase
+// Neither brand layer uses time remap — live AE read on the original master
+// reports timeRemapEnabled=false (an earlier dump field was stale). The
+// material comps play their own timeline, same as the original.
 //
 // Z-order kept from the original: Heading renders above Logo; the rig nulls
 // sit at the bottom of the stack like the original null block. Elements
