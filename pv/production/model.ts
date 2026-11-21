@@ -100,6 +100,19 @@ export interface ContentMetrics {
   height?: number;
   /** Anchor point in source pixels; written to ADBE Anchor Point when set. */
   anchor?: Vec2;
+  /**
+   * Visible content rect inside the source (source pixels, top-left
+   * origin). Material comps often carry transparent padding — layout
+   * lint reasons about THIS rect, not the nominal comp size. Defaults to
+   * {0,0,width,height}.
+   */
+  bounds?: Rect;
+  /**
+   * Uniform display scale (1 = source pixels). Applied to ADBE Scale at
+   * compile time AND used by layout lint, so the authored value is the
+   * single source of truth — never duplicate it in `patch`.
+   */
+  scale?: number;
 }
 
 /**
@@ -173,6 +186,12 @@ export interface SectionLayerSpec {
   timing?: SectionTiming;
   /** Parent ref: an anchor id or another section layer id in the same comp. */
   parent?: string;
+  /**
+   * Declared reason this layer may overlap neighbours at rest (e.g. a
+   * backdrop whose edge tucks under the layer above). Required string —
+   * layout lint rejects undeclared overlaps; a bare flag is not allowed.
+   */
+  allowOverlap?: string;
   patch?: LayerPatch;
 }
 

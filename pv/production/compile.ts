@@ -92,7 +92,7 @@ function clone<T>(v: T): T {
 
 // ---- frame / layout ----------------------------------------------------------
 
-function mergeFrame(base: FrameSpec, over: Partial<FrameSpec> | undefined): FrameSpec {
+export function mergeFrame(base: FrameSpec, over: Partial<FrameSpec> | undefined): FrameSpec {
   const out: FrameSpec = { ...base };
   if (!over) return out;
   const rec = out as unknown as Record<string, unknown>;
@@ -109,7 +109,7 @@ function regionRect(region: RegionSpec, grid: Grid | null, where: string): Rect 
   return grid.span(region.span);
 }
 
-function layoutRect(
+export function layoutRect(
   layout: LayoutSpec,
   comp: CompProduction,
   grid: Grid | null,
@@ -146,7 +146,7 @@ const ALIGN_POINT: Record<Align, (r: Rect) => Vec2> = {
   "bottom-right": (r) => ({ x: r.x + r.width, y: r.y + r.height }),
 };
 
-function layoutPosition(
+export function layoutPosition(
   layout: LayoutSpec,
   comp: CompProduction,
   grid: Grid | null,
@@ -462,6 +462,10 @@ function applyLayout(
   setTransformValue(transform, "ADBE Position", [pos.x, pos.y, 0]);
   const anchor = layerSpec.metrics?.anchor;
   if (anchor) setTransformValue(transform, "ADBE Anchor Point", [anchor.x, anchor.y, 0]);
+  const scale = layerSpec.metrics?.scale;
+  if (scale !== undefined) {
+    setTransformValue(transform, "ADBE Scale", [scale * 100, scale * 100, 100]);
+  }
 }
 
 function applyPatch(layer: LayerSpec, patch: SectionLayerSpec["patch"]): void {
