@@ -64,6 +64,13 @@ export type RegionSpec = { span: CellSpan } | { rect: Rect };
 export interface AnchorSpec {
   id: string;
   at?: Vec3;
+  /**
+   * Grid/region placement for unparented anchors (mutually exclusive with
+   * `parent`). When set, `at` is ignored and `keys` values are treated as
+   * Vec3 OFFSETS added to the layout-derived position — so keyed anchors
+   * keep tracking the grid instead of freezing absolute coordinates.
+   */
+  layout?: LayoutSpec;
   parent?: string;
   offset?: Vec3;
   keys?: KeySpec[];
@@ -97,7 +104,10 @@ export interface ContentMetrics {
 
 /**
  * Placement of a section layer. Exactly one of `position` / `rect` /
- * `region` / `span` applies (`position` wins and needs no metrics):
+ * `region` / `span` applies (`position` wins and needs no metrics). All
+ * modes resolve to a COMP-space point first; when the layer is parented,
+ * the compiler subtracts the parent anchor's comp-space position so the
+ * stored Position stays correct in parent space:
  * - `position`: absolute comp-space position of the layer's anchor point
  * - `rect`/`region`/`span`: target rect; `align` (default "center") picks
  *   which point of the rect the anchor lands on, `offset` nudges after.

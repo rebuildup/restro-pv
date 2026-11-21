@@ -438,11 +438,25 @@ function applyLayout(
   comp: CompProduction,
   grid: Grid | null,
   where: string,
+  parentWorldPos?: (parent: string) => Vec2 | null,
 ): void {
   const layout = layerSpec.layout;
   if (!layout) return;
-  const pos = layoutPosition(layout, comp, grid, `${where} layout`);
+  let pos = layoutPosition(layout, comp, grid, `${where} layout`);
   if (!pos) return;
+  // Layout modes resolve to comp space; under a parent the stored Position
+  // must be parent-local, so subtract the parent anchor's comp-space
+  // position. Layer (non-anchor) parents cannot be resolved statically —
+  // fail loudly instead of writing a comp-space value into a local slot.
+  if (layerSpec.parent !== undefined) {
+    const w = parentWorldPos?.(layerSpec.parent) ?? null;
+    if (!w) {
+      throw new Error(
+        `${where}: layout under parent "${layerSpec.parent}" requires an anchor parent`,
+      );
+    }
+    pos = { x: pos.x - w.x, y: pos.y - w.y };
+  }
   if (!layer.transform) layer.transform = baseTransform({});
   const transform = layer.transform;
   setTransformValue(transform, "ADBE Position", [pos.x, pos.y, 0]);
@@ -462,9 +476,45 @@ function applyPatch(layer: LayerSpec, patch: SectionLayerSpec["patch"]): void {
   }
 }
 
-function anchorToLayer(anchor: AnchorSpec, where: string): PendingLayer {
+function vec3Of(v: unknown): Vec3 {
+  if (Array.isArray(v)) {
+    return { x: Number(v[0]) || 0, y: Number(v[1]) || 0, z: Number(v[2]) || 0 };
+  }
+  if (v && typeof v === "object") {
+    const o = v as { x?: unknown; y?: unknown; z?: unknown };
+    return { x: Number(o.x) || 0, y: Number(o.y) || 0, z: Number(o.z) || 0 };
+  }
+  return { x: 0, y: 0, z: 0 };
+}
+
+function anchorToLayer(
+  anchor: AnchorSpec,
+  where: string,
+  comp: CompProduction,
+  grid: Grid | null,
+): PendingLayer {
   const zero: Vec3 = { x: 0, y: 0, z: 0 };
-  const position = anchor.parent ? (anchor.offset ?? zero) : (anchor.at ?? zero);
+  let base: Vec3 | undefined;
+  if (anchor.layout) {
+    if (anchor.parent !== undefined) {
+      throw new Error(`${where}: anchor "${anchor.id}" cannot combine layout with parent`);
+    }
+    const p = layoutPosition(anchor.layout, comp, grid, `${where} anchor "${anchor.id}"`);
+    if (!p) {
+      throw new Error(`${where} anchor "${anchor.id}": layout produced no position`);
+    }
+    base = { x: p.x, y: p.y, z: 0 };
+  }
+  const position = anchor.parent ? (anchor.offset ?? zero) : (base ?? anchor.at ?? zero);
+  // With a layout base, key values are Vec3 offsets from that base so the
+  // anchor keeps tracking the grid; without one they are absolute positions.
+  const keys =
+    anchor.keys && base
+      ? anchor.keys.map((k) => {
+          const o = vec3Of(k.v);
+          return { ...k, v: { x: base.x + o.x, y: base.y + o.y, z: base.z + o.z } };
+        })
+      : anchor.keys;
   return {
     refId: anchor.id,
     parent: anchor.parent,
@@ -474,7 +524,7 @@ function anchorToLayer(anchor: AnchorSpec, where: string): PendingLayer {
       kind: "null",
       shy: true,
       label: ANCHOR_LABEL,
-      transform: baseTransform({ position, positionKeys: anchor.keys }),
+      transform: baseTransform({ position, positionKeys: keys }),
     },
   };
 }
@@ -650,6 +700,46 @@ function compileComp(
     usedAssets: new Map(),
   };
 
+  // Anchor table is needed during section compilation: parented layers with
+  // a layout resolve their comp-space target against the parent anchor's
+  // comp-space position. Anchors themselves are still emitted last so AE
+  // indices keep content-first ordering.
+  const anchorSpecs = new Map<string, AnchorSpec>();
+  for (const a of comp.anchors ?? []) anchorSpecs.set(a.id, a);
+  for (const s of comp.sections) {
+    for (const a of s.anchors ?? []) anchorSpecs.set(a.id, a);
+  }
+  const anchorWorldCache = new Map<string, Vec2>();
+  const anchorWorld = (id: string, seen: Set<string>): Vec2 => {
+    const hit = anchorWorldCache.get(id);
+    if (hit) return hit;
+    const a = anchorSpecs.get(id);
+    if (!a) throw new Error(`${where}: unknown anchor "${id}"`);
+    if (seen.has(id)) throw new Error(`${where}: anchor parent cycle at "${id}"`);
+    seen.add(id);
+    let w: Vec2;
+    if (a.parent !== undefined) {
+      const p = anchorWorld(a.parent, seen);
+      const o = a.offset ?? { x: 0, y: 0, z: 0 };
+      w = { x: p.x + o.x, y: p.y + o.y };
+    } else if (a.layout) {
+      const p = layoutPosition(a.layout, comp, grid, `${where} anchor "${id}"`);
+      if (!p) throw new Error(`${where} anchor "${id}": layout produced no position`);
+      w = p;
+    } else {
+      const at = a.at ?? { x: 0, y: 0, z: 0 };
+      w = { x: at.x, y: at.y };
+    }
+    anchorWorldCache.set(id, w);
+    return w;
+  };
+  const parentWorldPos = (parent: string): Vec2 | null => {
+    // Non-anchor parents (layer refs) cannot be resolved statically; anchor
+    // world errors (unknown id, cycles) propagate as compile errors.
+    if (!anchorSpecs.has(parent)) return null;
+    return anchorWorld(parent, new Set());
+  };
+
   // Unified ref-id table: per section a FoldLayers divider (unless opted
   // out), then the section's layers front-to-back, then comp anchors last.
   // A section with group:false emits no divider, so its layers join the
@@ -698,7 +788,7 @@ function compileComp(
         if (timing.startTime !== undefined) layer.startTime = timing.startTime;
         if (timing.stretch !== undefined) layer.stretch = timing.stretch;
       }
-      applyLayout(layer, sl, comp, grid, `${sWhere} layer "${refId}"`);
+      applyLayout(layer, sl, comp, grid, `${sWhere} layer "${refId}"`, parentWorldPos);
       applyPatch(layer, sl.patch);
       options.onSectionLayer?.(comp.name, pending.length + 1, section.id);
       pending.push({ spec: layer, refId, parent: sl.parent });
@@ -729,7 +819,7 @@ function compileComp(
   }
   for (const a of compAnchors) {
     claimId(a.id, `${where} anchor`);
-    pending.push(anchorToLayer(a, `${where} anchor "${a.id}"`));
+    pending.push(anchorToLayer(a, `${where} anchor "${a.id}"`, comp, grid));
   }
 
   // Assign AE indices (spec order = AE order, [0] = top) and resolve refs.

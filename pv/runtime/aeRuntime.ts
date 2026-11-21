@@ -248,7 +248,10 @@ function __maybeRenameGroup(cp, ch) {
 }
 function __applyNode(p, node, path) {
   if (!p) { __err("missing property " + path); return; }
-  if (node.numProperties && node.properties && node.properties.length) {
+  // Group detection keys off "properties", not the redundant numProperties
+  // count: authored specs (brandcheck guides, markers) omit the count and
+  // were silently treated as leaves, producing empty shape contents.
+  if (node.properties && node.properties.length) {
     var addMode = __isAddContainer(node.matchName);
     // Group-level attrs FIRST: a disabled (enabled=false) group hides its
     // children in AE, so they must be skipped entirely -- writing them is a
@@ -448,6 +451,39 @@ function __createLayer(comp, ls, footageByName, compItems) {
   try { L.name = name; } catch (ne) {}
   return L;
 }
+// AE's layers.add* throws "undefined is not an object" while it is still
+// conforming/indexing a freshly opened material project — a state-based
+// window, not a fixed duration. Gate layer creation on a real DOM write
+// probe against the target comp instead of trusting elapsed sleeps.
+function __awaitCompReady(comp, cname, deadline) {
+  var attempt = 0;
+  while (new Date().getTime() < deadline) {
+    attempt++;
+    // Missing API is deterministic (e.g. fake hosts), not a busy window —
+    // fail fast instead of probing until the deadline.
+    var addNullFn = null;
+    try { addNullFn = comp.layers.addNull; } catch (x) {}
+    if (typeof addNullFn !== "function") {
+      __err("comp " + cname + " has no layers.addNull; cannot probe readiness");
+      return false;
+    }
+    var probe = null;
+    try {
+      probe = comp.layers.addNull();
+      if (probe) {
+        try { probe.remove(); } catch (x) {}
+        if (attempt > 1) __prog("comp " + cname + " ready after " + attempt + " probes");
+        return true;
+      }
+    } catch (pe) {
+      __prog("comp " + cname + " ready probe " + attempt + " failed: " + __estr(pe));
+    }
+    try { if ($.sleep) $.sleep(5000); } catch (sx) {}
+  }
+  __err("comp " + cname + " did not become writable in time");
+  return false;
+}
+
 // Read-only state snapshot attached to a create-layer failure so the report
 // distinguishes API misuse, dead references and host-state problems without
 // needing a rerun. Never mutates the project.
@@ -638,14 +674,19 @@ function buildProject(spec) {
     var comp = compItems[i];
     if (!comp) continue;
     var layers = compSpec.layers || [];
+    // AE's conform busy-window fluctuates: a comp can accept writes, then go
+    // busy again mid-batch. Gate the whole batch on a write probe, and on a
+    // per-layer failure re-probe until writable (bounded by a shared budget)
+    // before retrying once. Deterministic failures (unresolved sources)
+    // return null without throwing and are never retried.
+    var createDeadline = new Date().getTime() + 600000;
+    if (!__awaitCompReady(comp, compSpec.name, createDeadline)) continue;
     var created = [];
     for (var k = 0; k < layers.length; k++) created.push(null);
     var compT0 = new Date().getTime();
     __prog("comp start " + compSpec.name + " (" + layers.length + " layers)");
     // layers.add* inserts at the TOP of the stack, so iterate the spec
     // (AE order, [0] = top) in reverse to reproduce the original stacking.
-    // A failed add is a hard error with a state snapshot — never retried:
-    // blind retries hid the real failure mode for tens of minutes.
     for (var ri = layers.length - 1; ri >= 0; ri--) {
       var ls = layers[ri];
       var L = null;
@@ -654,11 +695,21 @@ function buildProject(spec) {
         L = __createLayer(comp, ls, footageByName, compItems);
       }
       catch (ce2) {
-        __err("create layer failed " + ls.name + ": " + __estr(ce2) +
-          " [diag " + __createDiag(comp, ls) + "]");
+        __prog("create layer failed " + ls.name + ": " + __estr(ce2) +
+          " [diag " + __createDiag(comp, ls) + "]; awaiting writable comp");
+        if (__awaitCompReady(comp, compSpec.name, createDeadline)) {
+          try { L = __createLayer(comp, ls, footageByName, compItems); }
+          catch (ce3) {
+            __err("create layer failed after retry " + ls.name + ": " + __estr(ce3) +
+              " [diag " + __createDiag(comp, ls) + "]");
+          }
+        }
       }
       created[ri] = L;
     }
+    var made = 0;
+    for (var ci2 = 0; ci2 < created.length; ci2++) if (created[ci2]) made++;
+    __prog("comp " + compSpec.name + " created " + made + "/" + layers.length + " layers");
     for (var li = 0; li < layers.length; li++) {
       if (created[li]) {
         __CTX = compSpec.name + " / " + (layers[li].name || ("layer" + layers[li].index));
@@ -669,6 +720,7 @@ function buildProject(spec) {
       }
     }
     __CTX = "";
+    __prog("comp " + compSpec.name + " aeLayers=" + comp.numLayers);
     __prog("comp done " + compSpec.name + " (" + layers.length + " layers, " +
       (new Date().getTime() - compT0) + "ms)");
     try { if ($.writeln) $.writeln("PV comp done: " + compSpec.name + " (" + layers.length + " layers)"); } catch (x) {}
@@ -716,6 +768,9 @@ function buildProject(spec) {
     }
   }
   __prog("expression audit done, errors=" + exprErrCount);
+  for (var dci = 0; dci < compItems.length; dci++) {
+    if (compItems[dci]) __prog("post-audit " + compItems[dci].name + " aeLayers=" + compItems[dci].numLayers);
+  }
   // Label every project item (covers material-AEP comps/footage, which have
   // no spec entry of their own) from the authored name -> color map.
   if (spec.itemLabels) {
@@ -727,6 +782,7 @@ function buildProject(spec) {
       if (lv !== undefined) { try { itm.label = __num(lv); } catch (le) {} }
     }
   }
+  if (compItems[0]) __prog("post-labels " + compItems[0].name + " aeLayers=" + compItems[0].numLayers);
   // Prune material-AEP items outside the authored keep lists so the saved
   // project contains only what the generated comp actually references.
   // Iterate backwards: remove() shifts later indices.
@@ -737,6 +793,33 @@ function buildProject(spec) {
     for (pk = 0; pk < spec.pruneMaterial.keepFootage.length; pk++) keepF[spec.pruneMaterial.keepFootage[pk]] = 1;
     for (pk = 0; pk < spec.comps.length; pk++) ourC[spec.comps[pk].name] = 1;
     for (pk = 0; pk < spec.footage.length; pk++) ourF[spec.footage[pk].name] = 1;
+    // Dependency closure: a kept comp is only usable while the items its
+    // layers point at survive. Null layers are backed by auto-named
+    // "Null N" footage items — dropping them deletes the null layer itself
+    // (observed: removing "Null 26"/"Null 27" killed the brand anchors).
+    // Walk layer sources of every kept comp until the keep set stops growing.
+    var grew = true, guard = 0;
+    while (grew && guard < 25) {
+      grew = false; guard++;
+      for (var ci9 = 1; ci9 <= app.project.numItems; ci9++) {
+        var kit = null;
+        try { kit = app.project.item(ci9); } catch (e) { continue; }
+        if (!kit || !(kit instanceof CompItem)) continue;
+        if (!keepC[kit.name] && !ourC[kit.name]) continue;
+        for (var ki = 1; ki <= kit.numLayers; ki++) {
+          var kl = null, ksrc = null;
+          try { kl = kit.layer(ki); } catch (e) { continue; }
+          if (!kl) continue;
+          try { ksrc = /** @type {any} */ (kl).source; } catch (e) { continue; }
+          if (!ksrc) continue;
+          if (ksrc instanceof CompItem) {
+            if (!keepC[ksrc.name] && !ourC[ksrc.name]) { keepC[ksrc.name] = 1; grew = true; }
+          } else if (ksrc instanceof FootageItem) {
+            if (!keepF[ksrc.name] && !ourF[ksrc.name]) { keepF[ksrc.name] = 1; grew = true; }
+          }
+        }
+      }
+    }
     var pruned = 0;
     for (var pi3 = app.project.numItems; pi3 >= 1; pi3--) {
       var it3 = null;
@@ -745,14 +828,30 @@ function buildProject(spec) {
       var drop = false;
       if (it3 instanceof CompItem) drop = !ourC[it3.name] && !keepC[it3.name];
       else if (it3 instanceof FootageItem) drop = !ourF[it3.name] && !keepF[it3.name];
-      if (drop) { try { it3.remove(); pruned++; } catch (re) {} }
+      if (drop) {
+        var nl0 = -1, iname = "?";
+        try { if (compItems[0]) nl0 = compItems[0].numLayers; } catch (x) {}
+        try { iname = it3.name; } catch (x) {}
+        try { it3.remove(); pruned++; } catch (re) {}
+        try {
+          if (compItems[0] && nl0 >= 0 && compItems[0].numLayers !== nl0) {
+            __prog("prune side-effect: removing " + iname + " changed " + compItems[0].name +
+              " layers " + nl0 + "->" + compItems[0].numLayers);
+          }
+        } catch (x) {}
+      }
     }
     __prog("material prune: removed=" + pruned);
   }
+  if (compItems[0]) __prog("post-prune " + compItems[0].name + " aeLayers=" + compItems[0].numLayers);
   // drop the scratch comp used to mint solid footage items
   if (__solidHost) {
     try { __solidHost.remove(); } catch (se) { __warn("solid host comp cleanup: " + __estr(se)); }
     __solidHost = null;
+  }
+  if (compItems[0]) __prog("post-solidhost " + compItems[0].name + " aeLayers=" + compItems[0].numLayers);
+  for (var pci = 0; pci < compItems.length; pci++) {
+    if (compItems[pci]) __prog("pre-save " + compItems[pci].name + " aeLayers=" + compItems[pci].numLayers);
   }
 }
 

@@ -247,9 +247,11 @@ test("grid change re-flows section placement", () => {
 test("layout: region/rect/align compute anchor positions", () => {
   const spec = compileProduction(demoProject(4));
   const m = masterOf(spec);
-  // brand region rect {40,40,200,100}, align top-left -> anchor lands at (40,40)
+  // brand region rect {40,40,200,100}, align top-left -> comp-space target
+  // (40,40); parented to rig.origin at (100,200) so the stored parent-local
+  // position is the difference (-60,-160).
   const mark = layerByName(m, "brand-mark");
-  assert.deepEqual(posOf(mark), [40, 40, 0]);
+  assert.deepEqual(posOf(mark), [-60, -160, 0]);
   // stage region span [1,1,2,2] on 4x4 grid, margin 40, gutter 20:
   // cellW=cellH=235; span x=295,y=295,w=510,h=510 -> center (550,550)
   const screen = layerByName(m, "stage/screen");
@@ -350,7 +352,10 @@ test("unresolvable references fail at compile time", () => {
 
   const badAnchor = demoProject(4);
   badAnchor.comps[1].sections[0].layers[0].parent = "missing.anchor";
-  assert.throws(() => compileProduction(badAnchor), /unknown parent "missing.anchor"/);
+  // The stage layer carries a layout, so the parent check fires during
+  // layout resolution (before parentIndex assignment) — still a compile
+  // error naming the bad parent.
+  assert.throws(() => compileProduction(badAnchor), /missing\.anchor/);
 
   const badAsset = demoProject(4);
   badAsset.comps[1].sections[0].layers[0].content = { kind: "footage", asset: "nope" };
@@ -526,7 +531,15 @@ test("expand flattens a material comp with remapped refs and shifted time", () =
           name: "Transform",
           matchName: "ADBE Transform Group",
           properties: [
-            { name: "Position", matchName: "ADBE Position", value: [100, 200, 0], keys: [{ t: 0.5, v: [100, 200, 0] }, { t: 1.5, v: [300, 400, 0] }] },
+            {
+              name: "Position",
+              matchName: "ADBE Position",
+              value: [100, 200, 0],
+              keys: [
+                { t: 0.5, v: [100, 200, 0] },
+                { t: 1.5, v: [300, 400, 0] },
+              ],
+            },
           ],
         },
       },
