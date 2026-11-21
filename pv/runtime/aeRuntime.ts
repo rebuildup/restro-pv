@@ -864,39 +864,70 @@ function buildProject(spec) {
   // project contains only what the generated comp actually references.
   // Iterate backwards: remove() shifts later indices.
   if (spec.pruneMaterial) {
-    var keepC = {}, keepF = {}, ourC = {}, ourF = {};
-    var pk;
-    for (pk = 0; pk < spec.pruneMaterial.keepComps.length; pk++) keepC[spec.pruneMaterial.keepComps[pk]] = 1;
-    for (pk = 0; pk < spec.pruneMaterial.keepFootage.length; pk++) keepF[spec.pruneMaterial.keepFootage[pk]] = 1;
-    for (pk = 0; pk < spec.comps.length; pk++) ourC[spec.comps[pk].name] = 1;
-    for (pk = 0; pk < spec.footage.length; pk++) ourF[spec.footage[pk].name] = 1;
-    // Dependency closure: a kept comp is only usable while the items its
-    // layers point at survive. Null layers are backed by auto-named
-    // "Null N" footage items — dropping them deletes the null layer itself
-    // (observed: removing "Null 26"/"Null 27" killed the brand anchors).
-    // Walk layer sources of every kept comp until the keep set stops growing.
+    // Dependency closure BY OBJECT IDENTITY, not name: the material AEP can
+    // hold items whose names collide with spec-created items (or with each
+    // other), and name-keyed keep lists cannot tell the duplicates apart.
+    // keepObj holds the actual AVItem references that must survive; item
+    // detection uses duck-typing (numLayers/numItems) because instanceof
+    // against the host classes is unreliable in this delivery context.
+    var keepObj = [];
+    function __keepIdx(it) {
+      for (var q = 0; q < keepObj.length; q++) if (keepObj[q] === it) return q;
+      return -1;
+    }
+    function __keepItem(it) {
+      if (it && __keepIdx(it) < 0) keepObj.push(it);
+    }
+    function __isCompItem(it) {
+      try { return it.numLayers !== undefined; } catch (e) { return false; }
+    }
+    function __isFolderItem(it) {
+      try { return it.numItems !== undefined && it.numLayers === undefined; } catch (e) { return false; }
+    }
+    function __keepLayerSource(lay) {
+      var s = null;
+      try { s = /** @type {any} */ (lay).source; } catch (e) {}
+      __keepItem(s);
+    }
+    // Seeds: every comp/footage this spec created, the solid-host scratch
+    // comp (removed by dedicated cleanup), and every layer source inside
+    // the generated comps — material comps, footage, and null backers.
+    var seedI;
+    for (seedI = 0; seedI < compItems.length; seedI++) __keepItem(compItems[seedI]);
+    __keepItem(__solidHost);
+    for (seedI = 0; seedI < spec.footage.length; seedI++) {
+      __keepItem(footageByName[spec.footage[seedI].name]);
+    }
+    for (seedI = 0; seedI < compItems.length; seedI++) {
+      var sc = compItems[seedI];
+      if (!sc) continue;
+      for (var sl0 = 1; sl0 <= sc.numLayers; sl0++) {
+        var slay0 = null;
+        try { slay0 = sc.layer(sl0); } catch (e) {}
+        if (slay0) __keepLayerSource(slay0);
+      }
+    }
+    // Closure: kept comps pull in their own layer sources until stable.
+    // Null layers are backed by auto-named "Null N" footage items —
+    // dropping them deletes the null layer itself (observed: removing
+    // "Null 26"/"Null 27" killed the brand anchors).
     var grew = true, guard = 0;
     while (grew && guard < 25) {
       grew = false; guard++;
-      for (var ci9 = 1; ci9 <= app.project.numItems; ci9++) {
-        var kit = null;
-        try { kit = app.project.item(ci9); } catch (e) { continue; }
-        if (!kit || !(kit instanceof CompItem)) continue;
-        if (!keepC[kit.name] && !ourC[kit.name]) continue;
-        for (var ki = 1; ki <= kit.numLayers; ki++) {
-          var kl = null, ksrc = null;
-          try { kl = kit.layer(ki); } catch (e) { continue; }
+      for (var ki0 = 0; ki0 < keepObj.length; ki0++) {
+        var kcomp = keepObj[ki0];
+        if (!__isCompItem(kcomp)) continue;
+        for (var ki = 1; ki <= kcomp.numLayers; ki++) {
+          var kl = null;
+          try { kl = kcomp.layer(ki); } catch (e) { continue; }
           if (!kl) continue;
-          try { ksrc = /** @type {any} */ (kl).source; } catch (e) { continue; }
-          if (!ksrc) continue;
-          if (ksrc instanceof CompItem) {
-            if (!keepC[ksrc.name] && !ourC[ksrc.name]) { keepC[ksrc.name] = 1; grew = true; }
-          } else if (ksrc instanceof FootageItem) {
-            if (!keepF[ksrc.name] && !ourF[ksrc.name]) { keepF[ksrc.name] = 1; grew = true; }
-          }
+          var before = keepObj.length;
+          __keepLayerSource(kl);
+          if (keepObj.length !== before) grew = true;
         }
       }
     }
+    __prog("prune keep-set: " + keepObj.length + " items by reference");
     // Expression + usedIn retention: name-keyed lists alone cannot see
     // references inside expression text (comp("x"), footage("x")) or
     // AVItem.usedIn consumers outside the layer-source walk. Anything
@@ -919,25 +950,18 @@ function buildProject(spec) {
       } catch (epg) {}
     }
     var __exprText = [];
-    for (var sci = 1; sci <= app.project.numItems; sci++) {
-      var sit = null;
-      try { sit = app.project.item(sci); } catch (e) {}
-      var sitKeep = false;
-      if (sit instanceof CompItem) {
-        sitKeep = !!(keepC[sit.name] || ourC[sit.name]);
-      }
-      if (sitKeep) {
-        var sitC = /** @type {any} */ (sit);
-        for (var sli = 1; sli <= sitC.numLayers; sli++) {
-          var slay = null;
-          try { slay = sitC.layer(sli); } catch (e) {}
-          if (!slay) continue;
-          __scanExprProps(slay, 0);
-          try {
-            var effs = slay.property("ADBE Effect Parade");
-            if (effs) __scanExprProps(effs, 0);
-          } catch (ee) {}
-        }
+    for (var sci = 0; sci < keepObj.length; sci++) {
+      var sitC = keepObj[sci];
+      if (!__isCompItem(sitC)) continue;
+      for (var sli = 1; sli <= sitC.numLayers; sli++) {
+        var slay = null;
+        try { slay = sitC.layer(sli); } catch (e) {}
+        if (!slay) continue;
+        __scanExprProps(slay, 0);
+        try {
+          var effs = slay.property("ADBE Effect Parade");
+          if (effs) __scanExprProps(effs, 0);
+        } catch (ee) {}
       }
     }
     var exprBlob = __exprText.join("\n");
@@ -950,15 +974,16 @@ function buildProject(spec) {
     for (var pi3 = app.project.numItems; pi3 >= 1; pi3--) {
       var it3 = null;
       try { it3 = app.project.item(pi3); } catch (e) {}
-      if (!it3 || it3 instanceof FolderItem) continue;
+      if (!it3 || __isFolderItem(it3)) continue;
       var drop = false;
       var exprHit = false;
       try { exprHit = __exprKeep(it3.name); } catch (xk) { exprHit = true; }
       var usedHit = false;
       try { var uin = /** @type {any} */ (it3).usedIn; if (uin && uin.length) usedHit = true; } catch (xu) {}
       if (exprHit) { __prog("prune keep: expression/usedIn references '" + it3.name + "'"); }
-      if (it3 instanceof CompItem) drop = !ourC[it3.name] && !keepC[it3.name] && !exprHit && !usedHit;
-      else if (it3 instanceof FootageItem) drop = !ourF[it3.name] && !keepF[it3.name] && !exprHit && !usedHit;
+      // Identity keep wins; expression/usedIn hits keep conservatively by
+      // name because they cannot be resolved to a unique object statically.
+      if (__keepIdx(it3) < 0 && !exprHit && !usedHit) drop = true;
       if (drop) {
         var nl0 = -1, iname = "?";
         try { if (compItems[0]) nl0 = compItems[0].numLayers; } catch (x) {}
@@ -976,11 +1001,19 @@ function buildProject(spec) {
     // Empty folders are never meaningful output — remove them after the
     // item sweep so authored trees stay free of husks.
     var removedFolders = 0;
-    for (var pfi = app.project.numItems; pfi >= 1; pfi--) {
-      var fitem = null;
-      try { fitem = app.project.item(pfi); } catch (e) {}
-      if (!fitem || !(fitem instanceof FolderItem)) continue;
-      try { if (fitem.numItems === 0) { fitem.remove(); removedFolders++; } } catch (fe) {}
+    var folderPass = 0;
+    var folderChanged = true;
+    // Repeat: emptying a child folder can empty its parent on the next pass.
+    while (folderChanged && folderPass < 6) {
+      folderChanged = false; folderPass++;
+      for (var pfi = app.project.numItems; pfi >= 1; pfi--) {
+        var fitem = null;
+        try { fitem = app.project.item(pfi); } catch (e) {}
+        if (!fitem || !__isFolderItem(fitem)) continue;
+        try {
+          if (/** @type {any} */ (fitem).numItems === 0) { fitem.remove(); removedFolders++; folderChanged = true; }
+        } catch (fe) {}
+      }
     }
     if (removedFolders) __prog("empty folders removed=" + removedFolders);
   }

@@ -319,6 +319,12 @@ export interface ProductionProject {
    * must reference a path present in this tree.
    */
   folders?: FolderNode[];
+  /**
+   * Folder assignment for material-AEP items by name (comps/footage the
+   * spec does not create). Validated against `folders` at compile time;
+   * names must resolve uniquely in AE or the runtime skips them.
+   */
+  materialFolders?: Record<string, string>;
   /** Repo-relative material AEP opened before the spec is built. */
   materialAep?: string;
 }

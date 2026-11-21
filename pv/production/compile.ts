@@ -983,10 +983,16 @@ export function compileProduction(
   };
   for (const c of project.comps) claimFolder(c.folder, `comp "${c.name}"`);
   for (const a of usedAssets) claimFolder(a.folder, `asset "${a.id}"`);
+  for (const [itemName, fpath] of Object.entries(project.materialFolders ?? {})) {
+    claimFolder(fpath, `material item "${itemName}"`);
+  }
   const folders = folderPaths.filter((f) => usedPaths.has(f.path));
 
   const out: ProjectSpec = { name: project.name, comps, footage };
   if (folders.length) out.folders = folders;
+  if (project.materialFolders && Object.keys(project.materialFolders).length) {
+    out.itemFolders = { ...project.materialFolders };
+  }
   if (project.materialAep !== undefined) out.materialAep = project.materialAep;
   return out;
 }

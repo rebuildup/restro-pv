@@ -112,6 +112,21 @@ describe("compileProduction folders", () => {
     ]);
   });
 
+  test("materialFolders validates paths and reaches spec.itemFolders", () => {
+    const p = project({
+      materialFolders: { "Material Comp": "03_Materials/Brand" },
+      folders: [{ name: "03_Materials", children: [{ name: "Brand" }] }],
+    });
+    const spec = compileProduction(p);
+    expect(spec.itemFolders).toEqual({ "Material Comp": "03_Materials/Brand" });
+    expect(spec.folders!.map((f) => f.path)).toContain("03_Materials/Brand");
+    const bad = project({
+      materialFolders: { "X": "Missing/Path" },
+      folders: [{ name: "03_Materials" }],
+    });
+    expect(() => compileProduction(bad)).toThrow(/undeclared folder/);
+  });
+
   test("no folders declared -> spec carries no folder fields", () => {
     const spec = compileProduction(project({}));
     expect(spec.folders).toBeUndefined();

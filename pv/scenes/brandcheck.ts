@@ -336,6 +336,14 @@ const project: ProductionProject = {
       children: [{ name: "Brand" }, { name: "Images" }, { name: "Solids" }],
     },
   ],
+  // Material-AEP comps are not created by this spec, so their folder
+  // assignment goes through the name-keyed materialFolders map (unique
+  // names only — the runtime skips ambiguous ones with a warning).
+  materialFolders: {
+    Heading: "03_Materials/Brand",
+    Logo: "03_Materials/Brand",
+    description: "03_Materials/Brand",
+  },
   // Minimal material AEP: extracted once from legacy (only the comps this
   // spec references + their dependency closure). Regenerate by building
   // against legacy/pv-2dc99e1.aep and copying the saved project.
@@ -346,14 +354,6 @@ export function brandCheckSpec(): ProjectSpec {
   const spec = compileProduction(project, { materialComps: materialCompsByName() });
   spec.itemLabels = materialItemLabels();
   spec.pruneMaterial = materialKeepSet(spec);
-  // Material-AEP comps are not created by this spec, so their folder
-  // assignment goes through the name-keyed itemFolders map (unique names
-  // only — the runtime skips ambiguous ones with a warning).
-  spec.itemFolders = {
-    Heading: "03_Materials/Brand",
-    Logo: "03_Materials/Brand",
-    description: "03_Materials/Brand",
-  };
   return spec;
 }
 
