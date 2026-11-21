@@ -1,12 +1,13 @@
-// Contract tests for the Step-2-B brand verification comp
-// (pv/scenes/brandcheck.ts): faithful reproduction of the legacy master's
-// Heading + Logo block. These pin the ORIGINAL structure — the P-null rig,
-// verbatim transforms, counter-phase Y keys, z-order — so the verification
-// AEP cannot silently regress to invented layout values.
+// Contract tests for the grid-driven brand verification comp
+// (pv/scenes/brandcheck.ts): placement must come from GridSpec + named
+// regions + anchor-relative motion — never from absolute coordinates.
 
 import { describe, expect, test } from "bun:test";
-import { brandCheckSpec } from "../pv/scenes/brandcheck.ts";
-import type { CompSpec, LayerSpec, PropNode } from "../pv/spec/types.ts";
+import { brandCheckProject, brandCheckSpec } from "../pv/scenes/brandcheck.ts";
+import { compileProduction } from "../pv/production/compile.ts";
+import { createGrid } from "../pv/production/grid.ts";
+import type { CompSpec, LayerSpec, PropNode, ProjectSpec } from "../pv/spec/types.ts";
+import { materialCompsByName } from "../pv/scenes/production.ts";
 
 const spec = brandCheckSpec();
 const comp = spec.comps[0] as CompSpec;
@@ -22,11 +23,29 @@ function child(node: PropNode, matchName: string): PropNode | undefined {
 }
 
 function vec3(node: PropNode | undefined): number[] | undefined {
-  return Array.isArray(node?.value) ? (node.value as number[]) : undefined;
+  const v = node?.value;
+  if (Array.isArray(v)) return v as number[];
+  if (v && typeof v === "object") {
+    const o = v as { x?: number; y?: number; z?: number };
+    return [Number(o.x) || 0, Number(o.y) || 0, Number(o.z) || 0];
+  }
+  return undefined;
 }
 
-describe("brand-check faithful reproduction", () => {
-  test("frame matches the original master; only brand material survives", () => {
+function positionOf(l: LayerSpec): number[] {
+  const v = vec3(child(l.transform!, "ADBE Position"));
+  if (!v) throw new Error(`${l.name}: no scalar Position`);
+  return v;
+}
+
+function recompile(mutate: (c: typeof brandCheckProject.comps[0]) => void): ProjectSpec {
+  const p = structuredClone(brandCheckProject);
+  mutate(p.comps[0]);
+  return compileProduction(p, { materialComps: materialCompsByName() });
+}
+
+describe("brand-check grid layout", () => {
+  test("frame matches the master; brand materials + stage asset survive", () => {
     expect(spec.comps).toHaveLength(1);
     expect(comp.name).toBe("brand-check");
     expect(comp.width).toBe(1080);
@@ -34,106 +53,133 @@ describe("brand-check faithful reproduction", () => {
     expect(comp.frameRate).toBe(24);
     expect(comp.duration).toBe(20);
     expect(comp.bgColor).toEqual([1, 1, 1]);
-    expect(spec.pruneMaterial?.keepComps.sort()).toEqual(["Heading", "Logo"]);
-  });
-
-  test("exactly the five reproduced layers, original names and kinds", () => {
-    expect(comp.layers.map((l) => l.name)).toEqual([
+    expect(spec.pruneMaterial?.keepComps.sort()).toEqual([
       "Heading",
       "Logo",
-      "P 9",
-      "P-33",
-      "P 5",
+      "description",
     ]);
-    expect(byName("Heading").kind).toBe("comp");
-    expect(byName("Heading").source).toBe("Heading");
-    expect(byName("Logo").kind).toBe("comp");
-    expect(byName("Logo").source).toBe("Logo");
-    for (const n of ["P 9", "P-33", "P 5"]) {
-      expect(byName(n).kind).toBe("null");
-    }
   });
 
-  test("parent chain matches the original rig", () => {
+  test("brand layers and anchors come from layout, not absolute coords", () => {
+    const names = comp.layers.map((l) => l.name);
+    for (const n of ["description", "Heading", "Logo", "Main (stage)"]) {
+      expect(names).toContain(n);
+    }
+    // Drift anchors are shy nulls named anchor:<id>.
+    expect(names).toContain("anchor:heading-drift");
+    expect(names).toContain("anchor:logo-drift");
+    expect(byName("anchor:heading-drift").kind).toBe("null");
+    expect(byName("anchor:heading-drift").shy).toBe(true);
+  });
+
+  test("parent wiring: brand layers ride their drift anchors", () => {
     const heading = byName("Heading");
     const logo = byName("Logo");
-    const p9 = byName("P 9");
-    const p33 = byName("P-33");
-    const p5 = byName("P 5");
-    expect(heading.parentIndex).toBe(p33.index);
-    expect(p33.parentIndex).toBe(p9.index);
-    expect(logo.parentIndex).toBe(p5.index);
-    expect(p9.parentIndex).toBeUndefined();
-    expect(p5.parentIndex).toBeUndefined();
-    // Z-order: Heading above Logo (original idx 15 < 18).
-    expect(heading.index).toBeLessThan(logo.index);
-  });
-
-  test("brand transforms are the verbatim dumped values", () => {
-    const h = byName("Heading").transform!;
-    expect(vec3(child(h, "ADBE Anchor Point"))).toEqual([0, 0, 0]);
-    expect(vec3(child(h, "ADBE Position"))).toEqual([0, 0, 0]);
-    expect(vec3(child(h, "ADBE Scale"))).toEqual([833.333333333333, 833.333333333333, 100]);
-    const l = byName("Logo").transform!;
-    expect(vec3(child(l, "ADBE Position"))).toEqual([100, 100, 0]);
-    expect(vec3(child(l, "ADBE Scale"))).toEqual([833.333333333333, 833.333333333333, 100]);
-    const p33 = byName("P-33").transform!;
-    expect(vec3(child(p33, "ADBE Position"))).toEqual([100, 100, 0]);
-    expect(vec3(child(p33, "ADBE Scale"))).toEqual([100, 100, 100]);
-  });
-
-  test("brand layers do not time-remap, matching the original master", () => {
-    // Live AE read on legacy master: timeRemapEnabled=false on both layers.
-    for (const n of ["Heading", "Logo"]) {
-      const l = byName(n);
-      expect(l.timeRemapEnabled).toBeFalsy();
-      expect(l.timeRemap).toBeUndefined();
+    const hd = byName("anchor:heading-drift");
+    const ld = byName("anchor:logo-drift");
+    expect(heading.parentIndex).toBe(hd.index);
+    expect(logo.parentIndex).toBe(ld.index);
+    // Parented layers store parent-local positions; effective comp-space
+    // position = anchor rest position + child local position must equal
+    // the layer's own layout target.
+    const grid = createGrid(
+      { columns: 12, rows: 12, margin: { x: 48, y: 48 }, gutter: { x: 16, y: 16 } },
+      { width: 1080, height: 1080 },
+    );
+    const restPos = (l: LayerSpec): number[] => {
+      const k = child(l.transform!, "ADBE Position")!.keys![0].v as number[];
+      return [k[0], k[1]];
+    };
+    const headingTarget = grid.span([0, 11, 4, 11]); // top-left
+    const logoZone = grid.span([0, 3, 4, 6]);
+    const logoTarget = {
+      x: logoZone.x + logoZone.width / 2,
+      y: logoZone.y + logoZone.height / 2,
+    };
+    const eff = (l: LayerSpec, a: LayerSpec, tx: number, ty: number) => {
+      const [ax, ay] = restPos(a);
+      const [cx, cy] = positionOf(l);
+      expect(ax + cx).toBeCloseTo(tx, 3);
+      expect(ay + cy).toBeCloseTo(ty, 3);
+    };
+    eff(heading, hd, headingTarget.x, headingTarget.y);
+    eff(logo, ld, logoTarget.x, logoTarget.y);
+    // Unparented layers carry real comp-space positions inside the frame.
+    for (const n of ["description", "Main (stage)"]) {
+      const p = positionOf(byName(n));
+      expect(p[0]).toBeGreaterThanOrEqual(0);
+      expect(p[0]).toBeLessThanOrEqual(1080);
+      expect(p[1]).toBeGreaterThanOrEqual(0);
+      expect(p[1]).toBeLessThanOrEqual(1080);
     }
   });
 
-  test("rig nulls keep the 12% compressed coordinate system", () => {
-    for (const n of ["P 9", "P 5"]) {
-      const t = byName(n).transform!;
-      expect(t.separatedPosition).toBe(true);
-      expect(vec3(child(t, "ADBE Anchor Point"))).toEqual([50, 50, 0]);
-      expect(child(t, "ADBE Position_0")?.value).toBe(26);
-      expect(vec3(child(t, "ADBE Scale"))).toEqual([12, 12, 100]);
-      expect(child(t, "ADBE Position")).toBeUndefined();
+  test("drift anchors keep grid base + offset keys (counter-phase)", () => {
+    const hd = byName("anchor:heading-drift").transform!;
+    const ld = byName("anchor:logo-drift").transform!;
+    const hy = child(hd, "ADBE Position")!.keys!;
+    const ly = child(ld, "ADBE Position")!.keys!;
+    // Key times identical to the original rig.
+    expect(hy.map((k) => k.t)).toEqual([3.875, 4.5, 15.5, 16.1666666666667]);
+    expect(ly.map((k) => k.t)).toEqual(hy.map((k) => k.t));
+    // Peak offsets relative to each anchor's own grid base:
+    // heading +155 (down), logo -155 (up) — counter-phase.
+    const ampH = (hy[1].v as number[])[1] - (hy[0].v as number[])[1];
+    const ampL = (ly[1].v as number[])[1] - (ly[0].v as number[])[1];
+    expect(ampH).toBeCloseTo(155, 5);
+    expect(ampL).toBeCloseTo(-155, 5);
+    // Bezier ease preserved.
+    const speed = (e: unknown) => (e as { speed?: number } | undefined)?.speed;
+    expect(speed(hy[0].outEase?.[0])).toBe(248);
+    expect(speed(ly[0].outEase?.[0])).toBe(-248);
+  });
+
+  test("zones are disjoint and inside the rail; stage takes the right side", () => {
+    const grid = createGrid(
+      { columns: 12, rows: 12, margin: { x: 48, y: 48 }, gutter: { x: 16, y: 16 } },
+      { width: 1080, height: 1080 },
+    );
+    const rail = grid.span([0, 0, 4, 11]);
+    const stage = grid.span([5, 0, 11, 11]);
+    const logo = grid.span([0, 3, 4, 6]);
+    const copy = grid.span([0, 7, 4, 10]);
+    const heading = grid.span([0, 11, 4, 11]);
+    // Brand rail ~ material width; stage is the remainder.
+    expect(rail.width).toBeGreaterThan(400);
+    expect(rail.width).toBeLessThan(450);
+    expect(stage.x).toBeGreaterThanOrEqual(rail.x + rail.width);
+    expect(stage.x + stage.width).toBeLessThanOrEqual(1080);
+    // Zones stack without overlap.
+    const zones = [logo, copy, heading];
+    for (let i = 0; i < zones.length; i++) {
+      for (let j = i + 1; j < zones.length; j++) {
+        const a = zones[i];
+        const b = zones[j];
+        const overlap =
+          a.x < b.x + b.width && b.x < a.x + a.width &&
+          a.y < b.y + b.height && b.y < a.y + a.height;
+        expect(overlap).toBe(false);
+      }
     }
   });
 
-  test("counter-phase Y keys reproduce the 4s/16s rig move", () => {
-    const y9 = child(byName("P 9").transform!, "ADBE Position_1")!;
-    const y5 = child(byName("P 5").transform!, "ADBE Position_1")!;
-    expect(y9.keys?.map((k) => [k.t, k.v])).toEqual([
-      [3.875, 734],
-      [4.5, 889],
-      [15.5, 889],
-      [16.1666666666667, 734],
-    ]);
-    expect(y5.keys?.map((k) => [k.t, k.v])).toEqual([
-      [3.875, 423],
-      [4.5, 268],
-      [15.5, 268],
-      [16.1666666666667, 423],
-    ]);
-    // Same key times on both nulls — the block moves as one counter-phase pair.
-    expect(y9.keys?.map((k) => k.t)).toEqual(y5.keys?.map((k) => k.t));
-    // Bezier easing preserved from the dump.
-    const easeSpeed = (e: unknown) =>
-      (e as { speed?: number } | undefined)?.speed;
-    expect(easeSpeed(y9.keys?.[0]?.outEase?.[0])).toBe(248);
-    expect(easeSpeed(y5.keys?.[0]?.outEase?.[0])).toBe(-248);
-  });
-
-  test("no grid, regions, authored text or invented anchors leaked in", () => {
-    expect(comp.layers.every((l) => !l.name.startsWith("grid "))).toBe(true);
-    expect(comp.layers.every((l) => l.kind !== "text")).toBe(true);
-    expect(comp.layers.every((l) => !l.name.startsWith("anchor:"))).toBe(true);
-    const json = JSON.stringify(comp.layers);
-    expect(json).not.toContain("{{ref:");
-    for (const l of comp.layers) {
-      expect(l.sourceCompIndex).toBeUndefined();
-    }
+  test("grid change re-flows unparented placements", () => {
+    const base = positionOf(byName("description"));
+    const wide = recompile((c) => {
+      c.grid = { ...c.grid!, margin: { x: 80, y: 48 } };
+    });
+    const wideComp = wide.comps[0] as CompSpec;
+    const moved = wideComp.layers.find((l) => l.name === "description")!;
+    const p2 = positionOf(moved);
+    expect(p2).not.toEqual(base);
+    // And the drift anchor's comp-space base moved too (its rest key
+    // carries base+offset, so a grid shift moves the whole trajectory).
+    const restKey = (l: LayerSpec): number[] => {
+      const k = child(l.transform!, "ADBE Position")!.keys![0].v as number[];
+      return [k[0], k[1]];
+    };
+    const kBase = restKey(byName("anchor:heading-drift"));
+    const kWide = restKey(wideComp.layers.find((l) => l.name === "anchor:heading-drift")!);
+    expect(kWide).not.toEqual(kBase);
   });
 });

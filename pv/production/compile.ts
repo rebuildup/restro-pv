@@ -512,7 +512,7 @@ function anchorToLayer(
     anchor.keys && base
       ? anchor.keys.map((k) => {
           const o = vec3Of(k.v);
-          return { ...k, v: { x: base.x + o.x, y: base.y + o.y, z: base.z + o.z } };
+          return { ...k, v: [base.x + o.x, base.y + o.y, base.z + o.z] };
         })
       : anchor.keys;
   return {
