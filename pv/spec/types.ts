@@ -32,8 +32,10 @@ export interface KeySpec {
   v: unknown; // scalar | number[] | {x,y,z} | Shape-like | TextDoc
   inT?: number;
   outT?: number;
-  inEase?: Array<[number, number]>;
-  outEase?: Array<[number, number]>;
+  // Ease entries: [speed, influence] pairs or dumped {speed, influence}
+  // objects — the runtime maps both to KeyframeEase.
+  inEase?: Array<[number, number] | { speed: number; influence: number }>;
+  outEase?: Array<[number, number] | { speed: number; influence: number }>;
   spIn?: [number, number];
   spOut?: [number, number];
 }
@@ -54,6 +56,12 @@ export interface PropNode {
   active?: unknown;
   enabled?: unknown;
   propertyIndex?: unknown;
+  /**
+   * On a transform group: Position uses separated X/Y/Z dimensions
+   * (ADBE Position_0/1/2 children instead of ADBE Position). The runtime
+   * sets `dimensionsSeparated` before applying children.
+   */
+  separatedPosition?: boolean;
 }
 
 export interface ShapeSpec {
