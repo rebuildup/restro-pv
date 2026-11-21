@@ -406,8 +406,5 @@ export function pvProductionSpec(): ProjectSpec {
   });
   spec.itemLabels = materialItemLabels();
   spec.pruneMaterial = materialKeepSet(spec);
-  // Real AE keeps conforming/previews busy for minutes after the material
-  // AEP opens; give layer creation five settle rounds (~12.5min coverage).
-  spec.createSettleMs = [30000, 60000, 120000, 240000, 300000];
   return spec;
 }

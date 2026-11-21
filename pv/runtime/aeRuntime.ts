@@ -34,16 +34,22 @@ var __CTX = "";
 // ExtendScript throws "Object of type Error" when an Error is concatenated
 // with +, so error objects must go through this before string building.
 function __estr(e) {
-  try {
-    var s = String(e.description || e.message || e);
-    // ExtendScript Error carries .line/.source/.fileName -- keep them so a
-    // bare "undefined is not an object" can be traced back to the JSX line.
-    var extra = "";
-    try { if (e.line !== undefined) extra += " @line " + e.line; } catch (x) {}
-    try { if (e.fileName) extra += " (" + e.fileName + ")"; } catch (x) {}
-    return s + extra;
-  }
-  catch (x) { return "(unprintable error)"; }
+  // NEVER String()/concatenate a raw catch value: ExtendScript throws
+  // "Object of type Error found where a Number, Array, or Property is
+  // needed" for Error-typed operands, which would kill the error path
+  // itself. Read known string fields with typeof guards instead.
+  var s = "";
+  try { var d = e.description; if (typeof d === "string" && d) s = d; } catch (x) {}
+  if (!s) { try { var m = e.message; if (typeof m === "string" && m) s = m; } catch (x) {} }
+  if (!s) { try { if (typeof e === "string") s = e; } catch (x) {} }
+  if (!s) { try { var n = e.name; if (typeof n === "string" && n) s = n; } catch (x) {} }
+  if (!s) s = "[unprintable thrown value]";
+  // ExtendScript Error carries .line/.source/.fileName -- keep them so a
+  // bare "undefined is not an object" can be traced back to the JSX line.
+  var extra = "";
+  try { if (e.line !== undefined) extra += " @line " + e.line; } catch (x) {}
+  try { if (e.fileName) extra += " (" + e.fileName + ")"; } catch (x) {}
+  return s + extra;
 }
 function __ctxMsg(msg) { return (__CTX ? __CTX + " | " : "") + String(msg); }
 function __warn(msg) { msg = __ctxMsg(msg); __WARN.push(msg); try { if ($.writeln) $.writeln("PV-WARN " + msg); } catch (x) {} }
@@ -442,6 +448,26 @@ function __createLayer(comp, ls, footageByName, compItems) {
   try { L.name = name; } catch (ne) {}
   return L;
 }
+// Read-only state snapshot attached to a create-layer failure so the report
+// distinguishes API misuse, dead references and host-state problems without
+// needing a rerun. Never mutates the project.
+function __createDiag(comp, ls) {
+  var parts = [];
+  try { parts.push("kind=" + ls.kind); } catch (x) {}
+  try { parts.push("src=" + (ls.source === undefined ? "-" : ls.source)); } catch (x) {}
+  try { parts.push("sci=" + ls.sourceCompIndex); } catch (x) {}
+  try { parts.push("layers=" + comp.layers.length); } catch (x) { parts.push("layers=?"); }
+  try {
+    var m = "add";
+    if (ls.kind === "shape") m = "addShape";
+    else if (ls.kind === "text") m = "addText";
+    else if (ls.kind === "null") m = "addNull";
+    parts.push("fn." + m + "=" + typeof comp.layers[m]);
+  } catch (x) { parts.push("fn=?"); }
+  try { parts.push("items=" + app.project.numItems); } catch (x) {}
+  try { parts.push("compOk=" + (comp instanceof CompItem)); } catch (x) {}
+  return parts.join(" ");
+}
 function __setProp(p, v) {
   if (v === undefined || v === null) return;
   if (__isShapeVal(v)) { p.setValue(__toShape(v)); return; }
@@ -618,16 +644,8 @@ function buildProject(spec) {
     __prog("comp start " + compSpec.name + " (" + layers.length + " layers)");
     // layers.add* inserts at the TOP of the stack, so iterate the spec
     // (AE order, [0] = top) in reverse to reproduce the original stacking.
-    //
-    // After opening a large material AEP, AE keeps conforming/indexing and
-    // rendering comp previews on its main thread for minutes; DOM mutations
-    // (layers.add*) throw "undefined is not an object" while that work is in
-    // flight, then recover on their own. Per-layer backoff cannot distinguish
-    // that window from a real failure, so creation runs in rounds instead:
-    // one pass over every layer, then retry only the thrown failures after
-    // progressively longer settles. A source that resolves to nothing is a
-    // permanent error (already logged) and is never retried.
-    var pending = [];
+    // A failed add is a hard error with a state snapshot — never retried:
+    // blind retries hid the real failure mode for tens of minutes.
     for (var ri = layers.length - 1; ri >= 0; ri--) {
       var ls = layers[ri];
       var L = null;
@@ -636,38 +654,10 @@ function buildProject(spec) {
         L = __createLayer(comp, ls, footageByName, compItems);
       }
       catch (ce2) {
-        __warn("create layer deferred " + ls.name + " (" + __estr(ce2) + ")");
-        pending.push(ri);
+        __err("create layer failed " + ls.name + ": " + __estr(ce2) +
+          " [diag " + __createDiag(comp, ls) + "]");
       }
       created[ri] = L;
-    }
-    var settle = spec.createSettleMs || [0];
-    for (var round = 0; round < settle.length && pending.length; round++) {
-      try { if ($.sleep) $.sleep(settle[round]); } catch (sx) {}
-      var still = [];
-      for (var pi = 0; pi < pending.length; pi++) {
-        var pri = pending[pi];
-        var pls = layers[pri];
-        __CTX = compSpec.name + " / " + (pls.name || ("layer " + pls.index));
-        try {
-          var pl = __createLayer(comp, pls, footageByName, compItems);
-          created[pri] = pl;
-          if (!pl) continue; // permanent: unresolved source already logged
-        }
-        catch (pe) {
-          still.push(pri);
-          if (round === settle.length - 1) {
-            __err("create layer failed " + pls.name + ": " + __estr(pe));
-          }
-        }
-      }
-      pending = still;
-      __prog("comp " + compSpec.name + " create retry round " + (round + 1) +
-        " pending=" + pending.length);
-    }
-    for (var pi2 = 0; pi2 < pending.length; pi2++) {
-      // Unreachable: the last round already logged each remaining failure.
-      created[pending[pi2]] = null;
     }
     for (var li = 0; li < layers.length; li++) {
       if (created[li]) {
@@ -696,7 +686,7 @@ function buildProject(spec) {
       try { ee = p.expressionError; } catch (e2) {}
       if (ee) {
         exprErrCount++;
-        __err("expressionError " + path + ": " + ee);
+        __err("expressionError " + path + ": " + __estr(ee));
       }
     }
     var n = 0;

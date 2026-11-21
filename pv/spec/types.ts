@@ -165,12 +165,4 @@ export interface ProjectSpec {
    * this spec are never pruned.
    */
   pruneMaterial?: { keepComps: string[]; keepFootage: string[] };
-  /**
-   * Settle delays (ms) between layer-creation retry rounds. After opening a
-   * large material AEP, AE keeps conforming/rendering previews on its main
-   * thread and layers.add* throws transiently; each entry is one retry pass
-   * over the still-failing layers. Omit for hosts that need no settling
-   * (fake AE, smoke specs).
-   */
-  createSettleMs?: number[];
 }
