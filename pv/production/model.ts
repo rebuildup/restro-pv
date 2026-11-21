@@ -74,6 +74,17 @@ export interface AnchorSpec {
   parent?: string;
   offset?: Vec3;
   keys?: KeySpec[];
+  /**
+   * Optional local transform of the anchor null itself (default: scale 1,
+   * rotation 0, anchor point {0,0}). Needed when an anchor reproduces a
+   * scaled rig (e.g. the original 12% P-nulls) — children then compose
+   * through the full parent transform, not just its translation.
+   * `scale` is a fraction (0.12 = 12%), `rotation` degrees, `anchorPoint`
+   * in the null's own pixel space.
+   */
+  scale?: number | { x: number; y: number };
+  rotation?: number;
+  anchorPoint?: Vec2;
 }
 
 /**

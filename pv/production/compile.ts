@@ -20,6 +20,14 @@ import type {
   Vec3,
 } from "../spec/types.ts";
 import { createGrid, type Grid } from "./grid.ts";
+import {
+  AFFINE_IDENTITY,
+  affineApply,
+  affineInvert,
+  affineMultiply,
+  localAffine,
+  type Affine,
+} from "./transform.ts";
 import type {
   Align,
   AnchorSpec,
@@ -438,24 +446,26 @@ function applyLayout(
   comp: CompProduction,
   grid: Grid | null,
   where: string,
-  parentWorldPos?: (parent: string) => Vec2 | null,
+  parentWorldAffine?: (parent: string) => Affine | null,
 ): void {
   const layout = layerSpec.layout;
   if (!layout) return;
   let pos = layoutPosition(layout, comp, grid, `${where} layout`);
   if (!pos) return;
   // Layout modes resolve to comp space; under a parent the stored Position
-  // must be parent-local, so subtract the parent anchor's comp-space
-  // position. Layer (non-anchor) parents cannot be resolved statically —
-  // fail loudly instead of writing a comp-space value into a local slot.
+  // must be parent-local. The conversion is the INVERSE of the parent's
+  // full world affine (scale/rotation/anchor included) — subtracting the
+  // parent position alone is only correct for unscaled, unrotated nulls.
+  // Layer (non-anchor) parents cannot be resolved statically — fail loudly
+  // instead of writing a comp-space value into a local slot.
   if (layerSpec.parent !== undefined) {
-    const w = parentWorldPos?.(layerSpec.parent) ?? null;
+    const w = parentWorldAffine?.(layerSpec.parent) ?? null;
     if (!w) {
       throw new Error(
         `${where}: layout under parent "${layerSpec.parent}" requires an anchor parent`,
       );
     }
-    pos = { x: pos.x - w.x, y: pos.y - w.y };
+    pos = affineApply(affineInvert(w), pos);
   }
   if (!layer.transform) layer.transform = baseTransform({});
   const transform = layer.transform;
@@ -521,18 +531,29 @@ function anchorToLayer(
           return { ...k, v: [base.x + o.x, base.y + o.y, base.z + o.z] };
         })
       : anchor.keys;
-  return {
-    refId: anchor.id,
-    parent: anchor.parent,
-    spec: {
-      index: 0,
-      name: "anchor:" + anchor.id,
-      kind: "null",
-      shy: true,
-      label: ANCHOR_LABEL,
-      transform: baseTransform({ position, positionKeys: keys }),
-    },
+  const spec: LayerSpec = {
+    index: 0,
+    name: "anchor:" + anchor.id,
+    kind: "null",
+    shy: true,
+    label: ANCHOR_LABEL,
+    transform: baseTransform({
+      position,
+      positionKeys: keys,
+      anchor: anchor.anchorPoint,
+    }),
   };
+  // Optional rig transform (scale/rotation) so scaled parents compose
+  // correctly through transform.ts instead of being silently dropped.
+  if (anchor.scale !== undefined) {
+    const sx = typeof anchor.scale === "number" ? anchor.scale : anchor.scale.x;
+    const sy = typeof anchor.scale === "number" ? anchor.scale : anchor.scale.y;
+    setTransformValue(spec.transform!, "ADBE Scale", [sx * 100, sy * 100, 100]);
+  }
+  if (anchor.rotation !== undefined) {
+    setTransformValue(spec.transform!, "ADBE Rotate Z", anchor.rotation);
+  }
+  return { refId: anchor.id, parent: anchor.parent, spec };
 }
 
 // ---- material comp expansion ---------------------------------------------------
@@ -715,35 +736,50 @@ function compileComp(
   for (const s of comp.sections) {
     for (const a of s.anchors ?? []) anchorSpecs.set(a.id, a);
   }
-  const anchorWorldCache = new Map<string, Vec2>();
-  const anchorWorld = (id: string, seen: Set<string>): Vec2 => {
+  // Anchor world transforms are full affines (position + optional
+  // scale/rotation/anchorPoint composed through the parent chain), so a
+  // child layout target converts to parent-local space via the inverse —
+  // not by subtracting positions, which is wrong under scaled/rotated
+  // parents (e.g. the original 12% P-null rigs).
+  const anchorWorldCache = new Map<string, Affine>();
+  const anchorLocalPosition = (a: AnchorSpec): Vec2 => {
+    if (a.parent !== undefined) {
+      const o = a.offset ?? { x: 0, y: 0, z: 0 };
+      return { x: o.x, y: o.y };
+    }
+    if (a.layout) {
+      const p = layoutPosition(a.layout, comp, grid, `${where} anchor "${a.id}"`);
+      if (!p) throw new Error(`${where} anchor "${a.id}": layout produced no position`);
+      return p;
+    }
+    const at = a.at ?? { x: 0, y: 0, z: 0 };
+    return { x: at.x, y: at.y };
+  };
+  const anchorWorldAffine = (id: string, seen: Set<string> = new Set()): Affine => {
     const hit = anchorWorldCache.get(id);
     if (hit) return hit;
     const a = anchorSpecs.get(id);
     if (!a) throw new Error(`${where}: unknown anchor "${id}"`);
     if (seen.has(id)) throw new Error(`${where}: anchor parent cycle at "${id}"`);
     seen.add(id);
-    let w: Vec2;
-    if (a.parent !== undefined) {
-      const p = anchorWorld(a.parent, seen);
-      const o = a.offset ?? { x: 0, y: 0, z: 0 };
-      w = { x: p.x + o.x, y: p.y + o.y };
-    } else if (a.layout) {
-      const p = layoutPosition(a.layout, comp, grid, `${where} anchor "${id}"`);
-      if (!p) throw new Error(`${where} anchor "${id}": layout produced no position`);
-      w = p;
-    } else {
-      const at = a.at ?? { x: 0, y: 0, z: 0 };
-      w = { x: at.x, y: at.y };
-    }
+    const local = localAffine({
+      anchor: a.anchorPoint ?? { x: 0, y: 0 },
+      position: anchorLocalPosition(a),
+      scale: a.scale,
+      rotation: a.rotation ?? 0,
+    });
+    const w =
+      a.parent !== undefined
+        ? affineMultiply(anchorWorldAffine(a.parent, seen), local)
+        : local;
     anchorWorldCache.set(id, w);
     return w;
   };
-  const parentWorldPos = (parent: string): Vec2 | null => {
+  const parentWorldAffine = (parent: string): Affine | null => {
     // Non-anchor parents (layer refs) cannot be resolved statically; anchor
     // world errors (unknown id, cycles) propagate as compile errors.
     if (!anchorSpecs.has(parent)) return null;
-    return anchorWorld(parent, new Set());
+    return anchorWorldAffine(parent);
   };
 
   // Unified ref-id table: per section a FoldLayers divider (unless opted
@@ -794,7 +830,7 @@ function compileComp(
         if (timing.startTime !== undefined) layer.startTime = timing.startTime;
         if (timing.stretch !== undefined) layer.stretch = timing.stretch;
       }
-      applyLayout(layer, sl, comp, grid, `${sWhere} layer "${refId}"`, parentWorldPos);
+      applyLayout(layer, sl, comp, grid, `${sWhere} layer "${refId}"`, parentWorldAffine);
       applyPatch(layer, sl.patch);
       options.onSectionLayer?.(comp.name, pending.length + 1, section.id);
       pending.push({ spec: layer, refId, parent: sl.parent });

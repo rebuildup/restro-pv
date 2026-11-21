@@ -650,6 +650,16 @@ function buildProject(spec) {
     }
   }
   __prog("footage imported");
+  // Name-collision guard: material AEPs must contain only material. A stray
+  // comp sharing a generated comp's name makes __findComp/comp(name)
+  // resolution ambiguous and silently renders the wrong comp (observed:
+  // a leftover "brand-check" inside brand-materials.aep shadowed the
+  // generated one). Fail loudly instead.
+  for (var gci = 0; gci < spec.comps.length; gci++) {
+    var gname = spec.comps[gci].name;
+    var goy = __findComp(gname);
+    if (goy) { __err("comp name collision: material project already has comp '" + gname + "'"); }
+  }
   // create every comp first so precomp layers can reference any of them
   var compItems = [];
   for (var i = 0; i < spec.comps.length; i++) {

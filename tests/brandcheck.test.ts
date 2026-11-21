@@ -125,15 +125,17 @@ describe("brand-check kg grid layout", () => {
     expect(positionOf(logo)[1]).toBeCloseTo(0, 5);
   });
 
-  test("original 833% brand scale and anchors are preserved verbatim", () => {
+  test("effective world transforms match the original rig composition", () => {
+    // The original leaf scales (833%/330%) sat under 12% rig parents;
+    // the authored metrics.scale is the EFFECTIVE world scale.
     for (const name of ["Heading", "Logo"]) {
       const l = byName(name);
-      expect(vec3(child(l.transform!, "ADBE Scale"))).toEqual([833.3333333333, 833.3333333333, 100]);
+      expect(vec3(child(l.transform!, "ADBE Scale"))).toEqual([100, 100, 100]);
       expect(vec3(child(l.transform!, "ADBE Anchor Point"))).toEqual([0, 0, 0]);
     }
-    // Icon: 330% scale, bottom-left anchor (240x234 source).
+    // Icon: 0.12 rig x 330% leaf = 39.6% effective, bottom-left anchor.
     const icon = byName("Icon (Ae)");
-    expect(vec3(child(icon.transform!, "ADBE Scale"))).toEqual([330, 330, 100]);
+    expect(vec3(child(icon.transform!, "ADBE Scale"))).toEqual([39.6, 39.6, 100]);
     expect(vec3(child(icon.transform!, "ADBE Anchor Point"))).toEqual([0, 234, 0]);
   });
 
@@ -192,39 +194,38 @@ describe("layoutCheck — swept-rect constraints", () => {
   test("authored brand-check project has zero violations", () => {
     const report = checkProjectLayout(brandCheckProject);
     expect(report.violations).toEqual([]);
-    // Bleeding brand elements are reported as unverified-by-design notes,
-    // never silently skipped.
-    expect(report.unverified.some((u) => u.layer === "Heading")).toBe(true);
-    expect(report.unverified.some((u) => u.layer === "Logo")).toBe(true);
+    // Effective-scale elements fit the frame — nothing should be
+    // reported as bleeding or unverified.
+    expect(report.unverified).toEqual([]);
   });
 
-  test("undeclared bleed is rejected as off-frame", () => {
+  test("off-frame drift is rejected without a bleed declaration", () => {
+    // Move the heading anchor to a low row: rest + 155px drift then
+    // carries the display rect past the frame bottom.
     const p = structuredClone(brandCheckProject);
     const heading = p.comps[0].sections
       .flatMap((s) => s.layers)
       .find((l) => l.name === "Heading")!;
-    delete heading.allowBleed;
+    heading.layout = { region: "zone-copy", align: "bottom-left" };
     const report = checkProjectLayout(p);
-    expect(report.violations.some((v) => v.kind === "off-frame" && v.layer.includes("Heading"))).toBe(
-      true,
-    );
+    expect(report.violations.some((v) => v.kind === "off-frame")).toBe(true);
   });
 
   test("undeclared rest overlap is rejected; scoped declaration passes", () => {
     const p = structuredClone(brandCheckProject);
-    // Move description up into the icon band without a matching
-    // declaration (its allowOverlap names only "Heading").
+    // Move description onto the icon band without a matching
+    // declaration (its allowOverlap names only "Heading"/"Logo").
     const desc = p.comps[0].sections
       .flatMap((s) => s.layers)
       .find((l) => l.name === "description")!;
-    desc.layout = { region: "anchor-icon", align: "top-left" };
+    desc.layout = { position: { x: 32, y: 200 } };
     const report = checkProjectLayout(p);
     expect(report.violations.some((v) => v.kind === "overlap")).toBe(true);
     // Declaring the overlap against the WRONG counterpart must not help.
     desc.allowOverlap = { reason: "wrong pair", with: ["Logo"] };
     expect(checkProjectLayout(p).violations.some((v) => v.kind === "overlap")).toBe(true);
-    // Naming the actual counterpart suppresses exactly that pair.
-    desc.allowOverlap = { reason: "icon band overlap", with: ["Icon (Ae)"] };
+    // Naming the actual counterparts suppresses exactly those pairs.
+    desc.allowOverlap = { reason: "icon+logo band overlap", with: ["Icon (Ae)", "Logo"] };
     const ok = checkProjectLayout(p);
     expect(ok.violations.filter((v) => v.kind === "overlap")).toEqual([]);
     // Restoring the authored layout is clean again.
@@ -249,5 +250,30 @@ describe("layoutCheck — swept-rect constraints", () => {
     delete icon.metrics;
     const report = checkProjectLayout(p);
     expect(report.unverified.some((u) => u.layer === "Icon (Ae)")).toBe(true);
+  });
+
+  test("scaled parent transform is composed, not read from the leaf", () => {
+    // A child under a 50%-scale anchor with local scale 2 has effective
+    // scale 1 — lint must compute the same composition compile emits.
+    const p = structuredClone(brandCheckProject);
+    const c = p.comps[0];
+    c.anchors = [
+      ...(c.anchors ?? []),
+      {
+        id: "half",
+        layout: { span: [0, 0, 0, 0], align: "top-left" },
+        scale: 0.5,
+      },
+    ];
+    const desc = c.sections
+      .flatMap((s) => s.layers)
+      .find((l) => l.name === "description")!;
+    desc.parent = "half";
+    desc.layout = { position: { x: 32, y: 400 } }; // world target: overlaps only logo
+    desc.metrics = { ...desc.metrics!, scale: 2 };
+    // Effective display = 416x298 at (32,400) — same as unscaled; the
+    // overlap with the logo band stays declared and legal.
+    const report = checkProjectLayout(p);
+    expect(report.violations).toEqual([]);
   });
 });

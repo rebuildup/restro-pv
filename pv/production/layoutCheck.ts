@@ -1,20 +1,23 @@
 // Layout lint — pure-TS geometric verification of the production model.
 //
-// For every section layer this resolves:
-//   - the REST display rect: layout position (grid/region/span/align/
-//     offset) -> comp-space anchor point -> content bounds via
-//     metrics.{anchor,bounds,scale}
-//   - the MOTION envelope: position-key deltas (with times) of the anchor
-//     parent chain — translation only; scale/rotation/internal animation
-//     inside material comps are invisible here and must be checked on
-//     real renders (reported via `unverified`, never silently assumed).
+// Shares ONE transform model with compile.ts (pv/production/transform.ts):
+// every anchor resolves to a world affine through its parent chain
+// (position + optional scale/rotation/anchorPoint), and each section
+// layer's display rect is computed as
+//
+//   world(c) = worldAnchorPos + M_parent · S_local · (c − anchor)
+//
+// where M_parent is the linear part of the parent anchor's world affine.
+// A leaf scale read alone is NEVER the effective scale — the original
+// 833% brand comps under 12% rig nulls are ~100% effective, and lint
+// must see the same composition the compiler emits.
 //
 // Results are split into:
 //   - violations: "off-frame" (swept rect leaves the comp frame),
 //     "overlap" (display rects intersect without a scoped declaration),
 //     "bad-parent" (unresolvable parent ref)
-//   - unverified: layers whose content size is unknown — the lint cannot
-//     reason about them and says so instead of skipping quietly.
+//   - unverified: layers whose content size or parent transform cannot be
+//     resolved statically — reported, never silently skipped.
 //
 // Declarations are scoped, never blanket:
 //   - allowBleed: reason string permitting frame overflow (crop).
@@ -32,6 +35,14 @@ import type {
   Rect,
   SectionLayerSpec,
 } from "./model.ts";
+import {
+  AFFINE_IDENTITY,
+  affineApply,
+  affineLinear,
+  affineMultiply,
+  localAffine,
+  type Affine,
+} from "./transform.ts";
 
 export type LayoutViolationKind = "off-frame" | "overlap" | "bad-parent";
 
@@ -68,6 +79,10 @@ interface AnchorCtx {
   byId: Map<string, AnchorSpec>;
   comp: CompProduction;
   grid: ReturnType<typeof createGrid> | null;
+  /** World affine per anchor id (lazy, cycle-checked). */
+  worldAffine: (id: string, seen?: Set<string>) => Affine;
+  /** World position of an anchor's anchor point. */
+  worldPos: (id: string) => Vec2;
 }
 
 const EPS = 0.5;
@@ -119,40 +134,6 @@ function unionRect(rs: Rect[]): Rect {
   return { x: x0, y: y0, width: x1 - x0, height: y1 - y0 };
 }
 
-function anchorBase(anchor: AnchorSpec, ctx: AnchorCtx, depth = 0): Vec2 | null {
-  if (depth > 8) return null;
-  if (anchor.layout) {
-    return layoutPosition(anchor.layout, ctx.comp, ctx.grid, `anchor "${anchor.id}"`) ?? null;
-  }
-  if (anchor.at) return { x: anchor.at.x, y: anchor.at.y };
-  if (anchor.parent) {
-    const parent = ctx.byId.get(anchor.parent);
-    if (!parent) return null;
-    const p = anchorBase(parent, ctx, depth + 1);
-    if (!p) return null;
-    const o = anchor.offset ?? { x: 0, y: 0, z: 0 };
-    return { x: p.x + o.x, y: p.y + o.y };
-  }
-  return { x: 0, y: 0 };
-}
-
-/** Motion poses contributed by an anchor's keys: {t, dx, dy} deltas. */
-function anchorPoses(anchor: AnchorSpec, ctx: AnchorCtx): { t: number; dx: number; dy: number }[] {
-  if (!anchor.keys?.length) return [];
-  if (anchor.layout) {
-    return anchor.keys.map((k) => {
-      const v = vec3Of(k.v);
-      return { t: k.t, dx: v.x, dy: v.y };
-    });
-  }
-  const base = anchorBase(anchor, ctx);
-  if (!base) return [];
-  return anchor.keys.map((k) => {
-    const v = vec3Of(k.v);
-    return { t: k.t, dx: v.x - base.x, dy: v.y - base.y };
-  });
-}
-
 function scalePair(scale: number | { x: number; y: number } | undefined): {
   x: number;
   y: number;
@@ -161,10 +142,101 @@ function scalePair(scale: number | { x: number; y: number } | undefined): {
   return typeof scale === "number" ? { x: scale, y: scale } : scale;
 }
 
+/** Build the anchor world-affine resolver for one comp (mirrors compile.ts). */
+function makeAnchorCtx(comp: CompProduction, grid: ReturnType<typeof createGrid> | null): AnchorCtx {
+  const byId = new Map<string, AnchorSpec>();
+  for (const a of comp.anchors ?? []) byId.set(a.id, a);
+  for (const s of comp.sections) for (const a of s.anchors ?? []) byId.set(a.id, a);
+  const cache = new Map<string, Affine>();
+  const localPos = (a: AnchorSpec): Vec2 => {
+    if (a.parent !== undefined) {
+      const o = a.offset ?? { x: 0, y: 0, z: 0 };
+      return { x: o.x, y: o.y };
+    }
+    if (a.layout) {
+      const p = layoutPosition(a.layout, comp, grid, `anchor "${a.id}"`);
+      if (!p) throw new Error(`anchor "${a.id}": layout produced no position`);
+      return p;
+    }
+    const at = a.at ?? { x: 0, y: 0, z: 0 };
+    return { x: at.x, y: at.y };
+  };
+  const worldAffine = (id: string, seen: Set<string> = new Set()): Affine => {
+    const hit = cache.get(id);
+    if (hit) return hit;
+    const a = byId.get(id);
+    if (!a) throw new Error(`unknown anchor "${id}"`);
+    if (seen.has(id)) throw new Error(`anchor parent cycle at "${id}"`);
+    seen.add(id);
+    const local = localAffine({
+      anchor: a.anchorPoint ?? { x: 0, y: 0 },
+      position: localPos(a),
+      scale: a.scale,
+      rotation: a.rotation ?? 0,
+    });
+    const w = a.parent !== undefined ? affineMultiply(worldAffine(a.parent, seen), local) : local;
+    cache.set(id, w);
+    return w;
+  };
+  return {
+    byId,
+    comp,
+    grid,
+    worldAffine,
+    worldPos: (id) => {
+      const a = byId.get(id);
+      if (!a) throw new Error(`unknown anchor "${id}"`);
+      const w = worldAffine(id);
+      const ap = a.anchorPoint ?? { x: 0, y: 0 };
+      return affineApply(w, ap);
+    },
+  };
+}
+
+/**
+ * World-space motion deltas contributed by an anchor's keys.
+ * Key values are positions in the anchor's PARENT space (or offsets from
+ * the layout base for layout anchors); transform them through the parent
+ * affine's linear part so scaled rigs move children correctly.
+ */
+function anchorPoses(anchor: AnchorSpec, ctx: AnchorCtx): { t: number; dx: number; dy: number }[] {
+  if (!anchor.keys?.length) return [];
+  // Linear part of the anchor's PARENT world transform (identity for roots).
+  const parentLinear = anchor.parent ? ctx.worldAffine(anchor.parent) : AFFINE_IDENTITY;
+  const toWorldDelta = (v: Vec3, base: Vec3): Vec2 => {
+    const d = affineLinear(parentLinear, { x: v.x - base.x, y: v.y - base.y });
+    return d;
+  };
+  if (anchor.layout) {
+    // Layout anchors are root-only; keys are offsets from the grid base.
+    return anchor.keys.map((k) => {
+      const v = vec3Of(k.v);
+      const d = toWorldDelta(v, { x: 0, y: 0, z: 0 });
+      return { t: k.t, dx: d.x, dy: d.y };
+    });
+  }
+  const base = vec3Of(
+    anchor.parent
+      ? anchor.offset ?? { x: 0, y: 0, z: 0 }
+      : anchor.at ?? { x: 0, y: 0, z: 0 },
+  );
+  return anchor.keys.map((k) => {
+    const v = vec3Of(k.v);
+    const d = toWorldDelta(v, base);
+    return { t: k.t, dx: d.x, dy: d.y };
+  });
+}
+
+/**
+ * Display rect of a layer in comp space. `pos` is the world anchor
+ * target (layout result); the content bounds are mapped through
+ * M_parent · S_local · (c − anchor) and AABB'd (rotation-safe).
+ */
 function displayRect(
   layer: SectionLayerSpec,
   pos: Vec2,
   frame: { width: number; height: number },
+  parentLinear: Affine,
 ): Rect | null {
   const m = layer.metrics;
   const srcW = m?.bounds?.width ?? m?.width;
@@ -173,12 +245,29 @@ function displayRect(
   const b = m?.bounds ?? { x: 0, y: 0, width: srcW, height: srcH };
   const anchor = m?.anchor ?? { x: frame.width / 2, y: frame.height / 2 };
   const s = scalePair(m?.scale);
-  return {
-    x: pos.x + (b.x - anchor.x) * s.x,
-    y: pos.y + (b.y - anchor.y) * s.y,
-    width: b.width * s.x,
-    height: b.height * s.y,
-  };
+  // M = parentLinear · diag(sx,sy): linear part composition.
+  const corners = [
+    { x: b.x, y: b.y },
+    { x: b.x + b.width, y: b.y },
+    { x: b.x, y: b.y + b.height },
+    { x: b.x + b.width, y: b.y + b.height },
+  ];
+  let x0 = Infinity;
+  let y0 = Infinity;
+  let x1 = -Infinity;
+  let y1 = -Infinity;
+  for (const c of corners) {
+    // d = c - anchor, then parentLinear · diag(s) · d
+    const sx = { x: (c.x - anchor.x) * s.x, y: (c.y - anchor.y) * s.y };
+    const w = affineLinear(parentLinear, sx);
+    const px = pos.x + w.x;
+    const py = pos.y + w.y;
+    x0 = Math.min(x0, px);
+    y0 = Math.min(y0, py);
+    x1 = Math.max(x1, px);
+    y1 = Math.max(y1, py);
+  }
+  return { x: x0, y: y0, width: x1 - x0, height: y1 - y0 };
 }
 
 function overlapAllowed(
@@ -192,14 +281,9 @@ function overlapAllowed(
   if (decl === undefined) return false;
   const d = typeof decl === "string" ? { reason: decl } : decl;
   if (d.with && d.with.length > 0) {
-    const ok = d.with.some(
-      (w) => w === "*" || w === selfName || w === selfId || w === otherName || w === otherId,
-    );
-    // `with` names the counterparts this layer may overlap; match either side.
     const names = new Set([selfName, selfId, otherName, otherId]);
     const scoped = d.with.some((w) => w === "*" || names.has(w));
     if (!scoped) return false;
-    void ok;
   }
   if (d.during && (t < d.during[0] || t > d.during[1])) return false;
   return true;
@@ -210,9 +294,7 @@ function checkComp(comp: CompProduction, project: ProductionProject): LayoutRepo
   const unverified: LayoutUnverified[] = [];
   const frame = mergeFrame(project.frame, comp.frame);
   const grid = comp.grid ? createGrid(comp.grid, frame) : null;
-  const anchors = comp.anchors ?? [];
-  const anchorById = new Map(anchors.map((a) => [a.id, a]));
-  const ctx: AnchorCtx = { byId: anchorById, comp, grid };
+  const ctx = makeAnchorCtx(comp, grid);
   const layerIds = new Set<string>();
   for (const s of comp.sections) {
     s.layers.forEach((l, i) => layerIds.add(l.id ?? `${s.id}/${i + 1}`));
@@ -225,7 +307,7 @@ function checkComp(comp: CompProduction, project: ProductionProject): LayoutRepo
       const name = layer.name ?? id;
       const where = `${comp.name}/${name}`;
 
-      if (layer.parent && !anchorById.has(layer.parent) && !layerIds.has(layer.parent)) {
+      if (layer.parent && !ctx.byId.has(layer.parent) && !layerIds.has(layer.parent)) {
         violations.push({
           comp: comp.name,
           layer: name,
@@ -238,7 +320,26 @@ function checkComp(comp: CompProduction, project: ProductionProject): LayoutRepo
       const pos =
         (layer.layout ? layoutPosition(layer.layout, comp, grid, `${where} layout`) : null) ??
         { x: frame.width / 2, y: frame.height / 2 };
-      const rect = displayRect(layer, pos, frame);
+
+      // Parent transform: anchor parents resolve to a world affine; a
+      // layer (non-anchor) parent cannot be evaluated statically.
+      let parentLinear = AFFINE_IDENTITY;
+      let parentAnchor: AnchorSpec | undefined;
+      if (layer.parent) {
+        if (ctx.byId.has(layer.parent)) {
+          parentAnchor = ctx.byId.get(layer.parent);
+          parentLinear = ctx.worldAffine(layer.parent);
+        } else {
+          unverified.push({
+            comp: comp.name,
+            layer: name,
+            reason: `${where}: parent "${layer.parent}" is a layer, not an anchor — world transform not statically evaluated`,
+          });
+          return;
+        }
+      }
+
+      const rect = displayRect(layer, pos, frame, parentLinear);
       if (!rect) {
         unverified.push({
           comp: comp.name,
@@ -248,9 +349,7 @@ function checkComp(comp: CompProduction, project: ProductionProject): LayoutRepo
         return;
       }
 
-      const deltas: { t: number; dx: number; dy: number }[] = [];
-      const parentAnchor = layer.parent ? anchorById.get(layer.parent) : undefined;
-      if (parentAnchor) deltas.push(...anchorPoses(parentAnchor, ctx));
+      const deltas = parentAnchor ? anchorPoses(parentAnchor, ctx) : [];
       const poses = [{ t: 0, rect }, ...deltas.map((d) => ({ t: d.t, rect: translate(rect, d.dx, d.dy) }))];
       const swept = unionRect(poses.map((p) => p.rect));
 

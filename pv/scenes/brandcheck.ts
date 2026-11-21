@@ -7,27 +7,31 @@
 //   -> cell 73.67 x 26.83px; grid lines x32..1048 step 85.67,
 //      y80..1000 step 38.83. See tests/grid-original.test.ts.
 //
-// The original brand elements are NOT neat cell occupants — they are
-// oversized comps anchored on grid intersections and cropped by the
-// frame (declared via allowBleed). Decoded from the legacy master dumps
-// (P-null rig: anchor[50,50] scale12% -> world = parentPos + 0.12*(child
-// - 50)) and confirmed by toComp measurement:
+// EFFECTIVE TRANSFORMS — the critical correction: the legacy brand
+// elements are NOT giant crops. Their 833%/330% leaf scales sit under
+// 12% P-null rig parents, so the composed world scale is ~100%/39.6%.
+// This comp authors the FLATTENED effective transform (layout anchor +
+// metrics.scale = world scale); the parent-chain math lives in
+// pv/production/transform.ts and is shared by compile + layoutCheck.
+// Original chains (pv/generated/05-master.ts):
 //
-//   element      anchor world pos      grid point        display size
-//   Heading      (32, 740) -> +155     col0 x row17      3466x550  (833%)
-//   Logo         (32, 429) -> -155     col0 x row9       3466x2166 (833%)
-//   description  top-left (32, 585)    col0 x row13      416x298   (100%)
-//   Ae.png       anchor BL ~(32, 391)  col0 x row8       792x772   (330%)
+//   Heading  P 9(12%,anchor50,pos26/734+155drift) → P-33(100%) → Heading(833.33%)
+//            world anchor (32,740), world scale ~1.0
+//   Logo     P 5(12%,anchor50,pos26/423-155drift) → Logo(833.33%)
+//            world anchor (32,429), world scale ~1.0
+//   Ae.png   P 3(12%,pos26,268) → P-11(100%,anchor0,100) → Ae.png(330%)
+//            world anchor (32,262), world scale 0.396
+//   description: no parent, pos (32,585) — a grid intersection itself
 //
 // Drift is anchor-relative: heading-drift / logo-drift nulls sit on grid
 // intersections; key values are comp-space OFFSETS (+155 / -155, same
 // times and ease speeds as legacy P 9 / P 5). A grid change re-places
 // the base AND the whole trajectory.
 //
-// PLUGIN ("AFTER EFFECTS\rPLUGIN", MeiryoUI ~861%/745% near grid
-// col6-7 x row3) is intentionally NOT a layer yet: its TextDocument
-// dump is a separate material-extraction task. Its placement rule is
-// recorded in docs as region "zone-plugin" below.
+// PLUGIN ("AFTER EFFECTS\rPLUGIN", MeiryoUI, effective ~103%x89% text at
+// world anchor ~(448,196) = col~4.9 x row3) is intentionally NOT a
+// layer yet: its TextDocument is a separate material-extraction task.
+// Its placement rule is recorded as region "zone-plugin" below.
 //
 // Z-order (front-to-back), matching the original backdrop role:
 //   stage > description > Heading > Icon(Ae) > Logo > bg-white
@@ -55,6 +59,7 @@ const FRAME = {
 // Original counter-phase move as comp-space offsets: Heading +155px down,
 // Logo -155px up. Key times/eases verbatim from the legacy P 9 / P 5 dump
 // (3.875->4.5 move, 15.5->16.1667 return; ease speeds +/-248 / -/+232.5).
+// The rig parents translate 1:1 in comp space, so world amplitude = 155px.
 
 function driftKeys(direction: 1 | -1): KeySpec[] {
   const amp = 155 * direction;
@@ -87,14 +92,16 @@ const comp: CompProduction = {
     stage: { span: [5, 0, 11, 23] },
     // Brand rail: material comps are 416px wide -> cols 0-4 (428px).
     "zone-copy": { span: [0, 13, 4, 21] }, // description top-left @ row13
-    // Single-cell spans below resolve to exact grid intersections —
-    // the original anchor positions sit ON grid lines, not inside cells.
+    // Single-cell spans below resolve to grid intersections — the
+    // original Heading/Logo/description anchors sit ON grid lines.
     "anchor-heading": { span: [0, 17, 0, 17] }, // (32, ~740)
     "anchor-logo": { span: [0, 9, 0, 9] }, // (32, ~429)
-    "anchor-icon": { span: [0, 8, 0, 8] }, // (32, ~391) bottom-left
+    // Ae.png's original rig (P 3, pos [26,268]) was NOT grid-derived;
+    // its anchor lands ~12px above the row5 line — preserved via offset.
+    "anchor-icon": { span: [0, 5, 0, 5] }, // (32, ~274) + offset -> (32,262)
     // PLUGIN text placement rule (layer deferred — see header):
-    // original ~(554,202) -> cols 6-7 x rows 3-5.
-    "zone-plugin": { span: [6, 3, 8, 5] },
+    // original world anchor ~(448,196) -> between col4/5 x row3.
+    "zone-plugin": { span: [5, 3, 7, 5] },
   },
   anchors: [
     {
@@ -109,11 +116,13 @@ const comp: CompProduction = {
     },
   ],
   // Front-to-back like the original: scene content on top, brand stack
-  // as backdrop, the white ground last.
+  // as backdrop, the white ground last. The stage section is disabled
+  // for this brand-only verification comp (placeholder would occlude).
   sections: [
     {
       id: "stage",
       role: "stage",
+      enabled: false,
       layers: [
         {
           id: "main-panel",
@@ -141,11 +150,11 @@ const comp: CompProduction = {
             anchor: { x: 0, y: 0 },
             bounds: { x: 0, y: 0, width: 416, height: 298 },
           },
-          // description renders above Heading in the original (idx 10
-          // vs 15); their rects overlap y740-883 like the master.
+          // description renders above Heading/Logo in the original
+          // (master idx 10 vs 15/18); their rects overlap like the master.
           allowOverlap: {
-            reason: "description overlays the heading brush band, as in master",
-            with: ["Heading"],
+            reason: "description overlays heading/logo band, as in master",
+            with: ["Heading", "Logo"],
           },
         },
         {
@@ -154,42 +163,35 @@ const comp: CompProduction = {
           content: { kind: "material-comp", comp: "Heading" },
           layout: { region: "anchor-heading", align: "top-left" },
           parent: "heading-drift",
-          // Verbatim original: 416x66 comp, anchor [0,0], scale 833.333%.
+          // Effective world transform: 0.12 rig x 833.333% leaf ~= 100%.
           // Alpha bbox: glyphs occupy x0-329 of the 416px comp.
           metrics: {
             width: 416,
             height: 66,
             anchor: { x: 0, y: 0 },
             bounds: { x: 0, y: 0, width: 329, height: 66 },
-            scale: 8.333333333333,
-          },
-          // 3466x550 display rect anchored at (32,740) — mostly off-frame
-          // by design, exactly like the master crop. +155 drift extends
-          // the bleed further; both are the original behavior.
-          allowBleed: "833% brand brush comp cropped by frame, as in master",
-          allowOverlap: {
-            reason: "heading band renders below stage panel, as backdrop",
-            with: ["Main (stage)"],
+            scale: 1,
           },
         },
         {
           id: "icon",
           name: "Icon (Ae)",
           content: { kind: "footage", asset: "ae-icon" },
-          layout: { region: "anchor-icon", align: "bottom-left" },
-          // Original: 240x234 PNG at 330%, anchor bottom-left, visible
-          // band y0-~368. Bottom-left of cell (0,8) ~= (32,391).
+          layout: {
+            region: "anchor-icon",
+            align: "top-left",
+            // Original P-3 rig placed the anchor ~12px above row5.
+            offset: { x: 0, y: -12.2 },
+          },
+          // Effective world transform: 0.12 rig x 330% leaf = 39.6%.
+          // Anchor [0,234] (bottom-left) lands at world (32,262), so the
+          // 240x234 PNG displays as ~95x93 at (32,169)-(127,262).
           metrics: {
             width: 240,
             height: 234,
             anchor: { x: 0, y: 234 },
             bounds: { x: 0, y: 0, width: 240, height: 234 },
-            scale: 3.3,
-          },
-          allowBleed: "330% icon extends above frame top, as in master",
-          allowOverlap: {
-            reason: "icon top band overlaps stage region edge; renders below scene",
-            with: ["Main (stage)"],
+            scale: 0.396,
           },
         },
         {
@@ -198,21 +200,13 @@ const comp: CompProduction = {
           content: { kind: "material-comp", comp: "Logo" },
           layout: { region: "anchor-logo", align: "top-left" },
           parent: "logo-drift",
-          // Verbatim original: 416x260 comp, anchor [0,0], scale 833.333%.
+          // Effective world transform: 0.12 rig x 833.333% leaf ~= 100%.
           metrics: {
             width: 416,
             height: 260,
             anchor: { x: 0, y: 0 },
             bounds: { x: 0, y: 0, width: 416, height: 260 },
-            scale: 8.333333333333,
-          },
-          // 3466x2166 backdrop anchored at (32,429) — the master crops it
-          // to the left ~2/3 of frame; -155 drift lifts it further.
-          allowBleed: "833% logo backdrop cropped right/bottom, as in master",
-          // Deepest backdrop: sits under every other layer by design.
-          allowOverlap: {
-            reason: "giant logo brush backdrop renders under all content",
-            with: ["*"],
+            scale: 1,
           },
         },
       ],
@@ -267,7 +261,10 @@ const project: ProductionProject = {
       file: "assets/images/Ae.png",
     },
   ],
-  materialAep: "legacy/pv-2dc99e1.aep",
+  // Minimal material AEP: extracted once from legacy (only the comps this
+  // spec references + their dependency closure). Regenerate by building
+  // against legacy/pv-2dc99e1.aep and copying the saved project.
+  materialAep: "materials/brand-materials.aep",
 };
 
 export function brandCheckSpec(): ProjectSpec {
