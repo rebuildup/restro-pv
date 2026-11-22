@@ -222,6 +222,12 @@ function __applyKeys(prop, keys) {
   }
 }
 
+// Deferred expression pass: {property, expression} pairs collected while
+// applying specs. Flushed after every comp exists so cross-layer references
+// resolve; re-assigning also clears AE's "Expression disabled" state left
+// by the eager first evaluation.
+var __pendingExprs = [];
+
 // ---- generic property tree -------------------------------------------------
 // Containers whose children must be ADDED (parades, vector contents, text
 // animators). Everything else has pre-existing children set by matchName.
@@ -238,13 +244,18 @@ function __childProp(parent, child) {
 }
 // Vector content groups (shape-layer Contents) carry functional names:
 // FoldLayers dividers are identified by FD-0/FD-1/FD-H:* group names inside
-// "ADBE Root Vectors Group", and dumped shape groups keep their authored
-// names. addProperty() gives a default name, so rename right after creation.
-// Other property types reject name writes -- restrict to vector groups.
-function __maybeRenameGroup(cp, ch) {
-  if (!cp || !ch || ch.matchName !== "ADBE Vector Group" || !ch.name) return;
+// "ADBE Root Vectors Group", dumped shape groups keep their authored
+// names, and effects keep their authored display names (expressions
+// resolve effects by name, e.g. effect("Corner TL")). addProperty() gives
+// a default name, so rename right after creation. Other property types
+// reject name writes -- restrict to vector groups and effect children.
+function __maybeRenameGroup(cp, ch, parentMatch) {
+  if (!cp || !ch || !ch.name) return;
+  var renamable = ch.matchName === "ADBE Vector Group" ||
+    parentMatch === "ADBE Effect Parade";
+  if (!renamable) return;
   try { cp.name = ch.name; }
-  catch (ne) { __warn("vector group rename failed '" + ch.name + "': " + __estr(ne)); }
+  catch (ne) { __warn("group/effect rename failed '" + ch.name + "': " + __estr(ne)); }
 }
 function __applyNode(p, node, path) {
   if (!p) { __err("missing property " + path); return; }
@@ -284,7 +295,7 @@ function __applyNode(p, node, path) {
       if (addMode) {
         try { cp = p.addProperty(ch.matchName); }
         catch (ae) { __err("addProperty " + ch.matchName + " under " + path + ": " + __estr(ae)); continue; }
-        __maybeRenameGroup(cp, ch);
+        __maybeRenameGroup(cp, ch, node.matchName);
       } else {
         cp = __childProp(p, ch);
       }
@@ -336,7 +347,15 @@ function __applyNode(p, node, path) {
     }
   }
   if (node.expression) {
-    try { p.expression = node.expression; }
+    try {
+      p.expression = node.expression;
+      // Expressions routinely reference layers created later in the build
+      // (tracker nulls, Linked Quads). AE evaluates on assignment, so an
+      // early set against a not-yet-built dependency records an error and
+      // can leave the expression disabled. Re-apply every expression once
+      // all comps/layers exist (see __flushExpressions).
+      __pendingExprs.push({ p: p, e: node.expression });
+    }
     catch (exe) { __err("expression failed on " + path + ": " + __estr(exe)); }
   }
 }
@@ -350,7 +369,7 @@ function __applyGroup(root, node, path) {
     if (addMode) {
       try { cp = root.addProperty(ch.matchName); }
       catch (ae) { __err("addProperty " + ch.matchName + " under " + path + ": " + __estr(ae)); continue; }
-      __maybeRenameGroup(cp, ch);
+      __maybeRenameGroup(cp, ch, node.matchName);
     } else {
       cp = __childProp(root, ch);
     }
@@ -787,6 +806,25 @@ function buildProject(spec) {
       (new Date().getTime() - compT0) + "ms)");
     try { if ($.writeln) $.writeln("PV comp done: " + compSpec.name + " (" + layers.length + " layers)"); } catch (x) {}
   }
+  // Deferred expression pass: every layer/comp now exists, so re-assigning
+  // each expression re-evaluates it against the complete project and clears
+  // stale "Expression disabled" states from the eager first pass. A comp
+  // time wiggle forces AE to re-evaluate before the audit reads
+  // expressionError.
+  var reapplyErr = 0;
+  for (var pe = 0; pe < __pendingExprs.length; pe++) {
+    var pex = __pendingExprs[pe];
+    try { pex.p.expression = pex.e; }
+    catch (peErr) { reapplyErr++; }
+  }
+  __pendingExprs = [];
+  for (var wci = 0; wci < compItems.length; wci++) {
+    var wcomp = compItems[wci];
+    if (!wcomp) continue;
+    try { wcomp.time = 0.5; } catch (e) {}
+    try { wcomp.time = 0; } catch (e) {}
+  }
+  __prog("expressions reapplied: " + reapplyErr + " failures");
   // Expression audit: AE reports per-property evaluation errors through
   // Property.expressionError. Scan every property of every layer we built;
   // any non-empty error is a hard failure — a generated project with broken
@@ -796,6 +834,10 @@ function buildProject(spec) {
     var expr = "";
     try { expr = p.expression; } catch (e) {}
     if (expr) {
+      // Force evaluation before reading expressionError: AE caches the
+      // error from the eager first pass and only refreshes it when the
+      // property value is actually requested.
+      try { var _v = p.value; } catch (ev) {}
       var ee = "";
       try { ee = p.expressionError; } catch (e2) {}
       if (ee) {
