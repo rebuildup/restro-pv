@@ -6,9 +6,9 @@
 //   - brand rail + description viewport on the left (unchanged from
 //     brand-check: Heading / AFTER EFFECTS PLUGIN / Ae.png / Logo /
 //     description, 0-20s)
-//   - "Lens magnifier" precomp at (75.97,337.88); the dump carries a stale
-//     ALPHA matte (P-71 above it) whose source is NOT bound
-//     (isTrackMatte=false) — inert in the original, reproduced as such
+//   - "Lens magnifier" precomp at (75.97,337.88) with the tracker null
+//     P-71 directly above it (master idx22->23); the stored ALPHA matte is
+//     LIVE — the null clips the magnifier to the lens window (see Matte note)
 //   - right-side step stack: four cumulative tab bands (labels 01-04 +
 //     tab backgrounds), STEP1-4 border/card frames, and the material comps
 //     STEP1 outline / STEP2-4 draft / Baseline (the FUDE "筆" glyph and its
@@ -19,14 +19,16 @@
 //   - audio: BGM mp3
 //
 // Matte note: the master dump sets trackMatteType=ALPHA (5013) on
-// description / Lens magnifier / STEP drafts / STEP1 outline, but EVERY one
-// of those matte sources has isTrackMatte=false in the source AEP — the
-// bindings are stale leftovers of an earlier layer arrangement and the
-// layers render UNMASKED (verified: original frames show full description
-// text where the LENS-frame rings never reach, and full draft content
-// outside the stroke-only borders). Only "PV showreel" has a live binding
-// (PV matte C, disabled). We reproduce the effective original state:
-// NO_TRACK_MATTE on all of them.
+// description / Lens magnifier / STEP drafts / STEP1 outline. The bindings
+// are mixed: the Lens magnifier matte IS live (the P-71 null clips the
+// magnifier's full-bleed comp to the lens window — render-verified in
+// scene-b.aep), while the draft mattes are stale/inert (the border above
+// each draft is a stroke-only outline — alpha-matting drafts to it clips
+// them to ~nothing, but the original renders them dense). description's
+// stored matte targets LENS frame, which is only a stroked ring — binding
+// it would clip the text to the ring, so it is inert in the original too.
+// We therefore emit 5013 only for Lens magnifier and 5012 elsewhere —
+// the effective state of the original.
 //
 // NOT reproduced (out of B scope): A1/A2/A3 content (bunkai/kai-zoom),
 // scene C/D/E comps, disabled scaffold layers, 'lens content' /
@@ -57,9 +59,9 @@ const B_OUT_STEP1 = 6.25;
 
 const LENS_FRAME = "LENS frame";
 const CLONE_NAMES = [
-  // chrome section: matte source directly above description
+  // chrome section: LENS frame directly above description (master idx9->10)
   LENS_FRAME,
-  // lens section: null matte source directly above Lens magnifier
+  // lens section: P-71 tracker null directly above Lens magnifier (idx22->23)
   "P-71",
   // step tabs
   "04  一画ずつに分割中・",
@@ -67,7 +69,8 @@ const CLONE_NAMES = [
   "02  輪郭線を延長した",
   "01  輪郭を解析した",
   "tab backgrounds",
-  // step stage: border immediately above its draft (alpha matte pairs)
+  // step stage: border immediately above its draft (master z-order kept;
+  // the stored mattes are inert — see Matte note)
   "STEP 4 border",
   "STEP 3 border",
   "STEP 2 border",
@@ -125,9 +128,9 @@ function stepCompLayer(
   };
 }
 
-/** STEP draft/outline material-comp layer. The master's ALPHA matte is
- *  inert (border source unbound, isTrackMatte=false) — reproduced as
- *  NO_TRACK_MATTE so the draft renders fully like the original. */
+/** STEP draft/outline material-comp layer: the master's ALPHA matte is a
+ *  stale leftover (inert in the original — the border above is a visible
+ *  stroke-only frame, not a filled matte), so NO_TRACK_MATTE is emitted. */
 function stepDraft(id: string, pos: { x: number; y: number }): SectionLayerSpec {
   return {
     ...stepCompLayer(id, id, pos),
@@ -158,10 +161,9 @@ const comp: CompProduction = {
   sections: [
     {
       // Front of the B window: LENS frame sits directly above description
-      // (master idx9->10) preserving z-order; the master's ALPHA matte on
-      // description is inert (LENS frame isTrackMatte=false) so it is
-      // reproduced as NO_TRACK_MATTE; then the accepted brand stack
-      // (description > Heading > PLUGIN > Ae > Logo).
+      // (master idx9->10); the master's stored ALPHA matte is stale/inert
+      // (LENS frame renders visibly, description unclipped) → 5012; then
+      // the accepted brand stack (description > Heading > PLUGIN > Ae > Logo).
       id: "chrome",
       role: "chrome",
       layers: [
@@ -175,8 +177,10 @@ const comp: CompProduction = {
     },
     {
       // P-71 (tracker null) directly above Lens magnifier preserves master
-      // z-order (idx22->23); the null-alpha matte is inert in the original
-      // (P-71 isTrackMatte=false) → reproduced as NO_TRACK_MATTE.
+      // z-order (idx22->23); the master's ALPHA matte is LIVE — verified in
+      // scene-b.aep: binding 5013 makes the null clip the magnifier's
+      // full-bleed comp content to the lens window (~60k vs ~99k nonwhite px
+      // in the lens area, matching the original's ~51k). → 5013.
       id: "lens",
       role: "scene",
       layers: [
@@ -192,7 +196,7 @@ const comp: CompProduction = {
             anchor: { x: 0, y: 0 },
           },
           timing: { inPoint: B_IN, outPoint: B_OUT, startTime: B_IN, stretch: 100 },
-          patch: { trackMatteType: 5012 },
+          patch: { trackMatteType: 5013 },
         },
       ],
     },
@@ -223,8 +227,8 @@ const comp: CompProduction = {
     },
     {
       // Step stage, master z-order: each border directly above its draft
-      // (alpha matte pairs stay adjacent inside the section), Baseline at
-      // the bottom of the stack.
+      // (adjacency preserved inside the section), Baseline at the bottom
+      // of the stack.
       id: "step-stage",
       role: "scene",
       layers: [

@@ -51,26 +51,30 @@ describe("scene-b structure", () => {
     expect(s.comps).toHaveLength(1);
   });
 
-  test("master's inert mattes reproduce as NO_TRACK_MATTE; z-order adjacency kept", () => {
-    // The master dump sets ALPHA (5013) on these layers but every matte
-    // source has isTrackMatte=false — the bindings are stale and the
-    // original renders them unmasked. We reproduce the effective state.
+  test("master's mixed mattes reproduce effective state; z-order adjacency kept", () => {
+    // The master dump sets ALPHA (5013) on six layers, but only the Lens
+    // magnifier binding is live (the P-71 null clips the full-bleed comp to
+    // the lens window — render-verified). The draft mattes target
+    // stroke-only borders (binding clips drafts to ~nothing while the
+    // original renders them dense) and description's targets a stroked
+    // ring — all inert in the original → NO_TRACK_MATTE (5012).
+    // Z-adjacency is preserved so mattes can be re-enabled deliberately.
     const s = spec();
     const layers = compOf(s).layers;
-    const pairs: Array<[string, string]> = [
-      ["description", "LENS frame"],
-      ["Lens magnifier", "P-71"],
-      ["STEP4 draft", "STEP 4 border"],
-      ["STEP3 draft", "STEP 3 border"],
-      ["STEP2 draft", "STEP 2 border"],
-      ["STEP1 outline", "STEP 1 border"],
+    const pairs: Array<[string, string, number]> = [
+      ["description", "LENS frame", 5012],
+      ["Lens magnifier", "P-71", 5013],
+      ["STEP4 draft", "STEP 4 border", 5012],
+      ["STEP3 draft", "STEP 3 border", 5012],
+      ["STEP2 draft", "STEP 2 border", 5012],
+      ["STEP1 outline", "STEP 1 border", 5012],
     ];
-    for (const [matted, matte] of pairs) {
+    for (const [matted, matte, tmt] of pairs) {
       const mi = indexOf(s, matted);
       const si = indexOf(s, matte);
       expect(mi, matted).toBeGreaterThan(0);
       expect(si, matte).toBe(mi - 1);
-      expect(layers[mi - 1].trackMatteType, matted).toBe(5012);
+      expect(layers[mi - 1].trackMatteType, matted).toBe(tmt);
     }
   });
 
