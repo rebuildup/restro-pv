@@ -6,8 +6,9 @@
 //   - brand rail + description viewport on the left (unchanged from
 //     brand-check: Heading / AFTER EFFECTS PLUGIN / Ae.png / Logo /
 //     description, 0-20s)
-//   - "Lens magnifier" precomp at (75.97,337.88), ALPHA-matted by the null
-//     directly above it (P-71) — same inert-null adjacency as master
+//   - "Lens magnifier" precomp at (75.97,337.88); the dump carries a stale
+//     ALPHA matte (P-71 above it) whose source is NOT bound
+//     (isTrackMatte=false) — inert in the original, reproduced as such
 //   - right-side step stack: four cumulative tab bands (labels 01-04 +
 //     tab backgrounds), STEP1-4 border/card frames, and the material comps
 //     STEP1 outline / STEP2-4 draft / Baseline (the FUDE "筆" glyph and its
@@ -17,9 +18,15 @@
 //   - ground: 3D grid-solid plane + White Solid 1, lens matte + STEP cards
 //   - audio: BGM mp3
 //
-// Matte adjacency is preserved by construction: every ALPHA-matted layer
-// sits directly below its matte source inside the same section, so no
-// FoldLayers divider can land between a matte pair.
+// Matte note: the master dump sets trackMatteType=ALPHA (5013) on
+// description / Lens magnifier / STEP drafts / STEP1 outline, but EVERY one
+// of those matte sources has isTrackMatte=false in the source AEP — the
+// bindings are stale leftovers of an earlier layer arrangement and the
+// layers render UNMASKED (verified: original frames show full description
+// text where the LENS-frame rings never reach, and full draft content
+// outside the stroke-only borders). Only "PV showreel" has a live binding
+// (PV matte C, disabled). We reproduce the effective original state:
+// NO_TRACK_MATTE on all of them.
 //
 // NOT reproduced (out of B scope): A1/A2/A3 content (bunkai/kai-zoom),
 // scene C/D/E comps, disabled scaffold layers, 'lens content' /
@@ -118,12 +125,13 @@ function stepCompLayer(
   };
 }
 
-/** STEP draft/outline material-comp layer: ALPHA-matted by the border
- *  clone directly above it inside the step-stage section. */
+/** STEP draft/outline material-comp layer. The master's ALPHA matte is
+ *  inert (border source unbound, isTrackMatte=false) — reproduced as
+ *  NO_TRACK_MATTE so the draft renders fully like the original. */
 function stepDraft(id: string, pos: { x: number; y: number }): SectionLayerSpec {
   return {
     ...stepCompLayer(id, id, pos),
-    patch: { trackMatteType: 5013 },
+    patch: { trackMatteType: 5012 },
   };
 }
 
@@ -150,25 +158,25 @@ const comp: CompProduction = {
   sections: [
     {
       // Front of the B window: LENS frame sits directly above description
-      // (master idx9->10) preserving the ALPHA matte adjacency; then the
-      // accepted brand stack (description > Heading > PLUGIN > Ae > Logo).
+      // (master idx9->10) preserving z-order; the master's ALPHA matte on
+      // description is inert (LENS frame isTrackMatte=false) so it is
+      // reproduced as NO_TRACK_MATTE; then the accepted brand stack
+      // (description > Heading > PLUGIN > Ae > Logo).
       id: "chrome",
       role: "chrome",
       layers: [
         clones.sectionLayer(LENS_FRAME),
-        // description keeps the master's ALPHA matte (LENS frame directly
-        // above it, same adjacency as idx9->10); brand-check left it
-        // unset because no matte source existed there.
         ...brandSection.layers.map((l) =>
           l.id === "description"
-            ? { ...l, patch: { ...(l.patch ?? {}), trackMatteType: 5013 } }
+            ? { ...l, patch: { ...(l.patch ?? {}), trackMatteType: 5012 } }
             : l,
         ),
       ],
     },
     {
-      // P-71 (tracker null) directly above Lens magnifier reproduces the
-      // master's null-alpha-matte adjacency (idx22->23).
+      // P-71 (tracker null) directly above Lens magnifier preserves master
+      // z-order (idx22->23); the null-alpha matte is inert in the original
+      // (P-71 isTrackMatte=false) → reproduced as NO_TRACK_MATTE.
       id: "lens",
       role: "scene",
       layers: [
@@ -184,7 +192,7 @@ const comp: CompProduction = {
             anchor: { x: 0, y: 0 },
           },
           timing: { inPoint: B_IN, outPoint: B_OUT, startTime: B_IN, stretch: 100 },
-          patch: { trackMatteType: 5013 },
+          patch: { trackMatteType: 5012 },
         },
       ],
     },
@@ -246,7 +254,7 @@ const comp: CompProduction = {
         {
           ...stepCompLayer("STEP1 outline", "STEP1 outline", { x: 797, y: 223 }, B_OUT_STEP1),
           patch: {
-            trackMatteType: 5013,
+            trackMatteType: 5012,
             // Master carried an inert Rotate X=90 on this non-3D layer;
             // preserved for fidelity.
             transform: {

@@ -51,7 +51,10 @@ describe("scene-b structure", () => {
     expect(s.comps).toHaveLength(1);
   });
 
-  test("ALPHA-matted layers sit directly below their matte source", () => {
+  test("master's inert mattes reproduce as NO_TRACK_MATTE; z-order adjacency kept", () => {
+    // The master dump sets ALPHA (5013) on these layers but every matte
+    // source has isTrackMatte=false — the bindings are stale and the
+    // original renders them unmasked. We reproduce the effective state.
     const s = spec();
     const layers = compOf(s).layers;
     const pairs: Array<[string, string]> = [
@@ -67,7 +70,7 @@ describe("scene-b structure", () => {
       const si = indexOf(s, matte);
       expect(mi, matted).toBeGreaterThan(0);
       expect(si, matte).toBe(mi - 1);
-      expect(layers[mi - 1].trackMatteType).toBe(5013);
+      expect(layers[mi - 1].trackMatteType, matted).toBe(5012);
     }
   });
 
