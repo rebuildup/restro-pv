@@ -731,21 +731,6 @@ function buildProject(spec) {
       if (fit && fst.folder) __assignFolder(fit, fst.folder);
     }
   }
-  if (spec.itemFolders) {
-    for (var ifn in spec.itemFolders) {
-      if (!spec.itemFolders.hasOwnProperty(ifn)) continue;
-      var ifpath = spec.itemFolders[ifn];
-      var ifmatches = 0, ifitem = null;
-      for (var iii = 1; iii <= app.project.numItems; iii++) {
-        var iit = null;
-        try { iit = app.project.item(iii); } catch (e) {}
-        if (iit && !(iit instanceof FolderItem) && iit.name === ifn) { ifmatches++; ifitem = iit; }
-      }
-      if (ifmatches === 1) __assignFolder(ifitem, ifpath);
-      else if (ifmatches > 1) __warn("itemFolders '" + ifn + "' ambiguous (" + ifmatches + " items), skipped");
-      else __warn("itemFolders '" + ifn + "' not found");
-    }
-  }
   for (i = 0; i < spec.comps.length; i++) {
     var compSpec = spec.comps[i];
     var comp = compItems[i];
@@ -860,6 +845,14 @@ function buildProject(spec) {
     }
   }
   if (compItems[0]) __prog("post-labels " + compItems[0].name + " aeLayers=" + compItems[0].numLayers);
+  // Duck-typed item classification shared by the prune closure and the
+  // folder sweep below (instanceof is unreliable in this delivery context).
+  function __isCompItem(it) {
+    try { return it.numLayers !== undefined; } catch (e) { return false; }
+  }
+  function __isFolderItem(it) {
+    try { return it.numItems !== undefined && it.numLayers === undefined; } catch (e) { return false; }
+  }
   // Prune material-AEP items outside the authored keep lists so the saved
   // project contains only what the generated comp actually references.
   // Iterate backwards: remove() shifts later indices.
@@ -877,12 +870,6 @@ function buildProject(spec) {
     }
     function __keepItem(it) {
       if (it && __keepIdx(it) < 0) keepObj.push(it);
-    }
-    function __isCompItem(it) {
-      try { return it.numLayers !== undefined; } catch (e) { return false; }
-    }
-    function __isFolderItem(it) {
-      try { return it.numItems !== undefined && it.numLayers === undefined; } catch (e) { return false; }
     }
     function __keepLayerSource(lay) {
       var s = null;
@@ -998,31 +985,40 @@ function buildProject(spec) {
       }
     }
     __prog("material prune: removed=" + pruned);
-    // Empty folders are never meaningful output — remove them after the
-    // item sweep so authored trees stay free of husks.
-    var removedFolders = 0;
-    var folderPass = 0;
-    var folderChanged = true;
-    // Repeat: emptying a child folder can empty its parent on the next pass.
-    while (folderChanged && folderPass < 6) {
-      folderChanged = false; folderPass++;
-      for (var pfi = app.project.numItems; pfi >= 1; pfi--) {
-        var fitem = null;
-        try { fitem = app.project.item(pfi); } catch (e) {}
-        if (!fitem || !__isFolderItem(fitem)) continue;
-        try {
-          if (/** @type {any} */ (fitem).numItems === 0) { fitem.remove(); removedFolders++; folderChanged = true; }
-        } catch (fe) {}
-      }
-    }
-    if (removedFolders) __prog("empty folders removed=" + removedFolders);
   }
-  if (compItems[0]) __prog("post-prune " + compItems[0].name + " aeLayers=" + compItems[0].numLayers);
-  // drop the scratch comp used to mint solid footage items
+  // Drop the scratch comp used to mint solid footage items before folder
+  // assignment/sweep — if it sits inside a material folder it would keep
+  // that folder artificially non-empty.
   if (__solidHost) {
     try { __solidHost.remove(); } catch (se) { __warn("solid host comp cleanup: " + __estr(se)); }
     __solidHost = null;
   }
+  // Material-item folder assignment runs AFTER pruning: the material AEP can
+  // contain duplicate names that only become unique once the dependency
+  // closure has removed the unreferenced copies. Assigning earlier would hit
+  // the ambiguity guard and leave items in their source folders.
+  if (spec.itemFolders) {
+    for (var ifn in spec.itemFolders) {
+      if (!spec.itemFolders.hasOwnProperty(ifn)) continue;
+      var ifpath = spec.itemFolders[ifn];
+      var ifmatches = 0, ifitem = null;
+      for (var iii = 1; iii <= app.project.numItems; iii++) {
+        var iit = null;
+        try { iit = app.project.item(iii); } catch (e) {}
+        if (iit && !(iit instanceof FolderItem) && iit.name === ifn) { ifmatches++; ifitem = iit; }
+      }
+      if (ifmatches === 1) __assignFolder(ifitem, ifpath);
+      else if (ifmatches > 1) __warn("itemFolders '" + ifn + "' ambiguous (" + ifmatches + " items), skipped");
+      else __warn("itemFolders '" + ifn + "' not found");
+    }
+  }
+  // Empty folders are never meaningful output — remove them after item
+  // moves so husks emptied by re-filing are swept too. FolderItem state can
+  // lag parentFolder moves within a session, so __sweepEmptyFolders also
+  // runs once more after the AEP save in __finish (see below).
+  var removedFolders = __sweepEmptyFolders();
+  if (removedFolders) __prog("empty folders removed=" + removedFolders);
+  if (compItems[0]) __prog("post-prune " + compItems[0].name + " aeLayers=" + compItems[0].numLayers);
   if (compItems[0]) __prog("post-solidhost " + compItems[0].name + " aeLayers=" + compItems[0].numLayers);
   for (var pci = 0; pci < compItems.length; pci++) {
     if (compItems[pci]) __prog("pre-save " + compItems[pci].name + " aeLayers=" + compItems[pci].numLayers);
@@ -1062,6 +1058,37 @@ function __writeReport() {
     wf.close();
   }
 }
+// Removes project folders that hold no items. Emptiness is checked by
+// scanning parentFolder references (FolderItem.numItems can lag moves
+// within a session). Repeats because emptying a child can empty its parent.
+function __sweepEmptyFolders() {
+  var removed = 0, pass = 0, changed = true;
+  while (changed && pass < 6) {
+    changed = false; pass++;
+    for (var pfi = app.project.numItems; pfi >= 1; pfi--) {
+      var fitem = null;
+      try { fitem = app.project.item(pfi); } catch (e) {}
+      if (!fitem) continue;
+      var fa = /** @type {any} */ (fitem);
+      var isFolder = false;
+      try { isFolder = fa.numItems !== undefined && fa.numLayers === undefined; } catch (e) {}
+      if (!isFolder) continue;
+      var kids = 0;
+      for (var qi = 1; qi <= app.project.numItems; qi++) {
+        var qit = null;
+        try { qit = app.project.item(qi); } catch (e) {}
+        if (!qit) continue;
+        try { if (/** @type {any} */ (qit).parentFolder === fitem) { kids++; break; } } catch (e) {}
+      }
+      if (kids === 0) {
+        try { fitem.remove(); removed++; changed = true; }
+        catch (re) { __prog("folder '" + fitem.name + "' remove failed: " + __estr(re)); }
+      }
+    }
+  }
+  return removed;
+}
+
 function __finish() {
   __prog("buildProject returned; writing report");
   __writeReport();
@@ -1071,6 +1098,15 @@ function __finish() {
       __prog("saving AEP: " + __SAVE_PATH);
       app.project.save(sf);
       __prog("AEP saved");
+      // Folder bookkeeping can still be settling after in-build moves; a
+      // post-save sweep catches husks the first pass could not remove, and
+      // re-saves so the file on disk is clean.
+      var postSweep = 0;
+      try { postSweep = __sweepEmptyFolders(); } catch (x) {}
+      if (postSweep > 0) {
+        __prog("post-save folder sweep removed=" + postSweep);
+        try { app.project.save(sf); __prog("AEP re-saved"); } catch (se2) { __err("re-save failed: " + __estr(se2)); }
+      }
       try { if ($.writeln) $.writeln("PV saved: " + __SAVE_PATH); } catch (x) {}
     } catch (se) { __err("project save failed: " + __estr(se)); }
   }

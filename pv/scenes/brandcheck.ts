@@ -333,16 +333,29 @@ const project: ProductionProject = {
     { name: "_Verification" },
     {
       name: "03_Materials",
-      children: [{ name: "Brand" }, { name: "Images" }, { name: "Solids" }],
+      children: [
+        { name: "Audio" },
+        { name: "Brand" },
+        { name: "Images" },
+        { name: "Solids" },
+      ],
     },
   ],
-  // Material-AEP comps are not created by this spec, so their folder
-  // assignment goes through the name-keyed materialFolders map (unique
-  // names only — the runtime skips ambiguous ones with a warning).
+  // Material-AEP items are not created by this spec, so their folder
+  // assignment goes through the name-keyed materialFolders map. Names are
+  // resolved AFTER material pruning, so only the dependency-closure
+  // survivors are matched (unique names; ambiguous ones warn + skip).
   materialFolders: {
     Heading: "03_Materials/Brand",
     Logo: "03_Materials/Brand",
     description: "03_Materials/Brand",
+    // Footage backing nulls inside the material comps.
+    "Blue Solid 1": "03_Materials/Solids",
+    "Blue Solid 2": "03_Materials/Solids",
+    "Null 30": "03_Materials/Solids",
+    "Null 31": "03_Materials/Solids",
+    // Audio layer inside the description material comp.
+    "drums-and-somps-background-music-458414.mp3": "03_Materials/Audio",
   },
   // Minimal material AEP: extracted once from legacy (only the comps this
   // spec references + their dependency closure). Regenerate by building
