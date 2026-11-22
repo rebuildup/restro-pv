@@ -1,0 +1,1 @@
+comp=brand-check items=18
