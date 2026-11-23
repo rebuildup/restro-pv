@@ -2,33 +2,37 @@
 // original master's B window (frames 101-190, ~4.25-7.92s) as semantic
 // sections (issue #19, Step 3).
 //
+// Compositing model (explicit, TypeScript-authored — see ADR-0003):
+//   - the legacy master's stored track mattes are NOT reproduced. The v10
+//     isolation experiment (verification/sceneb/v10-matte-isolation) showed
+//     the stored bindings are stale/inconsistent across layers and cannot be
+//     recreated by re-emitting 5012/5013; a controlled AE test proved a
+//     zero-alpha null matte source erases its target completely.
+//   - STEP drafts/outline render unmattted (5012). The border and card
+//     clones stay as visible info layers that frame each stage; they are no
+//     longer matte sources.
+//   - the Lens magnifier's display window is an explicit animated mask on
+//     the layer itself, authored from the legacy "lens matte" shape: a
+//     circle at master (660,810) radius ~210 that pops in at ~4.97s. The
+//     LENS frame ring clone remains as the window outline. P-71 (a
+//     zero-alpha tracker null) is removed — nothing references it.
+//   - the four stage labels appear cumulatively as each stage begins
+//     (SPEC §10.3), timed to the Lens comp's internal stage windows.
+//
 // What the original B window actually is (pv/generated/05-master.ts dump):
 //   - brand rail + description viewport on the left (unchanged from
 //     brand-check: Heading / AFTER EFFECTS PLUGIN / Ae.png / Logo /
 //     description, 0-20s)
-//   - "Lens magnifier" precomp at (75.97,337.88) with the tracker null
-//     P-71 directly above it (master idx22->23); the stored ALPHA matte is
-//     LIVE — the null clips the magnifier to the lens window (see Matte note)
+//   - "Lens magnifier" precomp at (75.97,337.88); its visible window is the
+//     "lens matte" circle at (660,810) r~210 (now an explicit layer mask)
 //   - right-side step stack: four cumulative tab bands (labels 01-04 +
 //     tab backgrounds), STEP1-4 border/card frames, and the material comps
 //     STEP1 outline / STEP2-4 draft / Baseline (the FUDE "筆" glyph and its
 //     processing stages), all inside 4.25-7.92s
 //   - tracker rig: ~55 nulls feeding the Linked Quad corner markers' Layer
 //     Controls (cloned via legacyCloneContext fixpoint closure)
-//   - ground: 3D grid-solid plane + White Solid 1, lens matte + STEP cards
+//   - ground: 3D grid-solid plane + White Solid 1
 //   - audio: BGM mp3
-//
-// Matte note: the master dump sets trackMatteType=ALPHA (5013) on
-// description / Lens magnifier / STEP drafts / STEP1 outline. The bindings
-// are mixed: the Lens magnifier matte IS live (the P-71 null clips the
-// magnifier's full-bleed comp to the lens window — render-verified in
-// scene-b.aep), while the draft mattes are stale/inert (the border above
-// each draft is a stroke-only outline — alpha-matting drafts to it clips
-// them to ~nothing, but the original renders them dense). description's
-// stored matte targets LENS frame, which is only a stroked ring — binding
-// it would clip the text to the ring, so it is inert in the original too.
-// We therefore emit 5013 only for Lens magnifier and 5012 elsewhere —
-// the effective state of the original.
 //
 // NOT reproduced (out of B scope): A1/A2/A3 content (bunkai/kai-zoom),
 // scene C/D/E comps, disabled scaffold layers, 'lens content' /
@@ -40,7 +44,7 @@
 import { compileProduction } from "../production/compile.ts";
 import type { CompProduction, ProductionProject, SectionLayerSpec } from "../production/model.ts";
 import { ITEM_LABEL_WORK } from "../production/theme.ts";
-import type { ProjectSpec } from "../spec/types.ts";
+import type { LayerSpec, ProjectSpec, PropNode } from "../spec/types.ts";
 import { brandCheckProject } from "./brandcheck.ts";
 import { legacyCloneContext, type LegacyCloneContext } from "./legacy-master.ts";
 import { materialCompsByName, materialItemLabels, materialKeepSet } from "./production.ts";
@@ -61,8 +65,6 @@ const LENS_FRAME = "LENS frame";
 const CLONE_NAMES = [
   // chrome section: LENS frame directly above description (master idx9->10)
   LENS_FRAME,
-  // lens section: P-71 tracker null directly above Lens magnifier (idx22->23)
-  "P-71",
   // step tabs
   "04  一画ずつに分割中・",
   "03  隠れた頂点を推定した",
@@ -75,11 +77,13 @@ const CLONE_NAMES = [
   "STEP 3 border",
   "STEP 2 border",
   "STEP 1 border",
+  // STEP card bands stay as visible info layers (frame each stage); they
+  // are no longer matte sources. The legacy "lens matte" circle is replaced
+  // by an explicit mask on the Lens magnifier layer (see lensWindowMasks).
   "STEP 1 card",
   "STEP 2 card",
   "STEP 3 card",
   "STEP 4 card",
-  "lens matte",
   // overlay quads + A-section stroke marker (always-on 0-20s)
   "Linked Quad 5",
   "Linked Quad 4",
@@ -128,13 +132,116 @@ function stepCompLayer(
   };
 }
 
-/** STEP draft/outline material-comp layer: the master's ALPHA matte is a
- *  stale leftover (inert in the original — the border above is a visible
- *  stroke-only frame, not a filled matte), so NO_TRACK_MATTE is emitted. */
+/** STEP draft/outline material-comp layer. The legacy border mattes are
+ *  intentionally NOT reproduced (see header): the comp renders unmattted
+ *  and the border/card clones frame it as visible info layers. */
 function stepDraft(id: string, pos: { x: number; y: number }): SectionLayerSpec {
+  return stepCompLayer(id, id, pos);
+}
+
+/** Clone a legacy info layer (border/card) with stale matte flags cleared:
+ *  in the master these doubled as track-matte sources; in the explicit
+ *  model they are plain visible layers. */
+function infoSpec(name: string): LayerSpec {
+  return { ...clones.layer(name), isTrackMatte: false, trackMatteType: 5012 };
+}
+function infoLayer(name: string): SectionLayerSpec {
+  return clones.sectionLayer(name, {
+    time: (l) => {
+      l.isTrackMatte = false;
+      l.trackMatteType = 5012;
+    },
+  });
+}
+
+// ---- lens window -------------------------------------------------------------
+// The legacy "lens matte" clone was a white ellipse at master (660,810),
+// radius ~210, hidden until ~4.97s then popping in with a damped spring.
+// We author the same window as an explicit mask on the Lens magnifier
+// layer so enlarged content can never leak outside the window.
+const LENS_POS = { x: 75.9680938720703, y: 337.882507324219 };
+const LENS_WINDOW = {
+  masterCenter: { x: 660, y: 810 },
+  radius: 210,
+  appearAt: 4.95,
+};
+// Stage windows from the Lens magnifier comp's internal sequencing
+// (comp-time + B_IN): outline 4.25-5.00, extend 5.00-5.63,
+// hidden-vertex 5.63-6.63, brush rebuild 6.63-7.92.
+const TAB_STAGE_IN = [B_IN, 5.0, 5.63, 6.63] as const;
+const TAB_NAMES = [
+  "01  輪郭を解析した",
+  "02  輪郭線を延長した",
+  "03  隠れた頂点を推定した",
+  "04  一画ずつに分割中・",
+] as const;
+
+/** Explicit elliptical display window for the Lens magnifier, in layer
+ *  space (the 1080x1080 material comp; layer pos LENS_POS, anchor 0,0,
+ *  scale 100 → mask coords = comp px offset by -LENS_POS from master).
+ *  Mask Expansion keyframes reproduce the legacy pop-in: collapsed at
+ *  appearAt, overshoot, damped settle to the full radius. */
+function lensWindowMasks(): PropNode {
+  const cx = LENS_WINDOW.masterCenter.x - LENS_POS.x;
+  const cy = LENS_WINDOW.masterCenter.y - LENS_POS.y;
+  const r = LENS_WINDOW.radius;
+  const N = 16;
+  const vertices: Array<[number, number]> = [];
+  for (let i = 0; i < N; i++) {
+    const a = (i / N) * Math.PI * 2;
+    vertices.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]);
+  }
+  const zero = vertices.map(() => [0, 0] as [number, number]);
+  const t0 = LENS_WINDOW.appearAt;
   return {
-    ...stepCompLayer(id, id, pos),
-    patch: { trackMatteType: 5012 },
+    name: "Masks",
+    matchName: "ADBE Mask Parade",
+    type: 6214,
+    properties: [
+      {
+        name: "lens window",
+        matchName: "ADBE Mask Atom",
+        type: 6213,
+        maskMode: 6813,
+        properties: [
+          {
+            name: "Mask Path",
+            matchName: "ADBE Mask Shape",
+            type: 6212,
+            numKeys: 0,
+            value: { vertices, inTangents: zero, outTangents: zero, closed: true },
+          },
+          {
+            name: "Mask Feather",
+            matchName: "ADBE Mask Feather",
+            type: 6212,
+            numKeys: 0,
+            value: [20, 20],
+          },
+          {
+            name: "Mask Opacity",
+            matchName: "ADBE Mask Opacity",
+            type: 6212,
+            numKeys: 0,
+            value: 100,
+          },
+          {
+            name: "Mask Expansion",
+            matchName: "ADBE Mask Offset",
+            type: 6212,
+            numKeys: 5,
+            value: 0,
+            keys: [
+              { t: t0, v: -r },
+              { t: t0 + 0.2, v: 15 },
+              { t: t0 + 0.55, v: -6 },
+              { t: t0 + 1.05, v: 0 },
+              { t: t0 + 1.6, v: 0 },
+            ],
+          },
+        ],
+      },
+    ],
   };
 }
 
@@ -176,27 +283,25 @@ const comp: CompProduction = {
       ],
     },
     {
-      // P-71 (tracker null) directly above Lens magnifier preserves master
-      // z-order (idx22->23); the master's ALPHA matte is LIVE — verified in
-      // scene-b.aep: binding 5013 makes the null clip the magnifier's
-      // full-bleed comp content to the lens window (~60k vs ~99k nonwhite px
-      // in the lens area, matching the original's ~51k). → 5013.
+      // Lens magnifier: enlarged brush content is confined to an explicit
+      // elliptical window mask (authored from the legacy "lens matte"
+      // circle). No track matte — the legacy P-71 zero-alpha null binding
+      // is removed entirely.
       id: "lens",
       role: "scene",
       layers: [
-        clones.sectionLayer("P-71"),
         {
           id: "lens-magnifier",
           name: "Lens magnifier",
           content: { kind: "material-comp", comp: "Lens magnifier" },
-          layout: { position: { x: 75.9680938720703, y: 337.882507324219 } },
+          layout: { position: LENS_POS },
           metrics: {
             width: 1080,
             height: 1080,
             anchor: { x: 0, y: 0 },
           },
           timing: { inPoint: B_IN, outPoint: B_OUT, startTime: B_IN, stretch: 100 },
-          patch: { trackMatteType: 5013 },
+          patch: { masks: lensWindowMasks() },
         },
       ],
     },
@@ -213,52 +318,56 @@ const comp: CompProduction = {
       ],
     },
     {
-      // Cumulative step tabs: labels 04->01 then the band background, all
-      // 4.25-7.92s (the original shows the full set, not a sequential add).
+      // Cumulative step tabs (SPEC §10.3): the band background shows for the
+      // whole window; each stage label appears when its stage begins and
+      // stays, timed to the Lens comp's internal stage windows.
       id: "step-tabs",
       role: "scene",
       layers: [
-        "04  一画ずつに分割中・",
-        "03  隠れた頂点を推定した",
-        "02  輪郭線を延長した",
-        "01  輪郭を解析した",
-        "tab backgrounds",
-      ].map((n) => clones.sectionLayer(n)),
+        // Front-to-back keeps the master's 04->01 label stacking.
+        ...[...TAB_NAMES].reverse().map((n) =>
+          clones.sectionLayer(n, {
+            time: (l) => {
+              l.inPoint = TAB_STAGE_IN[TAB_NAMES.indexOf(n)];
+            },
+          }),
+        ),
+        clones.sectionLayer("tab backgrounds"),
+      ],
     },
     {
-      // Step stage, master z-order: each border directly above its draft
-      // (adjacency preserved inside the section), Baseline at the bottom
-      // of the stack.
+      // Step stage, master z-order kept: border above its draft (adjacency
+      // preserved inside the section), Baseline at the bottom of the stack.
+      // All drafts render unmattted; borders/cards are visible info layers.
       id: "step-stage",
       role: "scene",
       layers: [
         {
           id: "step-4-border",
           name: "STEP 4 border",
-          content: { kind: "spec", layer: clones.layer("STEP 4 border") },
+          content: { kind: "spec", layer: infoSpec("STEP 4 border") },
         },
         stepDraft("STEP4 draft", { x: 540, y: 540 }),
         {
           id: "step-3-border",
           name: "STEP 3 border",
-          content: { kind: "spec", layer: clones.layer("STEP 3 border") },
+          content: { kind: "spec", layer: infoSpec("STEP 3 border") },
         },
         stepDraft("STEP3 draft", { x: 540, y: 540 }),
         {
           id: "step-2-border",
           name: "STEP 2 border",
-          content: { kind: "spec", layer: clones.layer("STEP 2 border") },
+          content: { kind: "spec", layer: infoSpec("STEP 2 border") },
         },
         stepDraft("STEP2 draft", { x: 540, y: 540 }),
         {
           id: "step-1-border",
           name: "STEP 1 border",
-          content: { kind: "spec", layer: clones.layer("STEP 1 border") },
+          content: { kind: "spec", layer: infoSpec("STEP 1 border") },
         },
         {
           ...stepCompLayer("STEP1 outline", "STEP1 outline", { x: 797, y: 223 }, B_OUT_STEP1),
           patch: {
-            trackMatteType: 5012,
             // Master carried an inert Rotate X=90 on this non-3D layer;
             // preserved for fidelity.
             transform: {
@@ -304,15 +413,10 @@ const comp: CompProduction = {
       ),
     },
     {
-      id: "matte-cards",
-      role: "guide",
-      layers: [
-        "lens matte",
-        "STEP 1 card",
-        "STEP 2 card",
-        "STEP 3 card",
-        "STEP 4 card",
-      ].map((n) => clones.sectionLayer(n)),
+      // STEP card bands: the visible card/frame info layers for each stage.
+      id: "step-cards",
+      role: "scene",
+      layers: ["STEP 1 card", "STEP 2 card", "STEP 3 card", "STEP 4 card"].map(infoLayer),
     },
     {
       id: "audio",

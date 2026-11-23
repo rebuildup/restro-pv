@@ -51,30 +51,71 @@ describe("scene-b structure", () => {
     expect(s.comps).toHaveLength(1);
   });
 
-  test("master's mixed mattes reproduce effective state; z-order adjacency kept", () => {
-    // The master dump sets ALPHA (5013) on six layers, but only the Lens
-    // magnifier binding is live (the P-71 null clips the full-bleed comp to
-    // the lens window — render-verified). The draft mattes target
-    // stroke-only borders (binding clips drafts to ~nothing while the
-    // original renders them dense) and description's targets a stroked
-    // ring — all inert in the original → NO_TRACK_MATTE (5012).
-    // Z-adjacency is preserved so mattes can be re-enabled deliberately.
+  test("no legacy track mattes remain; borders/cards are visible info layers", () => {
+    // v10 isolation experiment: the legacy stored mattes are stale and were
+    // abandoned (ADR-0003). The explicit model emits no ALPHA/ALPHA_INVERTED
+    // mattes at all — every layer is 5012 or unset.
     const s = spec();
-    const layers = compOf(s).layers;
-    const pairs: Array<[string, string, number]> = [
-      ["description", "LENS frame", 5012],
-      ["Lens magnifier", "P-71", 5013],
-      ["STEP4 draft", "STEP 4 border", 5012],
-      ["STEP3 draft", "STEP 3 border", 5012],
-      ["STEP2 draft", "STEP 2 border", 5012],
-      ["STEP1 outline", "STEP 1 border", 5012],
+    for (const l of compOf(s).layers) {
+      expect(l.trackMatteType ?? 5012, l.name).toBe(5012);
+    }
+    // Retired matte/null dependencies must not exist.
+    for (const gone of ["P-71", "lens matte"]) {
+      expect(compOf(s).layers.some((l) => l.name === gone), gone).toBe(false);
+    }
+    // Borders and cards survive as ordinary visible layers.
+    for (const n of [
+      "STEP 1 border",
+      "STEP 2 border",
+      "STEP 3 border",
+      "STEP 4 border",
+      "STEP 1 card",
+      "STEP 2 card",
+      "STEP 3 card",
+      "STEP 4 card",
+    ]) {
+      const l = byName(s, n);
+      expect(l.enabled ?? true, n).toBe(true);
+      expect(l.isTrackMatte ?? false, n).toBe(false);
+    }
+  });
+
+  test("lens magnifier window is an explicit mask, not a matte", () => {
+    const s = spec();
+    const l = byName(s, "Lens magnifier");
+    expect(l.trackMatteType ?? 5012).toBe(5012);
+    const parade = l.masks;
+    expect(parade?.matchName).toBe("ADBE Mask Parade");
+    const atom = parade?.properties?.[0];
+    expect(atom?.matchName).toBe("ADBE Mask Atom");
+    const path = atom?.properties?.find((p) => p.matchName === "ADBE Mask Shape");
+    const v = (path?.value as { vertices: number[][] }).vertices;
+    // 16-gon approximating the legacy "lens matte" circle: master center
+    // (660,810) r~210 → layer space (584,472) on the 1080 comp at pos
+    // (75.97,337.88). Verify bounds in layer space.
+    const xs = v.map((p) => p[0]);
+    const ys = v.map((p) => p[1]);
+    expect((Math.min(...xs) + Math.max(...xs)) / 2).toBeCloseTo(584.03, 0);
+    expect((Math.min(...ys) + Math.max(...ys)) / 2).toBeCloseTo(472.12, 0);
+    expect(Math.max(...xs) - Math.min(...xs)).toBeCloseTo(420, 0);
+    expect(Math.max(...ys) - Math.min(...ys)).toBeCloseTo(420, 0);
+    // Pop-in: Mask Expansion starts collapsed and settles at 0.
+    const exp = atom?.properties?.find((p) => p.matchName === "ADBE Mask Offset");
+    expect(exp?.keys?.[0].v).toBeCloseTo(-210, 5);
+    expect(exp?.keys?.[exp.keys.length - 1].v).toBe(0);
+  });
+
+  test("step labels appear cumulatively as each stage begins", () => {
+    const s = spec();
+    const expected: Array<[string, number]> = [
+      ["01  輪郭を解析した", 4.25],
+      ["02  輪郭線を延長した", 5.0],
+      ["03  隠れた頂点を推定した", 5.63],
+      ["04  一画ずつに分割中・", 6.63],
     ];
-    for (const [matted, matte, tmt] of pairs) {
-      const mi = indexOf(s, matted);
-      const si = indexOf(s, matte);
-      expect(mi, matted).toBeGreaterThan(0);
-      expect(si, matte).toBe(mi - 1);
-      expect(layers[mi - 1].trackMatteType, matted).toBe(tmt);
+    for (const [n, t] of expected) {
+      expect(byName(s, n).inPoint, n).toBeCloseTo(t, 5);
+      expect(byName(s, n).outPoint!, n).toBeGreaterThan(7.9);
     }
   });
 
@@ -102,7 +143,7 @@ describe("scene-b structure", () => {
     }
     expect(byName(s, "STEP1 outline").outPoint).toBeCloseTo(6.25, 5);
     // Always-on overlays keep their 0-20s window.
-    for (const name of ["grid-solid", "White Solid 1", "lens matte"]) {
+    for (const name of ["grid-solid", "White Solid 1"]) {
       const l = byName(s, name);
       expect(l.inPoint, name).toBe(0);
       expect(l.outPoint, name).toBeGreaterThanOrEqual(20);
@@ -159,9 +200,7 @@ describe("scene-b structure", () => {
     // ~55 rig nulls + 2 brand drift anchors; the exact count is the legacy
     // closure size — assert a sane range rather than a brittle number.
     expect(nulls.length).toBeGreaterThan(50);
-    const p71 = byName(s, "P-71");
-    expect(p71.kind).toBe("null");
-    expect(p71.parentIndex).toBe(indexOf(s, "P 18"));
+    expect(byName(s, "ctl-op").kind).toBe("null");
   });
 
   test("every Layer Control / expression reference resolved to a valid index", () => {
