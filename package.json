@@ -10,6 +10,7 @@
     "typecheck": "bun tsc -p tsconfig.json --noEmit",
     "test": "bun test tests",
     "render:beats": "bun tools/render-pv-beats.ts",
+    "render:remotion": "cd video && bunx remotion render src/index.ts PV-Master ../verification/pv-remotion.mp4 --codec=h264 --audio-codec=aac",
     "render:baseline": "bun tools/render-pv-beats.ts --aep legacy/pv-2dc99e1.aep --out verification/baseline-beats",
     "doctor": "bun tools/doctor.ts",
     "generate": "bun tools/generate.ts",
