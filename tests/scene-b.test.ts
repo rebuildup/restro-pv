@@ -111,8 +111,8 @@ describe("scene-b structure", () => {
     const expected: Array<[string, number]> = [
       ["01  輪郭を解析した", 4.25],
       ["02  輪郭線を延長した", 5.0],
-      ["03  隠れた頂点を推定した", 5.63],
-      ["04  一画ずつに分割中・", 6.63],
+      ["03  隠れた頂点を推定した", 5.625],
+      ["04  一画ずつに分割中・", 6.625],
     ];
     for (const [n, t] of expected) {
       expect(byName(s, n).inPoint, n).toBeCloseTo(t, 5);
@@ -124,9 +124,6 @@ describe("scene-b structure", () => {
     const s = spec();
     for (const name of [
       "Baseline",
-      "STEP4 draft",
-      "STEP3 draft",
-      "STEP2 draft",
       "Lens magnifier",
       "tab backgrounds",
       "STEP 1 card",
@@ -135,6 +132,22 @@ describe("scene-b structure", () => {
       expect(l.inPoint, name).toBeCloseTo(4.25, 5);
       expect(l.outPoint, name).toBeCloseTo(7.91666666666667, 5);
     }
+    // Each step comp is visible only during its own stage window. The
+    // brush progression trails the label/lens boundaries by ~0.1-0.25s,
+    // matching the observed legacy pacing (the stage color baked into
+    // each material comp tracks the active step instead of stacking all
+    // four identical-glyph comps).
+    const stageWindows: Array<[string, number, number]> = [
+      ["STEP1 outline", 4.25, 5.125],
+      ["STEP2 draft", 5.125, 5.8],
+      ["STEP3 draft", 5.8, 6.85],
+      ["STEP4 draft", 6.85, 7.91666666666667],
+    ];
+    for (const [name, inn, out] of stageWindows) {
+      const l = byName(s, name);
+      expect(l.inPoint, name).toBeCloseTo(inn, 5);
+      expect(l.outPoint, name).toBeCloseTo(out, 5);
+    }
     // Cloned layers keep their dumped (frame-quantized) out points.
     for (const name of ["LENS frame", "STEP 4 border", "Linked Quad 8"]) {
       const l = byName(s, name);
@@ -142,7 +155,6 @@ describe("scene-b structure", () => {
       expect(l.outPoint!, name).toBeGreaterThan(7.9);
       expect(l.outPoint!, name).toBeLessThan(7.93);
     }
-    expect(byName(s, "STEP1 outline").outPoint).toBeCloseTo(6.25, 5);
     // Always-on overlays keep their 0-20s window.
     for (const name of ["grid-solid", "White Solid 1"]) {
       const l = byName(s, name);

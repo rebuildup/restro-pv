@@ -57,7 +57,16 @@ const T_END = 20;
 // B window as dumped in the master (comp-time seconds).
 const B_IN = 4.25;
 const B_OUT = 7.91666666666667;
-const B_OUT_STEP1 = 6.25;
+// Stage windows for the main brush. The Lens magnifier comp sequences its
+// four step comps at comp-times 0-0.75 / 0.75-1.375 / 1.375-2.375 /
+// 2.375-3.667 (master 4.25 / 5.0 / 5.625 / 6.625 — the same boundaries the
+// step labels use via TAB_STAGE_IN). Legacy beat renders show the main
+// brush color change trailing those boundaries by roughly a tenth of a
+// second (f120/t5.0 still red, f160/t6.67 still blue, orange by ~6.8-7.0),
+// so the stage layers use the same progression delayed ~0.1-0.25s: the
+// label/lens announce the step, the brush shows its result.
+const BRUSH_STAGE_IN = [B_IN, 5.125, 5.8, 6.85] as const;
+const BRUSH_STAGE_OUT = [BRUSH_STAGE_IN[1], BRUSH_STAGE_IN[2], BRUSH_STAGE_IN[3], B_OUT] as const;
 
 // ---- legacy clone set ---------------------------------------------------------
 // Explicitly emitted legacy master layers (front-to-back within their
@@ -119,8 +128,9 @@ function stepCompLayer(
   id: string,
   comp: string,
   pos: { x: number; y: number },
-  out = B_OUT,
+  window?: { inPoint: number; outPoint: number },
 ): SectionLayerSpec {
+  const inn = window?.inPoint ?? B_IN;
   return {
     id,
     name: comp,
@@ -131,7 +141,7 @@ function stepCompLayer(
       height: 1080,
       anchor: { x: pos.x, y: pos.y },
     },
-    timing: { inPoint: B_IN, outPoint: out, startTime: B_IN, stretch: 100 },
+    timing: { inPoint: inn, outPoint: window?.outPoint ?? B_OUT, startTime: inn, stretch: 100 },
   };
 }
 
@@ -141,8 +151,12 @@ function stepCompLayer(
  *  legacy master never actually used these bindings (its only live
  *  isTrackMatte sources were unrelated scaffold layers). The stage comps
  *  are self-contained; borders/cards stay visible info layers. */
-function stepDraft(id: string, pos: { x: number; y: number }): SectionLayerSpec {
-  return stepCompLayer(id, id, pos);
+function stepDraft(
+  id: string,
+  pos: { x: number; y: number },
+  stage: number,
+): SectionLayerSpec {
+  return stepCompLayer(id, id, pos, { inPoint: BRUSH_STAGE_IN[stage], outPoint: BRUSH_STAGE_OUT[stage] });
 }
 
 /** Clone a legacy info layer (border/card) with stale matte flags cleared:
@@ -171,10 +185,9 @@ const LENS_WINDOW = {
   radius: 210,
   appearAt: 4.95,
 };
-// Stage windows from the Lens magnifier comp's internal sequencing
-// (comp-time + B_IN): outline 4.25-5.00, extend 5.00-5.63,
-// hidden-vertex 5.63-6.63, brush rebuild 6.63-7.92.
-const TAB_STAGE_IN = [B_IN, 5.0, 5.63, 6.63] as const;
+// Stage windows from the Lens magnifier comp's internal sequencing —
+// labels announce each step as the lens shows it.
+const TAB_STAGE_IN = [B_IN, 5.0, 5.625, 6.625] as const;
 const TAB_NAMES = [
   "01  輪郭を解析した",
   "02  輪郭線を延長した",
@@ -352,26 +365,29 @@ const comp: CompProduction = {
           name: "STEP 4 border",
           content: { kind: "spec", layer: infoSpec("STEP 4 border") },
         },
-        stepDraft("STEP4 draft", { x: 540, y: 540 }),
+        stepDraft("STEP4 draft", { x: 540, y: 540 }, 3),
         {
           id: "step-3-border",
           name: "STEP 3 border",
           content: { kind: "spec", layer: infoSpec("STEP 3 border") },
         },
-        stepDraft("STEP3 draft", { x: 540, y: 540 }),
+        stepDraft("STEP3 draft", { x: 540, y: 540 }, 2),
         {
           id: "step-2-border",
           name: "STEP 2 border",
           content: { kind: "spec", layer: infoSpec("STEP 2 border") },
         },
-        stepDraft("STEP2 draft", { x: 540, y: 540 }),
+        stepDraft("STEP2 draft", { x: 540, y: 540 }, 1),
         {
           id: "step-1-border",
           name: "STEP 1 border",
           content: { kind: "spec", layer: infoSpec("STEP 1 border") },
         },
         {
-          ...stepCompLayer("STEP1 outline", "STEP1 outline", { x: 797, y: 223 }, B_OUT_STEP1),
+          ...stepCompLayer("STEP1 outline", "STEP1 outline", { x: 797, y: 223 }, {
+            inPoint: BRUSH_STAGE_IN[0],
+            outPoint: BRUSH_STAGE_OUT[0],
+          }),
           patch: {
             // Master carried an inert Rotate X=90 on this non-3D layer;
             // preserved for fidelity.
