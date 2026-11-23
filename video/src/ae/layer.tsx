@@ -4,7 +4,7 @@ import { child, children, evalProp } from "./eval.ts";
 import { VectorShapes, vectorSilhouette } from "./shapes.tsx";
 import { LayerEffects } from "./effects.tsx";
 import { TextLayer } from "./text.tsx";
-import { compByIndex, footageByName } from "./project.ts";
+import { compByIndex, footageByName, footageSize } from "./project.ts";
 import { cssMatrix3d, mIdentity, mMultiply, mScreenFromClip, mLookAt, mPerspective, type Mat4 } from "./mat4.ts";
 import { worldMatrix, layerTransform } from "./transform.ts";
 import { staticFile, useCurrentFrame, useVideoConfig } from "remotion";
@@ -161,6 +161,7 @@ export function CompView({ comp, ctx, t, isRoot = false }: { comp: CompSpec; ctx
     if (!layerVisible(layer, comp, t)) continue;
     if (layer.isTrackMatte) continue; // consumed as matte; not drawn
     const { css, opacity } = layerScreenMatrix(comp, layers, layer, t, ctx.camera);
+    const box = contentBox(layer, comp);
     const masks = maskPaths(layer.masks, t);
     let maskImage: string | undefined;
     if (masks.length) {
@@ -175,7 +176,6 @@ export function CompView({ comp, ctx, t, isRoot = false }: { comp: CompSpec; ctx
     // matte: resolve source layer (selectable matte map, else legacy
     // above-layer rule) and rasterize its silhouette to a luminance mask.
     let matteImage: string | undefined;
-    let maskMode: string | undefined;
     const tm = layer.trackMatteType;
     if (tm && tm !== 5012) {
       const matteIndex = ctx.matteMap?.get(comp)?.get(layer.index) ?? layers[i - 1]?.index;
@@ -184,11 +184,13 @@ export function CompView({ comp, ctx, t, isRoot = false }: { comp: CompSpec; ctx
         const svg = matteSvg(comp, layers, ml, t, tm === 5014 || tm === 5016);
         if (svg) {
           matteImage = `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}")`;
-          maskMode = "luminance";
         }
       }
     }
-    const maskCss = [maskImage, matteImage].filter(Boolean).join(", ") || undefined;
+    // Regular layer masks live in layer space and move with the layer
+    // transform, so they stay on the inner (transformed) box. Track-matte
+    // silhouettes are rasterized in comp space, so they go on the outer
+    // untransformed comp-sized box where comp coordinates align directly.
     rendered.push(
       <div
         key={layer.index}
@@ -198,18 +200,31 @@ export function CompView({ comp, ctx, t, isRoot = false }: { comp: CompSpec; ctx
           top: 0,
           width: comp.width,
           height: comp.height,
-          transform: css,
-          transformOrigin: "0 0",
-          opacity,
           overflow: "visible",
-          maskImage: maskCss,
-          maskMode,
-          WebkitMaskImage: maskCss,
+          maskImage: matteImage,
+          maskMode: matteImage ? "luminance" : undefined,
+          WebkitMaskImage: matteImage,
         }}
       >
-        <LayerEffects layer={layer} t={t} box={effectBox(layer, comp)}>
-          <LayerContent layer={layer} ctx={ctx} t={t} comp={comp} />
-        </LayerEffects>
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: box.width,
+            height: box.height,
+            transform: css,
+            transformOrigin: "0 0",
+            opacity,
+            overflow: "visible",
+            maskImage,
+            WebkitMaskImage: maskImage,
+          }}
+        >
+          <LayerEffects layer={layer} t={t} box={box}>
+            <LayerContent layer={layer} ctx={ctx} t={t} comp={comp} />
+          </LayerEffects>
+        </div>
       </div>,
     );
   }
@@ -220,15 +235,14 @@ export function CompView({ comp, ctx, t, isRoot = false }: { comp: CompSpec; ctx
   );
 }
 
-// Layer-space pixel box for effect evaluation: footage layers use the
-// footage's own dimensions (solid specs carry them); everything else uses
-// the comp dimensions, matching how content is laid out.
-function effectBox(layer: LayerSpec, comp: CompSpec): { width: number; height: number } {
+// Layer content-space pixel box: footage layers live in the footage's own
+// pixel dimensions (solid specs carry them; probed dims for files), while
+// shape/text/comp layers use comp dimensions.
+function contentBox(layer: LayerSpec, comp: CompSpec): { width: number; height: number } {
   if (layer.kind === "footage") {
     const f = footageByName(layer.source);
-    if (f && "width" in f && typeof f.width === "number") {
-      return { width: f.width, height: f.height };
-    }
+    const size = f ? footageSize(f) : null;
+    if (size) return size;
   }
   return { width: comp.width, height: comp.height };
 }
@@ -263,7 +277,7 @@ function matteSvg(
   const cache = new Map<number, ReturnType<typeof worldMatrix>>();
   const w = worldMatrix(ml, layers, t, cache);
   const inner = matteContent(ml, t, 0);
-  if (!inner) return null;
+  if (!inner || !/<(path|rect|ellipse|circle|polygon|line)[\s/>]/.test(inner)) return null;
   const affine = affine2d(w.matrix);
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" width="${comp.width}" height="${comp.height}">` +

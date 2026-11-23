@@ -24,6 +24,26 @@ export function footageByName(name: string | undefined): FootageSpec | undefined
   return GENERATED_FOOTAGE.find((f) => f.name === name);
 }
 
+// The CompSpec dump does not record pixel dimensions for file footage.
+// AE layer space for footage is the footage's own pixel size, so the
+// renderer needs these to place <Video>/<Img> correctly. Probed from the
+// assets themselves (ffmpeg -i); all rec clips are 1920x1080@24fps.
+const FILE_FOOTAGE_DIMS: Record<string, { width: number; height: number }> = {
+  "assets/images/Ae.png": { width: 240, height: 234 },
+  "assets/rec/ae-decompose-ops.mp4": { width: 1920, height: 1080 },
+  "assets/rec/ae-stroke-animate.mp4": { width: 1920, height: 1080 },
+  "assets/rec/ae-reprocess.mp4": { width: 1920, height: 1080 },
+};
+
+// Pixel size of a footage item's layer space, or null when unknown
+// (audio-only items have no visual layer space).
+export function footageSize(f: FootageSpec): { width: number; height: number } | null {
+  if (f.kind === "solid") return { width: f.width, height: f.height };
+  if (f.audioOnly) return null;
+  const key = "file" in f ? f.file : undefined;
+  return (key && FILE_FOOTAGE_DIMS[key]) || null;
+}
+
 export function masterComp(): CompSpec {
   const m = compByName("master");
   if (!m) throw new Error("master comp not found in GENERATED_COMPS");

@@ -93,47 +93,67 @@ function starToD(points: number, innerR: number, outerR: number, rot: number, po
 }
 
 // First shape-bearing node inside a group (path/rect/ellipse/star).
-function shapePathOf(group: PropNode, t: number): { d: string; closed: boolean } | null {
-  const sub = children(group);
-  const shapeNode = sub.find((c) => c.matchName === SHAPE_PATH);
-  const rectNode = sub.find((c) => c.matchName === SHAPE_RECT);
-  const ellNode = sub.find((c) => c.matchName === SHAPE_ELLIPSE);
-  const starNode = sub.find((c) => c.matchName === SHAPE_STAR);
-  if (shapeNode) {
-    const s = evalProp(shapeNode, t) as ShapeSpec | undefined;
+// A bare shape node (Rect/Ellipse/Star/Path) appearing directly inside a
+// Vectors Group, without an enclosing "ADBE Vector Shape - Group". AE dumps
+// contain both layouts; sibling Fill/Stroke/Trim nodes at the group level
+// paint these shapes.
+function shapePathFromNode(node: PropNode, t: number): { d: string; closed: boolean } | null {
+  if (node.matchName === SHAPE_PATH) {
+    const s = evalProp(node, t) as ShapeSpec | undefined;
     if (s?.vertices?.length) return { d: shapeToD(s), closed: !!s.closed };
     return null;
   }
-  if (rectNode) {
+  if (node.matchName === SHAPE_RECT) {
     return {
       d: rectToD(
-        evalVec(child(rectNode, "ADBE Vector Rect Size"), t, 2),
-        evalVec(child(rectNode, "ADBE Vector Rect Position"), t, 2),
-        evalNum(child(rectNode, "ADBE Vector Rect Roundness"), t),
+        evalVec(child(node, "ADBE Vector Rect Size"), t, 2),
+        evalVec(child(node, "ADBE Vector Rect Position"), t, 2),
+        evalNum(child(node, "ADBE Vector Rect Roundness"), t),
       ),
       closed: true,
     };
   }
-  if (ellNode) {
+  if (node.matchName === SHAPE_ELLIPSE) {
     return {
       d: ellipseToD(
-        evalVec(child(ellNode, "ADBE Vector Ellipse Size"), t, 2),
-        evalVec(child(ellNode, "ADBE Vector Ellipse Position"), t, 2),
+        evalVec(child(node, "ADBE Vector Ellipse Size"), t, 2),
+        evalVec(child(node, "ADBE Vector Ellipse Position"), t, 2),
       ),
       closed: true,
     };
   }
-  if (starNode) {
+  if (node.matchName === SHAPE_STAR) {
     return {
       d: starToD(
-        evalNum(child(starNode, "ADBE Vector Star Points"), t, 5),
-        evalNum(child(starNode, "ADBE Vector Star Inner Radius"), t, 0),
-        evalNum(child(starNode, "ADBE Vector Star Outer Radius"), t, 0),
-        evalNum(child(starNode, "ADBE Vector Star Rotation"), t),
-        evalVec(child(starNode, "ADBE Vector Star Position"), t, 2),
+        evalNum(child(node, "ADBE Vector Star Points"), t, 5),
+        evalNum(child(node, "ADBE Vector Star Inner Radius"), t, 0),
+        evalNum(child(node, "ADBE Vector Star Outer Radius"), t, 0),
+        evalNum(child(node, "ADBE Vector Star Rotation"), t),
+        evalVec(child(node, "ADBE Vector Star Position"), t, 2),
       ),
       closed: true,
     };
+  }
+  return null;
+}
+
+function isBareShape(node: PropNode): boolean {
+  return (
+    node.matchName === SHAPE_PATH ||
+    node.matchName === SHAPE_RECT ||
+    node.matchName === SHAPE_ELLIPSE ||
+    node.matchName === SHAPE_STAR
+  );
+}
+
+function shapePathOf(group: PropNode, t: number): { d: string; closed: boolean } | null {
+  const sub = children(group);
+  for (const mn of [SHAPE_PATH, SHAPE_RECT, SHAPE_ELLIPSE, SHAPE_STAR]) {
+    const shapeNode = sub.find((c) => c.matchName === mn);
+    if (shapeNode) {
+      const p = shapePathFromNode(shapeNode, t);
+      if (p) return p;
+    }
   }
   // Recurse into nested groups (e.g. shape group containing only a group).
   for (const k of sub) {
@@ -278,14 +298,14 @@ function Scope({ node, t }: { node: PropNode; t: number }): React.ReactElement {
   const out: React.ReactNode[] = [];
   let key = 0;
   for (const k of kids) {
-    if (k.matchName === SHAPE_GROUP) {
+    if (k.matchName === SHAPE_GROUP || isBareShape(k)) {
       const sub = children(k);
       const ownTf = sub.find((c) => c.matchName === TRANSFORM_GROUP);
       const tf = groupTransform(ownTf, t);
       const op = groupOpacity(ownTf, t);
       const ownPaints = paintsOf(sub, t);
       const effective = ownPaints.length ? ownPaints : paints;
-      const p = shapePathOf(k, t);
+      const p = isBareShape(k) ? shapePathFromNode(k, t) : shapePathOf(k, t);
       if (!p || !effective.length) continue;
       const groupPaths: React.ReactNode[] = [];
       for (const paint of effective) {
@@ -432,14 +452,14 @@ function silhouetteScope(node: PropNode, t: number): string {
   const paints = silhouettePaintsOf(kids, t);
   const out: string[] = [];
   for (const k of kids) {
-    if (k.matchName === SHAPE_GROUP) {
+    if (k.matchName === SHAPE_GROUP || isBareShape(k)) {
       const sub = children(k);
       const ownTf = sub.find((c) => c.matchName === TRANSFORM_GROUP);
       const tf = groupTransform(ownTf, t);
       const op = groupOpacity(ownTf, t);
       const ownPaints = silhouettePaintsOf(sub, t);
       const effective = ownPaints.length ? ownPaints : paints;
-      const p = shapePathOf(k, t);
+      const p = isBareShape(k) ? shapePathFromNode(k, t) : shapePathOf(k, t);
       if (!p || !effective.length) continue;
       const paths: string[] = [];
       for (const paint of effective) {
@@ -464,6 +484,7 @@ function silhouetteScope(node: PropNode, t: number): string {
       const op = groupOpacity(tfNode, t);
       const vgrp = sub.find((c) => c.matchName === VECTORS_GROUP);
       const inner = vgrp ? silhouetteScope(vgrp, t) : "";
+      if (!inner) continue;
       const gAttrs = [
         tf ? `transform="${escAttr(tf)}"` : "",
         op !== 1 ? `opacity="${op}"` : "",
