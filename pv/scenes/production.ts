@@ -350,7 +350,7 @@ export function pvProductionProject(): ProductionProject {
 
 // Material-AEP items have no spec entries; label them by name so the
 // project panel distinguishes shipping scene comps from working/tmp items.
-function materialItemLabels(): Record<string, number> {
+export function materialItemLabels(): Record<string, number> {
   const labels: Record<string, number> = {};
   for (const c of GENERATED_COMPS) labels[c.name] = materialCompLabel(c.name);
   for (const f of GENERATED_FOOTAGE) labels[f.name] = ITEM_LABEL_WORK;

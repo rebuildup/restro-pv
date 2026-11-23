@@ -117,8 +117,13 @@ function probeJsx(donePath: string, reportPath: string): string {
     "try{",
     '  var c=app.project.items.addComp("ae-ready-probe",64,64,1,1,24);',
     '  var n=c.layers.addNull();n.name="probe/null";',
+    // addNull() creates a backing "Null N" footage item that survives
+    // comp.remove() — capture and remove it or every probe leaks items
+    // and the next build refuses on "project is not empty".
+    '  var src=null;try{src=n.source;}catch(x){}',
     '  var ok=(c.numLayers===undefined?c.layers.length:c.numLayers)>=1;',
     '  try{c.remove();}catch(x){}',
+    '  try{if(src)src.remove();}catch(x){}',
     '  log("probe ok="+ok+" items="+app.project.numItems);',
     '}catch(e){log("probe FAIL "+(e&&e.description?e.description:"?"));}',
     'var d=new File("' + donePath + '");d.open("w");d.write("done");d.close();',

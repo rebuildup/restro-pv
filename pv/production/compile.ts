@@ -20,12 +20,21 @@ import type {
   Vec3,
 } from "../spec/types.ts";
 import { createGrid, type Grid } from "./grid.ts";
+import {
+  AFFINE_IDENTITY,
+  affineApply,
+  affineInvert,
+  affineMultiply,
+  localAffine,
+  type Affine,
+} from "./transform.ts";
 import type {
   Align,
   AnchorSpec,
   CellSpan,
   CompileOptions,
   CompProduction,
+  FolderNode,
   FrameSpec,
   LayoutSpec,
   ProductionAsset,
@@ -92,7 +101,7 @@ function clone<T>(v: T): T {
 
 // ---- frame / layout ----------------------------------------------------------
 
-function mergeFrame(base: FrameSpec, over: Partial<FrameSpec> | undefined): FrameSpec {
+export function mergeFrame(base: FrameSpec, over: Partial<FrameSpec> | undefined): FrameSpec {
   const out: FrameSpec = { ...base };
   if (!over) return out;
   const rec = out as unknown as Record<string, unknown>;
@@ -109,7 +118,7 @@ function regionRect(region: RegionSpec, grid: Grid | null, where: string): Rect 
   return grid.span(region.span);
 }
 
-function layoutRect(
+export function layoutRect(
   layout: LayoutSpec,
   comp: CompProduction,
   grid: Grid | null,
@@ -146,7 +155,7 @@ const ALIGN_POINT: Record<Align, (r: Rect) => Vec2> = {
   "bottom-right": (r) => ({ x: r.x + r.width, y: r.y + r.height }),
 };
 
-function layoutPosition(
+export function layoutPosition(
   layout: LayoutSpec,
   comp: CompProduction,
   grid: Grid | null,
@@ -438,16 +447,38 @@ function applyLayout(
   comp: CompProduction,
   grid: Grid | null,
   where: string,
+  parentWorldAffine?: (parent: string) => Affine | null,
 ): void {
   const layout = layerSpec.layout;
   if (!layout) return;
-  const pos = layoutPosition(layout, comp, grid, `${where} layout`);
+  let pos = layoutPosition(layout, comp, grid, `${where} layout`);
   if (!pos) return;
+  // Layout modes resolve to comp space; under a parent the stored Position
+  // must be parent-local. The conversion is the INVERSE of the parent's
+  // full world affine (scale/rotation/anchor included) — subtracting the
+  // parent position alone is only correct for unscaled, unrotated nulls.
+  // Layer (non-anchor) parents cannot be resolved statically — fail loudly
+  // instead of writing a comp-space value into a local slot.
+  if (layerSpec.parent !== undefined) {
+    const w = parentWorldAffine?.(layerSpec.parent) ?? null;
+    if (!w) {
+      throw new Error(
+        `${where}: layout under parent "${layerSpec.parent}" requires an anchor parent`,
+      );
+    }
+    pos = affineApply(affineInvert(w), pos);
+  }
   if (!layer.transform) layer.transform = baseTransform({});
   const transform = layer.transform;
   setTransformValue(transform, "ADBE Position", [pos.x, pos.y, 0]);
   const anchor = layerSpec.metrics?.anchor;
   if (anchor) setTransformValue(transform, "ADBE Anchor Point", [anchor.x, anchor.y, 0]);
+  const scale = layerSpec.metrics?.scale;
+  if (scale !== undefined) {
+    const sx = typeof scale === "number" ? scale : scale.x;
+    const sy = typeof scale === "number" ? scale : scale.y;
+    setTransformValue(transform, "ADBE Scale", [sx * 100, sy * 100, 100]);
+  }
 }
 
 function applyPatch(layer: LayerSpec, patch: SectionLayerSpec["patch"]): void {
@@ -462,21 +493,68 @@ function applyPatch(layer: LayerSpec, patch: SectionLayerSpec["patch"]): void {
   }
 }
 
-function anchorToLayer(anchor: AnchorSpec, where: string): PendingLayer {
+function vec3Of(v: unknown): Vec3 {
+  if (Array.isArray(v)) {
+    return { x: Number(v[0]) || 0, y: Number(v[1]) || 0, z: Number(v[2]) || 0 };
+  }
+  if (v && typeof v === "object") {
+    const o = v as { x?: unknown; y?: unknown; z?: unknown };
+    return { x: Number(o.x) || 0, y: Number(o.y) || 0, z: Number(o.z) || 0 };
+  }
+  return { x: 0, y: 0, z: 0 };
+}
+
+function anchorToLayer(
+  anchor: AnchorSpec,
+  where: string,
+  comp: CompProduction,
+  grid: Grid | null,
+): PendingLayer {
   const zero: Vec3 = { x: 0, y: 0, z: 0 };
-  const position = anchor.parent ? (anchor.offset ?? zero) : (anchor.at ?? zero);
-  return {
-    refId: anchor.id,
-    parent: anchor.parent,
-    spec: {
-      index: 0,
-      name: "anchor:" + anchor.id,
-      kind: "null",
-      shy: true,
-      label: ANCHOR_LABEL,
-      transform: baseTransform({ position, positionKeys: anchor.keys }),
-    },
+  let base: Vec3 | undefined;
+  if (anchor.layout) {
+    if (anchor.parent !== undefined) {
+      throw new Error(`${where}: anchor "${anchor.id}" cannot combine layout with parent`);
+    }
+    const p = layoutPosition(anchor.layout, comp, grid, `${where} anchor "${anchor.id}"`);
+    if (!p) {
+      throw new Error(`${where} anchor "${anchor.id}": layout produced no position`);
+    }
+    base = { x: p.x, y: p.y, z: 0 };
+  }
+  const position = anchor.parent ? (anchor.offset ?? zero) : (base ?? anchor.at ?? zero);
+  // With a layout base, key values are Vec3 offsets from that base so the
+  // anchor keeps tracking the grid; without one they are absolute positions.
+  const keys =
+    anchor.keys && base
+      ? anchor.keys.map((k) => {
+          const o = vec3Of(k.v);
+          return { ...k, v: [base.x + o.x, base.y + o.y, base.z + o.z] };
+        })
+      : anchor.keys;
+  const spec: LayerSpec = {
+    index: 0,
+    name: "anchor:" + anchor.id,
+    kind: "null",
+    shy: true,
+    label: ANCHOR_LABEL,
+    transform: baseTransform({
+      position,
+      positionKeys: keys,
+      anchor: anchor.anchorPoint,
+    }),
   };
+  // Optional rig transform (scale/rotation) so scaled parents compose
+  // correctly through transform.ts instead of being silently dropped.
+  if (anchor.scale !== undefined) {
+    const sx = typeof anchor.scale === "number" ? anchor.scale : anchor.scale.x;
+    const sy = typeof anchor.scale === "number" ? anchor.scale : anchor.scale.y;
+    setTransformValue(spec.transform!, "ADBE Scale", [sx * 100, sy * 100, 100]);
+  }
+  if (anchor.rotation !== undefined) {
+    setTransformValue(spec.transform!, "ADBE Rotate Z", anchor.rotation);
+  }
+  return { refId: anchor.id, parent: anchor.parent, spec };
 }
 
 // ---- material comp expansion ---------------------------------------------------
@@ -650,6 +728,61 @@ function compileComp(
     usedAssets: new Map(),
   };
 
+  // Anchor table is needed during section compilation: parented layers with
+  // a layout resolve their comp-space target against the parent anchor's
+  // comp-space position. Anchors themselves are still emitted last so AE
+  // indices keep content-first ordering.
+  const anchorSpecs = new Map<string, AnchorSpec>();
+  for (const a of comp.anchors ?? []) anchorSpecs.set(a.id, a);
+  for (const s of comp.sections) {
+    for (const a of s.anchors ?? []) anchorSpecs.set(a.id, a);
+  }
+  // Anchor world transforms are full affines (position + optional
+  // scale/rotation/anchorPoint composed through the parent chain), so a
+  // child layout target converts to parent-local space via the inverse —
+  // not by subtracting positions, which is wrong under scaled/rotated
+  // parents (e.g. the original 12% P-null rigs).
+  const anchorWorldCache = new Map<string, Affine>();
+  const anchorLocalPosition = (a: AnchorSpec): Vec2 => {
+    if (a.parent !== undefined) {
+      const o = a.offset ?? { x: 0, y: 0, z: 0 };
+      return { x: o.x, y: o.y };
+    }
+    if (a.layout) {
+      const p = layoutPosition(a.layout, comp, grid, `${where} anchor "${a.id}"`);
+      if (!p) throw new Error(`${where} anchor "${a.id}": layout produced no position`);
+      return p;
+    }
+    const at = a.at ?? { x: 0, y: 0, z: 0 };
+    return { x: at.x, y: at.y };
+  };
+  const anchorWorldAffine = (id: string, seen: Set<string> = new Set()): Affine => {
+    const hit = anchorWorldCache.get(id);
+    if (hit) return hit;
+    const a = anchorSpecs.get(id);
+    if (!a) throw new Error(`${where}: unknown anchor "${id}"`);
+    if (seen.has(id)) throw new Error(`${where}: anchor parent cycle at "${id}"`);
+    seen.add(id);
+    const local = localAffine({
+      anchor: a.anchorPoint ?? { x: 0, y: 0 },
+      position: anchorLocalPosition(a),
+      scale: a.scale,
+      rotation: a.rotation ?? 0,
+    });
+    const w =
+      a.parent !== undefined
+        ? affineMultiply(anchorWorldAffine(a.parent, seen), local)
+        : local;
+    anchorWorldCache.set(id, w);
+    return w;
+  };
+  const parentWorldAffine = (parent: string): Affine | null => {
+    // Non-anchor parents (layer refs) cannot be resolved statically; anchor
+    // world errors (unknown id, cycles) propagate as compile errors.
+    if (!anchorSpecs.has(parent)) return null;
+    return anchorWorldAffine(parent);
+  };
+
   // Unified ref-id table: per section a FoldLayers divider (unless opted
   // out), then the section's layers front-to-back, then comp anchors last.
   // A section with group:false emits no divider, so its layers join the
@@ -698,7 +831,7 @@ function compileComp(
         if (timing.startTime !== undefined) layer.startTime = timing.startTime;
         if (timing.stretch !== undefined) layer.stretch = timing.stretch;
       }
-      applyLayout(layer, sl, comp, grid, `${sWhere} layer "${refId}"`);
+      applyLayout(layer, sl, comp, grid, `${sWhere} layer "${refId}"`, parentWorldAffine);
       applyPatch(layer, sl.patch);
       options.onSectionLayer?.(comp.name, pending.length + 1, section.id);
       pending.push({ spec: layer, refId, parent: sl.parent });
@@ -729,7 +862,7 @@ function compileComp(
   }
   for (const a of compAnchors) {
     claimId(a.id, `${where} anchor`);
-    pending.push(anchorToLayer(a, `${where} anchor "${a.id}"`));
+    pending.push(anchorToLayer(a, `${where} anchor "${a.id}"`, comp, grid));
   }
 
   // Assign AE indices (spec order = AE order, [0] = top) and resolve refs.
@@ -761,12 +894,27 @@ function compileComp(
   if (frame.pixelAspect !== undefined) spec.pixelAspect = frame.pixelAspect;
   if (frame.bgColor !== undefined) spec.bgColor = frame.bgColor;
   if (comp.label !== undefined) spec.label = comp.label;
+  if (comp.folder !== undefined) spec.folder = comp.folder;
   if (comp.hideShyLayers || anyFolded) spec.hideShyLayers = true;
 
   return { spec, usedAssets: [...ctx.usedAssets.values()] };
 }
 
 // ---- project ---------------------------------------------------------------------
+
+/** Flatten a FolderNode tree into {name, path} entries (parents before children). */
+export function flattenFolders(nodes: FolderNode[], prefix = ""): { name: string; path: string }[] {
+  const out: { name: string; path: string }[] = [];
+  for (const n of nodes) {
+    if (!n.name || n.name.includes("/")) {
+      throw new Error(`folder name must be non-empty and contain no "/": "${n.name}"`);
+    }
+    const path = prefix ? `${prefix}/${n.name}` : n.name;
+    out.push({ name: n.name, path });
+    if (n.children) out.push(...flattenFolders(n.children, path));
+  }
+  return out;
+}
 
 export function compileProduction(
   project: ProductionProject,
@@ -808,6 +956,7 @@ export function compileProduction(
   const footageNames = new Set<string>();
   const footage: FootageSpec[] = usedAssets.map((a) => {
     const f = toFootageSpec(a);
+    if (a.folder !== undefined) f.folder = a.folder;
     if (footageNames.has(f.name)) {
       throw new Error(`project "${project.name}": duplicate footage name "${f.name}"`);
     }
@@ -815,7 +964,35 @@ export function compileProduction(
     return f;
   });
 
+  // Project-panel folders: flatten the authored tree, keep only paths that
+  // actually hold items (plus their ancestors), and validate every item
+  // folder reference against the declared tree.
+  const folderPaths = flattenFolders(project.folders ?? []);
+  const validPaths = new Set(folderPaths.map((f) => f.path));
+  const usedPaths = new Set<string>();
+  const claimFolder = (path: string | undefined, what: string) => {
+    if (path === undefined) return;
+    if (!validPaths.has(path)) {
+      throw new Error(
+        `project "${project.name}": ${what} references undeclared folder "${path}"`,
+      );
+    }
+    // Ancestors must exist as materialized folders too.
+    const parts = path.split("/");
+    for (let i = 1; i <= parts.length; i++) usedPaths.add(parts.slice(0, i).join("/"));
+  };
+  for (const c of project.comps) claimFolder(c.folder, `comp "${c.name}"`);
+  for (const a of usedAssets) claimFolder(a.folder, `asset "${a.id}"`);
+  for (const [itemName, fpath] of Object.entries(project.materialFolders ?? {})) {
+    claimFolder(fpath, `material item "${itemName}"`);
+  }
+  const folders = folderPaths.filter((f) => usedPaths.has(f.path));
+
   const out: ProjectSpec = { name: project.name, comps, footage };
+  if (folders.length) out.folders = folders;
+  if (project.materialFolders && Object.keys(project.materialFolders).length) {
+    out.itemFolders = { ...project.materialFolders };
+  }
   if (project.materialAep !== undefined) out.materialAep = project.materialAep;
   return out;
 }

@@ -64,9 +64,27 @@ export type RegionSpec = { span: CellSpan } | { rect: Rect };
 export interface AnchorSpec {
   id: string;
   at?: Vec3;
+  /**
+   * Grid/region placement for unparented anchors (mutually exclusive with
+   * `parent`). When set, `at` is ignored and `keys` values are treated as
+   * Vec3 OFFSETS added to the layout-derived position — so keyed anchors
+   * keep tracking the grid instead of freezing absolute coordinates.
+   */
+  layout?: LayoutSpec;
   parent?: string;
   offset?: Vec3;
   keys?: KeySpec[];
+  /**
+   * Optional local transform of the anchor null itself (default: scale 1,
+   * rotation 0, anchor point {0,0}). Needed when an anchor reproduces a
+   * scaled rig (e.g. the original 12% P-nulls) — children then compose
+   * through the full parent transform, not just its translation.
+   * `scale` is a fraction (0.12 = 12%), `rotation` degrees, `anchorPoint`
+   * in the null's own pixel space.
+   */
+  scale?: number | { x: number; y: number };
+  rotation?: number;
+  anchorPoint?: Vec2;
 }
 
 /**
@@ -93,11 +111,28 @@ export interface ContentMetrics {
   height?: number;
   /** Anchor point in source pixels; written to ADBE Anchor Point when set. */
   anchor?: Vec2;
+  /**
+   * Visible content rect inside the source (source pixels, top-left
+   * origin). Material comps often carry transparent padding — layout
+   * lint reasons about THIS rect, not the nominal comp size. Defaults to
+   * {0,0,width,height}.
+   */
+  bounds?: Rect;
+  /**
+   * Display scale vs source pixels. Uniform number or per-axis pair.
+   * Applied to ADBE Scale at compile time AND used by layout lint, so the
+   * authored value is the single source of truth — never duplicate it in
+   * `patch`.
+   */
+  scale?: number | { x: number; y: number };
 }
 
 /**
  * Placement of a section layer. Exactly one of `position` / `rect` /
- * `region` / `span` applies (`position` wins and needs no metrics):
+ * `region` / `span` applies (`position` wins and needs no metrics). All
+ * modes resolve to a COMP-space point first; when the layer is parented,
+ * the compiler subtracts the parent anchor's comp-space position so the
+ * stored Position stays correct in parent space:
  * - `position`: absolute comp-space position of the layer's anchor point
  * - `rect`/`region`/`span`: target rect; `align` (default "center") picks
  *   which point of the rect the anchor lands on, `offset` nudges after.
@@ -163,6 +198,23 @@ export interface SectionLayerSpec {
   timing?: SectionTiming;
   /** Parent ref: an anchor id or another section layer id in the same comp. */
   parent?: string;
+  /**
+   * Declared rest-overlap allowance, scoped to specific counterpart
+   * layers and optionally a comp-time range — a blanket "may overlap
+   * anything" is not expressible. `with` lists counterpart layer ids or
+   * names ("*" matches all, for full-frame grounds); `during` is a
+   * [start,end] seconds window of comp time in which the overlap may
+   * occur. `reason` is required.
+   */
+  allowOverlap?:
+    | string
+    | { reason: string; with?: string[]; during?: [number, number] };
+  /**
+   * Declared reason this layer's display rect may leave the comp frame
+   * (intentional crop/bleed, e.g. the oversized brand brush elements).
+   * Without it, layout lint rejects off-frame sweeps.
+   */
+  allowBleed?: string;
   patch?: LayerPatch;
 }
 
@@ -211,6 +263,8 @@ export interface CompProduction {
   id: string;
   /** AE comp name (display; may differ from id). */
   name: string;
+  /** Project-panel folder path (e.g. "02_Design/Brand"); must exist in `folders`. */
+  folder?: string;
   /** Frame overrides merged over the project frame (defined fields only). */
   frame?: Partial<FrameSpec>;
   grid?: GridSpec;
@@ -224,6 +278,16 @@ export interface CompProduction {
   label?: number;
 }
 
+/**
+ * Project-panel folder tree node. `name` is the display name; nesting via
+ * `children` produces slash paths ("Material/Brand"). Comps and assets
+ * reference the leaf path through their `folder` field.
+ */
+export interface FolderNode {
+  name: string;
+  children?: FolderNode[];
+}
+
 /** Footage/solid item declared once and referenced by section layers. */
 export interface ProductionAsset {
   id: string;
@@ -232,6 +296,8 @@ export interface ProductionAsset {
   name?: string;
   /** AE label color for the footage item. */
   label?: number;
+  /** Project-panel folder path; must exist in `folders`. */
+  folder?: string;
   /** Repo-relative path for kind "file". */
   file?: string;
   /** Solid color [r,g,b] 0..1 for kind "solid". */
@@ -247,6 +313,18 @@ export interface ProductionProject {
   frame: FrameSpec;
   comps: CompProduction[];
   assets?: ProductionAsset[];
+  /**
+   * Project-panel folder tree. Only declare folders that actually hold
+   * items — empty formal folders are not emitted. Item `folder` fields
+   * must reference a path present in this tree.
+   */
+  folders?: FolderNode[];
+  /**
+   * Folder assignment for material-AEP items by name (comps/footage the
+   * spec does not create). Validated against `folders` at compile time;
+   * names must resolve uniquely in AE or the runtime skips them.
+   */
+  materialFolders?: Record<string, string>;
   /** Repo-relative material AEP opened before the spec is built. */
   materialAep?: string;
 }

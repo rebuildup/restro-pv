@@ -222,6 +222,12 @@ function __applyKeys(prop, keys) {
   }
 }
 
+// Deferred expression pass: {property, expression} pairs collected while
+// applying specs. Flushed after every comp exists so cross-layer references
+// resolve; re-assigning also clears AE's "Expression disabled" state left
+// by the eager first evaluation.
+var __pendingExprs = [];
+
 // ---- generic property tree -------------------------------------------------
 // Containers whose children must be ADDED (parades, vector contents, text
 // animators). Everything else has pre-existing children set by matchName.
@@ -238,17 +244,25 @@ function __childProp(parent, child) {
 }
 // Vector content groups (shape-layer Contents) carry functional names:
 // FoldLayers dividers are identified by FD-0/FD-1/FD-H:* group names inside
-// "ADBE Root Vectors Group", and dumped shape groups keep their authored
-// names. addProperty() gives a default name, so rename right after creation.
-// Other property types reject name writes -- restrict to vector groups.
-function __maybeRenameGroup(cp, ch) {
-  if (!cp || !ch || ch.matchName !== "ADBE Vector Group" || !ch.name) return;
+// "ADBE Root Vectors Group", dumped shape groups keep their authored
+// names, and effects keep their authored display names (expressions
+// resolve effects by name, e.g. effect("Corner TL")). addProperty() gives
+// a default name, so rename right after creation. Other property types
+// reject name writes -- restrict to vector groups and effect children.
+function __maybeRenameGroup(cp, ch, parentMatch) {
+  if (!cp || !ch || !ch.name) return;
+  var renamable = ch.matchName === "ADBE Vector Group" ||
+    parentMatch === "ADBE Effect Parade";
+  if (!renamable) return;
   try { cp.name = ch.name; }
-  catch (ne) { __warn("vector group rename failed '" + ch.name + "': " + __estr(ne)); }
+  catch (ne) { __warn("group/effect rename failed '" + ch.name + "': " + __estr(ne)); }
 }
 function __applyNode(p, node, path) {
   if (!p) { __err("missing property " + path); return; }
-  if (node.numProperties && node.properties && node.properties.length) {
+  // Group detection keys off "properties", not the redundant numProperties
+  // count: authored specs (brandcheck guides, markers) omit the count and
+  // were silently treated as leaves, producing empty shape contents.
+  if (node.properties && node.properties.length) {
     var addMode = __isAddContainer(node.matchName);
     // Group-level attrs FIRST: a disabled (enabled=false) group hides its
     // children in AE, so they must be skipped entirely -- writing them is a
@@ -281,7 +295,7 @@ function __applyNode(p, node, path) {
       if (addMode) {
         try { cp = p.addProperty(ch.matchName); }
         catch (ae) { __err("addProperty " + ch.matchName + " under " + path + ": " + __estr(ae)); continue; }
-        __maybeRenameGroup(cp, ch);
+        __maybeRenameGroup(cp, ch, node.matchName);
       } else {
         cp = __childProp(p, ch);
       }
@@ -333,7 +347,15 @@ function __applyNode(p, node, path) {
     }
   }
   if (node.expression) {
-    try { p.expression = node.expression; }
+    try {
+      p.expression = node.expression;
+      // Expressions routinely reference layers created later in the build
+      // (tracker nulls, Linked Quads). AE evaluates on assignment, so an
+      // early set against a not-yet-built dependency records an error and
+      // can leave the expression disabled. Re-apply every expression once
+      // all comps/layers exist (see __flushExpressions).
+      __pendingExprs.push({ p: p, e: node.expression });
+    }
     catch (exe) { __err("expression failed on " + path + ": " + __estr(exe)); }
   }
 }
@@ -347,7 +369,7 @@ function __applyGroup(root, node, path) {
     if (addMode) {
       try { cp = root.addProperty(ch.matchName); }
       catch (ae) { __err("addProperty " + ch.matchName + " under " + path + ": " + __estr(ae)); continue; }
-      __maybeRenameGroup(cp, ch);
+      __maybeRenameGroup(cp, ch, node.matchName);
     } else {
       cp = __childProp(root, ch);
     }
@@ -448,6 +470,39 @@ function __createLayer(comp, ls, footageByName, compItems) {
   try { L.name = name; } catch (ne) {}
   return L;
 }
+// AE's layers.add* throws "undefined is not an object" while it is still
+// conforming/indexing a freshly opened material project — a state-based
+// window, not a fixed duration. Gate layer creation on a real DOM write
+// probe against the target comp instead of trusting elapsed sleeps.
+function __awaitCompReady(comp, cname, deadline) {
+  var attempt = 0;
+  while (new Date().getTime() < deadline) {
+    attempt++;
+    // Missing API is deterministic (e.g. fake hosts), not a busy window —
+    // fail fast instead of probing until the deadline.
+    var addNullFn = null;
+    try { addNullFn = comp.layers.addNull; } catch (x) {}
+    if (typeof addNullFn !== "function") {
+      __err("comp " + cname + " has no layers.addNull; cannot probe readiness");
+      return false;
+    }
+    var probe = null;
+    try {
+      probe = comp.layers.addNull();
+      if (probe) {
+        try { probe.remove(); } catch (x) {}
+        if (attempt > 1) __prog("comp " + cname + " ready after " + attempt + " probes");
+        return true;
+      }
+    } catch (pe) {
+      __prog("comp " + cname + " ready probe " + attempt + " failed: " + __estr(pe));
+    }
+    try { if ($.sleep) $.sleep(5000); } catch (sx) {}
+  }
+  __err("comp " + cname + " did not become writable in time");
+  return false;
+}
+
 // Read-only state snapshot attached to a create-layer failure so the report
 // distinguishes API misuse, dead references and host-state problems without
 // needing a rerun. Never mutates the project.
@@ -614,6 +669,58 @@ function buildProject(spec) {
     }
   }
   __prog("footage imported");
+  // Name-collision guard: material AEPs must contain only material. A stray
+  // comp sharing a generated comp's name makes __findComp/comp(name)
+  // resolution ambiguous and silently renders the wrong comp (observed:
+  // a leftover "brand-check" inside brand-materials.aep shadowed the
+  // generated one). Fail loudly instead.
+  for (var gci = 0; gci < spec.comps.length; gci++) {
+    var gname = spec.comps[gci].name;
+    var goy = __findComp(gname);
+    if (goy) { __err("comp name collision: material project already has comp '" + gname + "'"); }
+  }
+  // Project-panel folders: materialize the declared tree, then assign
+  // items. Spec comps/footage carry folder paths resolved to FolderItems;
+  // itemFolders covers material-AEP items by name (ambiguous names are
+  // skipped with a warning — never guessed).
+  var __folderByPath = {};
+  if (spec.folders && spec.folders.length) {
+    for (var fdi = 0; fdi < spec.folders.length; fdi++) {
+      var fs = spec.folders[fdi];
+      var fpath = String(fs.path || "");
+      var fparts = fpath.split("/");
+      var fparent = null;
+      var fprefix = "";
+      var fok = true;
+      for (var fpi = 0; fpi < fparts.length; fpi++) {
+        var fpname = fparts[fpi];
+        var fkey = fprefix ? fprefix + "/" + fpname : fpname;
+        var fexist = __folderByPath[fkey];
+        if (!fexist) {
+          try {
+            fexist = fparent
+              ? fparent.items.addFolder(fpname)
+              : app.project.items.addFolder(fpname);
+            __folderByPath[fkey] = fexist;
+          } catch (fe) {
+            __err("addFolder failed " + fkey + ": " + __estr(fe));
+            fok = false;
+            break;
+          }
+        }
+        fparent = fexist;
+        fprefix = fkey;
+      }
+      if (fok && fparent) __prog("folder " + fpath);
+    }
+  }
+  function __assignFolder(item, fpath) {
+    if (!item || !fpath) return;
+    var fo = __folderByPath[String(fpath)];
+    if (!fo) { __warn("folder not materialized for '" + fpath + "'"); return; }
+    try { item.parentFolder = fo; }
+    catch (fe) { __warn("parentFolder failed for " + item.name + ": " + __estr(fe)); }
+  }
   // create every comp first so precomp layers can reference any of them
   var compItems = [];
   for (var i = 0; i < spec.comps.length; i++) {
@@ -633,19 +740,34 @@ function buildProject(spec) {
     } catch (ce) { __err("addComp failed " + cs.name + ": " + __estr(ce)); compItems.push(null); }
   }
   __prog("comps created");
+  for (var fci = 0; fci < spec.comps.length; fci++) {
+    if (compItems[fci] && spec.comps[fci].folder) __assignFolder(compItems[fci], spec.comps[fci].folder);
+  }
+  if (spec.footage) {
+    for (var ffi = 0; ffi < spec.footage.length; ffi++) {
+      var fst = spec.footage[ffi];
+      var fit = footageByName[fst.name];
+      if (fit && fst.folder) __assignFolder(fit, fst.folder);
+    }
+  }
   for (i = 0; i < spec.comps.length; i++) {
     var compSpec = spec.comps[i];
     var comp = compItems[i];
     if (!comp) continue;
     var layers = compSpec.layers || [];
+    // AE's conform busy-window fluctuates: a comp can accept writes, then go
+    // busy again mid-batch. Gate the whole batch on a write probe, and on a
+    // per-layer failure re-probe until writable (bounded by a shared budget)
+    // before retrying once. Deterministic failures (unresolved sources)
+    // return null without throwing and are never retried.
+    var createDeadline = new Date().getTime() + 600000;
+    if (!__awaitCompReady(comp, compSpec.name, createDeadline)) continue;
     var created = [];
     for (var k = 0; k < layers.length; k++) created.push(null);
     var compT0 = new Date().getTime();
     __prog("comp start " + compSpec.name + " (" + layers.length + " layers)");
     // layers.add* inserts at the TOP of the stack, so iterate the spec
     // (AE order, [0] = top) in reverse to reproduce the original stacking.
-    // A failed add is a hard error with a state snapshot — never retried:
-    // blind retries hid the real failure mode for tens of minutes.
     for (var ri = layers.length - 1; ri >= 0; ri--) {
       var ls = layers[ri];
       var L = null;
@@ -654,11 +776,21 @@ function buildProject(spec) {
         L = __createLayer(comp, ls, footageByName, compItems);
       }
       catch (ce2) {
-        __err("create layer failed " + ls.name + ": " + __estr(ce2) +
-          " [diag " + __createDiag(comp, ls) + "]");
+        __prog("create layer failed " + ls.name + ": " + __estr(ce2) +
+          " [diag " + __createDiag(comp, ls) + "]; awaiting writable comp");
+        if (__awaitCompReady(comp, compSpec.name, createDeadline)) {
+          try { L = __createLayer(comp, ls, footageByName, compItems); }
+          catch (ce3) {
+            __err("create layer failed after retry " + ls.name + ": " + __estr(ce3) +
+              " [diag " + __createDiag(comp, ls) + "]");
+          }
+        }
       }
       created[ri] = L;
     }
+    var made = 0;
+    for (var ci2 = 0; ci2 < created.length; ci2++) if (created[ci2]) made++;
+    __prog("comp " + compSpec.name + " created " + made + "/" + layers.length + " layers");
     for (var li = 0; li < layers.length; li++) {
       if (created[li]) {
         __CTX = compSpec.name + " / " + (layers[li].name || ("layer" + layers[li].index));
@@ -669,10 +801,30 @@ function buildProject(spec) {
       }
     }
     __CTX = "";
+    __prog("comp " + compSpec.name + " aeLayers=" + comp.numLayers);
     __prog("comp done " + compSpec.name + " (" + layers.length + " layers, " +
       (new Date().getTime() - compT0) + "ms)");
     try { if ($.writeln) $.writeln("PV comp done: " + compSpec.name + " (" + layers.length + " layers)"); } catch (x) {}
   }
+  // Deferred expression pass: every layer/comp now exists, so re-assigning
+  // each expression re-evaluates it against the complete project and clears
+  // stale "Expression disabled" states from the eager first pass. A comp
+  // time wiggle forces AE to re-evaluate before the audit reads
+  // expressionError.
+  var reapplyErr = 0;
+  for (var pe = 0; pe < __pendingExprs.length; pe++) {
+    var pex = __pendingExprs[pe];
+    try { pex.p.expression = pex.e; }
+    catch (peErr) { reapplyErr++; }
+  }
+  __pendingExprs = [];
+  for (var wci = 0; wci < compItems.length; wci++) {
+    var wcomp = compItems[wci];
+    if (!wcomp) continue;
+    try { wcomp.time = 0.5; } catch (e) {}
+    try { wcomp.time = 0; } catch (e) {}
+  }
+  __prog("expressions reapplied: " + reapplyErr + " failures");
   // Expression audit: AE reports per-property evaluation errors through
   // Property.expressionError. Scan every property of every layer we built;
   // any non-empty error is a hard failure — a generated project with broken
@@ -682,6 +834,10 @@ function buildProject(spec) {
     var expr = "";
     try { expr = p.expression; } catch (e) {}
     if (expr) {
+      // Force evaluation before reading expressionError: AE caches the
+      // error from the eager first pass and only refreshes it when the
+      // property value is actually requested.
+      try { var _v = p.value; } catch (ev) {}
       var ee = "";
       try { ee = p.expressionError; } catch (e2) {}
       if (ee) {
@@ -716,6 +872,9 @@ function buildProject(spec) {
     }
   }
   __prog("expression audit done, errors=" + exprErrCount);
+  for (var dci = 0; dci < compItems.length; dci++) {
+    if (compItems[dci]) __prog("post-audit " + compItems[dci].name + " aeLayers=" + compItems[dci].numLayers);
+  }
   // Label every project item (covers material-AEP comps/footage, which have
   // no spec entry of their own) from the authored name -> color map.
   if (spec.itemLabels) {
@@ -727,32 +886,184 @@ function buildProject(spec) {
       if (lv !== undefined) { try { itm.label = __num(lv); } catch (le) {} }
     }
   }
+  if (compItems[0]) __prog("post-labels " + compItems[0].name + " aeLayers=" + compItems[0].numLayers);
+  // Duck-typed item classification shared by the prune closure and the
+  // folder sweep below (instanceof is unreliable in this delivery context).
+  function __isCompItem(it) {
+    try { return it.numLayers !== undefined; } catch (e) { return false; }
+  }
+  function __isFolderItem(it) {
+    try { return it.numItems !== undefined && it.numLayers === undefined; } catch (e) { return false; }
+  }
   // Prune material-AEP items outside the authored keep lists so the saved
   // project contains only what the generated comp actually references.
   // Iterate backwards: remove() shifts later indices.
   if (spec.pruneMaterial) {
-    var keepC = {}, keepF = {}, ourC = {}, ourF = {};
-    var pk;
-    for (pk = 0; pk < spec.pruneMaterial.keepComps.length; pk++) keepC[spec.pruneMaterial.keepComps[pk]] = 1;
-    for (pk = 0; pk < spec.pruneMaterial.keepFootage.length; pk++) keepF[spec.pruneMaterial.keepFootage[pk]] = 1;
-    for (pk = 0; pk < spec.comps.length; pk++) ourC[spec.comps[pk].name] = 1;
-    for (pk = 0; pk < spec.footage.length; pk++) ourF[spec.footage[pk].name] = 1;
+    // Dependency closure BY OBJECT IDENTITY, not name: the material AEP can
+    // hold items whose names collide with spec-created items (or with each
+    // other), and name-keyed keep lists cannot tell the duplicates apart.
+    // keepObj holds the actual AVItem references that must survive; item
+    // detection uses duck-typing (numLayers/numItems) because instanceof
+    // against the host classes is unreliable in this delivery context.
+    var keepObj = [];
+    function __keepIdx(it) {
+      for (var q = 0; q < keepObj.length; q++) if (keepObj[q] === it) return q;
+      return -1;
+    }
+    function __keepItem(it) {
+      if (it && __keepIdx(it) < 0) keepObj.push(it);
+    }
+    function __keepLayerSource(lay) {
+      var s = null;
+      try { s = /** @type {any} */ (lay).source; } catch (e) {}
+      __keepItem(s);
+    }
+    // Seeds: every comp/footage this spec created, the solid-host scratch
+    // comp (removed by dedicated cleanup), and every layer source inside
+    // the generated comps — material comps, footage, and null backers.
+    var seedI;
+    for (seedI = 0; seedI < compItems.length; seedI++) __keepItem(compItems[seedI]);
+    __keepItem(__solidHost);
+    for (seedI = 0; seedI < spec.footage.length; seedI++) {
+      __keepItem(footageByName[spec.footage[seedI].name]);
+    }
+    for (seedI = 0; seedI < compItems.length; seedI++) {
+      var sc = compItems[seedI];
+      if (!sc) continue;
+      for (var sl0 = 1; sl0 <= sc.numLayers; sl0++) {
+        var slay0 = null;
+        try { slay0 = sc.layer(sl0); } catch (e) {}
+        if (slay0) __keepLayerSource(slay0);
+      }
+    }
+    // Closure: kept comps pull in their own layer sources until stable.
+    // Null layers are backed by auto-named "Null N" footage items —
+    // dropping them deletes the null layer itself (observed: removing
+    // "Null 26"/"Null 27" killed the brand anchors).
+    var grew = true, guard = 0;
+    while (grew && guard < 25) {
+      grew = false; guard++;
+      for (var ki0 = 0; ki0 < keepObj.length; ki0++) {
+        var kcomp = keepObj[ki0];
+        if (!__isCompItem(kcomp)) continue;
+        for (var ki = 1; ki <= kcomp.numLayers; ki++) {
+          var kl = null;
+          try { kl = kcomp.layer(ki); } catch (e) { continue; }
+          if (!kl) continue;
+          var before = keepObj.length;
+          __keepLayerSource(kl);
+          if (keepObj.length !== before) grew = true;
+        }
+      }
+    }
+    __prog("prune keep-set: " + keepObj.length + " items by reference");
+    // Expression + usedIn retention: name-keyed lists alone cannot see
+    // references inside expression text (comp("x"), footage("x")) or
+    // AVItem.usedIn consumers outside the layer-source walk. Anything
+    // still referenced after this pass is kept — unknown references are
+    // preserved, never guessed away.
+    function __scanExprProps(prop, depth) {
+      if (!prop || depth > 12) return;
+      try {
+        var ex = prop.expression;
+        if (ex) __exprText.push(String(ex));
+      } catch (exx) {}
+      try {
+        if (prop.numProperties > 0 && prop instanceof PropertyGroup) {
+          for (var ei = 1; ei <= prop.numProperties; ei++) {
+            var ep = null;
+            try { ep = prop.property(ei); } catch (eep) {}
+            if (ep) __scanExprProps(ep, depth + 1);
+          }
+        }
+      } catch (epg) {}
+    }
+    var __exprText = [];
+    for (var sci = 0; sci < keepObj.length; sci++) {
+      var sitC = keepObj[sci];
+      if (!__isCompItem(sitC)) continue;
+      for (var sli = 1; sli <= sitC.numLayers; sli++) {
+        var slay = null;
+        try { slay = sitC.layer(sli); } catch (e) {}
+        if (!slay) continue;
+        __scanExprProps(slay, 0);
+        try {
+          var effs = slay.property("ADBE Effect Parade");
+          if (effs) __scanExprProps(effs, 0);
+        } catch (ee) {}
+      }
+    }
+    var exprBlob = __exprText.join("\n");
+    function __exprKeep(name) {
+      if (!name) return false;
+      var esc = name.replace(/[.*+?^{}$()|[\]\\]/g, "\\$&");
+      return new RegExp("(comp|footage)\\(\\s*[\"']" + esc + "[\"']").test(exprBlob);
+    }
     var pruned = 0;
     for (var pi3 = app.project.numItems; pi3 >= 1; pi3--) {
       var it3 = null;
       try { it3 = app.project.item(pi3); } catch (e) {}
-      if (!it3 || it3 instanceof FolderItem) continue;
+      if (!it3 || __isFolderItem(it3)) continue;
       var drop = false;
-      if (it3 instanceof CompItem) drop = !ourC[it3.name] && !keepC[it3.name];
-      else if (it3 instanceof FootageItem) drop = !ourF[it3.name] && !keepF[it3.name];
-      if (drop) { try { it3.remove(); pruned++; } catch (re) {} }
+      var exprHit = false;
+      try { exprHit = __exprKeep(it3.name); } catch (xk) { exprHit = true; }
+      var usedHit = false;
+      try { var uin = /** @type {any} */ (it3).usedIn; if (uin && uin.length) usedHit = true; } catch (xu) {}
+      if (exprHit) { __prog("prune keep: expression/usedIn references '" + it3.name + "'"); }
+      // Identity keep wins; expression/usedIn hits keep conservatively by
+      // name because they cannot be resolved to a unique object statically.
+      if (__keepIdx(it3) < 0 && !exprHit && !usedHit) drop = true;
+      if (drop) {
+        var nl0 = -1, iname = "?";
+        try { if (compItems[0]) nl0 = compItems[0].numLayers; } catch (x) {}
+        try { iname = it3.name; } catch (x) {}
+        try { it3.remove(); pruned++; } catch (re) {}
+        try {
+          if (compItems[0] && nl0 >= 0 && compItems[0].numLayers !== nl0) {
+            __prog("prune side-effect: removing " + iname + " changed " + compItems[0].name +
+              " layers " + nl0 + "->" + compItems[0].numLayers);
+          }
+        } catch (x) {}
+      }
     }
     __prog("material prune: removed=" + pruned);
   }
-  // drop the scratch comp used to mint solid footage items
+  // Drop the scratch comp used to mint solid footage items before folder
+  // assignment/sweep — if it sits inside a material folder it would keep
+  // that folder artificially non-empty.
   if (__solidHost) {
     try { __solidHost.remove(); } catch (se) { __warn("solid host comp cleanup: " + __estr(se)); }
     __solidHost = null;
+  }
+  // Material-item folder assignment runs AFTER pruning: the material AEP can
+  // contain duplicate names that only become unique once the dependency
+  // closure has removed the unreferenced copies. Assigning earlier would hit
+  // the ambiguity guard and leave items in their source folders.
+  if (spec.itemFolders) {
+    for (var ifn in spec.itemFolders) {
+      if (!spec.itemFolders.hasOwnProperty(ifn)) continue;
+      var ifpath = spec.itemFolders[ifn];
+      var ifmatches = 0, ifitem = null;
+      for (var iii = 1; iii <= app.project.numItems; iii++) {
+        var iit = null;
+        try { iit = app.project.item(iii); } catch (e) {}
+        if (iit && !(iit instanceof FolderItem) && iit.name === ifn) { ifmatches++; ifitem = iit; }
+      }
+      if (ifmatches === 1) __assignFolder(ifitem, ifpath);
+      else if (ifmatches > 1) __warn("itemFolders '" + ifn + "' ambiguous (" + ifmatches + " items), skipped");
+      else __warn("itemFolders '" + ifn + "' not found");
+    }
+  }
+  // Empty folders are never meaningful output — remove them after item
+  // moves so husks emptied by re-filing are swept too. FolderItem state can
+  // lag parentFolder moves within a session, so __sweepEmptyFolders also
+  // runs once more after the AEP save in __finish (see below).
+  var removedFolders = __sweepEmptyFolders();
+  if (removedFolders) __prog("empty folders removed=" + removedFolders);
+  if (compItems[0]) __prog("post-prune " + compItems[0].name + " aeLayers=" + compItems[0].numLayers);
+  if (compItems[0]) __prog("post-solidhost " + compItems[0].name + " aeLayers=" + compItems[0].numLayers);
+  for (var pci = 0; pci < compItems.length; pci++) {
+    if (compItems[pci]) __prog("pre-save " + compItems[pci].name + " aeLayers=" + compItems[pci].numLayers);
   }
 }
 
@@ -789,6 +1100,37 @@ function __writeReport() {
     wf.close();
   }
 }
+// Removes project folders that hold no items. Emptiness is checked by
+// scanning parentFolder references (FolderItem.numItems can lag moves
+// within a session). Repeats because emptying a child can empty its parent.
+function __sweepEmptyFolders() {
+  var removed = 0, pass = 0, changed = true;
+  while (changed && pass < 6) {
+    changed = false; pass++;
+    for (var pfi = app.project.numItems; pfi >= 1; pfi--) {
+      var fitem = null;
+      try { fitem = app.project.item(pfi); } catch (e) {}
+      if (!fitem) continue;
+      var fa = /** @type {any} */ (fitem);
+      var isFolder = false;
+      try { isFolder = fa.numItems !== undefined && fa.numLayers === undefined; } catch (e) {}
+      if (!isFolder) continue;
+      var kids = 0;
+      for (var qi = 1; qi <= app.project.numItems; qi++) {
+        var qit = null;
+        try { qit = app.project.item(qi); } catch (e) {}
+        if (!qit) continue;
+        try { if (/** @type {any} */ (qit).parentFolder === fitem) { kids++; break; } } catch (e) {}
+      }
+      if (kids === 0) {
+        try { fitem.remove(); removed++; changed = true; }
+        catch (re) { __prog("folder '" + fitem.name + "' remove failed: " + __estr(re)); }
+      }
+    }
+  }
+  return removed;
+}
+
 function __finish() {
   __prog("buildProject returned; writing report");
   __writeReport();
@@ -798,8 +1140,20 @@ function __finish() {
       __prog("saving AEP: " + __SAVE_PATH);
       app.project.save(sf);
       __prog("AEP saved");
+      // Folder bookkeeping can still be settling after in-build moves; a
+      // post-save sweep catches husks the first pass could not remove, and
+      // re-saves so the file on disk is clean.
+      var postSweep = 0;
+      try { postSweep = __sweepEmptyFolders(); } catch (x) {}
+      if (postSweep > 0) {
+        __prog("post-save folder sweep removed=" + postSweep);
+        try { app.project.save(sf); __prog("AEP re-saved"); } catch (se2) { __err("re-save failed: " + __estr(se2)); }
+      }
       try { if ($.writeln) $.writeln("PV saved: " + __SAVE_PATH); } catch (x) {}
     } catch (se) { __err("project save failed: " + __estr(se)); }
+    // Save-phase errors land in __ERR after the first report write; rewrite
+    // so the report the runner parses includes them before .done appears.
+    __writeReport();
   }
   if (__REPORT_PATH) {
     var d = new File(__REPORT_PATH + ".done");
