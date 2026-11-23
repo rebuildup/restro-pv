@@ -21,7 +21,9 @@ export function TextLayer({ node, t }: { node: PropNode; t: number }): React.Rea
   const doc = evalProp(docNode, t);
   if (!isTextDoc(doc)) return null;
   const d = doc as Record<string, unknown>;
-  const text = String(d.text ?? "");
+  // AE dumps line breaks as "\r"; normalize all break forms to "\n" so
+  // whiteSpace:"pre" renders them as separate lines.
+  const text = String(d.text ?? "").replace(/\r\n|\r|\u2028|\u2029/g, "\n");
   if (!text) return null;
   const size = typeof d.fontSize === "number" ? d.fontSize : typeof d.size === "number" ? d.size : 24;
   const family = String(d.fontFamily ?? "sans-serif");
@@ -46,6 +48,13 @@ export function TextLayer({ node, t }: { node: PropNode; t: number }): React.Rea
   const stroke = Array.isArray(d.strokeColor)
     ? `rgb(${(d.strokeColor as number[]).map((c) => Math.round(c * 255)).join(",")})`
     : "transparent";
+  // AE point text anchors at the first-line baseline; the dumped Position
+  // therefore sits on the baseline, not the top of the line box. HTML renders
+  // from the top of the div, which would drop every text block by roughly a
+  // line height. Shift the block up so the first baseline lands on the
+  // anchor: baseline sits ~ascent below the line-box top, and half-leading
+  // adds (leading - fontSize)/2 above it.
+  const baselineOffset = (leading - size) / 2 + size * 1.05;
   return (
     <div
       style={{
@@ -59,6 +68,7 @@ export function TextLayer({ node, t }: { node: PropNode; t: number }): React.Rea
         whiteSpace: "pre",
         textAlign: just,
         width: "max-content",
+        transform: `translateY(${-baselineOffset}px)`,
       }}
     >
       {text}

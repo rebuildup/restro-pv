@@ -14,6 +14,15 @@ export const RemotionRoot: React.FC = () => {
         height={1080}
       />
       <Composition
+        id="PV-Comp"
+        component={CompOnly}
+        durationInFrames={480}
+        fps={24}
+        width={1080}
+        height={1080}
+        defaultProps={{ compName: "bunkai" }}
+      />
+      <Composition
         id="PV-Comp-Description"
         component={CompOnly}
         durationInFrames={240}

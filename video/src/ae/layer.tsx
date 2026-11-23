@@ -15,6 +15,10 @@ export interface RenderCtx {
   footage: FootageSpec[];
   camera: { fov: number; distance: number };
   matteMap: Map<CompSpec, Map<number, number>>; // comp -> (matted layer.index -> matte layer.index)
+  // Optional production override: return false to skip a layer at time t.
+  // Used for Remotion-side scene direction that the dumped AEP cannot
+  // express (e.g. retiring the caption column once the ending owns the frame).
+  layerFilter?: (comp: CompSpec, layer: LayerSpec, t: number) => boolean;
 }
 
 // ---- camera -----------------------------------------------------------------
@@ -179,6 +183,7 @@ export function CompView({ comp, ctx, t, isRoot = false }: { comp: CompSpec; ctx
   for (let i = layers.length - 1; i >= 0; i--) {
     const layer = layers[i];
     if (!layerVisible(layer, comp, t)) continue;
+    if (ctx.layerFilter && !ctx.layerFilter(comp, layer, t)) continue;
     if (layer.isTrackMatte) continue; // consumed as matte; not drawn
     const { css, opacity } = layerScreenMatrix(comp, layers, layer, t, ctx.camera);
     const box = contentBox(layer, comp);
