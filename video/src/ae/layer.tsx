@@ -130,8 +130,13 @@ function LayerContent({ layer, ctx, t, comp }: { layer: LayerSpec; ctx: RenderCt
 }
 
 export function layerLocalTime(layer: LayerSpec, compT: number): number {
+  // AE semantics: layer.startTime is the comp time at which the layer's
+  // source begins (equals inPoint for precomps starting at source 0, and
+  // can be negative for pre-trimmed footage). Local time is
+  // (compT - startTime) * stretch/100.
   const stretch = layer.stretch ?? 100;
-  return (layer.startTime ?? 0) + ((compT - (layer.inPoint ?? 0)) * stretch) / 100;
+  const start = layer.startTime ?? layer.inPoint ?? 0;
+  return ((compT - start) * stretch) / 100;
 }
 
 function layerVisible(layer: LayerSpec, comp: CompSpec, t: number): boolean {
