@@ -7,7 +7,7 @@ import { TextLayer } from "./text.tsx";
 import { compByIndex, footageByName, footageSize } from "./project.ts";
 import { cssMatrix3d, mIdentity, mMultiply, mScreenFromClip, mLookAt, mPerspective, type Mat4 } from "./mat4.ts";
 import { worldMatrix, layerTransform } from "./transform.ts";
-import { staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { staticFile, useCurrentFrame, useVideoConfig, Sequence } from "remotion";
 import { Video, Audio, Img } from "remotion";
 
 export interface RenderCtx {
@@ -83,6 +83,7 @@ function maskPaths(node: PropNode | undefined, t: number): { d: string; mode: nu
 
 // ---- content ----------------------------------------------------------------
 function LayerContent({ layer, ctx, t, comp }: { layer: LayerSpec; ctx: RenderCtx; t: number; comp: CompSpec }): React.ReactNode {
+  const frame = useCurrentFrame();
   switch (layer.kind) {
     case "shape": {
       const shapes = layer.shapes;
@@ -112,13 +113,21 @@ function LayerContent({ layer, ctx, t, comp }: { layer: LayerSpec; ctx: RenderCt
       }
       const url = staticFile(f.file);
       if (/\.(mp4|mov|webm)$/i.test(f.file)) {
+        // AE layer time is authoritative: at comp-local time t the footage
+        // must show source frame layerLocalTime*fps. Remotion media timing is
+        // frame + trimBefore relative to the root composition frame, so wrap
+        // the video in a Sequence shifted by (frame - desiredMediaFrame); the
+        // clip then sees exactly the desired source frame on every render.
+        // All footage in this project is 24fps, matching the comp frame rate.
+        const mediaFrame = Math.max(0, layerLocalTime(layer, t) * 24);
         return (
-          <Video
-            src={url}
-            muted
-            style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "100%", objectFit: "fill" }}
-            startFrom={Math.max(0, Math.round(layerLocalTime(layer, t) * 24))}
-          />
+          <Sequence from={Math.round(frame - mediaFrame)} layout="none">
+            <Video
+              src={url}
+              muted
+              style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "100%", objectFit: "fill" }}
+            />
+          </Sequence>
         );
       }
       if (f.audioOnly) return <Audio src={url} />;
