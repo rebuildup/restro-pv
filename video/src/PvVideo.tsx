@@ -1,19 +1,26 @@
 import React from "react";
 import { CompView, type RenderCtx } from "./ae/layer.tsx";
-import { masterComp, mattePairs } from "./ae/project.ts";
-import { GENERATED_COMPS, GENERATED_FOOTAGE } from "./ae/project.ts";
+import {
+  GENERATED_COMPS,
+  GENERATED_FOOTAGE,
+  masterComp,
+  mattePairs,
+} from "./ae/project.ts";
+import {
+  applyMasterPatches,
+  LEFT_COLUMN_REPLACED,
+  STEP_REVEAL,
+} from "./ae/masterPatch.ts";
+import { LeftCopy } from "./scenes/LeftCopy.tsx";
 import { useCurrentFrame, useVideoConfig } from "remotion";
 
-// Top-level PV composition: renders the dumped AE "master" comp through the
-// CompSpec interpreter at the current frame.
+applyMasterPatches();
 
-// Ending starts at frame 371 (15.4583s). From there the "PV end" scene owns
-// the product message; the persistent caption column ("description") and the
-// C-scene tagline bar ("Heading") would collide with its staggered copy, so
-// they are retired for the ending only. This is a Remotion-side direction
-// decision layered on the dumped AEP structure, not an AEP reproduction.
-const END_T = 371 / 24;
-const RETIRED_IN_ENDING = new Set([10, 15]); // master layer.index: description, Heading
+// Top-level PV composition: renders the dumped AE "master" comp through the
+// CompSpec interpreter at the current frame. The dumped scene comps
+// (PV A2 / PV reel C / PV ops / PV end) render correctly in master context,
+// so scenes are not replaced; authored overlays cover only what the dump
+// cannot express (per-scene left copy, step reveal timing).
 
 const ctx: RenderCtx = {
   comps: GENERATED_COMPS,
@@ -21,8 +28,11 @@ const ctx: RenderCtx = {
   camera: { fov: 40, distance: 1500 },
   matteMap: mattePairs(),
   layerFilter: (comp, layer, t) => {
-    if (comp.name !== "master" || t < END_T) return true;
-    return !RETIRED_IN_ENDING.has(layer.index);
+    if (comp.name !== "master") return true;
+    if (LEFT_COLUMN_REPLACED.has(layer.index)) return false;
+    const reveal = STEP_REVEAL[layer.index];
+    if (reveal !== undefined) return t >= reveal;
+    return true;
   },
 };
 
@@ -34,6 +44,7 @@ export const PvVideo: React.FC = () => {
   return (
     <div style={{ position: "relative", width: comp.width, height: comp.height }}>
       <CompView comp={comp} ctx={ctx} t={t} isRoot />
+      <LeftCopy t={t} />
     </div>
   );
 };
