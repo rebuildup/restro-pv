@@ -51,10 +51,11 @@ describe("scene-b structure", () => {
     expect(s.comps).toHaveLength(1);
   });
 
-  test("no legacy track mattes remain; borders/cards are visible info layers", () => {
-    // v10 isolation experiment: the legacy stored mattes are stale and were
-    // abandoned (ADR-0003). The explicit model emits no ALPHA/ALPHA_INVERTED
-    // mattes at all — every layer is 5012 or unset.
+  test("no track mattes remain; borders/cards are visible info layers", () => {
+    // ADR-0004 + v12 experiment: stale legacy bindings are gone and the
+    // border-matte variant was rejected — AE disables the matte-source
+    // border, zeroing its alpha and erasing the draft. Every layer is
+    // therefore 5012 or unset.
     const s = spec();
     for (const l of compOf(s).layers) {
       expect(l.trackMatteType ?? 5012, l.name).toBe(5012);

@@ -1151,6 +1151,9 @@ function __finish() {
       }
       try { if ($.writeln) $.writeln("PV saved: " + __SAVE_PATH); } catch (x) {}
     } catch (se) { __err("project save failed: " + __estr(se)); }
+    // Save-phase errors land in __ERR after the first report write; rewrite
+    // so the report the runner parses includes them before .done appears.
+    __writeReport();
   }
   if (__REPORT_PATH) {
     var d = new File(__REPORT_PATH + ".done");

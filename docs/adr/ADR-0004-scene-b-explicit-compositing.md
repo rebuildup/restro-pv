@@ -70,6 +70,17 @@ TypeScript から明示的に生成する方式へ変更する。
   より未完了の場合がある。静的検証（typecheck / bun test / jsx:check /
   ae-test fake host）は本決定時点で全てグリーン。
 
+## 追補（v12 実験・2026-11-23）
+
+border マット方式の再検討として、draft へ `5013` を再付与し border を
+マット源とする構成を実機ビルドした（`verification/sceneb/v12-stage-mattes/`）。
+結果、AE がマット源である border レイヤーを `enabled=false` にし、その
+アルファがゼロ化して draft がほぼ全消去された（ステージ領域の有色画素が
+激減）。さらに live master プローブでは `isTrackMatte=true` が
+`PV matte C` と `Shape Layer 2`（いずれも B 範囲外の scaffold）のみで
+あり、draft→border の結合は元 master でも実効していなかった。
+以上から border マット案も却下し、draft の非マット描画を確定とした。
+
 ## 却下した案
 
 - **stored 5012/5013 の再 emit 継続**: v10 で実効状態の不整合と

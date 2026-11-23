@@ -9,8 +9,11 @@
 //     recreated by re-emitting 5012/5013; a controlled AE test proved a
 //     zero-alpha null matte source erases its target completely.
 //   - STEP drafts/outline render unmattted (5012). The border and card
-//     clones stay as visible info layers that frame each stage; they are no
-//     longer matte sources.
+//     clones stay as visible info layers that frame each stage. A v12
+//     experiment re-adding border mattes showed AE disables the matte
+//     source border, zeroing the matte and erasing the drafts — and the
+//     legacy master's only live isTrackMatte sources were unrelated
+//     scaffold layers anyway, so the binding was never real.
 //   - the Lens magnifier's display window is an explicit animated mask on
 //     the layer itself, authored from the legacy "lens matte" shape: a
 //     circle at master (660,810) radius ~210 that pops in at ~4.97s. The
@@ -132,9 +135,12 @@ function stepCompLayer(
   };
 }
 
-/** STEP draft/outline material-comp layer. The legacy border mattes are
- *  intentionally NOT reproduced (see header): the comp renders unmattted
- *  and the border/card clones frame it as visible info layers. */
+/** STEP draft/outline material-comp layer, unmattted. Empirically (v12
+ *  build): giving the draft ALPHA makes AE disable the border layer above
+ *  it, which zeroes the matte alpha and erases the draft entirely — the
+ *  legacy master never actually used these bindings (its only live
+ *  isTrackMatte sources were unrelated scaffold layers). The stage comps
+ *  are self-contained; borders/cards stay visible info layers. */
 function stepDraft(id: string, pos: { x: number; y: number }): SectionLayerSpec {
   return stepCompLayer(id, id, pos);
 }
@@ -337,8 +343,7 @@ const comp: CompProduction = {
     },
     {
       // Step stage, master z-order kept: border above its draft (adjacency
-      // preserved inside the section), Baseline at the bottom of the stack.
-      // All drafts render unmattted; borders/cards are visible info layers.
+      // preserved; no matte binding — see stepDraft note), Baseline last.
       id: "step-stage",
       role: "scene",
       layers: [

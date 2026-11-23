@@ -1,18 +1,22 @@
 #!/usr/bin/env bun
-// Runs a generated JSX inside After Effects and waits for its report marker.
+// Runs a generated JSX inside After Effects and waits for ITS completion
+// marker — the per-run contract materialized by tools/lib/jsx-run.ts.
 //
 //   bun tools/run-jsx.ts <script.jsx> [--timeout 3600000]
 //
-// The script is expected to write <report>.done when finished (build-jsx.ts
-// bakes __REPORT_PATH and the runtime writes the marker). AE is launched if
-// needed and left running. The currently open project is NOT closed by this
-// tool — the JSX itself decides what to build/save.
+// The runner extracts the baked artifact paths from the JSX, writes a
+// per-run copy under .tmp/run/<runId>/ with unique report/progress/
+// warnings paths, executes that copy, and classifies the result only after
+// verifying this run's report.done, report JSON and saved AEP. AE is
+// launched if needed and left running. The currently open project is NOT
+// closed by this tool — the JSX itself decides what to build/save.
+//
+// Exit codes: 0 ok, 1 failed-*, 3 unknown-timeout (never auto-resend).
 import { spawn } from "node:child_process";
-import { existsSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-
 import { aeIsRunning, aeProbeOnce, resolveAe } from "./lib/host.ts";
+import { executeRun, prepareRun } from "./lib/jsx-run.ts";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -21,7 +25,7 @@ const script = resolve(args[0] ?? "");
 let timeoutMs = 3_600_000;
 const ti = args.indexOf("--timeout");
 if (ti >= 0) timeoutMs = Number(args[ti + 1]);
-if (!args[0] || !existsSync(script)) {
+if (!args[0]) {
   console.error("usage: bun tools/run-jsx.ts <script.jsx> [--timeout ms]");
   process.exit(1);
 }
@@ -29,6 +33,8 @@ if (!args[0] || !existsSync(script)) {
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function main() {
+  const paths = prepareRun(script, ROOT);
+
   const ae = await resolveAe();
   if (!aeIsRunning()) {
     console.log("launching After Effects...");
@@ -59,41 +65,36 @@ async function main() {
     console.log("AE script-ready probe passed");
   }
 
-  // report marker: derive from script name under .tmp/run/
-  const reportBase = resolve(ROOT, ".tmp", "run", script.replace(/[^\w.-]+/g, "_"));
-  const donePath = reportBase + ".done";
-  const { rmSync } = await import("node:fs");
-  rmSync(donePath, { force: true });
-  rmSync(reportBase, { force: true });
-
-  console.log("running " + script);
   // '-r' runs the script with write access (unlike '-ro' used for read-only
   // dumps). Paths must not contain whitespace on Windows.
-  const child = spawn(ae.executable, ["-r", script], {
-    cwd: dirname(ae.executable),
-    stdio: "ignore",
-  });
-  child.unref();
+  const result = await executeRun(
+    paths,
+    () => {
+      const child = spawn(ae.executable, ["-r", paths.scriptPath], {
+        cwd: dirname(ae.executable),
+        stdio: "ignore",
+      });
+      child.unref();
+      console.log("running " + paths.scriptPath);
+    },
+    { timeoutMs, log: (m) => console.log(m) },
+  );
 
-  // The JSX's __REPORT_PATH is baked at build time; the runner cannot know it.
-  // Poll for ANY new .done under .tmp/ plus rely on build report path printed
-  // by convention: tools/build-jsx defaults report to .tmp/pv-build-report.json
-  const reportJson = resolve(ROOT, ".tmp", "pv-build-report.json");
-  const reportDone = reportJson + ".done";
-  rmSync(reportDone, { force: true });
+  if (result.report) {
+    console.log(`warnings=${result.report.warnings} errors=${result.report.errors}`);
+    for (const e of (result.report.errList ?? []).slice(0, 20)) console.log("  ERR " + e);
+    for (const w of (result.report.warnList ?? []).slice(0, 10)) console.log("  WARN " + w);
+  }
+  if (result.output) {
+    console.log(`output: ${result.output.path} (${result.output.bytes} bytes)`);
+  }
+  console.log(`run-jsx: ${result.status} (${Math.round(result.waitedMs / 1000)}s)`);
+  if (result.reason) console.log("  " + result.reason);
+  console.log("run dir: " + paths.runDir);
 
-  const deadline = Date.now() + timeoutMs;
-  while (!existsSync(reportDone)) {
-    if (Date.now() > deadline) throw new Error("jsx run timed out after " + timeoutMs + "ms");
-    await sleep(3000);
-  }
-  console.log("jsx finished; report: " + reportJson);
-  if (existsSync(reportJson)) {
-    const r = JSON.parse((await import("node:fs")).readFileSync(reportJson, "utf8"));
-    console.log(`warnings=${r.warnings} errors=${r.errors}`);
-    for (const e of (r.errList ?? []).slice(0, 20)) console.log("  ERR " + e);
-    for (const w of (r.warnList ?? []).slice(0, 10)) console.log("  WARN " + w);
-  }
+  if (result.status === "ok") process.exit(0);
+  if (result.status === "unknown-timeout") process.exit(3);
+  process.exit(1);
 }
 
 main().catch((e) => {
