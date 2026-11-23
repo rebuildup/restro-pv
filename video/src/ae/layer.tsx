@@ -1,7 +1,7 @@
 import React from "react";
 import type { CompSpec, FootageSpec, LayerSpec, PropNode } from "../../../pv/model/types.ts";
 import { child, children, evalProp } from "./eval.ts";
-import { VectorShapes } from "./shapes.tsx";
+import { VectorShapes, vectorSilhouette } from "./shapes.tsx";
 import { LayerEffects } from "./effects.tsx";
 import { TextLayer } from "./text.tsx";
 import { compByIndex, footageByName } from "./project.ts";
@@ -14,7 +14,7 @@ export interface RenderCtx {
   comps: CompSpec[];
   footage: FootageSpec[];
   camera: { fov: number; distance: number };
-  matteMap: Map<number, number>; // layer.index -> matte layer.index (within comp)
+  matteMap: Map<CompSpec, Map<number, number>>; // comp -> (matted layer.index -> matte layer.index)
 }
 
 // ---- camera -----------------------------------------------------------------
@@ -178,10 +178,10 @@ export function CompView({ comp, ctx, t, isRoot = false }: { comp: CompSpec; ctx
     let maskMode: string | undefined;
     const tm = layer.trackMatteType;
     if (tm && tm !== 5012) {
-      const matteIndex = ctx.matteMap?.get(layer.index) ?? layers[i - 1]?.index;
+      const matteIndex = ctx.matteMap?.get(comp)?.get(layer.index) ?? layers[i - 1]?.index;
       const ml = matteIndex !== undefined ? layers.find((l) => l.index === matteIndex) : undefined;
       if (ml) {
-        const svg = matteSvg(comp, layers, ml, t, ctx, tm === 5014 || tm === 5016);
+        const svg = matteSvg(comp, layers, ml, t, tm === 5014 || tm === 5016);
         if (svg) {
           matteImage = `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}")`;
           maskMode = "luminance";
@@ -241,85 +241,68 @@ function bg(comp: CompSpec): string {
   return "#000";
 }
 
+// affine2d extracts the 2D affine part of a layer->comp Mat4 as an SVG
+// matrix() transform. 3D/perspective components are dropped (approximation
+// shared with the rest of the matte path).
+function affine2d(m: ReturnType<typeof worldMatrix>["matrix"]): string {
+  const a = m[0], b = m[1], c = m[4], d = m[5], e = m[12], f = m[13];
+  return `matrix(${a.toFixed(5)},${b.toFixed(5)},${c.toFixed(5)},${d.toFixed(5)},${e.toFixed(5)},${f.toFixed(5)})`;
+}
+
 // matteSvg rasterizes the matte layer's silhouette into a standalone SVG
 // string usable as a CSS mask-image. White = visible. `inverted` flips the
-// polarity. Only shape/solid matte sources; anything else returns null and
-// the caller renders unmasked (tracked approximation).
+// polarity. Matte sources: shape layers, solid footage, and (recursively)
+// precomps; anything else contributes nothing.
 function matteSvg(
   comp: CompSpec,
   layers: LayerSpec[],
   ml: LayerSpec,
   t: number,
-  ctx: RenderCtx,
   inverted: boolean,
 ): string | null {
   const cache = new Map<number, ReturnType<typeof worldMatrix>>();
   const w = worldMatrix(ml, layers, t, cache);
-  const m = w.matrix;
-  // world matrix is column-major 4x4; layer->comp affine 2D part:
-  const a = m[0], b = m[1], c = m[4], d = m[5], e = m[12], f = m[13];
-  const affine = `matrix(${a.toFixed(5)},${b.toFixed(5)},${c.toFixed(5)},${d.toFixed(5)},${e.toFixed(5)},${f.toFixed(5)})`;
-  let inner = "";
-  if (ml.kind === "shape" && ml.shapes) {
-    inner = renderShapesToSvgString(ml.shapes, t);
-  } else if (ml.kind === "footage") {
-    const f = footageByName(ml.source);
-    if (f?.kind === "solid") {
-      const col = inverted ? "#000" : "#fff";
-      inner = `<rect x="0" y="0" width="${f.width}" height="${f.height}" fill="${col}"/>`;
-    }
-  }
+  const inner = matteContent(ml, t, 0);
   if (!inner) return null;
-  // invert via luminance: normal matte draws white shapes on black;
-  // inverted draws black shapes on white. Shapes keep their own colors
-  // only when they are fills; simplest robust form: flatten each painted
-  // path to a solid silhouette.
-  const body =
-    ml.kind === "shape" && ml.shapes
-      ? silhouetteOfShapes(ml.shapes, t, inverted ? "#000" : "#fff")
-      : inner;
+  const affine = affine2d(w.matrix);
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" width="${comp.width}" height="${comp.height}">` +
     `<rect width="${comp.width}" height="${comp.height}" fill="${inverted ? "#fff" : "#000"}"/>` +
-    `<g transform="${affine}" fill="${inverted ? "#000" : "#fff"}" fill-rule="evenodd">${body}</g>` +
+    `<g transform="${affine}" fill="${inverted ? "#000" : "#fff"}" fill-rule="evenodd">${inner}</g>` +
     `</svg>`
   );
 }
 
-// Walk a vector tree and emit path 'd' strings for every painted shape,
-// ignoring fill/stroke colors (matte uses silhouette alpha only).
-function silhouetteOfShapes(node: PropNode, t: number, color: string): string {
-  void color;
-  const out: string[] = [];
-  const visit = (n: PropNode) => {
-    if (n.matchName === "ADBE Vector Shape - Group") {
-      for (const k of children(n)) visit(k);
-    } else if (n.matchName === "ADBE Vector Shape") {
-      const s = evalProp(n, t) as { vertices?: number[][]; inTangents?: number[][]; outTangents?: number[][]; closed?: boolean } | undefined;
-      if (s?.vertices?.length) {
-        const verts = s.vertices;
-        const cnt = verts.length;
-        const parts = [`M${verts[0][0]},${verts[0][1]}`];
-        const steps = s.closed ? cnt : cnt - 1;
-        for (let i = 0; i < steps; i++) {
-          const j = (i + 1) % cnt;
-          const o = (s.outTangents?.[i] ?? [0, 0]) as number[];
-          const it = (s.inTangents?.[j] ?? [0, 0]) as number[];
-          parts.push(`C${verts[i][0] + o[0]},${verts[i][1] + (o[1] ?? 0)} ${verts[j][0] + it[0]},${verts[j][1] + (it[1] ?? 0)} ${verts[j][0]},${verts[j][1]}`);
-        }
-        if (s.closed) parts.push("Z");
-        out.push(`<path d="${parts.join(" ")}"/>`);
-      }
-    } else {
-      for (const k of children(n)) visit(k);
+// matteContent returns the layer's silhouette as an SVG fragment in the
+// layer's own content space (pre-transform). t is the comp-local time of the
+// comp that owns `layer`.
+function matteContent(layer: LayerSpec, t: number, depth: number): string {
+  if (depth > 4) return "";
+  if (layer.kind === "shape" && layer.shapes) {
+    return vectorSilhouette(layer.shapes, t);
+  }
+  if (layer.kind === "footage") {
+    const f = footageByName(layer.source);
+    if (f?.kind === "solid") {
+      return `<rect x="0" y="0" width="${f.width}" height="${f.height}"/>`;
     }
-  };
-  visit(node);
-  return out.join("");
-}
-
-// renderShapesToSvgString kept for non-shape matte paths; shapes go through
-// silhouetteOfShapes instead.
-function renderShapesToSvgString(_node: PropNode, _t: number): string {
+    return "";
+  }
+  if (layer.kind === "comp") {
+    const sub = compByIndex(layer.sourceCompIndex);
+    if (!sub) return "";
+    const subT = layerLocalTime(layer, t);
+    const cache = new Map<number, ReturnType<typeof worldMatrix>>();
+    const parts: string[] = [];
+    for (const sl of sub.layers) {
+      if (!layerVisible(sl, sub, subT)) continue;
+      if (sl.isTrackMatte) continue;
+      const sw = worldMatrix(sl, sub.layers, subT, cache);
+      const inner = matteContent(sl, subT, depth + 1);
+      if (!inner) continue;
+      parts.push(`<g transform="${affine2d(sw.matrix)}">${inner}</g>`);
+    }
+    return parts.join("");
+  }
   return "";
 }

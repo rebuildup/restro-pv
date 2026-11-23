@@ -347,3 +347,135 @@ function Scope({ node, t }: { node: PropNode; t: number }): React.ReactElement {
 export function VectorShapes({ node, t }: { node: PropNode; t: number }): React.ReactElement {
   return <Scope node={node} t={t} />;
 }
+
+// ---- matte silhouette -------------------------------------------------------
+// Serializes the vector tree to an SVG fragment suitable for use inside a
+// <mask>/data-URI matte: every painted path emitted in white, preserving
+// group transforms, paint alpha and stroke trim. Unlike the on-screen render
+// this ignores paint colors entirely (matte uses coverage only).
+
+interface SilPaint {
+  hasFill: boolean;
+  fillAlpha: number;
+  fillRule?: string;
+  hasStroke: boolean;
+  strokeAlpha: number;
+  strokeWidth?: number;
+  strokeLinecap?: string;
+  strokeLinejoin?: string;
+  trim?: { start: number; end: number; offset: number };
+}
+
+function silhouettePaintsOf(nodes: PropNode[], t: number): SilPaint[] {
+  const fills = nodes.filter((n) => n.matchName === FILL);
+  const strokes = nodes.filter((n) => n.matchName === STROKE);
+  const trims = nodes.filter((n) => n.matchName === TRIM);
+  const out: SilPaint[] = [];
+  for (const f of fills) {
+    const op = num(evalProp(child(f, "ADBE Vector Fill Opacity"), t), 100);
+    if (op <= 0) continue;
+    const fc = colorOf(f, "ADBE Vector Fill Color", t);
+    const rule = num(evalProp(child(f, "ADBE Vector Fill Rule"), t), 1);
+    out.push({
+      hasFill: true,
+      fillAlpha: (op / 100) * fc[3],
+      fillRule: rule === 2 ? "evenodd" : "nonzero",
+      hasStroke: false,
+      strokeAlpha: 0,
+    });
+  }
+  for (const s of strokes) {
+    const op = num(evalProp(child(s, "ADBE Vector Stroke Opacity"), t), 100);
+    if (op <= 0) continue;
+    const sc = colorOf(s, "ADBE Vector Stroke Color", t);
+    const p: SilPaint = {
+      hasFill: false,
+      fillAlpha: 0,
+      hasStroke: true,
+      strokeAlpha: (op / 100) * sc[3],
+      strokeWidth: num(evalProp(child(s, "ADBE Vector Stroke Width"), t), 1),
+      strokeLinecap:
+        num(evalProp(child(s, "ADBE Vector Stroke Line Cap"), t), 1) === 2 ? "round" : "butt",
+      strokeLinejoin:
+        num(evalProp(child(s, "ADBE Vector Stroke Line Join"), t), 1) === 2 ? "round" : "miter",
+    };
+    const trim = trims[0];
+    if (trim) {
+      p.trim = {
+        start: num(evalProp(child(trim, "ADBE Vector Trim Start"), t), 0),
+        end: num(evalProp(child(trim, "ADBE Vector Trim End"), t), 100),
+        offset: num(evalProp(child(trim, "ADBE Vector Trim Offset"), t), 0),
+      };
+    }
+    out.push(p);
+  }
+  return out;
+}
+
+function escAttr(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+}
+
+function trimDash(d: string, trim: SilPaint["trim"]): string {
+  if (!trim) return "";
+  const len = pathLength(d);
+  if (len <= 0) return "";
+  const start = (trim.start / 100) * len;
+  const end = (trim.end / 100) * len;
+  const offset = (trim.offset / 100) * len;
+  const visible = Math.max(0, end - start);
+  return ` stroke-dasharray="${visible} ${len}" stroke-dashoffset="${-(start + offset)}"`;
+}
+
+function silhouetteScope(node: PropNode, t: number): string {
+  const kids = children(node);
+  const paints = silhouettePaintsOf(kids, t);
+  const out: string[] = [];
+  for (const k of kids) {
+    if (k.matchName === SHAPE_GROUP) {
+      const sub = children(k);
+      const ownTf = sub.find((c) => c.matchName === TRANSFORM_GROUP);
+      const tf = groupTransform(ownTf, t);
+      const op = groupOpacity(ownTf, t);
+      const ownPaints = silhouettePaintsOf(sub, t);
+      const effective = ownPaints.length ? ownPaints : paints;
+      const p = shapePathOf(k, t);
+      if (!p || !effective.length) continue;
+      const paths: string[] = [];
+      for (const paint of effective) {
+        const attrs = [
+          `d="${escAttr(p.d)}"`,
+          paint.hasFill ? `fill="#fff" fill-opacity="${paint.fillAlpha}" fill-rule="${paint.fillRule ?? "nonzero"}"` : `fill="none"`,
+          paint.hasStroke
+            ? `stroke="#fff" stroke-opacity="${paint.strokeAlpha}" stroke-width="${paint.strokeWidth ?? 1}" stroke-linecap="${paint.strokeLinecap ?? "butt"}" stroke-linejoin="${paint.strokeLinejoin ?? "miter"}"${trimDash(p.d, paint.trim)}`
+            : `stroke="none"`,
+        ].join(" ");
+        paths.push(`<path ${attrs}/>`);
+      }
+      const gAttrs = [
+        tf ? `transform="${escAttr(tf)}"` : "",
+        op !== 1 ? `opacity="${op}"` : "",
+      ].filter(Boolean).join(" ");
+      out.push(`<g${gAttrs ? ` ${gAttrs}` : ""}>${paths.join("")}</g>`);
+    } else if (k.matchName === VECTOR_GROUP) {
+      const sub = children(k);
+      const tfNode = sub.find((c) => c.matchName === TRANSFORM_GROUP);
+      const tf = groupTransform(tfNode, t);
+      const op = groupOpacity(tfNode, t);
+      const vgrp = sub.find((c) => c.matchName === VECTORS_GROUP);
+      const inner = vgrp ? silhouetteScope(vgrp, t) : "";
+      const gAttrs = [
+        tf ? `transform="${escAttr(tf)}"` : "",
+        op !== 1 ? `opacity="${op}"` : "",
+      ].filter(Boolean).join(" ");
+      out.push(`<g${gAttrs ? ` ${gAttrs}` : ""}>${inner}</g>`);
+    } else if (k.matchName === VECTORS_GROUP) {
+      out.push(silhouetteScope(k, t));
+    }
+  }
+  return out.join("");
+}
+
+export function vectorSilhouette(node: PropNode, t: number): string {
+  return silhouetteScope(node, t);
+}

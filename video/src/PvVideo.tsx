@@ -1,6 +1,6 @@
 import React from "react";
 import { CompView, type RenderCtx } from "./ae/layer.tsx";
-import { masterComp } from "./ae/project.ts";
+import { masterComp, mattePairs } from "./ae/project.ts";
 import { GENERATED_COMPS, GENERATED_FOOTAGE } from "./ae/project.ts";
 import { useCurrentFrame, useVideoConfig } from "remotion";
 
@@ -11,7 +11,7 @@ const ctx: RenderCtx = {
   comps: GENERATED_COMPS,
   footage: GENERATED_FOOTAGE,
   camera: { fov: 40, distance: 1500 },
-  matteMap: new Map(),
+  matteMap: mattePairs(),
 };
 
 export const PvVideo: React.FC = () => {
