@@ -9,7 +9,9 @@
     "types": ["bun"],
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react-jsx",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"]
   },
-  "include": ["tools/**/*.ts", "pv/**/*.ts", "tests/**/*.ts"]
+  "include": ["tools/**/*.ts", "pv/**/*.ts", "tests/**/*.ts", "video/**/*.ts", "video/**/*.tsx"]
 }

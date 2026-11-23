@@ -16,3 +16,6 @@ Auto-Save/
 
 # ae-test run artifacts (baselines under __snapshots__ ARE committed)
 .ae-test-results/
+
+# Remotion public dir (junction to assets/, not committed)
+public/
