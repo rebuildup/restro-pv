@@ -26,6 +26,14 @@ export function TextLayer({ node, t }: { node: PropNode; t: number }): React.Rea
   const size = typeof d.fontSize === "number" ? d.fontSize : typeof d.size === "number" ? d.size : 24;
   const family = String(d.fontFamily ?? "sans-serif");
   const style = String(d.fontStyle ?? "");
+  // Kozuka Gothic Pr6N is a commercial Morisawa font and cannot be bundled.
+  // It is derived from Source Han Sans, same as Noto Sans JP (OFL), which is
+  // installed on the render host — substitute it and keep the original name
+  // first so environments that do have the font still use it.
+  const familyStack = /kozuka/i.test(family)
+    ? `"${family}", "Noto Sans JP", sans-serif`
+    : `${family}, sans-serif`;
+  const weight = /b|bold/i.test(style) ? 700 : /m|medium|demi/i.test(style) ? 500 : 400;
   const fill = Array.isArray(d.fillColor)
     ? `rgb(${(d.fillColor as number[]).map((c) => Math.round(c * 255)).join(",")})`
     : "#000";
@@ -41,7 +49,8 @@ export function TextLayer({ node, t }: { node: PropNode; t: number }): React.Rea
   return (
     <div
       style={{
-        fontFamily: `${family}${style ? ` ${style}` : ""}, sans-serif`,
+        fontFamily: familyStack,
+        fontWeight: weight,
         fontSize: size,
         lineHeight: `${leading}px`,
         color: fill,

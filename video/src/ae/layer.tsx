@@ -130,7 +130,18 @@ function LayerContent({ layer, ctx, t, comp }: { layer: LayerSpec; ctx: RenderCt
           </Sequence>
         );
       }
-      if (f.audioOnly) return <Audio src={url} />;
+      if (f.audioOnly) {
+        // Same AE layer-time semantics as video: shift a Sequence so the
+        // clip's media timeline lands on layerLocalTime. Without this every
+        // nested instance would play from the root frame and stack
+        // correlated copies of the same BGM.
+        const mediaFrame = Math.max(0, layerLocalTime(layer, t) * 24);
+        return (
+          <Sequence from={Math.round(frame - mediaFrame)} layout="none">
+            <Audio src={url} />
+          </Sequence>
+        );
+      }
       return <Img src={url} style={{ position: "absolute", left: 0, top: 0, maxWidth: "none" }} />;
     }
     case "null":
