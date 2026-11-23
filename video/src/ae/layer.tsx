@@ -2,6 +2,7 @@ import React from "react";
 import type { CompSpec, FootageSpec, LayerSpec, PropNode } from "../../../pv/model/types.ts";
 import { child, children, evalProp } from "./eval.ts";
 import { VectorShapes } from "./shapes.tsx";
+import { LayerEffects } from "./effects.tsx";
 import { TextLayer } from "./text.tsx";
 import { compByIndex, footageByName } from "./project.ts";
 import { cssMatrix3d, mIdentity, mMultiply, mScreenFromClip, mLookAt, mPerspective, type Mat4 } from "./mat4.ts";
@@ -206,7 +207,9 @@ export function CompView({ comp, ctx, t, isRoot = false }: { comp: CompSpec; ctx
           WebkitMaskImage: maskCss,
         }}
       >
-        <LayerContent layer={layer} ctx={ctx} t={t} comp={comp} />
+        <LayerEffects layer={layer} t={t} box={effectBox(layer, comp)}>
+          <LayerContent layer={layer} ctx={ctx} t={t} comp={comp} />
+        </LayerEffects>
       </div>,
     );
   }
@@ -215,6 +218,19 @@ export function CompView({ comp, ctx, t, isRoot = false }: { comp: CompSpec; ctx
       {rendered}
     </div>
   );
+}
+
+// Layer-space pixel box for effect evaluation: footage layers use the
+// footage's own dimensions (solid specs carry them); everything else uses
+// the comp dimensions, matching how content is laid out.
+function effectBox(layer: LayerSpec, comp: CompSpec): { width: number; height: number } {
+  if (layer.kind === "footage") {
+    const f = footageByName(layer.source);
+    if (f && "width" in f && typeof f.width === "number") {
+      return { width: f.width, height: f.height };
+    }
+  }
+  return { width: comp.width, height: comp.height };
 }
 
 function bg(comp: CompSpec): string {
