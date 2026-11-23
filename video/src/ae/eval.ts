@@ -200,13 +200,17 @@ export function sampleKeys(keys: KeySpec[], t: number): unknown {
   return lerpValue(k1.v, k2.v, eu);
 }
 
-export function evalProp(node: PropNode | undefined, t: number): unknown {
+export interface EvalCtx {
+  layerName?: string;
+}
+
+export function evalProp(node: PropNode | undefined, t: number, ctx?: EvalCtx): unknown {
   if (!node) return undefined;
   // Expressions take precedence: the dumped static value is stale when an
   // expression drives the property.
   if (typeof node.expression === "string" && node.expression.length > 0) {
     try {
-      return evalExpression(node.expression, t);
+      return evalExpression(node.expression, t, { layerName: ctx?.layerName, value: node.value });
     } catch {
       // fall through to keys/value
     }
@@ -216,13 +220,13 @@ export function evalProp(node: PropNode | undefined, t: number): unknown {
 }
 
 // Convenience: numeric eval (missing -> fallback)
-export function evalNum(node: PropNode | undefined, t: number, fallback = 0): number {
-  const v = evalProp(node, t);
+export function evalNum(node: PropNode | undefined, t: number, fallback = 0, ctx?: EvalCtx): number {
+  const v = evalProp(node, t, ctx);
   return typeof v === "number" ? v : fallback;
 }
 
-export function evalVec(node: PropNode | undefined, t: number, dims = 2): number[] {
-  const v = evalProp(node, t);
+export function evalVec(node: PropNode | undefined, t: number, dims = 2, ctx?: EvalCtx): number[] {
+  const v = evalProp(node, t, ctx);
   if (Array.isArray(v)) {
     const out: number[] = [];
     for (let i = 0; i < dims; i++) out.push(typeof v[i] === "number" ? v[i] : 0);

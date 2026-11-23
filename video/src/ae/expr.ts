@@ -5,20 +5,32 @@
 
 export class ExprError extends Error {}
 
-type Env = { time: number };
+type Env = { time: number; layerName?: string; value?: unknown };
 
+// AE ease-family signature is ease*(t, t1, t2, value1, value2) — note t2
+// comes before the values, unlike linear(t, t1, value1, t2, value2). All
+// expressions in this project use that order consistently.
 const fns: Record<string, (...a: number[]) => number> = {
-  linear: (t, t1, v1, t2, v2) => {
-    if (t <= t1) return v1;
-    if (t >= t2) return v2;
-    return v1 + ((v2 - v1) * (t - t1)) / (t2 - t1);
+  linear: (t, t1, t2, v1, v2) => {
+    // Accept both argument orders: if (a2,a3) does not look like
+    // (t1<t2) but (a1,a3) does, reinterpret as AE linear order.
+    let T1 = t1, T2 = t2, V1 = v1, V2 = v2;
+    if (!(T1 < T2) && t1 < v1) {
+      T1 = t1; V1 = t2; T2 = v1; V2 = v2;
+    }
+    if (t <= T1) return V1;
+    if (t >= T2) return V2;
+    return V1 + ((V2 - V1) * (t - T1)) / (T2 - T1);
   },
-  ease: (t, t1, v1, t2, v2) => fns.linear(t, t1, v1, t2, v2) ** 0 + easeVal(fns.linear(t, t1, v1, t2, v2)),
-  easeIn: (t, t1, v1, t2, v2) => {
+  ease: (t, t1, t2, v1, v2) => {
+    const u = t <= t1 ? 0 : t >= t2 ? 1 : easeVal((t - t1) / (t2 - t1));
+    return v1 + (v2 - v1) * u;
+  },
+  easeIn: (t, t1, t2, v1, v2) => {
     const u = clamp01((t - t1) / (t2 - t1));
     return v1 + (v2 - v1) * u * u;
   },
-  easeOut: (t, t1, v1, t2, v2) => {
+  easeOut: (t, t1, t2, v1, v2) => {
     const u = clamp01((t - t1) / (t2 - t1));
     return v1 + (v2 - v1) * (1 - (1 - u) * (1 - u));
   },
@@ -32,11 +44,44 @@ function easeVal(u: number) {
   return u * u * (3 - 2 * u);
 }
 
+// Targeted evaluator for the FUDE stroke-scatter family used on Position
+// properties throughout Baseline/PV glyph comps:
+//   var m={'S01':[x,y],...}; var k=thisLayer.name.substr(A,B);
+//   var d=m[k]?[...]:[0,0]; var p=easeOut(time,T1,T2,0,1);
+//   value+[d[0]*p,d[1]*p,0].slice(0,value.length)
+// Returns undefined when the expression does not match so the caller can
+// fall back to the generic parser.
+function evalStrokeScatter(src: string, env: Env): unknown {
+  if (!env.layerName || !Array.isArray(env.value)) return undefined;
+  if (!src.includes("thisLayer.name.substr") || !src.includes("value+[")) return undefined;
+  const map: Record<string, [number, number]> = {};
+  for (const m of src.matchAll(/'(\w+)':\[\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*\]/g)) {
+    map[m[1]] = [Number(m[2]), Number(m[3])];
+  }
+  const sub = /thisLayer\.name\.substr\((\d+),(\d+)\)/.exec(src);
+  if (!sub) return undefined;
+  const key = env.layerName.substr(Number(sub[1]), Number(sub[2]));
+  const d = map[key] ?? [0, 0];
+  const ez = /ease(?:Out|In)?\(time,\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)\s*\)/.exec(src);
+  let p = 0;
+  if (ez) {
+    const [, t1, t2, v1, v2] = ez.map(Number) as unknown as [number, number, number, number, number];
+    p = ez[0].includes("easeOut") ? fns.easeOut(env.time, t1, t2, v1, v2)
+      : ez[0].includes("easeIn") ? fns.easeIn(env.time, t1, t2, v1, v2)
+      : fns.ease(env.time, t1, t2, v1, v2);
+  }
+  const base = env.value as number[];
+  const delta = [d[0] * p, d[1] * p, 0];
+  return base.map((v, i) => (typeof v === "number" ? v + (delta[i] ?? 0) : v));
+}
+
 // very small recursive-descent parser for the expression subset
-export function evalExpression(expr: string, time: number): unknown {
+export function evalExpression(expr: string, time: number, ctx?: { layerName?: string; value?: unknown }): unknown {
   const src = expr.trim().replace(/;$/, "");
+  const env: Env = { time, layerName: ctx?.layerName, value: ctx?.value };
+  const scattered = evalStrokeScatter(src, env);
+  if (scattered !== undefined) return scattered;
   let i = 0;
-  const env: Env = { time };
 
   function peek() {
     return src[i];

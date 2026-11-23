@@ -28,10 +28,11 @@ function propOf(t: PropNode | undefined, matchName: string): PropNode | undefine
 
 export function layerTransform(layer: LayerSpec, t: number): LayerTransform {
   const tr = layer.transform;
-  const anchor = evalVec(propOf(tr, "ADBE Anchor Point"), t, 3);
+  const ectx = { layerName: layer.name };
+  const anchor = evalVec(propOf(tr, "ADBE Anchor Point"), t, 3, ectx);
   while (anchor.length < 3) anchor.push(0);
 
-  let position = evalVec(propOf(tr, "ADBE Position"), t, 3);
+  let position = evalVec(propOf(tr, "ADBE Position"), t, 3, ectx);
   let separated = false;
   if (position.length === 0) {
     separated = true;
