@@ -1,0 +1,11 @@
+{
+  "id": "wu-e-r4",
+  "wu": "WU-E",
+  "subject": "scene E v4: tiles recap moved to bottom band (f375) -> hero -> card (f465)",
+  "frames": [
+    { "file": "verification/wu-e2/f375c.png", "frame": 375, "note": "tiles recap bottom band" },
+    { "file": "verification/wu-e2/f410.png", "frame": 410, "note": "hero 筆 held separated" },
+    { "file": "verification/wu-e2/f465.png", "frame": 465, "note": "product card hold" }
+  ],
+  "context": "Tiles moved from y170 to y690 to avoid the persistent brand lockup (big 筆 + AFTER EFFECTS PLUGIN text) in the upper right zone."
+}

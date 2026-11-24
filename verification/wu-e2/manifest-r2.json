@@ -1,0 +1,12 @@
+{
+  "id": "wu-e-r2",
+  "wu": "WU-E",
+  "subject": "scene E v2: tiles recap (f375) -> hero 筆 separation (f400/f410) -> product card (f465)",
+  "frames": [
+    { "file": "verification/wu-e2/f375.png", "frame": 375, "note": "B/C/D tiles recap" },
+    { "file": "verification/wu-e2/f400.png", "frame": 400, "note": "hero 筆 mid-separation" },
+    { "file": "verification/wu-e2/f410.png", "frame": 410, "note": "hero 筆 held separated" },
+    { "file": "verification/wu-e2/f465.png", "frame": 465, "note": "product card hold" }
+  ],
+  "context": "SPEC §5 E: f371-388 tiles recap of B/C/D, f389-430 large hero 筆 (same char as B) with strokes separating and reassembling, f431-479 product card hold. SceneE.tsx authors all three phases."
+}
