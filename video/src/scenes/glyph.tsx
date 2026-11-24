@@ -257,6 +257,74 @@ export const StrokeField: React.FC<StrokeFieldProps> = ({
   );
 };
 
+// ---- stroke material helpers -------------------------------------------------
+// Shared paint normalization for authored stroke fields (Issue #28 contract
+// direction: scenes must not grow private sanitize/recolor copies).
+// Dumped Restro stroke layers animate paint props (fill/stroke opacity,
+// trim, color) as the product's own reveal; at a static rest pose those
+// keys can evaluate invisible. These helpers produce clean clones whose
+// paint is static so scene-driven strokeOpacity/strokeTransform own
+// visibility instead.
+
+const OPAQUE_PAINT_PROPS = new Set([
+  "ADBE Vector Fill Opacity",
+  "ADBE Vector Stroke Opacity",
+  "ADBE Vector Group Opacity",
+]);
+const FREE_COLOR_PROPS = new Set([
+  "ADBE Vector Fill Color",
+  "ADBE Vector Stroke Color",
+]);
+const TRIM_REST: Record<string, number> = {
+  "ADBE Vector Trim Start": 0,
+  "ADBE Vector Trim End": 100,
+  "ADBE Vector Trim Offset": 0,
+};
+
+export function sanitizeShapes(node: PropNode): void {
+  if (OPAQUE_PAINT_PROPS.has(node.matchName)) {
+    node.value = 100;
+    node.keys = undefined;
+  } else if (FREE_COLOR_PROPS.has(node.matchName)) {
+    node.keys = undefined;
+  } else if (node.matchName in TRIM_REST) {
+    node.value = TRIM_REST[node.matchName];
+    node.keys = undefined;
+  }
+  for (const p of node.properties ?? []) sanitizeShapes(p);
+}
+
+export function cleanShapes(shapes: unknown): PropNode {
+  const copy = JSON.parse(JSON.stringify(shapes)) as PropNode;
+  sanitizeShapes(copy);
+  return copy;
+}
+
+// Set every fill/stroke color in a shape tree to `rgb` (0..1) and unkey it.
+export function recolorShapes(node: PropNode, rgb: [number, number, number]): void {
+  if (FREE_COLOR_PROPS.has(node.matchName)) {
+    node.value = [rgb[0], rgb[1], rgb[2], 1];
+    node.keys = undefined;
+    return;
+  }
+  for (const p of node.properties ?? []) recolorShapes(p, rgb);
+}
+
+// Clone a stroke set with per-stroke solid colors. `color` receives the
+// stroke item and index; returns StrokeItems whose layer.shapes are clean
+// clones (safe to hand to StrokeField without touching the dumped source).
+export function tintedStrokes(
+  strokes: StrokeItem[],
+  color: (item: StrokeItem, i: number) => [number, number, number],
+): StrokeItem[] {
+  return strokes.map((s, i) => {
+    const rgb = color(s, i);
+    const shapes = cleanShapes(s.layer.shapes);
+    recolorShapes(shapes, rgb);
+    return { ...s, layer: { ...s.layer, shapes } };
+  });
+}
+
 // ---- timing helpers ---------------------------------------------------------
 
 export const clamp01 = (v: number): number => (v < 0 ? 0 : v > 1 ? 1 : v);

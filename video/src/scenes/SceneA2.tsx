@@ -1,6 +1,8 @@
 import React from "react";
 import {
+  cleanShapes,
   compStrokes,
+  recolorShapes,
   StrokeField,
   easeInOutCubic,
   seg,
@@ -61,56 +63,8 @@ const Z1 = 1.32;
 const FIELD_OX = 830; // screen x the comp focus maps to at zoom 1
 const FIELD_OY = 545; // screen y the comp focus maps to at zoom 1
 
-// The runs* stroke layers animate paint props (fill/stroke opacity, trim,
-// color) as the Restro reveal — at rest pose most evaluate invisible or
-// keyed. For this static display we strip those keys once, here, so the
-// scene's own strokeOpacity/strokeTransform drive visibility instead.
-// (Shared material contract: Issue #28 — do not copy this per scene.)
-const OPAQUE_PROPS = new Set([
-  "ADBE Vector Fill Opacity",
-  "ADBE Vector Stroke Opacity",
-  "ADBE Vector Group Opacity",
-]);
-const FREE_COLOR_PROPS = new Set([
-  "ADBE Vector Fill Color",
-  "ADBE Vector Stroke Color",
-]);
-const TRIM_VALUES: Record<string, number> = {
-  "ADBE Vector Trim Start": 0,
-  "ADBE Vector Trim End": 100,
-  "ADBE Vector Trim Offset": 0,
-};
-
-function sanitizeShapes(node: PropNode): void {
-  if (OPAQUE_PROPS.has(node.matchName)) {
-    node.value = 100;
-    node.keys = undefined;
-  } else if (FREE_COLOR_PROPS.has(node.matchName)) {
-    node.keys = undefined;
-  } else if (node.matchName in TRIM_VALUES) {
-    node.value = TRIM_VALUES[node.matchName];
-    node.keys = undefined;
-  }
-  for (const p of node.properties ?? []) sanitizeShapes(p);
-}
-
-function cleanShapes(shapes: unknown): PropNode {
-  const copy = JSON.parse(JSON.stringify(shapes)) as PropNode;
-  sanitizeShapes(copy);
-  return copy;
-}
-
-function recolorShapes(node: PropNode, rgb: [number, number, number]): void {
-  if (
-    node.matchName === "ADBE Vector Fill Color" ||
-    node.matchName === "ADBE Vector Stroke Color"
-  ) {
-    node.value = [rgb[0], rgb[1], rgb[2], 1];
-    node.keys = undefined;
-    return;
-  }
-  for (const p of node.properties ?? []) recolorShapes(p, rgb);
-}
+// Paint normalization lives in glyph.tsx (Issue #28 shared contract);
+// see cleanShapes/recolorShapes there.
 
 let cached: {
   comp: CompSpec;

@@ -124,6 +124,26 @@ export function applyMasterPatches(): void {
       fadeOpacity(l, w.inP, w.outP);
     }
   }
+
+  // Left-column captions (description comp): the dumped C-section copy
+  // (layers ending ~11.75-11.79) overlaps the D-section copy that starts
+  // at 11.71, so both texts are visible together for ~2 frames at the
+  // C->D boundary (f281+). Clamp every caption that starts inside scene C
+  // to end at the scene boundary.
+  const desc = GENERATED_COMPS.find((c) => c.name === "description");
+  if (desc) {
+    for (const l of desc.layers) {
+      if (
+        l.inPoint !== undefined &&
+        l.outPoint !== undefined &&
+        l.inPoint >= 7.9 &&
+        l.inPoint < 11.71 &&
+        l.outPoint > 11.71
+      ) {
+        l.outPoint = 11.7;
+      }
+    }
+  }
 }
 
 // Replace a layer's opacity keys with a short fade-in at `inP` and a
