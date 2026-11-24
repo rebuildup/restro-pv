@@ -177,6 +177,86 @@ export function applyMasterPatches(): void {
           }
         }
       }
+      // Dumped E-block captions (in >=15.44): SceneE authors the product
+      // card/lockup itself, so these leftovers double the product name and
+      // sales info (v11 rejection: 製品名の重複 / 販売表示の階層不足).
+      // i30/i31 are already disabled in the dump; zero the rest.
+      if (l.inPoint !== undefined && l.inPoint >= 15.44) {
+        l.outPoint = l.inPoint;
+        continue;
+      }
+    }
+
+    // Caption fit pass (v11 rejection: 説明文の切断). Several dumped
+    // point-text captions were authored against a wider canvas: center-
+    // justified anchors parked near the comp's right edge (x≈332-409 in a
+    // 416px comp) with fontSize 35-40 clip mid-sentence at the comp
+    // boundary. Shrink fontSize (floor 12px) until the longest line fits
+    // the available width; when the anchor itself leaves no room, recenter
+    // it on the comp first. Width estimate: CJK/full-width = 1em,
+    // ASCII = 0.55em, space = 0.3em, with a 16px safety margin.
+    const DW = desc.width ?? 416;
+    const MARGIN = 16;
+    const emOf = (ch: string): number => {
+      const c = ch.codePointAt(0) ?? 0;
+      if (ch === " ") return 0.3;
+      if (c < 0x80) return 0.55;
+      return 1;
+    };
+    for (const l of desc.layers) {
+      if (l.enabled === false) continue;
+      if (
+        l.inPoint === undefined ||
+        l.outPoint === undefined ||
+        l.outPoint <= l.inPoint
+      ) {
+        continue;
+      }
+      const tdoc = l.text?.properties?.find(
+        (p) => p.matchName === "ADBE Text Document",
+      );
+      const doc = tdoc?.value as
+        | {
+            fontSize?: number;
+            text?: string;
+            justification?: number;
+            boxText?: boolean;
+          }
+        | undefined;
+      if (
+        !doc ||
+        doc.boxText ||
+        typeof doc.fontSize !== "number" ||
+        typeof doc.text !== "string"
+      ) {
+        continue;
+      }
+      const em = Math.max(
+        ...doc.text
+          .split(/\r\n|\r|\n/)
+          .map((s) => [...s].reduce((a, ch) => a + emOf(ch), 0)),
+        0,
+      );
+      if (em <= 0) continue;
+      const pos = child(l.transform, "ADBE Position");
+      const ax = Array.isArray(pos?.value) ? (pos.value[0] as number) : 0;
+      const availFor = (x: number) =>
+        doc.justification === 7415
+          ? 2 * Math.min(x, DW - x)
+          : doc.justification === 7414
+            ? x
+            : DW - x;
+      let avail = availFor(ax) - MARGIN;
+      let need = avail / em;
+      if (need >= doc.fontSize) continue;
+      if (need < 12 && doc.justification === 7415 && pos && pos.numKeys === 0 && Array.isArray(pos.value)) {
+        // Center-anchored caption whose anchor sits at the comp edge:
+        // recenter on the comp, then re-fit.
+        pos.value = [DW / 2, pos.value[1], pos.value[2] ?? 0];
+        avail = DW - MARGIN;
+        need = avail / em;
+      }
+      doc.fontSize = Math.max(12, Math.min(doc.fontSize, need));
     }
   }
 }
