@@ -10,6 +10,7 @@ import { applyMasterPatches, STEP_REVEAL, B_HIDDEN, B_WINDOW, E_HIDDEN, E_WINDOW
 import { SceneA2 } from "./scenes/SceneA2.tsx";
 import { SceneB } from "./scenes/SceneB.tsx";
 import { SceneC } from "./scenes/SceneC.tsx";
+import { SceneD } from "./scenes/SceneD.tsx";
 import { SceneE } from "./scenes/SceneE.tsx";
 import { useCurrentFrame, useVideoConfig } from "remotion";
 
@@ -57,6 +58,7 @@ export const PvVideo: React.FC = () => {
       <SceneA2 t={t} />
       <SceneB t={t} />
       <SceneC t={t} />
+      <SceneD t={t} />
       <SceneE t={t} />
     </div>
   );

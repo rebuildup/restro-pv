@@ -62,47 +62,53 @@ export function applyMasterPatches(): void {
     // src..src+(out-in).
     const OPS_WINDOWS: Record<
       string,
-      { inP: number; outP: number; src: number; crop?: { pos: [number, number]; scale: number } }
+      { inP: number; outP: number; src: number; srcFile?: string; crop?: { pos: [number, number]; scale: number } }
     > = {
       // W1 main window: decompose-ops stroke drawing over "Retro"
       // (40.0-41.7s: red path strokes draw across the letters with visible
       // vertex handles; earlier 38.6-40.3 is nearly static). Retarget the
       // dumped crop — it included a dark UI band right of the comp viewer
       // (source x>~1072); now frames viewer x≈528-1072, y≈180-541.
+      // Schedule is staggered so at least two windows are live at any
+      // comp-local time — r6 review failed empty single-window gaps.
       W1: {
-        inP: 0.1,
-        outP: 1.8,
-        src: 40.0,
+        inP: 0.05,
+        outP: 1.9,
+        src: 39.9,
         crop: { pos: [956, 459], scale: 110.3 },
       },
-      // W2 small window: decompose-ops Restro plugin panel. The dumped crop
-      // framed the Project panel (static list); retarget to the Restro
-      // panel (x≈1344-1613, Decompose/Merge/Refine + Layer Contents) and
-      // play the ~36.5s moment where the decomposed stroke list appears.
+      // W2 small window: stroke-animate t≈5.0-6.7s — the generated strokes
+      // (small red/green rects) moving across the "Restro" text, the exact
+      // operation SPEC §5 D lists for this recording. Distinct phase from
+      // W3's 22-24.3s control-point editing; every sampled later segment
+      // in all three recordings still shows anchor UI, so operation-phase
+      // variety is the achievable distinction.
       W2: {
-        inP: 0.6,
-        outP: 2.3,
-        src: 36.4,
-        crop: { pos: [212, 675], scale: 81.1 },
+        inP: 0.55,
+        outP: 2.4,
+        src: 5.0,
+        srcFile: "ae-stroke-animate.mp4",
+        crop: { pos: [671, 682], scale: 53.1 },
       },
-      // W3 center crop: stroke-animate stroke scribble animation
-      // (22.2-23.85s). Retarget the dumped wide crop to the stroke cluster
-      // (source ≈x620-1070,y175-585) so the thin red strokes stay readable
-      // inside the 292px window.
+      // W3 center crop: stroke-animate stroke scribble animation.
+      // Segment moved to 22.0-24.3s — the control-point/path-editing
+      // motion peak (24.3s) — instead of the 22.2-23.85 slice that ended
+      // just before the visible change.
       W3: {
-        inP: 1.2,
-        outP: 2.85,
-        src: 22.2,
+        inP: 1.0,
+        outP: 3.72,
+        src: 22.0,
         crop: { pos: [1009, 714], scale: 64.9 },
       },
-      // W4 wide bottom window: reprocess comp switch + "MV" appearing
-      // (6.2-7.9s). Slight zoom toward the text area (source ≈x528-1073,
-      // y192-428).
+      // W4 wide bottom window: reprocess selection->clean reveal.
+      // Delayed to local 2.0 and src 13.9 so the 14.2-15.5s reveal lands at
+      // the scene end instead of decaying into a static white result
+      // (r8: late frames showed an over-zoomed, near-blank W4).
       W4: {
-        inP: 1.85,
-        outP: 3.55,
-        src: 6.2,
-        crop: { pos: [955, 1146], scale: 110 },
+        inP: 2.0,
+        outP: 3.72,
+        src: 13.9,
+        crop: { pos: [907, 1052], scale: 115.4 },
       },
     };
     for (const l of ops.layers) {
@@ -112,6 +118,7 @@ export function applyMasterPatches(): void {
       l.inPoint = w.inP;
       l.outPoint = w.outP;
       if (l.kind === "footage") {
+        if (w.srcFile) l.source = w.srcFile;
         // layerLocalTime = compT - startTime; want source `src` at compT w.inP.
         l.startTime = w.inP - w.src;
         if (w.crop) {

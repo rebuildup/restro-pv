@@ -1,0 +1,18 @@
+{
+  "id": "wu-d-r7",
+  "scene": "D",
+  "subject": "scene D staggered four-window recording sequence",
+  "frames": [
+    { "file": "verification/wu-d2/f300.png", "frame": 300, "note": "early D: only W1 live" },
+    { "file": "verification/wu-d2/f330.png", "frame": 330, "note": "mid D: W2+W3+W4 live" },
+    { "file": "verification/wu-d2/f350.png", "frame": 350, "note": "late D: W3+W4 live" },
+    { "file": "verification/wu-d2/f365.png", "frame": 365, "note": "end D: W4 only" }
+  ],
+  "requirements": [
+    "各フレームで少なくとも2つの窓に判別可能なAE/プラグイン操作映像が写っている（空白・極小帯・白紙化していない）",
+    "4つの窓がキャプションと内容の両面で異なる操作フェーズとして区別できる",
+    "各窓の上の日本語キャプションが読み取れ、レイアウトを壊していない",
+    "窓の登場・退場が時間的に設計されており、フレーム間に明らかな描画破綻がない"
+  ],
+  "context": "Scene D is frames 281-370 of a 480-frame 24fps promo PV. Windows are staggered async recordings of a stroke-decomposition plugin: W1 top = anchor-point estimation, W2 mid-left = stroke generation (small moving shapes over Restro text), W3 mid-right = control-point editing (red points and handles), W4 bottom = reprocess/result reveal. Japanese labels sit above each window. Previous round failed because windows went blank or appeared as tiny strips; the schedule was changed so windows overlap."
+}
