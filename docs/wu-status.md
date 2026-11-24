@@ -24,7 +24,7 @@
 | WU-B | B 工程 | 独立レビュー合格（wu-b-r13: 8/8 PASS） | SceneB 全面作り直し: 実測の輪郭シルエット→筆画別draft輪郭→実ストローク交差のjunctionマーカー+ルーペ→13実筆画の分離再構成。analysisGate で工程を硬く切替、レンズは下部空き領域で実拡大。glyph.tsx に ContourField itemColor/itemTransform 追加 |
 | WU-C | C 作品例 | 独立レビュー合格（wu-c-r16: 9/9 PASS） | r7〜r15 で FAIL 反復後に作り直し。最終形: cell pitch 1920（960px 空白ギャップ=窓高で2作品が窓内に同居しない直列遷移）、各作品は認識→動き→収束→保持の完結アーク（w1 散布→段階集約→安定 ripple、w2 多色筆→時間差の波→収束、w3 上下反転エンブレムの stream-in→呼吸→保持）。作品ごとに地色・完成像を差別化（和紙/寒色/暗色）。f281 の D cut で残留なし。左カラム description comp の文字切れは dump 由来の共通課題として別途要対応 |
 | WU-D | D 実操作録画 | 独立レビュー合格（wu-d-r26 PASS 10/10） | authored 再構成完了: dumped PV ops 非表示化＋description Dブロック clamp、SceneD.tsx が左コピーと4非同期窓を自前描画（W1分解before→after / W2筆画モーション / W3制御点編集 / W4再処理dialog→結果）。区間は全フレームデコードで検証（-ssシークずれを SEGMENTS.md に記録）。再録画不要と判断 |
-| WU-E | E 商品 | 制作中（r4合格撤回） | r4 PASS はユーザー実画像確認で撤回。v5 で hero 右ゾーン クリップ・カードの Web chrome 撤去（組版ロックアップ化）・タイル overflow 修正済。wu-e-r5: 7/9 PASS。残 FAIL は E-1/E-4 = 実 B/C/D コンポの回収タイルで、WU-C/D 未完のため仮素材では合格不可（manualGate でも証明必須） |
+| WU-E | E 商品 | 独立レビュー合格（wu-e-r8: 9/9 PASS） | r4 PASS はユーザー実画像確認で撤回後、v5-v8 で再構成: hero 右ゾーンクリップ・組版ロックアップ化（Web chrome 撤去）・タイル stagger 修正（D タイル未登場の構造バグを解消）・回収タイルを実成果へ置換（B=実筆画黄tint、C=多色作品glyph、D=検証済み録画フレーム assets/rec/e-tile-d.png）。manualGate の実コンポ/実素材参照は SceneE.tsx コードで証明可能 |
 | WU-Q | 独立レビュー基盤 | 技術検証済（v2.1） | criteria v2026-11-25.2: 全WU共通基準 CMN-1..4（ゾーン規律・転換残像・情報階層/装飾抑制・design-baseline 照合）を自動マージ。WU-E に E-4 実コンポタイル・E-5 Web風カード禁止を追加。manualGates で静止画不可証明条件（素材由来・輪郭由来・実操作性）を別証拠必須化。r4 見逃し原因=基準欠落を calib-e-fail-1（FAIL 8/9）で較正済 |
 | #28 | 筆画素材契約 | 制作中（契約テスト開始） | tests/stroke-contract.test.ts で素材契約を固定: Baseline FUDE=13筆画・bunkai runs4 SPEC指定セット・有限/安定ジオメトリを検証。glyph.tsx の compStrokes/StrokeField/sanitize系が契約の実装。輪郭↔復元筆画の対応証明・座標変換保証の文書化は継続 |
 
