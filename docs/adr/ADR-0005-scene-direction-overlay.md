@@ -82,3 +82,33 @@ Remotion 側で制御する。
   操作区間へ付け替え（`OPS_INPOINTS`）
 - E [15.46,20): `PV end` を退避し SceneE が3タイル→筆分離再集合→
   商品カードの構成を描画
+
+## 改訂（2026-11-25 beats 原本との照合を受けて）
+
+`verification/beats/`（実AEP出力 43ビート）を正本として全シーンを再評価
+した結果、v7-v9 の authored シーン置き換えは原本の演出設計からの逸脱で
+あり退行と判断した。原本が持つ構造（グリッド・組版・工程タブ帯・
+ステップフィルタ・ルーペ・カード構成）を dumped コンポと beats から
+復元する方針へ戻す。
+
+検証で判明した事実：
+
+- FUDE 筆画リグ（STEP1-4 draft・Baseline・PV glyph・PV probe char 等）
+  は Opacity=0 固定 + AE 式（`comp().layer()`・`createPath`・Linked Quad
+  マスク式）に依存し、CompSpec 解釈層では**一切描画されない**。
+  これらの字形が必要な場面だけ StrokeField（実筆画パス再利用）で
+  authored 層を置く。
+- B の原本設計は「同一文字へ工程ごとの色フィルタを適用」+ 工程タブ帯
+  + ルーペ + 中/した状態ラベル。幾何学的装飾の追加は原本にないため
+  行わない。
+- E の dumped `PV end` は商品コピーを左カラム x≈124 に配置しカード枠が
+  なく、beats の右側カードと異なる。`PV end` を退避し SceneE が右側
+  カードを authored する。
+
+現行構成：
+
+- A/C/D: dumped コンポをそのまま使用（A2 分解アニメ・作品カード・
+  実録画4窓・ダイアログなし in-point）
+- B: dumped UI（タブ帯・STEP border）+ SceneB（実 Baseline 筆画の
+  ステップ色フィルタ・中/したラベル・ルーペ）
+- E: dumped runs5/6 筆画ヒーロー + SceneE（右側商品カード）
