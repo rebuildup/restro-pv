@@ -1,4 +1,5 @@
 import React from "react";
+import { Img, staticFile } from "remotion";
 import {
   clamp01,
   compStrokes,
@@ -6,6 +7,7 @@ import {
   easeOutCubic,
   seg,
   StrokeField,
+  tintedStrokes,
   type StrokeItem,
 } from "./glyph.tsx";
 
@@ -35,6 +37,11 @@ const CARD_ITEMS: { text: string; size: number; weight: number; color: string; g
 let cached: {
   comp: ReturnType<typeof compStrokes>["comp"];
   strokes: StrokeItem[];
+  // real B/C scene content for the recap tiles (SPEC §5 E: tiles show the
+  // actual comps' first frames — B = reconstructed strokes, C = the three
+  // works' finished forms)
+  bStrokes: StrokeItem[];
+  cWorks: StrokeItem[][];
   cx: number;
   cy: number;
 } | null = null;
@@ -45,6 +52,21 @@ function buildData() {
     poseT: 0.5,
   });
   if (!strokes.length) throw new Error("Baseline FUDE strokes not found");
+  // B tile: the reconstructed-stroke end state (step-4 yellow family)
+  const bStrokes = tintedStrokes(strokes, () => [0.95, 0.72, 0.08]);
+  // C tile: the three works' finished forms — ink gather, multicolor wave,
+  // dark-ground emblem — as mini glyphs
+  const cWorks = [
+    tintedStrokes(strokes, () => [0.12, 0.12, 0.12]),
+    tintedStrokes(strokes, (_s, i) =>
+      [[0.75, 0.2, 0.15], [0.15, 0.5, 0.75], [0.85, 0.6, 0.1], [0.2, 0.6, 0.3]][i % 4] as [
+        number,
+        number,
+        number,
+      ],
+    ),
+    tintedStrokes(strokes, () => [0.9, 0.9, 0.95]),
+  ];
   let minX = 1e9,
     minY = 1e9,
     maxX = -1e9,
@@ -56,7 +78,7 @@ function buildData() {
       if (y < minY) minY = y;
       if (y > maxY) maxY = y;
     }
-  cached = { comp, strokes, cx: (minX + maxX) / 2, cy: (minY + maxY) / 2 };
+  cached = { comp, strokes, bStrokes, cWorks, cx: (minX + maxX) / 2, cy: (minY + maxY) / 2 };
   return cached;
 }
 
@@ -82,7 +104,7 @@ const TILE_W = 170;
 const TILE_H = 200;
 
 export const SceneE: React.FC<{ t: number }> = ({ t }) => {
-  const { comp, strokes, cx, cy } = buildData();
+  const { comp, strokes, bStrokes, cWorks, cx, cy } = buildData();
 
   // --- hero stroke directions (radial + slight tangential jitter) ---
   const dirs = strokes.map((s, i) => {
@@ -102,7 +124,7 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
   // --- tiles recap window ---
   const tilesP =
     t >= T_TILES_IN && t < T_TILES_OUT
-      ? 1 - seg(t, T_TILES_OUT - 0.16, T_TILES_OUT - 0.02)
+      ? 1 - seg(t, T_TILES_OUT - 0.1, T_TILES_OUT - 0.02)
       : 0;
 
   // --- hero window: enters as tiles shrink away, holds, fades before card ---
@@ -124,7 +146,7 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
       {/* ---- B/C/D tiles recap (f371-388) ---- */}
       {tilesP > 0 &&
         TILE_DEFS.map((tile, i) => {
-          const p = easeOutCubic(clamp01((t - (T_TILES_IN + i * 0.14)) / 0.3));
+          const p = easeOutCubic(clamp01((t - (T_TILES_IN + i * 0.06)) / 0.26));
           if (p <= 0) return null;
           return (
             <div
@@ -176,49 +198,44 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
                       transformOrigin: "0 0",
                     }}
                   >
-                    <StrokeField comp={comp} strokes={strokes} poseT={0.5} />
+                    <StrokeField comp={comp} strokes={bStrokes} poseT={0.5} />
                   </div>
                 )}
                 {tile.label === "C" && (
-                  <div style={{ display: "flex", gap: 14, alignItems: "flex-end", height: "100%" }}>
-                    {[86, 118, 74].map((h, j) => (
-                      <div
-                        key={j}
-                        style={{
-                          width: 52,
-                          height: h,
-                          border: "2px solid #111",
-                          background: j === 1 ? "rgba(192,57,43,0.15)" : "rgba(0,0,0,0.05)",
-                        }}
-                      />
-                    ))}
+                  // C's three works share one char in different treatments;
+                  // at tile scale a single legible work reads better than
+                  // three illegible thumbnails — show the multicolor wave.
+                  <div
+                    style={{
+                      position: "absolute",
+                      left: 0,
+                      top: 0,
+                      width: comp.width,
+                      height: comp.height,
+                      transform: fitFor(TILE_W - 20, TILE_H - 60, 0, 0),
+                      transformOrigin: "0 0",
+                    }}
+                  >
+                    <StrokeField comp={comp} strokes={cWorks[1]} poseT={0.5} />
                   </div>
                 )}
                 {tile.label === "D" && (
-                  <div style={{ position: "relative", height: "100%" }}>
-                    <div
-                      style={{
-                        position: "absolute",
-                        left: 0,
-                        top: 6,
-                        width: 150,
-                        height: 104,
-                        border: "2px solid #1a5276",
-                        background: "rgba(26,82,118,0.12)",
-                      }}
-                    />
-                    <div
-                      style={{
-                        position: "absolute",
-                        left: 158,
-                        top: 40,
-                        width: 82,
-                        height: 58,
-                        border: "2px solid #1a5276",
-                        background: "rgba(26,82,118,0.12)",
-                      }}
-                    />
-                  </div>
+                  // Real ops recording still — frame extracted from the
+                  // frame-verified W1 segment (verification/wu-d-mat/
+                  // SEGMENTS.md): ae-decompose-ops ~36.6s shows the
+                  // decomposed strokes + red anchors.
+                  <Img
+                    src={staticFile("assets/rec/e-tile-d.png")}
+                    style={{
+                      position: "absolute",
+                      left: 0,
+                      top: 0,
+                      width: TILE_W - 16,
+                      height: TILE_H - 54,
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                  />
                 )}
               </div>
             </div>

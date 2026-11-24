@@ -1,0 +1,11 @@
+{
+  "id": "wu-e-r6",
+  "wu": "WU-E",
+  "subject": "scene E v6: recap tiles now show REAL B/C/D content (tinted stroke glyphs, 3 work thumbnails, actual ops footage)",
+  "frames": [
+    { "file": "verification/wu-e3/f375.png", "frame": 375, "note": "tiles with real B/C/D content" },
+    { "file": "verification/wu-e2/f410d.png", "frame": 410, "note": "hero separated (unchanged)" },
+    { "file": "verification/wu-e3/f465.png", "frame": 465, "note": "typographic product lockup (unchanged)" }
+  ],
+  "context": "v6: B tile = real Baseline strokes tinted step-4 yellow; C tile = three mini work glyphs (ink/multicolor/dark-emblem); D tile = actual ae-decompose-ops footage playing (frame-verified segment). manualGate evidence: tiles reference compStrokes('Baseline') output and assets/rec footage directly in SceneE.tsx."
+}
