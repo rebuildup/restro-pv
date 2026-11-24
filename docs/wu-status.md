@@ -27,18 +27,19 @@
 | WU-E | E 商品 | 独立レビュー合格（wu-e-r8: 9/9 PASS） | r4 PASS はユーザー実画像確認で撤回後、v5-v8 で再構成: hero 右ゾーンクリップ・組版ロックアップ化（Web chrome 撤去）・タイル stagger 修正（D タイル未登場の構造バグを解消）・回収タイルを実成果へ置換（B=実筆画黄tint、C=多色作品glyph、D=検証済み録画フレーム assets/rec/e-tile-d.png）。manualGate の実コンポ/実素材参照は SceneE.tsx コードで証明可能 |
 | WU-Q | 独立レビュー基盤 | 技術検証済（v2.1） | criteria v2026-11-25.2: 全WU共通基準 CMN-1..4（ゾーン規律・転換残像・情報階層/装飾抑制・design-baseline 照合）を自動マージ。WU-E に E-4 実コンポタイル・E-5 Web風カード禁止を追加。manualGates で静止画不可証明条件（素材由来・輪郭由来・実操作性）を別証拠必須化。r4 見逃し原因=基準欠落を calib-e-fail-1（FAIL 8/9）で較正済 |
 | WU-INT | シーン境界の統合検証 | 独立レビュー合格（wu-int-r3: 7/7 PASS） | integration-bounds-1 FAIL→r3 PASS。修正: A1→A2 ghost/context stroke の fade-in（f45 残像解消）、A3→B bunkai bridge のフェード延長＋outPoint 調整（f100→101 無変化解消）、description comp の B キャプション expression をキー焼付け化（t0 stagger の再現、f102-104 タグライン衝突解消）、D→E copyOut を境界0.12s前に終了（f370 ゴーストテキスト解消）、E タイル開始を 15.44 に前倒し。潜在課題: ネスト comp が overflow:visible で描画されるため comp 境界外レイヤーがはみ出す（AE は clip する）—将来WUで要対応 |
-| #28 | 筆画素材契約 | 制作中（契約テスト開始） | tests/stroke-contract.test.ts で素材契約を固定: Baseline FUDE=13筆画・bunkai runs4 SPEC指定セット・有限/安定ジオメトリを検証。glyph.tsx の compStrokes/StrokeField/sanitize系が契約の実装。輪郭↔復元筆画の対応証明・座標変換保証の文書化は継続 |
+| #28 | 筆画素材契約 | 技術検証済（文書化済） | docs/stroke-material-contract.md で共通契約を文書化: compStrokes/StrokeField/ContourField API、comp座標→単一 fieldTransform の変換保証、輪郭↔復元筆画の同一素材・登録証明（ink centroid ~(780,540) 実測）、sanitize/recolor の描画可能性契約。tests/stroke-contract.test.ts が Baseline=13筆画・bunkai runs4 SPEC指定セット・安定ジオメトリを pin。座標系混同による旧「描画不能」判定の無効化も記録 |
 
 ## 次のアクション
 
 1. manualGates の最終集約: 各WUの合否判定へ manualGate 証拠を紐付ける
-   （verification/manual-gates.md に A/B/C/D/E の証拠を集約済みか確認し、
-   未記載のWUがあれば追記。画像PASSのみでWUを閉じない運用を維持）
-2. #28: 輪郭↔復元筆画の対応証明と座標変換保証の文書化（契約テストは実装済み。
-   共通素材契約として A2/B/C/E の sanitize・recolor 増殖を止める構造を確定）
+   （verification/manual-gates.md は A〜E を網羅済み。WU 受入時に
+   画像PASSと併せて参照する運用を維持）
+2. 潜在課題の解消判断: (a) ネスト comp の overflow:visible はみ出し
+   （WU-INT で確認、AE は clip する）、(b) description comp 416px 幅の
+   文字クリップ（WU-C レビュー検出）。全シーン共通の dumped テキスト
+   基盤に関わるため、text.tsx justify 修正の全シーン再レビューと
+   合わせて一括で扱う
 3. 全編統合時: text.tsx の center-justify 修正が A/B/C/E の既存コピー位置を
-   変えるため、全シーンの局所レビューを再実施してから全編レンダー。
-   あわせて description comp の 416px 幅クリップ問題（WU-C レビュー検出）と
-   ネスト comp の overflow:visible 問題（WU-INT 潜在課題）を解消するか判断
+   変えるため、全シーンの局所レビューを再実施してから全編レンダー
 4. WU-Q 残: WU-INT を含む全レビューで series 基準の時間判定が
    適切なフレーム密度で行われているかの監査
