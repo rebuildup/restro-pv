@@ -56,6 +56,20 @@ if (!wu) {
   process.exit(1);
 }
 
+// Exemption guard (user directive 2026-11-25): manifest context/subject may
+// describe what is being reviewed but must never instruct the reviewer to
+// skip, exempt, or excuse a defect. Reject such manifests outright.
+const EXEMPTION_RE =
+  /do not fail|don't fail|not fail|except for|exempt|should not be (a )?fail|unintended clipping|忠実|原本(との|に)忠実|評価除外|不合格としない|fail しない/i;
+const manifestText = `${m.subject ?? ""}\n${m.context ?? ""}`;
+if (EXEMPTION_RE.test(manifestText)) {
+  console.error(
+    "manifest rejected: context/subject contains exemption language. " +
+      "Criteria cannot be waived per-manifest; describe the subject only.",
+  );
+  process.exit(1);
+}
+
 // --- Load fixed criteria (cannot be overridden by the manifest) ---
 const criteriaRaw = readFileSync(CRITERIA_PATH);
 const criteria = JSON.parse(criteriaRaw.toString()) as {
