@@ -1,0 +1,43 @@
+{
+  "id": "wu-d-r27",
+  "wu": "WU-D",
+  "subject": "scene D rebuilt r4: left copy moved below brand lockup (top:648); W4 aux window shows reprocess arc [wu-d-r27]",
+  "frames": [
+    {
+      "file": "verification/recheck/f285.png",
+      "frame": 285,
+      "note": "D start: copy + W1 only"
+    },
+    {
+      "file": "verification/recheck/f300.png",
+      "frame": 300,
+      "note": "W1 before->after, W2 enters"
+    },
+    {
+      "file": "verification/recheck/f315.png",
+      "frame": 315,
+      "note": "W1 after, W2/W3 live"
+    },
+    {
+      "file": "verification/recheck/f345.png",
+      "frame": 345,
+      "note": "all 4; W4 Executing dialog"
+    },
+    {
+      "file": "verification/recheck/f355.png",
+      "frame": 355,
+      "note": "W4 result complete"
+    },
+    {
+      "file": "verification/recheck/f368.png",
+      "frame": 368,
+      "note": "tail fading"
+    },
+    {
+      "file": "verification/recheck/f375.png",
+      "frame": 375,
+      "note": "D->E handoff"
+    }
+  ],
+  "context": "POST-CLIP RE-VERIFICATION: frames re-rendered after interpreter change — nested precomps now clip to comp bounds (AE semantics, wu-int-r5 PASS). Left-column display text now crops at the comp edge exactly like the AE original (fidelity-legacy-vs-remotion.png). Judge the same criteria on these current frames. Scene D authored per SPEC §5 D. Left copy 「After Effectsで、/そのまま動かせる。」 placed at top:648 below the persistent brand lockup (bottom ~y550). W1 large = decompose-ops 35.9s before->after; W2/W3 = stroke-animate edit(22.7s)/motion(25.0s); W4 = reprocess 5.0s redraw->Executing Script dialog->result at aux size. Frame-accurate verified. NOTE: 'Restro / 筆画復元' lockup is the persistent brand required by SPEC §4 / D-6, present in all scenes — not a D leftover."
+}

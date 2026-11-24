@@ -1,0 +1,108 @@
+{
+  "id": "wu-d-r28",
+  "wu": "WU-D",
+  "subject": "scene D rebuilt r4: left copy moved below brand lockup (top:648); W4 aux window shows reprocess arc [wu-d-r27] [wu-d-r28: async exit stagger fOut W2=356/W3=361/W4=366/W1=370 + intermediate frames]",
+  "frames": [
+    {
+      "file": "verification/recheck/f285.png",
+      "frame": 285,
+      "note": "D start: copy + W1 only"
+    },
+    {
+      "file": "verification/recheck/f300.png",
+      "frame": 300,
+      "note": "W1 before->after, W2 enters"
+    },
+    {
+      "file": "verification/recheck/f315.png",
+      "frame": 315,
+      "note": "W1 after, W2/W3 live"
+    },
+    {
+      "file": "verification/recheck/f345.png",
+      "frame": 345,
+      "note": "all 4; W4 Executing dialog"
+    },
+    {
+      "file": "verification/recheck/f348.png",
+      "frame": 348,
+      "note": "W2 exit begins (fOut 356)"
+    },
+    {
+      "file": "verification/recheck/f350.png",
+      "frame": 350,
+      "note": "W2 mid-exit"
+    },
+    {
+      "file": "verification/recheck/f352.png",
+      "frame": 352,
+      "note": "W2 last fade / W3 exit begins"
+    },
+    {
+      "file": "verification/recheck/f354.png",
+      "frame": 354,
+      "note": "W3 mid-exit"
+    },
+    {
+      "file": "verification/recheck/f355.png",
+      "frame": 355,
+      "note": "W4 result complete"
+    },
+    {
+      "file": "verification/recheck/f356.png",
+      "frame": 356,
+      "note": "W2 gone, W3 mid-exit"
+    },
+    {
+      "file": "verification/recheck/f358.png",
+      "frame": 358,
+      "note": "W3 mid / W4 exit begins"
+    },
+    {
+      "file": "verification/recheck/f360.png",
+      "frame": 360,
+      "note": "W3 last / W4 mid / W1 exit begins"
+    },
+    {
+      "file": "verification/recheck/f362.png",
+      "frame": 362,
+      "note": "W4 mid / W1 mid"
+    },
+    {
+      "file": "verification/recheck/f364.png",
+      "frame": 364,
+      "note": "W4 mid / W1 mid"
+    },
+    {
+      "file": "verification/recheck/f366.png",
+      "frame": 366,
+      "note": "W4 gone, W1 mid-exit"
+    },
+    {
+      "file": "verification/recheck/f367.png",
+      "frame": 367,
+      "note": "W1 mid-exit"
+    },
+    {
+      "file": "verification/recheck/f368.png",
+      "frame": 368,
+      "note": "tail fading"
+    },
+    {
+      "file": "verification/recheck/f369.png",
+      "frame": 369,
+      "note": "W1 last fade frame"
+    },
+    {
+      "file": "verification/recheck/f370.png",
+      "frame": 370,
+      "note": "all windows gone (D tail)"
+    },
+    {
+      "file": "verification/recheck/f375.png",
+      "frame": 375,
+      "note": "D->E handoff"
+    }
+  ],
+  "context": "POST-CLIP + EXIT-STAGGER RE-VERIFICATION: window exits are now explicitly staggered — W2 fOut 356, W3 fOut 361, W4 fOut 366, W1 (main) fOut 370, each with ~7-frame fade — so aux windows leave first and the main decompose window persists longest. Intermediate frames f348-f370 capture each exit. Judge the same D criteria; D-2 requires visible async exit progression. POST-CLIP RE-VERIFICATION: frames re-rendered after interpreter change — nested precomps now clip to comp bounds (AE semantics, wu-int-r5 PASS). Left-column display text now crops at the comp edge exactly like the AE original (fidelity-legacy-vs-remotion.png). Judge the same criteria on these current frames. Scene D authored per SPEC §5 D. Left copy 「After Effectsで、/そのまま動かせる。」 placed at top:648 below the persistent brand lockup (bottom ~y550). W1 large = decompose-ops 35.9s before->after; W2/W3 = stroke-animate edit(22.7s)/motion(25.0s); W4 = reprocess 5.0s redraw->Executing Script dialog->result at aux size. Frame-accurate verified. NOTE: 'Restro / 筆画復元' lockup is the persistent brand required by SPEC §4 / D-6, present in all scenes — not a D leftover."
+}

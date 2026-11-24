@@ -49,7 +49,7 @@ const WINDOWS: Win[] = [
     w: 560,
     h: 315,
     fIn: 281,
-    fOut: 368,
+    fOut: 370,
     caption: "分解 — 文字が筆画シェイプに",
   },
   {
@@ -64,7 +64,7 @@ const WINDOWS: Win[] = [
     w: 270,
     h: 200,
     fIn: 297,
-    fOut: 359,
+    fOut: 356,
     caption: "筆画ごとの動き",
   },
   {
@@ -78,7 +78,7 @@ const WINDOWS: Win[] = [
     w: 260,
     h: 200,
     fIn: 313,
-    fOut: 365,
+    fOut: 361,
     caption: "制御点の編集",
   },
   {
@@ -97,7 +97,7 @@ const WINDOWS: Win[] = [
     w: 480,
     h: 270,
     fIn: 320,
-    fOut: 370,
+    fOut: 366,
     caption: "再処理 — 結果を再構成",
   },
 ];

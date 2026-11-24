@@ -7,7 +7,6 @@ import {
   easeOutCubic,
   seg,
   StrokeField,
-  tintedStrokes,
   type StrokeItem,
 } from "./glyph.tsx";
 
@@ -37,11 +36,9 @@ const CARD_ITEMS: { text: string; size: number; weight: number; color: string; g
 let cached: {
   comp: ReturnType<typeof compStrokes>["comp"];
   strokes: StrokeItem[];
-  // real B/C scene content for the recap tiles (SPEC §5 E: tiles show the
-  // actual comps' first frames — B = reconstructed strokes, C = the three
-  // works' finished forms)
-  bStrokes: StrokeItem[];
-  cWorks: StrokeItem[][];
+  // real B/C/D scene snapshots for the recap tiles (SPEC §5 E: tiles show
+  // the actual outputs — B/C are crops of the real scene renders,
+  // D is a frame-verified ops recording still; see assets/rec/e-tile-*.png)
   cx: number;
   cy: number;
 } | null = null;
@@ -52,21 +49,6 @@ function buildData() {
     poseT: 0.5,
   });
   if (!strokes.length) throw new Error("Baseline FUDE strokes not found");
-  // B tile: the reconstructed-stroke end state (step-4 yellow family)
-  const bStrokes = tintedStrokes(strokes, () => [0.95, 0.72, 0.08]);
-  // C tile: the three works' finished forms — ink gather, multicolor wave,
-  // dark-ground emblem — as mini glyphs
-  const cWorks = [
-    tintedStrokes(strokes, () => [0.12, 0.12, 0.12]),
-    tintedStrokes(strokes, (_s, i) =>
-      [[0.75, 0.2, 0.15], [0.15, 0.5, 0.75], [0.85, 0.6, 0.1], [0.2, 0.6, 0.3]][i % 4] as [
-        number,
-        number,
-        number,
-      ],
-    ),
-    tintedStrokes(strokes, () => [0.9, 0.9, 0.95]),
-  ];
   let minX = 1e9,
     minY = 1e9,
     maxX = -1e9,
@@ -78,7 +60,7 @@ function buildData() {
       if (y < minY) minY = y;
       if (y > maxY) maxY = y;
     }
-  cached = { comp, strokes, bStrokes, cWorks, cx: (minX + maxX) / 2, cy: (minY + maxY) / 2 };
+  cached = { comp, strokes, cx: (minX + maxX) / 2, cy: (minY + maxY) / 2 };
   return cached;
 }
 
@@ -104,7 +86,7 @@ const TILE_W = 170;
 const TILE_H = 200;
 
 export const SceneE: React.FC<{ t: number }> = ({ t }) => {
-  const { comp, strokes, bStrokes, cWorks, cx, cy } = buildData();
+  const { comp, strokes, cx, cy } = buildData();
 
   // --- hero stroke directions (radial + slight tangential jitter) ---
   const dirs = strokes.map((s, i) => {
@@ -175,7 +157,10 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
               >
                 {tile.label} — {tile.sub}
               </div>
-              {/* mini recap glyphs: B=筆 strokes, C=works strip, D=ops windows */}
+              {/* recap snapshots: real scene/ops output stills, one per WU.
+                  B = SceneB junction/lens moment (f154 crop), C = SceneC
+                  work panel (f220 crop), D = frame-verified decompose-ops
+                  still — all in assets/rec/e-tile-*.png */}
               <div
                 style={{
                   position: "absolute",
@@ -186,57 +171,18 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
                   overflow: "hidden",
                 }}
               >
-                {tile.label === "B" && (
-                  <div
-                    style={{
-                      position: "absolute",
-                      left: 0,
-                      top: 0,
-                      width: comp.width,
-                      height: comp.height,
-                      transform: fitFor(TILE_W - 20, TILE_H - 60, 0, 0),
-                      transformOrigin: "0 0",
-                    }}
-                  >
-                    <StrokeField comp={comp} strokes={bStrokes} poseT={0.5} />
-                  </div>
-                )}
-                {tile.label === "C" && (
-                  // C's three works share one char in different treatments;
-                  // at tile scale a single legible work reads better than
-                  // three illegible thumbnails — show the multicolor wave.
-                  <div
-                    style={{
-                      position: "absolute",
-                      left: 0,
-                      top: 0,
-                      width: comp.width,
-                      height: comp.height,
-                      transform: fitFor(TILE_W - 20, TILE_H - 60, 0, 0),
-                      transformOrigin: "0 0",
-                    }}
-                  >
-                    <StrokeField comp={comp} strokes={cWorks[1]} poseT={0.5} />
-                  </div>
-                )}
-                {tile.label === "D" && (
-                  // Real ops recording still — frame extracted from the
-                  // frame-verified W1 segment (verification/wu-d-mat/
-                  // SEGMENTS.md): ae-decompose-ops ~36.6s shows the
-                  // decomposed strokes + red anchors.
-                  <Img
-                    src={staticFile("assets/rec/e-tile-d.png")}
-                    style={{
-                      position: "absolute",
-                      left: 0,
-                      top: 0,
-                      width: TILE_W - 16,
-                      height: TILE_H - 54,
-                      objectFit: "cover",
-                      display: "block",
-                    }}
-                  />
-                )}
+                <Img
+                  src={staticFile(`assets/rec/e-tile-${tile.label.toLowerCase()}.png`)}
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    top: 0,
+                    width: TILE_W - 16,
+                    height: TILE_H - 54,
+                    objectFit: "cover",
+                    display: "block",
+                  }}
+                />
               </div>
             </div>
           );
