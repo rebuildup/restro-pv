@@ -6,8 +6,9 @@ import {
   masterComp,
   mattePairs,
 } from "./ae/project.ts";
-import { applyMasterPatches, STEP_REVEAL, B_HIDDEN, B_WINDOW, E_HIDDEN, E_WINDOW } from "./ae/masterPatch.ts";
+import { applyMasterPatches, STEP_REVEAL, B_HIDDEN, B_WINDOW, E_HIDDEN, E_WINDOW, C_HIDDEN, C_WINDOW } from "./ae/masterPatch.ts";
 import { SceneB } from "./scenes/SceneB.tsx";
+import { SceneC } from "./scenes/SceneC.tsx";
 import { SceneE } from "./scenes/SceneE.tsx";
 import { useCurrentFrame, useVideoConfig } from "remotion";
 
@@ -32,6 +33,8 @@ const ctx: RenderCtx = {
       return false;
     if (E_HIDDEN.has(layer.index) && t >= E_WINDOW[0] && t < E_WINDOW[1])
       return false;
+    if (C_HIDDEN.has(layer.index) && t >= C_WINDOW[0] && t < C_WINDOW[1])
+      return false;
     return true;
   },
 };
@@ -45,6 +48,7 @@ export const PvVideo: React.FC = () => {
     <div style={{ position: "relative", width: comp.width, height: comp.height }}>
       <CompView comp={comp} ctx={ctx} t={t} isRoot />
       <SceneB t={t} />
+      <SceneC t={t} />
       <SceneE t={t} />
     </div>
   );

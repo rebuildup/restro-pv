@@ -97,3 +97,11 @@ export const B_WINDOW: [number, number] = [3.9, 7.96];
 // a FUDE rig that evaluates to opacity 0 anyway.
 export const E_HIDDEN = new Set([12]); // PV end
 export const E_WINDOW: [number, number] = [15.46, 20.0];
+
+// Scene-C: the dumped PV reel C chain (reel window/showreel/strip/cells)
+// renders the same 13-stroke 筆 in all three works — verified identical
+// stroke sets across PV glyph WA/WB/WC/EE — so it cannot satisfy SPEC §5
+// C's "内容と動きの異なる複数作品". Hide the master reel layer; SceneC
+// authors three distinct works from the same real stroke paths.
+export const C_HIDDEN = new Set([14]); // PV reel C
+export const C_WINDOW: [number, number] = [7.96, 11.71];
