@@ -5,7 +5,6 @@ import {
   clamp01,
   easeInOutCubic,
   easeOutBack,
-  easeOutCubic,
   seg,
 } from "./glyph.tsx";
 import type { StrokeItem } from "./glyph.tsx";
@@ -17,36 +16,90 @@ import type { CompSpec } from "../../../pv/model/types.ts";
 // the SAME 13-stroke 筆 (verified in the dumps), so they cannot satisfy
 // "内容と動きの異なる複数作品" — this scene is authored.
 //
-//   Work 01 「書き順」      — strokes appear one by one in stroke order,
-//                            assembling the character like writing.
-//   Work 02 「分解と再構成」 — strokes burst outward then snap back into
-//                            the character; decompose/recompose motion.
-//   Work 03 「筆画の流れ」  — strokes travel in staggered horizontal waves,
-//                            ink-flow motion, then settle into the char.
+// Layout follows SPEC: one tall strip (3 cells) inside a clipped window;
+// the strip scrolls so each work dwells centered while its own animation
+// plays, then yields to the next — no near-empty transition frames.
 //
-// Each work occupies the strip window (~1.25s) with a short gap; the strip
-// scrolls vertically so the outgoing work exits top and incoming enters
-// bottom, matching SPEC's 縦スクロールストリップ.
+//   Work 01 「書き順で組み立てる」— strokes appear one by one in stroke
+//     order and assemble the character like writing, then hold.
+//   Work 02 「完成形に波を送る」  — the completed character stays whole;
+//     a staggered traveling wave pushes each stroke out and back.
+//   Work 03 「筆画で別構図を作る」— the completed character breaks apart
+//     and the strokes re-form into a different abstract composition.
 
 const T0 = 7.96;
 const T1 = 11.71;
-const WORK_DUR = 1.25;
-const STRIP_X = 600; // window left
-const STRIP_Y = 200; // window top
-const STRIP_W = 400;
-const STRIP_H = 720;
+const STRIP_X = 548; // window left
+const STRIP_Y = 210; // window top
+const STRIP_W = 520;
+const STRIP_H = 700;
+const CELL_H = 700;
+const GAP = 40;
+const PITCH = CELL_H + GAP;
+const STRIP_H_TOTAL = CELL_H * 3 + GAP * 2;
 
-const WORK_TITLES = ["書き順でたどる", "分解と再構成", "筆画の流れ"];
+const WORK_TITLES = [
+  "書き順で組み立てる",
+  "完成形に波を送る",
+  "筆画で別構図を作る",
+];
 
-let cached: { comp: CompSpec; strokes: StrokeItem[] } | null = null;
+// Scroll waypoints [rel seconds, strip y]: dwell centered on each work,
+// short eased travel between cells.
+const SCROLL: [number, number][] = [
+  [0.0, -80],
+  [0.5, 0],
+  [1.3, 0],
+  [1.55, PITCH],
+  [2.45, PITCH],
+  [2.7, PITCH * 2],
+  [3.75, PITCH * 2],
+];
+
+// Per-work animation clock: [start rel, duration]. Each work's motion is
+// keyed to when its cell is centered in the window.
+const ANIM: [number, number][] = [
+  [0.02, 1.2],
+  [1.4, 1.05],
+  [2.65, 1.1],
+];
+
+let cached: { comp: CompSpec; strokes: StrokeItem[]; center: [number, number] } | null =
+  null;
 function glyphData() {
   if (cached) return cached;
-  cached = compStrokes("Baseline", { pattern: /^FUDE S\d+/, poseT: 0.5 });
+  const { comp, strokes } = compStrokes("Baseline", {
+    pattern: /^FUDE S\d+/,
+    poseT: 0.5,
+  });
+  let minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9;
+  for (const s of strokes)
+    for (const [x, y] of s.points) {
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+    }
+  cached = { comp, strokes, center: [(minX + maxX) / 2, (minY + maxY) / 2] };
   return cached;
 }
 
-// Fit strokes into the strip window: char ~300px tall, centered.
-function fitTransform(strokes: StrokeItem[], scaleMul = 1): string {
+// Piecewise smooth scroll position (smoothstep between waypoints).
+function scrollY(rel: number): number {
+  if (rel <= SCROLL[0][0]) return SCROLL[0][1];
+  for (let i = 0; i < SCROLL.length - 1; i++) {
+    const [t0, v0] = SCROLL[i];
+    const [t1, v1] = SCROLL[i + 1];
+    if (rel <= t1) {
+      const u = easeInOutCubic(clamp01((rel - t0) / (t1 - t0)));
+      return v0 + (v1 - v0) * u;
+    }
+  }
+  return SCROLL[SCROLL.length - 1][1];
+}
+
+// Fit strokes into a strip cell: char ~560px tall, centered.
+function fitTransform(strokes: StrokeItem[]): string {
   let minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9;
   for (const s of strokes)
     for (const [x, y] of s.points) {
@@ -56,150 +109,101 @@ function fitTransform(strokes: StrokeItem[], scaleMul = 1): string {
       if (y > maxY) maxY = y;
     }
   const h = maxY - minY || 1;
-  const s = (560 / h) * scaleMul;
+  const w = maxX - minX || 1;
+  const s = Math.min(430 / w, 590 / h); // fit inside usable window area
   const tx = STRIP_W / 2 - ((minX + maxX) / 2) * s;
-  const ty = STRIP_H / 2 - ((minY + maxY) / 2) * s;
+  const ty = CELL_H / 2 - ((minY + maxY) / 2) * s;
   return `translate(${tx}px,${ty}px) scale(${s})`;
 }
 
-// Per-work stroke transform (comp-space CSS transform around origin 0,0 —
-// StrokeField wraps each stroke in a comp-sized div, so transforms compose
-// with the outer fit transform).
-function workStrokeTransform(
-  work: number,
-  localT: number,
-): (item: StrokeItem, i: number) => string | undefined {
-  if (work === 0) {
-    // writing order: each stroke slides in from its own offset with a
-    // slight rotation, staggered by stroke index
-    return (item, i) => {
-      const p = clamp01((localT - i * 0.07) / 0.28);
-      if (p <= 0) return "translate(0px,0px) scale(0)";
-      const e = easeOutBack(p);
-      const dx = (item.center[0] - 700) * 0.15;
-      const dy = (item.center[1] - 500) * 0.15;
-      return `translate(${dx * (1 - e)}px,${dy * (1 - e)}px) scale(${e})`;
-    };
-  }
-  if (work === 1) {
-    // decompose and STAY scattered: strokes burst outward to a spread
-    // layout and remain there — visibly different content from work 01
-    return (item, i) => {
-      const burst = easeInOutCubic(seg(localT, 0.1 + i * 0.03, 0.6));
-      const d = burst;
-      if (d <= 0.001) return undefined;
-      const dx = (item.center[0] - 700) * 0.9 * d;
-      const dy = (item.center[1] - 500) * 0.9 * d;
-      const rot = (i % 2 === 0 ? 1 : -1) * 30 * d;
-      return `translate(${dx}px,${dy}px) rotate(${rot}deg)`;
-    };
-  }
-  // work 2: staggered horizontal ink-flow waves
-  return (item, i) => {
-    const wave =
-      Math.sin(localT * 5 + i * 0.9) * 26 +
-      Math.sin(localT * 2.3 + i * 0.4) * 14;
-    const settle = 1 - easeOutCubic(seg(localT, 0.9, 1.2));
-    const drift = wave * settle;
-    return `translate(${drift}px,${Math.sin(i) * 8 * settle}px)`;
+// Deterministic per-stroke targets for work 03's alternate composition:
+// a deliberate loose grid (distinct finished arrangement, not noise).
+function scatterTarget(i: number, n: number): { dx: number; dy: number; rot: number } {
+  const col = i % 4;
+  const row = Math.floor(i / 4);
+  return {
+    dx: (col - 1.5) * 120 + ((i * 37) % 20) - 10,
+    dy: (row - (n - 1) / 8) * 100 + ((i * 53) % 16) - 8,
+    rot: (i % 2 === 0 ? 1 : -1) * (8 + (i % 3) * 4),
   };
 }
 
-// opacity helper separate from transform (StrokeField has strokeOpacity)
+// Per-work stroke transform (comp-space CSS transform, origin 0,0).
+function workStrokeTransform(
+  work: number,
+  localT: number,
+  n: number,
+  glyphCenter: [number, number],
+): (item: StrokeItem, i: number) => string | undefined {
+  if (work === 0) {
+    // writing order: each stroke scales in from a slight offset,
+    // staggered by stroke index; assembled char holds after ~0.8
+    return (_item, i) => {
+      const p = clamp01((localT - i * 0.045) / 0.28);
+      if (p <= 0) return "translate(0px,0px) scale(0)";
+      const e = easeOutBack(p);
+      const a = (i * 2.399) % (Math.PI * 2); // golden-angle scatter dir
+      return `translate(${Math.cos(a) * 60 * (1 - e)}px,${Math.sin(a) * 60 * (1 - e)}px) scale(${e})`;
+    };
+  }
+  if (work === 1) {
+    // completed char + traveling wave: strokes pushed out and back with
+    // a per-stroke phase; envelope rises then falls to zero
+    return (_item, i) => {
+      const env = Math.sin(Math.PI * clamp01(localT / 0.95));
+      if (env <= 0.001) return undefined;
+      const w =
+        Math.sin(localT * 9 - i * 0.85) * 0.6 +
+        Math.sin(localT * 3.1 - i * 0.35) * 0.4;
+      const d = env * w * 90;
+      const rot = env * Math.sin(localT * 7 - i * 0.6) * 4;
+      return `translate(${d}px,${d * 0.55}px) rotate(${rot}deg)`;
+    };
+  }
+  // work 2: strokes leave the character and re-form an alternate
+  // composition; holds there (a different finished arrangement)
+  return (item, i) => {
+    const p = easeInOutCubic(seg(localT, 0.15 + i * 0.02, 0.75));
+    if (p <= 0) return undefined;
+    const tgt = scatterTarget(i, n);
+    const [cx, cy] = item.center;
+    // shrink the whole character about its center as the strokes leave,
+    // then place each stroke on the grid, rotating about its own center
+    const k = 1 - 0.32 * p;
+    const [gx, gy] = glyphCenter;
+    const scx = gx + (cx - gx) * k;
+    const scy = gy + (cy - gy) * k;
+    return (
+      `translate(${tgt.dx * p}px,${tgt.dy * p}px)` +
+      ` translate(${scx}px,${scy}px) rotate(${tgt.rot * p}deg)` +
+      ` translate(${-scx}px,${-scy}px)` +
+      ` translate(${gx}px,${gy}px) scale(${k}) translate(${-gx}px,${-gy}px)`
+    );
+  };
+}
+
 function workStrokeOpacity(
   work: number,
   localT: number,
 ): (item: StrokeItem, i: number) => number {
   if (work === 0) {
-    return (_item, i) => clamp01((localT - i * 0.07) / 0.15);
+    return (_item, i) => clamp01((localT - i * 0.045) / 0.18);
   }
-  if (work === 1) return () => 1;
-  return (_item, i) => easeOutCubic(seg(localT, i * 0.04, i * 0.04 + 0.2));
-}
-
-const PALETTE = [
-  "#111111", "#111111", "#111111", "#111111", "#111111", "#111111",
-  "#111111", "#111111", "#111111", "#111111", "#111111", "#111111",
-  "#111111",
-];
-
-function tintAll(strokes: StrokeItem[], color: string): StrokeItem[] {
-  // cheap approach: reuse compStrokes cache per color is overkill; works
-  // 01/03 use black strokes, work 02 uses a red accent on alternating
-  // strokes for separation readability.
-  if (color === "#111111") return strokes;
-  return strokes; // placeholder — tints handled by caller when needed
+  return () => 1;
 }
 
 export const SceneC: React.FC<{ t: number }> = ({ t }) => {
   if (t < T0 || t >= T1) return null;
-  const { comp, strokes } = glyphData();
+  const { comp, strokes, center } = glyphData();
   if (!strokes.length) return null;
 
   const rel = t - T0;
-  const works: React.ReactNode[] = [];
-
-  for (let w = 0; w < 3; w++) {
-    const wStart = w * WORK_DUR;
-    const wEnd = wStart + WORK_DUR;
-    if (rel < wStart - 0.22 || rel > wEnd + 0.22) continue;
-    const localT = clamp01((rel - wStart) / WORK_DUR);
-    // work slides up through the strip: enters below, exits above
-    const scrollP = easeInOutCubic(seg(rel, wStart - 0.22, wEnd + 0.02));
-    const yOff = STRIP_H - scrollP * STRIP_H * 1.9;
-    const opacity =
-      rel < wStart - 0.22 || rel > wEnd + 0.22 ? 0 : 1;
-    works.push(
-      <div
-        key={w}
-        style={{
-          position: "absolute",
-          left: 0,
-          top: yOff,
-          width: STRIP_W,
-          height: STRIP_H,
-          opacity,
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            left: 0,
-            top: 0,
-            width: STRIP_W,
-            height: STRIP_H,
-            transform: fitTransform(strokes),
-            transformOrigin: "0 0",
-          }}
-        >
-          <StrokeField
-            comp={comp}
-            strokes={tintAll(strokes, "#111111")}
-            poseT={0.5}
-            strokeTransform={workStrokeTransform(w, localT)}
-            strokeOpacity={workStrokeOpacity(w, localT)}
-          />
-        </div>
-        <div
-          style={{
-            position: "absolute",
-            left: 16,
-            top: 14,
-            fontFamily: "'Noto Sans JP', sans-serif",
-            fontSize: 26,
-            fontWeight: 700,
-            color: "#111",
-          }}
-        >
-          作品 {String(w + 1).padStart(2, "0")} — {WORK_TITLES[w]}
-        </div>
-      </div>,
-    );
-  }
+  const sy = scrollY(rel);
+  const fit = fitTransform(strokes);
 
   return (
     <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-      {/* strip window: clipped viewport + frame */}
+      {/* strip window: clipped viewport */}
       <div
         style={{
           position: "absolute",
@@ -211,8 +215,64 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
           background: "#fff",
         }}
       >
-        {works}
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: -sy,
+            width: STRIP_W,
+            height: STRIP_H_TOTAL,
+          }}
+        >
+          {WORK_TITLES.map((title, w) => {
+            const [aStart, aDur] = ANIM[w];
+            const localT = clamp01((rel - aStart) / aDur);
+            return (
+              <div
+                key={w}
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  top: w * PITCH,
+                  width: STRIP_W,
+                  height: CELL_H,
+                }}
+              >
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    transform: fit,
+                    transformOrigin: "0 0",
+                  }}
+                >
+                  <StrokeField
+                    comp={comp}
+                    strokes={strokes}
+                    poseT={0.5}
+                    strokeTransform={workStrokeTransform(w, localT, strokes.length, center)}
+                    strokeOpacity={workStrokeOpacity(w, localT)}
+                  />
+                </div>
+                <div
+                  style={{
+                    position: "absolute",
+                    left: 16,
+                    top: 14,
+                    fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
+                    fontSize: 26,
+                    fontWeight: 700,
+                    color: "#111",
+                  }}
+                >
+                  作品 {String(w + 1).padStart(2, "0")} — {title}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
+      {/* frame */}
       <div
         style={{
           position: "absolute",
