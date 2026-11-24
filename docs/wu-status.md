@@ -24,7 +24,7 @@
 | WU-B | B 工程 | 技術検証済（初版） | 実筆画+工程色+ラベル+ルーペ。工程ごとの実幾何差分の作り込みが未了 |
 | WU-C | C 作品例 | 制作中 | 3作品（集約/波紋/鏡像エンブレム）の縦スクロール。境界レビュー wu-c-r6: 切替自体は PASS、エンブレムは fade を 3.65-3.74 に変更し f279 で判別可能に保持。C 側エッセイ層も無効化済。D 側組版の残課題は WU-D に集約 |
 | WU-D | D 実操作録画 | 制作中（組版未解決） | 窓の技術修正は維持（スタッガー・ラベル同期・インセット・入口即時化・W1即時表示）。ただし映像として不合格：左カラム組版は dumped テキストのままでは成立しないため、文字縮小・要素削除の対症療法を全て revert（e6c2eb8）。ブランドロックアップ復帰済み。次は dumped パッチではなく authored 左カラム＋録画窓の再構成、または素材不足分の再録画が必要 |
-| WU-E | E 商品 | 技術検証済（初版） | authored 右カード+確定コピー。ロゴ・確定コピー照合と締めの設計が残る |
+| WU-E | E 商品 | 独立レビュー合格（r4、サンプル系列） | SceneE に SPEC 3相（f371-388 B/C/Dタイル回収→f389-430 筆hero分離再集合→f431-479 商品カード）を authored。wu-e-r1 FAIL（recap/hero 未実装）→ r4 PASS 3/3。タイルは右ゾーン下部帯・非重複配置 |
 | WU-Q | 独立レビュー基盤 | 技術検証済（v2） | verification/criteria/wu-criteria.json に SPEC §5/§8/§11・ユーザー指摘由来の固定基準（frame/series 区別）。wu-review.ts v2 は基準をレジストリからのみ供給し、要件別判定・sourceSha・criteria sha256・画像 sha256・モデル・時刻を記録。series 基準は≥3フレーム必須、判定欠落は INCOMPLETE で合格不可。ネガティブ較正 calib-c-fail-1 で既知不合格画像→FAIL を確認済（1/5 PASS） |
 | #28 | 筆画素材契約 | Issue管理中 | 座標バグで「描画不能」判定が無効だった旨をコメント済。glyph.tsx に sanitizeShapes/cleanShapes/recolorShapes/tintedStrokes を集約し SceneA2/SceneC が利用開始（初歩的な共通化）。契約の正式設計は未着手 |
 
