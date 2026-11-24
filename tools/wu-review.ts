@@ -1,34 +1,41 @@
-// WU-Q independent review harness.
+// WU-Q independent review harness v2.
 //
-// Sends an ORDERED frame series plus an explicit requirement checklist to a
-// multimodal model and records the verdict as durable evidence. This is the
-// evaluation path required by SPEC §11 / user feedback: per-requirement
-// pass/fail, real frame<->time mapping, recorded model/prompt/frames, and
-// re-review after fixes — independent of the implementer's self-assessment.
+// Sends an ORDERED frame series plus FIXED acceptance criteria to a
+// multimodal model and records the verdict as durable evidence. Requirements
+// are loaded from verification/criteria/wu-criteria.json (versioned, tied to
+// SPEC §5/§8/§11 and user feedback) — the implementer cannot shrink them
+// through the manifest. A review only counts toward WU acceptance when every
+// fixed criterion receives a verdict; partial evaluation cannot pass.
 //
 // Usage:
 //   bun tools/wu-review.ts <manifest.json>
 //
 // Manifest shape:
 //   {
-//     "id": "wu-c-r1",               // review round id (dir under verification/reviews/)
-//     "scene": "C",                  // work unit
-//     "subject": "scene C strip",    // what is being judged
-//     "frames": [                    // ordered; "frame" is the PV-Master frame no.
-//       { "file": "verification/x/f200.png", "frame": 200, "note": "work1 dwell" }
-//     ],
-//     "requirements": [              // each judged independently
-//       "3作品が内容と動きの異なる完成した映像作品として見える",
-//       "..."
+//     "id": "wu-d-r23",               // review round id (dir under verification/reviews/)
+//     "wu": "WU-D",                   // work unit — selects fixed criteria
+//     "subject": "scene D ops windows", // what is being judged
+//     "frames": [                     // ordered; "frame" is the PV-Master frame no.
+//       { "file": "verification/x/f300.png", "frame": 300, "note": "W1 mid" }
 //     ],
 //     "context": "optional extra facts for the reviewer"
 //   }
 //
-// Output: prints verdict; appends JSONL record to
-//   verification/reviews/<id>.jsonl  and a human summary <id>.md
+// series-kind criteria require >=3 ordered frames; the verdict must address
+// temporal development, not mere element presence.
+//
+// Evidence recorded per review (verification/reviews/<id>/reviews.jsonl):
+//   ts, model, sourceSha (git HEAD), criteriaVersion + criteriaSha256,
+//   frames[{file, frame, sha256}], per-criterion verdicts parsed from the
+//   response, overall PASS only if all criteria PASS.
 // Env: MINIMAX_API_KEY, VISION_MODEL (default MiniMax-M3.1-Flash)
-import { readFileSync, appendFileSync, mkdirSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { readFileSync, appendFileSync, mkdirSync, writeFileSync, existsSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { execSync } from "node:child_process";
+import { join } from "node:path";
+
+const CRITERIA_PATH = "verification/criteria/wu-criteria.json";
+const MIN_SERIES_FRAMES = 3;
 
 const manifestPath = process.argv[2];
 if (!manifestPath) {
@@ -37,12 +44,47 @@ if (!manifestPath) {
 }
 const m = JSON.parse(readFileSync(manifestPath, "utf8")) as {
   id: string;
-  scene: string;
+  wu?: string;
+  scene?: string; // legacy manifests used scene: "D" etc.
   subject: string;
   frames: { file: string; frame: number; note?: string }[];
-  requirements: string[];
   context?: string;
 };
+const wu = m.wu ?? (m.scene ? `WU-${m.scene}` : undefined);
+if (!wu) {
+  console.error("manifest needs \"wu\" (or legacy \"scene\")");
+  process.exit(1);
+}
+
+// --- Load fixed criteria (cannot be overridden by the manifest) ---
+const criteriaRaw = readFileSync(CRITERIA_PATH);
+const criteria = JSON.parse(criteriaRaw.toString()) as {
+  version: string;
+  criteria: Record<string, { id: string; kind: "frame" | "series"; text: string; source: string }[]>;
+};
+const reqs = criteria.criteria[wu];
+if (!reqs || reqs.length === 0) {
+  console.error(`no fixed criteria for wu "${wu}" in ${CRITERIA_PATH}`);
+  process.exit(1);
+}
+const needsSeries = reqs.some((r) => r.kind === "series");
+if (needsSeries && m.frames.length < MIN_SERIES_FRAMES) {
+  console.error(
+    `${wu} has series-kind criteria; need >=${MIN_SERIES_FRAMES} ordered frames, got ${m.frames.length}`,
+  );
+  process.exit(1);
+}
+
+const sha256 = (buf: Buffer | string) => createHash("sha256").update(buf).digest("hex");
+const sourceSha = (() => {
+  try {
+    return execSync("git rev-parse HEAD", { encoding: "utf8" }).trim();
+  } catch {
+    return "unknown";
+  }
+})();
+const criteriaSha = sha256(criteriaRaw);
+
 const key = process.env.MINIMAX_API_KEY;
 if (!key) throw new Error("MINIMAX_API_KEY not set");
 const model = process.env.VISION_MODEL ?? "MiniMax-M3.1-Flash";
@@ -51,12 +93,16 @@ const frameList = m.frames
   .map((f, i) => `画像${i + 1}: frame ${f.frame}${f.note ? ` (${f.note})` : ""} — ${f.file}`)
   .join("\n");
 
-const prompt = `You are an independent video-quality reviewer for a Japanese promo PV (1080x1080, 24fps). You are judging ${m.scene} — ${m.subject}. The images below are an ORDERED frame series (image N corresponds to the frame number listed). ${m.context ?? ""}
+const seriesNote = needsSeries
+  ? `\nSeveral requirements concern TEMPORAL development (kind=series). Judge them from the ordered frame series: element presence alone is NOT sufficient — require visible change/progression across the frames.`
+  : "";
 
-Judge EACH requirement independently against the SPEC criteria. Do not pass an item merely because the element exists — judge whether it fulfills its purpose as video. Call out obvious breakage, cheapness, pointlessness, or technical-demo feel explicitly.
+const prompt = `You are an independent video-quality reviewer for a Japanese promo PV (1080x1080, 24fps). You are judging work unit ${wu} — ${m.subject}. The images below are an ORDERED frame series (image N corresponds to the frame number listed). ${m.context ?? ""}${seriesNote}
+
+Judge EACH requirement independently against the fixed acceptance criteria (derived from docs/SPEC.md §5/§8/§11 and user feedback). Do not pass an item merely because the element exists — judge whether it fulfills its purpose as video. Call out obvious breakage, cheapness, pointlessness, technical-demo feel, or unauthorized element removal explicitly.
 
 Requirements:
-${m.requirements.map((r, i) => `${i + 1}. ${r}`).join("\n")}
+${reqs.map((r, i) => `${i + 1}. [${r.kind}] ${r.text}`).join("\n")}
 
 Respond in Japanese, in EXACTLY this format:
 ## 総合判定
@@ -71,6 +117,10 @@ PASS または FAIL（1行理由）
 
 const content: unknown[] = [{ type: "text", text: prompt + "\n\n" + frameList }];
 for (const f of m.frames) {
+  if (!existsSync(f.file)) {
+    console.error(`missing frame file: ${f.file}`);
+    process.exit(1);
+  }
   content.push({
     type: "image_url",
     image_url: { url: `data:image/png;base64,${readFileSync(f.file).toString("base64")}` },
@@ -97,21 +147,53 @@ if (j.error) {
 }
 const verdict = j.choices?.[0]?.message?.content ?? "";
 
+// --- Parse per-requirement verdicts; incomplete evaluation cannot pass ---
+const perReq: { id: string; verdict: "PASS" | "FAIL" | "MISSING"; text: string }[] = reqs.map((r, i) => {
+  const re = new RegExp(`^${i + 1}\\.\\s*(PASS|FAIL|INCOMPLETE)`, "m");
+  const match = verdict.match(re);
+  const v = match?.[1];
+  return {
+    id: r.id,
+    verdict: v === "PASS" ? "PASS" : v === "FAIL" ? "FAIL" : "MISSING",
+    text: r.text,
+  };
+});
+const missing = perReq.filter((p) => p.verdict === "MISSING").map((p) => p.id);
+const anyFail = perReq.some((p) => p.verdict === "FAIL");
+const outcome = missing.length > 0 ? "INCOMPLETE" : anyFail ? "FAIL" : "PASS";
+
+// --- Record evidence ---
 const dir = join("verification", "reviews", m.id);
 mkdirSync(dir, { recursive: true });
 const ts = new Date().toISOString();
-appendFileSync(
-  join(dir, "reviews.jsonl"),
-  JSON.stringify({
-    ts,
-    model,
-    scene: m.scene,
-    subject: m.subject,
-    frames: m.frames.map((f) => ({ file: f.file, frame: f.frame, note: f.note })),
-    requirements: m.requirements,
-    verdict,
-  }) + "\n",
+const record = {
+  ts,
+  model,
+  wu: wu,
+  subject: m.subject,
+  sourceSha,
+  criteriaVersion: criteria.version,
+  criteriaSha256: criteriaSha,
+  outcome,
+  perRequirement: perReq,
+  missingVerdicts: missing,
+  frames: m.frames.map((f) => ({
+    file: f.file,
+    frame: f.frame,
+    note: f.note,
+    sha256: sha256(readFileSync(f.file)),
+  })),
+  verdict,
+};
+appendFileSync(join(dir, "reviews.jsonl"), JSON.stringify(record) + "\n");
+writeFileSync(
+  join(dir, `${ts.replace(/[:.]/g, "-")}.md`),
+  `# ${m.id} — ${wu} ${m.subject}\n\n` +
+    `- ts: ${ts}\n- model: ${model}\n- sourceSha: ${sourceSha}\n` +
+    `- criteria: v${criteria.version} sha256:${criteriaSha}\n` +
+    `- outcome: **${outcome}**\n\n${verdict}\n`,
 );
-writeFileSync(join(dir, `${ts.replace(/[:.]/g, "-")}.md`), `# ${m.id} — ${m.scene} ${m.subject}\n\n${verdict}\n`);
 console.log(verdict);
-console.log(`\n[recorded] verification/reviews/${m.id}/`);
+console.log(`\n[evidence] ${outcome} | ${perReq.filter((p) => p.verdict === "PASS").length}/${reqs.length} criteria PASS${missing.length ? ` | MISSING verdicts: ${missing.join(",")}` : ""}`);
+console.log(`[recorded] verification/reviews/${m.id}/`);
+process.exit(outcome === "PASS" ? 0 : 1);

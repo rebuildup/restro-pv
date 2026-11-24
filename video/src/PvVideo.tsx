@@ -43,14 +43,6 @@ const ctx: RenderCtx = {
       return false;
     if (A2T_HIDDEN.has(layer.index) && t >= A2T_WINDOW[0] && t < A2T_WINDOW[1])
       return false;
-    if (process.env.HIDE_DEBUG && [15, 16, 17, 18].includes(layer.index)) return false;
-    // Persistent brand lockup (Heading comp / AFTER EFFECTS PLUGIN / Ae.png /
-    // Logo, master 15-18) is rejected as an always-on element (SPEC §11:
-    // "Heading の20秒常時表示をやめ"). Hide it across C+D where the left
-    // column belongs to per-scene description copy; SceneE authors its own
-    // lockup for E.
-    if ([15, 16, 17, 18].includes(layer.index) && t >= 7.96 && t < 15.46)
-      return false;
     return true;
   },
 };

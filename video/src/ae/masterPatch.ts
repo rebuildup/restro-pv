@@ -174,58 +174,6 @@ export function applyMasterPatches(): void {
         l.outPoint = 11.7;
       }
     }
-    // SPEC §11 rejected the long essay copy ("長文エッセイは削除または大幅
-    // 短縮"). Essay-length description layers render as a single unwrapped
-    // line that runs underneath the ops windows and reads as clipped text
-    // (r5/r16 reviews). Disable every >150-char layer; headlines and short
-    // subs remain.
-    for (const l of desc.layers) {
-      if ((l.name ?? "").length > 150) {
-        l.enabled = false;
-      }
-    }
-    // The D-section English sub ("Decompose and edit text or shapes in
-    // After Effects") duplicates the Japanese sub above it and, as point
-    // text at 35px, runs ~800px right — underneath the ops windows, where
-    // it reads as clipped/broken text (r6). Drop the redundant EN line.
-    for (const l of desc.layers) {
-      if ((l.name ?? "").startsWith("Decompose and edit text or shapes")) {
-        l.enabled = false;
-      }
-    }
-    // D-section copy still overruns the ~460px left column even after
-    // center-justify anchoring (r19). Shrink the remaining D text layers'
-    // font size to 65% so headline + sub fit left of the ops windows.
-    // (Transform scale was rejected: text anchors are not at the position,
-    // so scaling teleports the glyphs — r20 fragments.)
-    for (const l of desc.layers) {
-      if (l.inPoint === undefined || l.inPoint < 11.7 || !l.text) continue;
-      const docProp = l.text.properties?.find(
-        (p) => p.matchName === "ADBE Text Document",
-      );
-      const doc = (docProp?.value ?? l.text.value) as
-        | { fontSize?: { value?: number } | number; leading?: { value?: number } | number }
-        | undefined;
-      if (!doc || typeof doc !== "object") continue;
-      const fs = typeof doc.fontSize === "object" ? doc.fontSize.value : doc.fontSize;
-      const ld = typeof doc.leading === "object" ? doc.leading.value : doc.leading;
-      if (typeof fs === "number") {
-        if (typeof doc.fontSize === "object" && doc.fontSize) doc.fontSize.value = fs * 0.65;
-        else doc.fontSize = fs * 0.65;
-      }
-      if (typeof ld === "number") {
-        if (typeof doc.leading === "object" && doc.leading) doc.leading.value = ld * 0.65;
-        else doc.leading = ld * 0.65;
-      }
-      // The JP sub's dumped anchor sits at comp x≈409 — even at 65% its
-      // centered line still reaches ~100px under the ops windows (r21).
-      // Re-anchor it left so the whole line stays in the left column.
-      if ((l.name ?? "").startsWith("文字もシェイプも")) {
-        const pos = child(l.transform, "ADBE Position");
-        const v = pos?.value as number[] | undefined;
-        if (pos && Array.isArray(v)) pos.value = [300, v[1] ?? 0, v[2] ?? 0];
-      }
-    }
   }
 }
 
