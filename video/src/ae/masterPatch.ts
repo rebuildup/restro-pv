@@ -178,18 +178,18 @@ export const E_WINDOW: [number, number] = [15.46, 20.0];
 export const C_HIDDEN = new Set([14]); // PV reel C
 export const C_WINDOW: [number, number] = [7.96, 11.71];
 
-// Scene-A2: the dumped A2 visuals cannot satisfy SPEC §5 A2. "PV A2" only
-// renders the outline ghost (its FUDE S* rigs evaluate to opacity 0) and
-// the two "kai-zoom" instances on top show stroke pieces without the
-// restored-continuous-stroke proof or accent emphasis. Hide all three for
-// the authored window; SceneA2 re-renders the real stroke paths with the
-// separation/accent direction. bunkai (232) keeps playing underneath from
-// 3.42s and carries the A3 bridge after the authored fade.
-export const A2_HIDDEN = new Set([11, 235, 236]); // PV A2 + kai-zoom x2
-export const A2_WINDOW: [number, number] = [1.5, 3.7917];
+// Scene-A2 [1.875,3.75): the dumped "PV A2" comp (11) stays visible — its
+// FUDE rigs evaluate to opacity 0, so it renders exactly the giant-解
+// outline ghost that SPEC §5 A2 wants as the 元輪郭. Only the two
+// "kai-zoom" instances (235/236) are hidden: they show stroke pieces
+// without the restored-continuous-stroke proof. SceneA2 overlays the real
+// bunkai runs4 strokes aligned to the crossing and drives separation +
+// accent on the common frame timeline.
+export const A2_HIDDEN = new Set([235, 236]); // kai-zoom x2
+export const A2_WINDOW: [number, number] = [1.875, 3.75];
 // bunkai (232) is the A3 bridge zoom, but it fades in at 3.42s — underneath
-// the still-opaque authored panel that would double-image the character.
-// Hide it only until the authored fade has mostly completed (3.55s), then
+// the still-opaque authored strokes that would double-image the character.
+// Hide it only until the authored fade has mostly completed (3.6s), then
 // let it carry the upward-scroll transition into scene B.
 export const A2B_HIDDEN = new Set([232]); // bunkai
-export const A2B_WINDOW: [number, number] = [1.5, 3.55];
+export const A2B_WINDOW: [number, number] = [1.875, 3.6];
