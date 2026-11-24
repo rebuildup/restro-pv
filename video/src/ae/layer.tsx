@@ -254,7 +254,7 @@ export function CompView({ comp, ctx, t, isRoot = false }: { comp: CompSpec; ctx
     );
   }
   return (
-    <div style={{ position: "absolute", left: 0, top: 0, width: comp.width, height: comp.height, background: isRoot ? bg(comp) : "transparent", overflow: isRoot ? "hidden" : "visible" }}>
+    <div style={{ position: "absolute", left: 0, top: 0, width: comp.width, height: comp.height, background: isRoot ? bg(comp) : "transparent", overflow: "hidden" }}>
       {rendered}
     </div>
   );
