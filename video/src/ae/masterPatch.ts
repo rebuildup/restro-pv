@@ -1,7 +1,7 @@
 import type { CompSpec, LayerSpec, PropNode } from "../../../pv/model/types.ts";
 import { GENERATED_COMPS } from "../../../pv/generated/index.ts";
 import { masterComp } from "./project.ts";
-import { children } from "./eval.ts";
+import { child, children } from "./eval.ts";
 
 // Production patches applied to the dumped master CompSpec at module load.
 // The dumps stay untouched; these transforms express direction decisions
@@ -49,22 +49,94 @@ export function applyMasterPatches(): void {
   );
   m.layers.splice(pos, 1, ...clones);
 
-  // D scene recordings: re-point each PV ops footage window at a meaningful
-  // operation segment (verified dialog-free in the source scans). Negative
-  // startTime = source in-point, per layerLocalTime((compT - start) * s/100).
+  // D scene recordings: re-edit the four PV ops windows as an asynchronous
+  // multi-window sequence. Each window gets its own [in,out) slot with a
+  // short opacity fade-out, and its footage is re-pointed at a verified
+  // motion-bearing segment of the source capture (segment picks and crop
+  // rationale: verification/wu-d). This resolves the v10 rejection items
+  // "表示終了後に退場して切り替わらない" and "動きがない".
   const ops = GENERATED_COMPS.find((c) => c.name === "PV ops");
   if (ops) {
-    const OPS_INPOINTS: Record<string, number> = {
-      "W1 rec": 34.0, // decompose-ops: 分解実行 → 結果の断片表示
-      "W2 rec": 46.0, // decompose-ops: 結果の検査（静止・判読可）
-      "W3 rec": 27.0, // stroke-animate: 線画の描画アニメ開始
-      "W4 rec": 33.0, // reprocess: 文字の変形・動き付け
+    // Per-window schedule in PV ops comp-local seconds. `src` is the source
+    // time shown at `in`; footage plays at stretch 100 so the window covers
+    // src..src+(out-in).
+    const OPS_WINDOWS: Record<
+      string,
+      { inP: number; outP: number; src: number; crop?: { pos: [number, number]; scale: number } }
+    > = {
+      // W1 main window: decompose-ops stroke drawing over "Retro"
+      // (40.0-41.7s: red path strokes draw across the letters with visible
+      // vertex handles; earlier 38.6-40.3 is nearly static). Retarget the
+      // dumped crop — it included a dark UI band right of the comp viewer
+      // (source x>~1072); now frames viewer x≈528-1072, y≈180-541.
+      W1: {
+        inP: 0.1,
+        outP: 1.8,
+        src: 40.0,
+        crop: { pos: [956, 459], scale: 110.3 },
+      },
+      // W2 small window: decompose-ops Restro plugin panel. The dumped crop
+      // framed the Project panel (static list); retarget to the Restro
+      // panel (x≈1344-1613, Decompose/Merge/Refine + Layer Contents) and
+      // play the ~36.5s moment where the decomposed stroke list appears.
+      W2: {
+        inP: 0.6,
+        outP: 2.3,
+        src: 36.4,
+        crop: { pos: [212, 675], scale: 81.1 },
+      },
+      // W3 center crop: stroke-animate stroke scribble animation
+      // (22.2-23.85s). Retarget the dumped wide crop to the stroke cluster
+      // (source ≈x620-1070,y175-585) so the thin red strokes stay readable
+      // inside the 292px window.
+      W3: {
+        inP: 1.2,
+        outP: 2.85,
+        src: 22.2,
+        crop: { pos: [1009, 714], scale: 64.9 },
+      },
+      // W4 wide bottom window: reprocess comp switch + "MV" appearing
+      // (6.2-7.9s). Slight zoom toward the text area (source ≈x528-1073,
+      // y192-428).
+      W4: {
+        inP: 1.85,
+        outP: 3.55,
+        src: 6.2,
+        crop: { pos: [955, 1146], scale: 110 },
+      },
     };
     for (const l of ops.layers) {
-      const s = OPS_INPOINTS[l.name];
-      if (s !== undefined) l.startTime = -s;
+      const wKey = l.name.split(" ")[0];
+      const w = OPS_WINDOWS[wKey];
+      if (!w) continue;
+      l.inPoint = w.inP;
+      l.outPoint = w.outP;
+      if (l.kind === "footage") {
+        // layerLocalTime = compT - startTime; want source `src` at compT w.inP.
+        l.startTime = w.inP - w.src;
+        if (w.crop) {
+          const pos = child(l.transform, "ADBE Position");
+          const scale = child(l.transform, "ADBE Scale");
+          if (pos) pos.value = [w.crop.pos[0], w.crop.pos[1], 0];
+          if (scale) scale.value = [w.crop.scale, w.crop.scale, 100];
+        }
+      }
+      fadeOpacity(l, w.inP, w.outP);
     }
   }
+}
+
+// Replace a layer's opacity keys with a short fade-in at `inP` and a
+// fade-out ending at `outP`, keeping full opacity between.
+function fadeOpacity(layer: LayerSpec, inP: number, outP: number): void {
+  const opacity = child(layer.transform, "ADBE Opacity");
+  if (!opacity) return;
+  const fin = Math.min(inP + 0.14, outP - 0.34);
+  const fout = outP - 0.16;
+  const k = (t: number, v: number) => ({ t, v, inT: 6612, outT: 6612 });
+  opacity.keys = [k(inP, 0), k(fin, 100), k(fout, 100), k(outP, 0)];
+  opacity.numKeys = 4;
+  opacity.value = 0;
 }
 
 // Scene-B tab reveal schedule (comp seconds): the four tab backgrounds
