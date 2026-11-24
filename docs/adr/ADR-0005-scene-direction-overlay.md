@@ -1,114 +1,62 @@
-# ADR-0005: シーン演出は Remotion 側 React シーンで実装する
+# ADR-0005: シーン演出の実装方針（dumped 優先 + 筆画 authored 層）
 
 ## 状態
 
-Accepted（一部改訂: 下記「改訂」を参照）
+Accepted
 
 ## 背景
 
 ADR-0003 により PV 映像の主経路は Remotion となった。レンダラー基盤
 （#23 / PR #27）は `pv/generated/` の CompSpec ダンプを解釈して AEP 構造を
-再生するが、SPEC §10 監査が指摘する未達（C の作品差別化・D の可読性・
-E の締め・A2 の専用演出・B の工程進行・左コピー整理）は dumped 構造の
-ままでは解消できない。CompSpec は生成物であり、手編集すると再生成で
-失われる。
+再生する。SPEC §10 監査と v6/v9/v10 の受入不合格を経て、制作手段の選択が
+要求を変えないよう、以下の安定した境界を定める。
 
-## 決定
+`verification/beats/`（実AEP出力43ビート）は**原本の演出と素材を理解する
+ための参照**であり、完成品質の正本ではない。原本に存在する未達
+（C の作品同一性・D の静止録画・E のカード配置など）を継承しない。
 
-1. **シーン演出の作り込みは `video/src/scenes/` の React コンポーネント
-   として実装する**。`PvVideo` の `layerFilter` で master の該当レイヤー
-   を時間窓ごとに退避させ、React 側シーンを同じ時間窓・同じゾーンに
-   重ねる。dumped CompSpec は AEP 構造の参照として変更しない。
-2. **実Restro出力の筆画は dumped shape データを再利用する**。
-   `Baseline`/`PV glyph`/`bunkai` の FUDE S*・STROKE_* レイヤーを
-   `VectorShapes` で SVG 描画し、レイヤー単位の transform を React 側で
-   時間関数駆動する。見た目の似た架空図形での代替は禁止（ADR-0003 第5項）。
-3. **左カラムと B の工程進行も同じ機構で扱う**。`description`/`Heading`/
-   STEP 系レイヤーの表示窓を `layerFilter` で整理し、必要なコピーは
-   React テキストで置き換える。
-4. CompSpec への恒久的な変更が必要になった場合は、ダンプ生成側
+## 決定（安定版 — 以降の改訂はこの枠組みの内側で行う）
+
+1. **dumped コンポを既定とし、描画できるものはそのまま使う**。
+   グリッド・ロゴ・テキスト・フッテージ・カード枠・タブ帯など、
+   CompSpec 解釈層が正しく再生できる要素は dumped を保持する。
+2. **FUDE 筆画リグは描画不能なので、字形が必要な場面では実筆画
+   パスを StrokeField で authored 再描画する**。`glyph.tsx` は dumped
+   コンポの shape データをそのまま SVG 化し、レイヤー transform と
+   塗り色のみをシーン側で制御する。見た目の似た架空図形での代替は禁止
+   （ADR-0003 第5項）。
+3. **シーンの置き換えは「dumped が描画不能」または「dumped の配置が
+   要求を満たさない」場合に限定し、シーン全体の安易な再実装をしない**。
+   置き換える場合も原本の保護対象（構成・コピー・モーションの意味）を
+   beats と SPEC から復元する。
+4. **新規制作が必須の作業単位（C の作品・D の録画）は、省略せず実施する**。
+   素材不足は作業省略の根拠にならない。
+5. CompSpec への恒久的な変更が必要になった場合はダンプ生成側
    （`tools/dump-aep-tree.ts` 系）か AEP 側の修正として別 Issue で扱い、
-   `pv/generated/*.ts` の手編集は行わない。
+   `pv/generated/*.ts` の手編集は行わない。`masterPatch.ts` の時間窓
+   フィルタは dumped を変更しない実行時パッチとして許容する。
+
+## 検証済みの事実（2026-11-25）
+
+- FUDE リグ（STEP1-4 draft・Baseline・PV glyph・PV probe char・
+  TMP_widecopy 等）は Opacity=0 固定で、表示を AE 式
+  （`comp().layer()`・`createPath`・Linked Quad マスク式）に依存する。
+  CompSpec 解釈層では**一切描画されない**。字形は StrokeField で再構成する。
+- PV glyph WA/WB/WC/EE/A/A2/B/C は**全て同一の13筆画（同一「筆」）**。
+  C の「3作品」は原本では同一素材のスケール違いであり、SPEC §5 C の
+  「内容と動きの異なる複数作品」を満たさない。C は新規制作対象。
+- dumped `PV end` は商品コピーを左カラム（x≈124）に配置しカード枠がなく、
+  beats の右側カードと異なる。E の商品カードは authored 層で補う。
+- `PV ops` の4録画窓は in-point 付け替え（`OPS_INPOINTS`）で
+  ダイアログの写らない区間を表示できるが、素材自体の動きは限定的。
+  D は実機再収録を前提に設計する。
 
 ## 影響
 
-- 新規: `video/src/scenes/`（LeftCopy ほか、必要に応じてシーン別
-  オーバーレイを追加）
-- `video/src/PvVideo.tsx` の `layerFilter` がシーン退避とコピー整理を担う
-- Issue #26 の受入条件はこの方式で満たす
-- AE JSX 経路（`pv/`→AEP）にはこの決定を適用しない。AE 経路は ADR-0003
-  第3項どおり保全のみ
-
-## 改訂（2026-11-24 実装検証後）
-
-CompSpec 解釈層（#23 / PR #27）の成熟により、master 内の dumped シーン
-コンポ（`PV A2`・`PV reel C` 系・`PV ops`・`PV end`）が master コンテキストで
-正しくレンダリングされることが確認された。C の3作品は `PV glyph WA/WB/WC`
-の別文字コンポ、D の4窓は正しい in-point とトラックマットを持ち、E の
-終了カードも素材どおり表示される。
-
-このため **C/D/E/A2 のシーン全体を React で置き換える方針は取りやめ、
-dumped コンポをそのまま使う**。React 側の残存オーバーレイは次に限定する。
-
-- `LeftCopy`: 左カラムコピーのシーン別整理（`description`/`Heading`/
-  A シーン見出しテキスト層の退避）
-- `STEP_REVEAL` + tab 分割: B シーンの4工程の順次進行表示
-
-`layerFilter` + React オーバーレイの機構自体は維持し、将来 dumped では
-表現できない演出が必要になった場合に同じ方式で追加する。
-
-## 改訂（2026-11-24 v6 受入不合格を受けて）
-
-v6 の全編レビューで dumped コンポ採用が視覚受入を満たさないことが確認
-されたため、dumped を既定路線とはせず **シーン単位で authored 層を復活**
-させた。`glyph.tsx` の StrokeField が dumped コンポの筆画レイヤーを
-rest pose で個別再配置できるため、素材の実形状を保ったまま演出だけを
-Remotion 側で制御する。
-
-- A2 [1.875,3.79): `PV A2`/`kai-zoom`/`bunkai` を退避し SceneA2 が交差
-  筆画の分離・隠れ部マーカー・ゴーストを描画
-- B [3.9,7.96): STEP1-4 draft コンポが実際には同一グリフの色替えのみ
-  （"FUDE outline inset" の fill だけが工程色で異なり、幾何差分なし）と
-  ダンプ検証で判明したため、draft comps・Baseline・Lens magnifier を
-  退避。SceneB が実 Baseline 筆画を dumped 位置に再描画し、SPEC §5 B の
-  工程意味に対応する異種の幾何情報を同一文字上に累積表示する
-  （01 輪郭強調→02 接線延長→03 頂点推定+ルーペ→04 筆画分離・変位）。
-  帯状タブ・STEP border・工程ラベル（master idx 166-169,170,
-  171-177,301-304）は dumped のまま維持し、保護された演出構造を保持。
-  13筆画を4+3+3+3に機械分割する初版は工程意味を持たないため廃止
-- C [7.96,11.71): `PV reel C` を退避し SceneC が縦スクロール窓内に
-  Baseline FUDE 筆画で構成した3作品を表示
-- D: dumped `PV ops` の4録画窓は維持し、in-point をダイアログの写らない
-  操作区間へ付け替え（`OPS_INPOINTS`）
-- E [15.46,20): `PV end` を退避し SceneE が3タイル→筆分離再集合→
-  商品カードの構成を描画
-
-## 改訂（2026-11-25 beats 原本との照合を受けて）
-
-`verification/beats/`（実AEP出力 43ビート）を正本として全シーンを再評価
-した結果、v7-v9 の authored シーン置き換えは原本の演出設計からの逸脱で
-あり退行と判断した。原本が持つ構造（グリッド・組版・工程タブ帯・
-ステップフィルタ・ルーペ・カード構成）を dumped コンポと beats から
-復元する方針へ戻す。
-
-検証で判明した事実：
-
-- FUDE 筆画リグ（STEP1-4 draft・Baseline・PV glyph・PV probe char 等）
-  は Opacity=0 固定 + AE 式（`comp().layer()`・`createPath`・Linked Quad
-  マスク式）に依存し、CompSpec 解釈層では**一切描画されない**。
-  これらの字形が必要な場面だけ StrokeField（実筆画パス再利用）で
-  authored 層を置く。
-- B の原本設計は「同一文字へ工程ごとの色フィルタを適用」+ 工程タブ帯
-  + ルーペ + 中/した状態ラベル。幾何学的装飾の追加は原本にないため
-  行わない。
-- E の dumped `PV end` は商品コピーを左カラム x≈124 に配置しカード枠が
-  なく、beats の右側カードと異なる。`PV end` を退避し SceneE が右側
-  カードを authored する。
-
-現行構成：
-
-- A/C/D: dumped コンポをそのまま使用（A2 分解アニメ・作品カード・
-  実録画4窓・ダイアログなし in-point）
-- B: dumped UI（タブ帯・STEP border）+ SceneB（実 Baseline 筆画の
-  ステップ色フィルタ・中/したラベル・ルーペ）
-- E: dumped runs5/6 筆画ヒーロー + SceneE（右側商品カード）
+- `video/src/ae/masterPatch.ts`: dumped 実行時パッチ（tab 分割・
+  STEP_REVEAL・B_HIDDEN・E_HIDDEN・D in-point）
+- `video/src/scenes/`: 字形 authored 層（glyph.tsx + SceneB/SceneE ほか、
+  WU ごとに追加）
+- Issue #26 の作業単位 WU-0〜WU-Q（Issue コメント参照）で受入を管理
+- AE JSX 経路（`pv/`→AEP）にはこの決定を適用しない。AE 経路は
+  ADR-0003 第3項どおり保全のみ
