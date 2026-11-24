@@ -9,9 +9,17 @@ import {
 import {
   applyMasterPatches,
   LEFT_COLUMN_REPLACED,
+  HIDDEN_ALWAYS,
   STEP_REVEAL,
+  sceneReplaced,
+  sceneHidden,
 } from "./ae/masterPatch.ts";
+import { compByIndex } from "./ae/project.ts";
 import { LeftCopy } from "./scenes/LeftCopy.tsx";
+import { SceneE } from "./scenes/SceneE.tsx";
+import { SceneA2 } from "./scenes/SceneA2.tsx";
+import { SceneC } from "./scenes/SceneC.tsx";
+import { SceneB } from "./scenes/SceneB.tsx";
 import { useCurrentFrame, useVideoConfig } from "remotion";
 
 applyMasterPatches();
@@ -29,7 +37,13 @@ const ctx: RenderCtx = {
   matteMap: mattePairs(),
   layerFilter: (comp, layer, t) => {
     if (comp.name !== "master") return true;
+    if (HIDDEN_ALWAYS.has(layer.index)) return false;
     if (LEFT_COLUMN_REPLACED.has(layer.index)) return false;
+    if (sceneHidden(layer.index, t)) return false;
+    if (layer.kind === "comp") {
+      const sub = compByIndex(layer.sourceCompIndex);
+      if (sceneReplaced(sub?.name, t)) return false;
+    }
     const reveal = STEP_REVEAL[layer.index];
     if (reveal !== undefined) return t >= reveal;
     return true;
@@ -45,6 +59,10 @@ export const PvVideo: React.FC = () => {
     <div style={{ position: "relative", width: comp.width, height: comp.height }}>
       <CompView comp={comp} ctx={ctx} t={t} isRoot />
       <LeftCopy t={t} />
+      <SceneA2 t={t} />
+      <SceneB t={t} />
+      <SceneC t={t} />
+      <SceneE t={t} />
     </div>
   );
 };
