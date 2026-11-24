@@ -56,3 +56,26 @@ dumped コンポをそのまま使う**。React 側の残存オーバーレイ�
 
 `layerFilter` + React オーバーレイの機構自体は維持し、将来 dumped では
 表現できない演出が必要になった場合に同じ方式で追加する。
+
+## 改訂（2026-11-24 v6 受入不合格を受けて）
+
+v6 の全編レビューで dumped コンポ採用が視覚受入を満たさないことが確認
+されたため、dumped を既定路線とはせず **シーン単位で authored 層を復活**
+させた。`glyph.tsx` の StrokeField が dumped コンポの筆画レイヤーを
+rest pose で個別再配置できるため、素材の実形状を保ったまま演出だけを
+Remotion 側で制御する。
+
+- A2 [1.875,3.79): `PV A2`/`kai-zoom`/`bunkai` を退避し SceneA2 が交差
+  筆画の分離・隠れ部マーカー・ゴーストを描画
+- B [3.9,7.96): STEP draft カード・tab・Lens magnifier・Baseline を退避し
+  SceneB が同一「筆」グリフへ工程ごとの筆画群を累積表示。SPEC §0 が
+  「保護対象」とした STEP カード構造からの逸脱だが、dumped 構造では
+  「同一文字への処理結果の累積」が表現できず受入不合格だったため、
+  SPEC の演出意図（同一文字上に処理結果を時間とともに重ねる）に忠実な
+  authored 実装を採用した。工程ラベル（master idx 166-169）は維持
+- C [7.96,11.71): `PV reel C` を退避し SceneC が縦スクロール窓内に
+  Baseline FUDE 筆画で構成した3作品を表示
+- D: dumped `PV ops` の4録画窓は維持し、in-point をダイアログの写らない
+  操作区間へ付け替え（`OPS_INPOINTS`）
+- E [15.46,20): `PV end` を退避し SceneE が3タイル→筆分離再集合→
+  商品カードの構成を描画
