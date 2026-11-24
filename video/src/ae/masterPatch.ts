@@ -155,6 +155,14 @@ export const SCENE_HIDDEN: { indices: number[]; t0: number; t1: number }[] = [
     t0: 3.9,
     t1: 7.96,
   },
+  // Scene E: the persistent `Logo` comp renders a large Restro wordmark at
+  // bottom-left that collides with LeftCopy and the authored product card;
+  // SceneE carries the brand lockup itself.
+  {
+    indices: [18],
+    t0: 15.46,
+    t1: 20.0,
+  },
 ];
 
 export function sceneReplaced(compName: string | undefined, t: number): boolean {
