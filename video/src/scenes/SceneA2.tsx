@@ -58,7 +58,7 @@ const FOCUS: [number, number] = [563, 577];
 // hero zone (x~480-1080) at impact scale, pushing in slightly over f45-55.
 const Z0 = 1.22;
 const Z1 = 1.32;
-const FIELD_OX = 800; // screen x the comp focus maps to at zoom 1
+const FIELD_OX = 830; // screen x the comp focus maps to at zoom 1
 const FIELD_OY = 545; // screen y the comp focus maps to at zoom 1
 
 // The runs* stroke layers animate paint props (fill/stroke opacity, trim,
@@ -164,8 +164,10 @@ export const SceneA2: React.FC<{ t: number }> = ({ t }) => {
   const sep = easeInOutCubic(seg(rel, 0.46, 0.88));
   // f67-78 (rel ~0.9-1.4): accent fade on the restored vertical
   const accent = easeInOutCubic(seg(rel, 0.85, 1.15));
-  // f79-89 (rel ~1.5-1.83): fade into the dumped bunkai A3 bridge
-  const sceneOpacity = 1 - seg(rel, 1.5, 1.83);
+  // f79-89 (rel ~1.5-1.83): comparison hold — the separated vertical and
+  // parted horizontals must stay readable; only the last ~5 frames fade
+  // into the dumped bunkai A3 bridge (onscreen from ~3.55s)
+  const sceneOpacity = 1 - seg(rel, 1.62, 1.8);
 
   const strokeOpacity = (item: StrokeItem, i: number): number => {
     if (i === vertIndex) return Math.max(1 - accent, 0.0); // black vert out
@@ -190,11 +192,22 @@ export const SceneA2: React.FC<{ t: number }> = ({ t }) => {
         pointerEvents: "none",
       }}
     >
-      {/* stroke field in comp space, mapped onto the right hero zone */}
+      {/* stroke field in comp space, clipped to the right hero zone so
+          reconstructed strokes never collide with the left copy column */}
       <div
         style={{
           position: "absolute",
-          left: 0,
+          left: 480,
+          top: 0,
+          width: 600,
+          height: 1080,
+          overflow: "hidden",
+        }}
+      >
+      <div
+        style={{
+          position: "absolute",
+          left: -480, // keep comp->screen transform in absolute coords
           top: 0,
           width: comp.width,
           height: comp.height,
@@ -216,6 +229,7 @@ export const SceneA2: React.FC<{ t: number }> = ({ t }) => {
           strokeTransform={() => `translate(${VERT_SEP_X * sep}px,${VERT_SEP_Y * sep}px)`}
           strokeOpacity={() => accent}
         />
+      </div>
       </div>
     </div>
   );

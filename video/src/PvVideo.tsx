@@ -6,7 +6,7 @@ import {
   masterComp,
   mattePairs,
 } from "./ae/project.ts";
-import { applyMasterPatches, STEP_REVEAL, B_HIDDEN, B_WINDOW, E_HIDDEN, E_WINDOW, C_HIDDEN, C_WINDOW, A2_HIDDEN, A2_WINDOW, A2B_HIDDEN, A2B_WINDOW } from "./ae/masterPatch.ts";
+import { applyMasterPatches, STEP_REVEAL, B_HIDDEN, B_WINDOW, E_HIDDEN, E_WINDOW, C_HIDDEN, C_WINDOW, A2_HIDDEN, A2_WINDOW, A2B_HIDDEN, A2B_WINDOW, A2T_HIDDEN, A2T_WINDOW } from "./ae/masterPatch.ts";
 import { SceneA2 } from "./scenes/SceneA2.tsx";
 import { SceneB } from "./scenes/SceneB.tsx";
 import { SceneC } from "./scenes/SceneC.tsx";
@@ -39,6 +39,8 @@ const ctx: RenderCtx = {
     if (A2_HIDDEN.has(layer.index) && t >= A2_WINDOW[0] && t < A2_WINDOW[1])
       return false;
     if (A2B_HIDDEN.has(layer.index) && t >= A2B_WINDOW[0] && t < A2B_WINDOW[1])
+      return false;
+    if (A2T_HIDDEN.has(layer.index) && t >= A2T_WINDOW[0] && t < A2T_WINDOW[1])
       return false;
     return true;
   },

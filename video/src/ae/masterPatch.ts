@@ -192,4 +192,10 @@ export const A2_WINDOW: [number, number] = [1.875, 3.75];
 // Hide it only until the authored fade has mostly completed (3.6s), then
 // let it carry the upward-scroll transition into scene B.
 export const A2B_HIDDEN = new Set([232]); // bunkai
-export const A2B_WINDOW: [number, number] = [1.875, 3.6];
+export const A2B_WINDOW: [number, number] = [1.875, 3.62];
+
+// A2 tail: once the authored comparison hold ends (~f85), the giant-解
+// ghost would double-image the incoming bunkai A3 bridge. Hide PV A2 for
+// the bridge window; the bridge carries the upward scroll into scene B.
+export const A2T_HIDDEN = new Set([11]); // PV A2 ghost
+export const A2T_WINDOW: [number, number] = [3.55, 4.3];
