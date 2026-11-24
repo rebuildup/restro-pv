@@ -1,0 +1,14 @@
+{
+  "id": "wu-c-r7",
+  "wu": "WU-C",
+  "subject": "scene C three works vertical scroll — current authored state (work1 gather / work2 wave / work3 mirror emblem)",
+  "frames": [
+    { "file": "verification/wu-c3/f220.png", "frame": 220, "note": "work1 assembled char holding mid-window" },
+    { "file": "verification/wu-c3/f235.png", "frame": 235, "note": "scroll to work2, wave starting" },
+    { "file": "verification/wu-c3/f248.png", "frame": 248, "note": "work2 centered, traveling wave" },
+    { "file": "verification/wu-c3/f265.png", "frame": 265, "note": "scroll to work3, emblem assembling" },
+    { "file": "verification/wu-c3/f273.png", "frame": 273, "note": "work3 emblem centered, holding" },
+    { "file": "verification/wu-c3/f279.png", "frame": 279, "note": "last C frame before D cut" }
+  ],
+  "context": "Baseline review of the current SceneC implementation. The window is the right-zone vertical strip x~490-1060 y~60-1020. Works are built from real Restro Baseline FUDE S01-S13 stroke paths via StrokeField. Work1: scattered strokes gather into 筆 (ink). Work2: completed char with per-stroke traveling wave + red crest highlight. Work3: char meets mirror image forming a bilateral emblem in palette colors. C ends at f281 where scene D begins."
+}

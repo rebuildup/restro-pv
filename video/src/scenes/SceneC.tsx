@@ -2,7 +2,6 @@ import React from "react";
 import {
   compStrokes,
   easeInOutCubic,
-  easeOutBack,
   easeOutCubic,
   seg,
   StrokeField,
@@ -15,20 +14,27 @@ import type { CompSpec } from "../../../pv/model/types.ts";
 // built from the real Restro stroke paths (Baseline FUDE S01-S13), shown in
 // one tall clipped window on the right stage, scrolling like a film strip.
 //
-//   Work 01 「筆画が集まって文字になる」— scattered strokes gather into the
-//     assembled 筆 (ink only).
-//   Work 02 「時間差の波」— the completed char carries a traveling per-stroke
-//     wave; a red highlight rides the wave crest (ink + accent).
-//   Work 03 「別の構図」— the assembled char meets its mirror image:
-//     a bilateral symmetric "emblem" composition in palette colors.
+//   Work 01 「筆画が集まって文字になる」— strokes start fully scattered
+//     across the cell, then gather with per-stroke stagger into the
+//     assembled 筆 and hold (warm paper ground, ink only).
+//   Work 02 「時間差の波」— a multicolored char (palette strokes, different
+//     color order than work 03) is recognized first, then a traveling
+//     per-stroke wave runs through it with a red crest highlight, and it
+//     resolves back to the same colored char and holds (cool ground).
+//   Work 03 「別の構図」— the char meets its own reflection: a vertical
+//     two-wing emblem in palette colors on a dark ground. Strokes stream
+//     in from their own side and hold.
 //
 // SPEC timing: each work's animation is keyed to when its cell actually
-// enters/centers in the window — no completed form visible for only a few
-// frames, no motion hidden in dead time.
+// enters/centers in the window — completed forms hold long enough to be
+// recognized, no motion hidden in dead time.
 //
 // Window: x 490-1060, y 60-1020 (SPEC right zone). Strip cells are 960px
-// with 240px intentional head/tail margins (no adjacent work above the
-// first or below the last).
+// with a 960px intentional blank gap between works (pitch 1920). Because
+// the gap equals the window height, the window can NEVER contain parts of
+// two works at once — transit reads work-bottom -> pure blank -> work-top,
+// a serial exit/enter rather than overlapping fragments. 240px head/tail
+// pads keep the first/last works free of neighbors.
 
 const T0 = 191 / 24;
 const T1 = 281 / 24;
@@ -38,34 +44,41 @@ const WIN_Y = 60;
 const WIN_W = 570;
 const WIN_H = 960;
 const CELL_H = 960;
+const GAP = 960;
+const PITCH = CELL_H + GAP;
 const PAD = 240;
-const PITCH = CELL_H;
-const STRIP_H = PAD * 2 + CELL_H * 3;
+const CELL_TOPS = [PAD, PAD + PITCH, PAD + PITCH * 2];
+const STRIP_H = PAD + PITCH * 2 + CELL_H + PAD;
 
 const WORK_TITLES = [
   "作品 01 — 筆画が集まって文字になる",
   "作品 02 — 時間差の波",
   "作品 03 — 筆画で別の構図",
 ];
+const CELL_BG = ["#f6f1e7", "#edf0f4", "#1e2129"];
+const TITLE_INK = ["#17171a", "#17171a", "#e8e6df"];
+const STRIP_BG = "#e7e3da";
 
-// Scroll waypoints [rel seconds, strip offset]. Cell w centers when
-// sy = PAD + w*PITCH. Works enter before centering; animation windows
-// below are keyed to entry, per SPEC.
+// Scroll waypoints [rel seconds, strip offset]. A work's cell is exactly
+// framed when sy equals its cell top. Scroll legs are ~0.4s; dwells are
+// keyed so each work's animation runs while it is actually in the window.
 const SCROLL: [number, number][] = [
-  [0.0, 140],
-  [0.45, PAD],
-  [1.55, PAD],
-  [1.95, PAD + PITCH],
-  [2.85, PAD + PITCH],
-  [3.3, PAD + PITCH * 2],
-  [3.75, PAD + PITCH * 2 + 80],
+  [0.0, 120],
+  [0.3, CELL_TOPS[0]],
+  [1.25, CELL_TOPS[0]],
+  [1.65, CELL_TOPS[1]],
+  [2.25, CELL_TOPS[1]],
+  [2.65, CELL_TOPS[2]],
 ];
 
-// Per-work animation windows [rel start, rel end].
+// Per-work animation windows [rel start, rel end], keyed to window entry.
+// Each work runs recognize -> motion -> resolve -> hold inside its dwell:
+// w1 gather then a settle ripple; w2 static colored char, wave, resolve;
+// w3 stream-in assembly, then a single breathe-and-rejoin, then hold.
 const ANIM: [number, number][] = [
-  [0.45, 1.55],
-  [1.7, 2.85],
-  [2.9, 3.7],
+  [0.28, 1.28],
+  [1.5, 2.3],
+  [2.5, 3.68],
 ];
 
 // Palette for work 03 (the scene's color differentiation per SPEC).
@@ -92,6 +105,7 @@ let cached: {
   ink: StrokeItem[];
   waveInk: StrokeItem[];
   waveRed: StrokeItem[];
+  waveColor: StrokeItem[];
   ring: StrokeItem[];
   geom: WorkGeom;
 } | null = null;
@@ -119,22 +133,23 @@ function buildData() {
   const cy = (minY + maxY) / 2;
   const n = strokes.length;
 
-  // Work 01 scatter must keep every displaced stroke inside the cell:
-  // the cell fit gives ~430 comp px of half-width around the char center,
-  // so clamp each scatter vector until the offset stroke bbox fits.
-  const BOX_X = 410;
-  const BOX_Y = 560;
+  // Work 01 scatter must keep every displaced stroke inside the cell.
+  // The single-char fit is ~0.73 scale, so 285 screen px half-width is
+  // ~390 comp px around the char center; clamp each scatter vector until
+  // the offset stroke bbox fits.
+  const BOX_X = 370;
+  const BOX_Y = 600;
   const scatter = strokes.map((s, i) => {
     const dx = s.center[0] - cx;
     const dy = s.center[1] - cy;
     const len = Math.hypot(dx, dy) || 1;
-    const dist = 170 + ((i * 89) % 130); // 170-300 comp px outward
-    const swing = ((i * 47) % 48) - 24; // tangential jitter, comp px
+    const dist = 200 + ((i * 89) % 160); // 200-360 comp px outward
+    const swing = ((i * 47) % 56) - 28; // tangential jitter, comp px
     const tx = -dy / len;
     const ty = dx / len;
     let sx = (dx / len) * dist + tx * swing;
     let sy = (dy / len) * dist + ty * swing;
-    for (let k = 0; k < 4; k++) {
+    for (let k = 0; k < 5; k++) {
       const [x0, y0, x1, y1] = s.bbox;
       const inX =
         Math.max(x0 + sx, x1 + sx) <= cx + BOX_X &&
@@ -149,7 +164,7 @@ function buildData() {
     return {
       dx: sx,
       dy: sy,
-      rot: (i % 2 === 0 ? 1 : -1) * (10 + (i % 4) * 6),
+      rot: (i % 2 === 0 ? 1 : -1) * (12 + (i % 4) * 8),
     };
   });
 
@@ -165,11 +180,17 @@ function buildData() {
   const ink = tintedStrokes(strokes, () => INK);
   const waveInk = tintedStrokes(strokes, () => INK);
   const waveRed = tintedStrokes(strokes, () => ACCENT);
+  // Work 02's finished form: as the wave releases, ink strokes fade and a
+  // per-stroke palette field (different index order than work 03's) fades
+  // in — the resolved char stays multicolored, distinct from work 01.
+  const waveColor = tintedStrokes(strokes, (_s, i) =>
+    PALETTE[(i * 2 + 1) % PALETTE.length],
+  );
   const ringStrokes = tintedStrokes(strokes, (_s, i) =>
     PALETTE[i % PALETTE.length],
   );
 
-  cached = { comp, ink, waveInk, waveRed, ring: ringStrokes, geom };
+  cached = { comp, ink, waveInk, waveRed, waveColor, ring: ringStrokes, geom };
   return cached;
 }
 
@@ -207,14 +228,15 @@ function waveTransform(
   i: number,
   t: number,
   env: number,
+  amp = 1,
 ): string {
-  const w = Math.sin(t * 7 - i * 0.6) * 0.65 + Math.sin(t * 3.2 - i * 0.3) * 0.35;
-  const d = env * w * 55;
-  const rot = env * Math.sin(t * 6 - i * 0.5) * 4;
+  const w = Math.sin(t * 7 - i * 0.8) * 0.65 + Math.sin(t * 3.2 - i * 0.35) * 0.35;
+  const d = env * w * 80 * amp;
+  const rot = env * Math.sin(t * 6 - i * 0.55) * 5 * amp;
   const crest = Math.max(0, w) * env;
   const [cx, cy] = s.center;
   const r = g.radial[i];
-  const pop = 1 + crest * 0.1; // crest strokes swell slightly
+  const pop = 1 + crest * 0.12 * amp; // crest strokes swell slightly
   return (
     `translate(${r.x * d}px,${r.y * d}px)` +
     ` translate(${cx}px,${cy}px) rotate(${rot}deg) scale(${pop})` +
@@ -223,45 +245,92 @@ function waveTransform(
 }
 
 function waveCrest(t: number, i: number, env: number): number {
-  const w = Math.sin(t * 7 - i * 0.6) * 0.65 + Math.sin(t * 3.2 - i * 0.3) * 0.35;
+  const w = Math.sin(t * 7 - i * 0.8) * 0.65 + Math.sin(t * 3.2 - i * 0.35) * 0.35;
   return Math.max(0, w) * env;
 }
 
-// Work 03: the char meets its mirror image. The mirrored copy is a second
-// StrokeField inside a comp-space wrapper flipped about the char's
-// vertical center axis (x = 2*cx). Strokes stream in with a per-stroke
-// stagger so the emblem assembles like a reveal, then holds.
-const MIRROR_AXIS_X = 2 * 946; // char bbox center x in comp space
-
+// Work 03 stream-in: per-stroke remaining travel fraction. Both wings use
+// the same local offset (-k*D on y): the upper char is upright so its
+// strokes fly in from above; the lower char lives inside a vertically
+// flipped wrapper, so the same offset lands it below its final spot.
 function w3Stream(q: number): number {
-  // per-stroke arrival progress -> remaining travel fraction
   return 1 - easeOutCubic(clamp01(q));
+}
+
+// char bbox in comp space (measured Baseline FUDE S01-S13 rest pose)
+const BB = { minX: 583, minY: 283, maxX: 1309, maxY: 997 };
+const BB_W = BB.maxX - BB.minX;
+const BB_H = BB.maxY - BB.minY;
+const BB_CX = (BB.minX + BB.maxX) / 2;
+const BB_CY = (BB.minY + BB.maxY) / 2;
+
+// map the comp-space char bbox onto a cell-space rect
+function charFit(maxW: number, maxH: number, cx: number, cy: number): string {
+  const s = Math.min(maxW / BB_W, maxH / BB_H);
+  const tx = cx - BB_CX * s;
+  const ty = cy - BB_CY * s;
+  return `translate(${tx}px,${ty}px) scale(${s})`;
 }
 
 export const SceneC: React.FC<{ t: number }> = ({ t }) => {
   if (t < T0 || t >= T1) return null;
-  const { comp, ink, waveInk, waveRed, ring, geom } = buildData();
+  const { comp, ink, waveColor, waveRed, ring, geom } = buildData();
   const rel = t - T0;
   const sy = scrollY(rel);
-  // fade the whole strip out just before the D boundary (f281). Hold the
-  // emblem near-full until rel 3.65 so the last C frames still read as a
-  // finished work, then drop quickly into the cut (r5: the old 3.52-3.72
-  // fade left f279 at ~27% opacity = indistinguishable blocks).
-  const sceneOpacity = 1 - seg(rel, 3.65, 3.74);
-
-  // char bbox for fit transforms (comp space ~[583,283]-[1309,997])
-  const BB = { minX: 583, minY: 283, maxX: 1309, maxY: 997 };
-  const fitFor = (maxW: number, maxH: number, cx: number, cy: number) => {
-    const w = BB.maxX - BB.minX;
-    const h = BB.maxY - BB.minY;
-    const s = Math.min(maxW / w, maxH / h);
-    const tx = cx - ((BB.minX + BB.maxX) / 2) * s;
-    const ty = cy - ((BB.minY + BB.maxY) / 2) * s;
-    return `translate(${tx}px,${ty}px) scale(${s})`;
-  };
+  // Hold the finished emblem fully legible until rel 3.70 (f~280), then a
+  // fast fade completes before the D cut at rel 3.75 (f281).
+  const sceneOpacity = 1 - seg(rel, 3.7, 3.745);
 
   // per-work local animation progress
   const local = ANIM.map(([a, b]) => clamp01((rel - a) / (b - a)));
+
+  // work 01: distance-staggered gather — strokes hold fully scattered
+  // through the entry scroll, then travel in with per-stroke stagger.
+  // easeOutCubic (not easeOutBack: its early slope snaps strokes to ~90%
+  // almost immediately, which read as "already assembled" in review).
+  const g1 = local[0];
+  const gatherP = (i: number) =>
+    easeOutCubic(clamp01((g1 * 1.7 - 0.06 - i * 0.045) / 0.6));
+  // post-gather settle: once the char is recognized (~rel 0.95), one soft
+  // ripple runs through the strokes and dies out, leaving a clean hold
+  const settleEnv = Math.sin(Math.PI * seg(rel, 1.0, 1.26));
+
+  // work 02: recognize -> wave -> resolve. The envelope attacks after a
+  // short clean hold, sustains, then releases so the last stretch of the
+  // window is the clean assembled char again.
+  const l2 = local[1];
+  const env2 =
+    l2 < 0.3
+      ? 0
+      : Math.sin(Math.PI * clamp01((l2 - 0.3) / 0.48)) * (1 - seg(l2, 0.8, 0.9));
+  const waveT = rel * 2.2;
+
+  // work 03: stream-in stagger per stroke, completes ~40% into the window
+  // so the formed emblem gets a long centered recognition + hold
+  const l3 = local[2];
+  const w3q = (i: number) => clamp01((l3 * 2.1 - 0.04 - i * 0.02) / 0.55);
+
+  // work 03 layout: two facing chars forming a vertical emblem.
+  // Upper char: upright, center (285, 310). Lower char: same strokes in a
+  // vertically flipped wrapper, center (285, 670). Scale ~0.70 so the
+  // emblem fills the cell with margin and reads as one composed piece.
+  const W3_S = 0.7;
+  // post-assembly motion: once the emblem is recognized (~rel 3.0), the
+  // two wings part and rejoin once, then hold still until the fade
+  const w3Breath = Math.sin(Math.PI * seg(rel, 3.2, 3.6)) * 12;
+  const w3UpperFit = `translate(${285 - BB_CX * W3_S}px,${
+    310 - w3Breath - BB_CY * W3_S
+  }px) scale(${W3_S})`;
+  const w3LowerFit = `translate(${285 - BB_CX * W3_S}px,${
+    670 + w3Breath + BB_CY * W3_S
+  }px) scale(${W3_S},${-W3_S})`;
+  const w3StreamOffset = (i: number, k: number) => {
+    const jx = (((i * 37) % 60) - 30) * 0.4 * k;
+    return `translate(${jx}px,${-460 * k}px)`;
+  };
+
+  // works 01/02: single char, ~530px wide, centered at (285, 505)
+  const singleFit = charFit(530, 720, 285, 505);
 
   return (
     <div
@@ -281,6 +350,7 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
           width: WIN_W,
           height: WIN_H,
           overflow: "hidden",
+          background: STRIP_BG,
         }}
       >
         <div
@@ -290,11 +360,11 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
             top: -sy,
             width: WIN_W,
             height: STRIP_H,
+            background: STRIP_BG,
           }}
         >
           {WORK_TITLES.map((title, w) => {
-            const top = PAD + w * PITCH;
-            const fit = fitFor(430, 600, WIN_W / 2, 545);
+            const top = CELL_TOPS[w];
             return (
               <div
                 key={w}
@@ -304,6 +374,8 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                   top,
                   width: WIN_W,
                   height: CELL_H,
+                  background: CELL_BG[w],
+                  overflow: "hidden",
                 }}
               >
                 <div
@@ -313,7 +385,8 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                     top: 0,
                     width: comp.width,
                     height: comp.height,
-                    transform: fit,
+                    transform:
+                      w === 2 ? undefined : singleFit,
                     transformOrigin: "0 0",
                   }}
                 >
@@ -322,27 +395,28 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                       comp={comp}
                       strokes={ink}
                       poseT={0.5}
-                      strokeTransform={(s, i) =>
-                        // gather completes ~60% into the window so the
-                        // assembled char holds for the rest of the dwell
-                        gatherTransform(
-                          geom.scatter[i],
-                          s,
-                          easeOutBack(clamp01(local[0] / 0.6)),
-                        )
-                      }
+                      strokeTransform={(s, i) => {
+                        const base = gatherTransform(geom.scatter[i], s, gatherP(i));
+                        if (settleEnv <= 0.001) return base;
+                        return (
+                          base +
+                          waveTransform(geom, s, i, rel * 3.1, settleEnv, 0.5)
+                        );
+                      }}
                     />
                   )}
                   {w === 1 && (
                     <>
+                      {/* work 2's finished form IS the multicolored char:
+                          recognize -> wave -> resolve all happen on the
+                          same palette strokes (order differs from w3) */}
                       <StrokeField
                         comp={comp}
-                        strokes={waveInk}
+                        strokes={waveColor}
                         poseT={0.5}
                         strokeTransform={(s, i) => {
-                          const env = Math.sin(Math.PI * local[1]);
-                          if (env <= 0.001) return undefined;
-                          return waveTransform(geom, s, i, rel * 2.2, env);
+                          if (env2 <= 0.001) return undefined;
+                          return waveTransform(geom, s, i, waveT, env2);
                         }}
                       />
                       <StrokeField
@@ -350,72 +424,77 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                         strokes={waveRed}
                         poseT={0.5}
                         strokeTransform={(s, i) => {
-                          const env = Math.sin(Math.PI * local[1]);
-                          if (env <= 0.001) return undefined;
-                          return waveTransform(geom, s, i, rel * 2.2, env);
+                          if (env2 <= 0.001) return undefined;
+                          return waveTransform(geom, s, i, waveT, env2);
                         }}
                         strokeOpacity={(_s, i) =>
-                          waveCrest(rel * 2.2, i, Math.sin(Math.PI * local[1])) * 0.9
+                          waveCrest(waveT, i, env2) * 0.9
                         }
                       />
                     </>
                   )}
-                  {w === 2 && (
-                    <>
-                      {/* original half of the emblem */}
+                </div>
+                {w === 2 && (
+                  <>
+                    {/* upper wing: upright char, strokes stream in from above */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        left: 0,
+                        top: 0,
+                        width: comp.width,
+                        height: comp.height,
+                        transform: w3UpperFit,
+                        transformOrigin: "0 0",
+                      }}
+                    >
                       <StrokeField
                         comp={comp}
                         strokes={ring}
                         poseT={0.5}
                         strokeTransform={(_s, i) => {
-                          const q = clamp01(
-                            (local[2] * 1.5 - 0.05 - i * 0.025) / 0.75,
-                          );
-                          const k = w3Stream(q);
+                          const k = w3Stream(w3q(i));
                           if (k >= 1) return undefined;
-                          return `translate(${-30 * k}px,${12 * k}px)`;
+                          return w3StreamOffset(i, k);
                         }}
                       />
-                      {/* mirrored half: wrapper flips comp x about the
-                          char's vertical center axis; strokes stream in
-                          from the right edge with per-stroke stagger */}
-                      <div
-                        style={{
-                          position: "absolute",
-                          left: 0,
-                          top: 0,
-                          width: comp.width,
-                          height: comp.height,
-                          transform: `translate(${MIRROR_AXIS_X}px,0px) scale(-1,1)`,
-                          transformOrigin: "0 0",
+                    </div>
+                    {/* lower wing: same strokes, vertically flipped about
+                        the char's horizontal center axis, streams in from
+                        below — together they read as one emblem */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        left: 0,
+                        top: 0,
+                        width: comp.width,
+                        height: comp.height,
+                        transform: w3LowerFit,
+                        transformOrigin: "0 0",
+                      }}
+                    >
+                      <StrokeField
+                        comp={comp}
+                        strokes={ring}
+                        poseT={0.5}
+                        strokeTransform={(_s, i) => {
+                          const k = w3Stream(w3q(i));
+                          if (k >= 1) return undefined;
+                          return w3StreamOffset(i, k);
                         }}
-                      >
-                        <StrokeField
-                          comp={comp}
-                          strokes={ring}
-                          poseT={0.5}
-                          strokeTransform={(_s, i) => {
-                            const q = clamp01(
-                              (local[2] * 1.5 - 0.05 - i * 0.025) / 0.75,
-                            );
-                            const k = w3Stream(q);
-                            if (k >= 1) return undefined;
-                            return `translate(${340 * k}px,0px)`;
-                          }}
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
+                      />
+                    </div>
+                  </>
+                )}
                 <div
                   style={{
                     position: "absolute",
                     left: 18,
                     top: 22,
                     fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
-                    fontSize: 24,
+                    fontSize: 20,
                     fontWeight: 700,
-                    color: "#111",
+                    color: TITLE_INK[w],
                   }}
                 >
                   {title}

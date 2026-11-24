@@ -1,0 +1,15 @@
+{
+  "id": "wu-d-r26",
+  "wu": "WU-D",
+  "subject": "scene D rebuilt r4: left copy moved below brand lockup (top:648); W4 aux window shows reprocess arc",
+  "frames": [
+    { "file": "verification/wu-d-v6/f285.png", "frame": 285, "note": "D start: copy + W1 only" },
+    { "file": "verification/wu-d-v6/f300.png", "frame": 300, "note": "W1 before->after, W2 enters" },
+    { "file": "verification/wu-d-v6/f315.png", "frame": 315, "note": "W1 after, W2/W3 live" },
+    { "file": "verification/wu-d-v6/f345.png", "frame": 345, "note": "all 4; W4 Executing dialog" },
+    { "file": "verification/wu-d-v6/f355.png", "frame": 355, "note": "W4 result complete" },
+    { "file": "verification/wu-d-v6/f368.png", "frame": 368, "note": "tail fading" },
+    { "file": "verification/wu-d-v6/f375.png", "frame": 375, "note": "D->E handoff" }
+  ],
+  "context": "Scene D authored per SPEC §5 D. Left copy 「After Effectsで、/そのまま動かせる。」 placed at top:648 below the persistent brand lockup (bottom ~y550). W1 large = decompose-ops 35.9s before->after; W2/W3 = stroke-animate edit(22.7s)/motion(25.0s); W4 = reprocess 5.0s redraw->Executing Script dialog->result at aux size. Frame-accurate verified. NOTE: 'Restro / 筆画復元' lockup is the persistent brand required by SPEC §4 / D-6, present in all scenes — not a D leftover."
+}

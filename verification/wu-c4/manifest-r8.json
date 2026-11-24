@@ -1,0 +1,18 @@
+{
+  "id": "wu-c-r8",
+  "wu": "WU-C",
+  "subject": "scene C reworked — 3 distinct finished works (paper gather / cool wave / dark reflection emblem), 480px blank gaps between cells",
+  "frames": [
+    { "file": "verification/wu-c4/f200.png", "frame": 200, "note": "work1 entering, strokes scattered" },
+    { "file": "verification/wu-c4/f210.png", "frame": 210, "note": "work1 gather mid-flight" },
+    { "file": "verification/wu-c4/f222.png", "frame": 222, "note": "work1 assembled 筆 holding" },
+    { "file": "verification/wu-c4/f236.png", "frame": 236, "note": "work2 entering window" },
+    { "file": "verification/wu-c4/f246.png", "frame": 246, "note": "work2 wave traveling" },
+    { "file": "verification/wu-c4/f254.png", "frame": 254, "note": "work2 resolved clean char" },
+    { "file": "verification/wu-c4/f264.png", "frame": 264, "note": "scroll transition w2->w3 (blank gap)" },
+    { "file": "verification/wu-c4/f272.png", "frame": 272, "note": "work3 emblem centered holding" },
+    { "file": "verification/wu-c4/f278.png", "frame": 278, "note": "work3 emblem late hold" },
+    { "file": "verification/wu-c4/f280.png", "frame": 280, "note": "last C frame before D cut" }
+  ],
+  "context": "Rework after wu-c-r7 FAIL. Changes: cell pitch 1440 with 480px intentional blank gaps so scroll transitions never show two readable works; works enlarged to ~530px; each work has a distinct ground (warm paper / cool / dark ink) and title; work1 scatter->staggered gather->long hold; work2 clean recognize->traveling wave->clean resolve hold; work3 redesigned as vertical reflection emblem (char over its mirror, palette strokes streaming in from each side). C fades out 3.70-3.745 rel, D starts f281."
+}

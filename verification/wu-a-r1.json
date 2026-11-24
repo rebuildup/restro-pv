@@ -1,0 +1,15 @@
+{
+  "id": "wu-a-r1",
+  "wu": "WU-A",
+  "subject": "Scene A2: ghost outline + restored runs4 strokes registration, separation choreography, A3 bridge handoff",
+  "frames": [
+    {"file": "verification/wu-a2/f45.png", "frame": 45, "note": "A2 start: push-in begins, crossing cluster centered"},
+    {"file": "verification/wu-a2/f56.png", "frame": 56, "note": "separation begins"},
+    {"file": "verification/wu-a2/f62.png", "frame": 62, "note": "vertical stroke separated from crossings"},
+    {"file": "verification/wu-a2/f76.png", "frame": 76, "note": "red accent on restored vertical, horizontals parted"},
+    {"file": "verification/wu-a2/f86.png", "frame": 86, "note": "comparison hold tail"},
+    {"file": "verification/wu-a2/f90.png", "frame": 90, "note": "A3 bridge fade-in (bunkai layer 232)"},
+    {"file": "verification/wu-a2/f95.png", "frame": 95, "note": "bridge into scene B"}
+  ],
+  "context": "A2 [45,90): ghost = PV glyph A2 FUDE outline re-rendered light via StrokeField; strokes = bunkai runs4 bars; both share one fieldTransform (registration: both comps identity on master during A1, ink centroids coincide ~780,540). Choreography f45-55 push-in, f56-66 vertical separates, f67-78 accent, f79-89 hold, then bunkai bridge fades in (patched opacity keys) while kai-zoom layers stay hidden until their outPoint 3.92."
+}

@@ -44,7 +44,7 @@ function cssColor(c: [number, number, number, number]): string {
   return `rgba(${Math.round(c[0] * 255)},${Math.round(c[1] * 255)},${Math.round(c[2] * 255)},${c[3]})`;
 }
 
-function shapeToD(s: ShapeSpec): string {
+export function shapeToD(s: ShapeSpec): string {
   const v = s.vertices;
   const n = v.length;
   if (n === 0) return "";

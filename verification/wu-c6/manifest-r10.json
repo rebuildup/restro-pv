@@ -1,0 +1,20 @@
+{
+  "id": "wu-c-r10",
+  "wu": "WU-C",
+  "subject": "scene C round 3 — rebalanced scroll/dwell timing, cell clipping fixed, emblem margin increased",
+  "frames": [
+    { "file": "verification/wu-c6/f195.png", "frame": 195, "note": "work1 entering, strokes scattered" },
+    { "file": "verification/wu-c6/f208.png", "frame": 208, "note": "work1 gather in flight" },
+    { "file": "verification/wu-c6/f218.png", "frame": 218, "note": "work1 assembled hold" },
+    { "file": "verification/wu-c6/f228.png", "frame": 228, "note": "scroll w1->w2 through blank gap" },
+    { "file": "verification/wu-c6/f233.png", "frame": 233, "note": "work2 clean char recognized" },
+    { "file": "verification/wu-c6/f245.png", "frame": 245, "note": "work2 resolved clean char before exit" },
+    { "file": "verification/wu-c6/f255.png", "frame": 255, "note": "work3 entering, emblem assembling" },
+    { "file": "verification/wu-c6/f265.png", "frame": 265, "note": "work3 emblem forming" },
+    { "file": "verification/wu-c6/f275.png", "frame": 275, "note": "work3 emblem hold" },
+    { "file": "verification/wu-c6/f279.png", "frame": 279, "note": "emblem legible before fade" },
+    { "file": "verification/wu-c6/f281.png", "frame": 281, "note": "D cut" },
+    { "file": "verification/wu-c6/f285.png", "frame": 285, "note": "D established, no C residue" }
+  ],
+  "context": "Round 3 after wu-c-r9. Fixes: scroll legs rebalanced (~0.4s) so each work dwells centered longer; work2 wave envelope now fully releases (rel~2.2) before its scroll-out leg so the exit reads wave->clean->gone; cells now overflow:hidden so stream offsets cannot draw into the blank gap; emblem scale 0.70 with ~40-60px margins. Frame notes verified against actual cell bg pixels."
+}

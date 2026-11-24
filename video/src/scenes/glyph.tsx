@@ -1,9 +1,9 @@
 import React from "react";
 import { compByName } from "../ae/project.ts";
 import type { CompSpec, LayerSpec } from "../ae/project.ts";
-import type { PropNode } from "../../../pv/model/types.ts";
+import type { PropNode, ShapeSpec } from "../../../pv/model/types.ts";
 import { worldMatrix } from "../ae/transform.ts";
-import { VectorShapes } from "../ae/shapes.tsx";
+import { VectorShapes, shapeToD } from "../ae/shapes.tsx";
 import { child, children, evalNum, evalProp, evalVec } from "../ae/eval.ts";
 import {
   mIdentity,
@@ -61,6 +61,10 @@ function groupMatrix(node: PropNode | undefined, t: number): Mat4 {
     m = mMultiply(m, mTranslation(-(anchor[0] ?? 0), -(anchor[1] ?? 0)));
   return m;
 }
+
+// Exported alias for scene/probe code that needs the same vector-group
+// transform math StrokeField uses internally.
+export const groupMatrixFor = groupMatrix;
 
 // Walk the shape tree accumulating vector-group transforms, collecting path
 // vertices already mapped into layer space.
@@ -339,3 +343,147 @@ export const easeOutBack = (p: number): number => {
 // progress of t within [a,b]
 export const seg = (t: number, a: number, b: number): number =>
   clamp01((t - a) / (b - a));
+
+// ---- contour / ring extraction ---------------------------------------------
+// Real bezier path data of stroke layers emitted as SVG-ready path strings in
+// comp space. Scenes use this for "analysis line" presentations — character
+// contours, per-stroke draft boundaries, junction markers — where StrokeField's
+// fill rendering would hide the underlying structure. Path data is never
+// approximated: same ShapeSpec vertices/tangents and the same group/world
+// matrix composition as StrokeField/collectPoints.
+
+export interface ContourPath {
+  d: string;
+  // CSS matrix() mapping path-local coords into comp space
+  matrix: string;
+}
+
+const cssMat2d = (m: Mat4): string =>
+  `matrix(${m[0]},${m[1]},${m[4]},${m[5]},${m[12]},${m[13]})`;
+
+function collectContourPaths(
+  node: PropNode,
+  m: Mat4,
+  t: number,
+  wm: Mat4,
+  paths: ContourPath[],
+  rings: [number, number][][] | null,
+): void {
+  for (const k of children(node)) {
+    if (k.matchName === TRANSFORM_GROUP) continue;
+    const sub = children(k);
+    const tf = sub.find((c) => c.matchName === TRANSFORM_GROUP);
+    const m2 = tf ? mMultiply(m, groupMatrix(tf, t)) : m;
+    if (k.matchName === SHAPE_PATH) {
+      const s = evalProp(k, t) as ShapeSpec | undefined;
+      if (s?.vertices?.length) {
+        const M = mMultiply(wm, m2);
+        paths.push({ d: shapeToD(s), matrix: cssMat2d(M) });
+        if (rings) {
+          rings.push(
+            s.vertices.map((v) => {
+              const p = transformPoint(M, v[0], v[1], 0);
+              return [p[0], p[1]] as [number, number];
+            }),
+          );
+        }
+      }
+      continue;
+    }
+    if (
+      k.matchName === VECTOR_GROUP ||
+      k.matchName === VECTORS_GROUP ||
+      k.matchName === SHAPE_GROUP ||
+      (k.properties ?? []).length > 0
+    ) {
+      collectContourPaths(k, m2, t, wm, paths, rings);
+    }
+  }
+}
+
+// All bezier contours of one stroke layer as comp-space SVG paths.
+export function strokeContours(
+  comp: CompSpec,
+  item: StrokeItem,
+  poseT = 0.5,
+): ContourPath[] {
+  if (!item.layer.shapes) return [];
+  const paths: ContourPath[] = [];
+  const cache = new Map<number, ReturnType<typeof worldMatrix>>();
+  const w = worldMatrix(item.layer, comp.layers, poseT, cache);
+  collectContourPaths(item.layer.shapes, mIdentity(), poseT, w.matrix, paths, null);
+  return paths;
+}
+
+// Closed polygon rings (comp space) for one stroke layer — one ring per
+// path. Used for geometric analysis such as stroke-crossing detection.
+export function strokeRings(
+  comp: CompSpec,
+  item: StrokeItem,
+  poseT = 0.5,
+): [number, number][][] {
+  if (!item.layer.shapes) return [];
+  const paths: ContourPath[] = [];
+  const rings: [number, number][][] = [];
+  const cache = new Map<number, ReturnType<typeof worldMatrix>>();
+  const w = worldMatrix(item.layer, comp.layers, poseT, cache);
+  collectContourPaths(item.layer.shapes, mIdentity(), poseT, w.matrix, paths, rings);
+  return rings;
+}
+
+export interface ContourFieldProps {
+  comp: CompSpec;
+  // contours[i] = all paths of stroke i (parallel to a StrokeField call)
+  contours: ContourPath[][];
+  color: string;
+  // stroke width in comp units (scales with the glyph like fills do)
+  width: number;
+  opacity?: number;
+  itemOpacity?: (i: number) => number;
+  // per-item color override (e.g. edge tone matched to a tinted fill)
+  itemColor?: (i: number) => string | undefined;
+  // per-item comp-space transform, mirrors StrokeField.strokeTransform
+  itemTransform?: (i: number) => string | undefined;
+}
+
+// Stroked (unfilled) rendering of real stroke geometry — contour lines,
+// draft boundaries, selection outlines. One comp-sized SVG; parent applies
+// the same fit/lens transforms used for StrokeField.
+export const ContourField: React.FC<ContourFieldProps> = ({
+  comp,
+  contours,
+  color,
+  width,
+  opacity = 1,
+  itemOpacity,
+  itemColor,
+  itemTransform,
+}) => (
+  <svg
+    width={comp.width}
+    height={comp.height}
+    viewBox={`0 0 ${comp.width} ${comp.height}`}
+    style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}
+  >
+    {contours.map((paths, i) => (
+      <g
+        key={i}
+        opacity={opacity * (itemOpacity ? itemOpacity(i) : 1)}
+        transform={itemTransform ? itemTransform(i) : undefined}
+      >
+        {paths.map((p, j) => (
+          <path
+            key={j}
+            d={p.d}
+            transform={p.matrix}
+            fill="none"
+            stroke={itemColor ? itemColor(i) ?? color : color}
+            strokeWidth={width}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        ))}
+      </g>
+    ))}
+  </svg>
+);

@@ -1,0 +1,21 @@
+{
+  "id": "wu-c-r12",
+  "wu": "WU-C",
+  "subject": "scene C round 5 — work2 is a multicolored char throughout (recognize->wave->resolve->hold), explicit mid-scroll frames included",
+  "frames": [
+    { "file": "verification/wu-c8/f195.png", "frame": 195, "note": "work1 entering, strokes scattered" },
+    { "file": "verification/wu-c8/f210.png", "frame": 210, "note": "work1 gather in flight" },
+    { "file": "verification/wu-c8/f220.png", "frame": 220, "note": "work1 assembled ink hold" },
+    { "file": "verification/wu-c8/f227.png", "frame": 227, "note": "mid-scroll w1->w2 through blank gap" },
+    { "file": "verification/wu-c8/f234.png", "frame": 234, "note": "work2 colored char, wave starting" },
+    { "file": "verification/wu-c8/f240.png", "frame": 240, "note": "work2 wave crest" },
+    { "file": "verification/wu-c8/f246.png", "frame": 246, "note": "work2 resolved colored char hold" },
+    { "file": "verification/wu-c8/f252.png", "frame": 252, "note": "mid-scroll w2->w3 through blank gap" },
+    { "file": "verification/wu-c8/f262.png", "frame": 262, "note": "work3 centered, emblem assembling" },
+    { "file": "verification/wu-c8/f272.png", "frame": 272, "note": "work3 emblem forming" },
+    { "file": "verification/wu-c8/f278.png", "frame": 278, "note": "work3 emblem hold" },
+    { "file": "verification/wu-c8/f281.png", "frame": 281, "note": "D cut" },
+    { "file": "verification/wu-c8/f285.png", "frame": 285, "note": "D established, no C residue" }
+  ],
+  "context": "Round 5 after wu-c-r11. Changes: work2's finished form is now the multicolored char itself (palette order (i*2+1)%4) — recognize->wave->resolve->hold all on one colored form, ~1.2s of recognizable finished state; scroll legs rebalanced (1.3-1.7, 2.3-2.7) for longer centered dwells; manifest now includes explicit mid-scroll frames f227/f252. Note: left-column text clipping at x~460 is the dumped 416px 'description' comp shared by all scenes (analysis/dumps source), outside SceneC scope — flagged for the left-column owner."
+}

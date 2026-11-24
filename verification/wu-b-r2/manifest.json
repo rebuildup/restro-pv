@@ -1,0 +1,14 @@
+{
+  "id": "wu-b-r2",
+  "wu": "WU-B",
+  "subject": "scene B step progression: real per-step geometry (contour -> draft contours -> junction markers+lens -> separated strokes)",
+  "frames": [
+    {"file": "verification/wu-b-r2/f110.png", "frame": 110, "note": "step0 輪郭を解析: silhouette+contour only"},
+    {"file": "verification/wu-b-r2/f135.png", "frame": 135, "note": "step1 輪郭線を延長: draft stroke contours appear"},
+    {"file": "verification/wu-b-r2/f146.png", "frame": 146, "note": "step2 start: junction markers + lens appear"},
+    {"file": "verification/wu-b-r2/f158.png", "frame": 158, "note": "step2 隠れた頂点を推定: markers+lens active"},
+    {"file": "verification/wu-b-r2/f170.png", "frame": 170, "note": "step3 start: strokes separating/filling"},
+    {"file": "verification/wu-b-r2/f178.png", "frame": 178, "note": "step3 一画ずつに分割: separated tinted strokes"}
+  ],
+  "context": "Scene B [101,191) of a 1080x1080 promo PV. The giant character 筆 must stay the same single glyph throughout. Steps: 01 outline analysis, 02 contour extension (per-stroke draft contours from real Restro decomposed stroke boundaries), 03 hidden-vertex inference (markers at real stroke-outline crossings + circular lens), 04 stroke reconstruction (13 real strokes slightly displaced, individually tinted, one selected). Left column shows description text; right side has step tabs/labels."
+}

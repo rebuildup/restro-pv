@@ -1,0 +1,14 @@
+{
+  "id": "wu-b-r12",
+  "wu": "WU-B",
+  "subject": "scene B v11: drafts nearly gone during vertex step, lens closer to focal, stronger selection mark",
+  "frames": [
+    {"file": "verification/wu-b-r12/f112.png", "frame": 112, "note": "step0 輪郭を解析 mid: red silhouette+contour"},
+    {"file": "verification/wu-b-r12/f140.png", "frame": 140, "note": "step1 輪郭線を延長 mid: green drafts, red ghost only"},
+    {"file": "verification/wu-b-r12/f154.png", "frame": 154, "note": "step2 mid: blue markers + lens close to focal"},
+    {"file": "verification/wu-b-r12/f166.png", "frame": 166, "note": "step2 late"},
+    {"file": "verification/wu-b-r12/f176.png", "frame": 176, "note": "step3 mid: only reconstructed strokes"},
+    {"file": "verification/wu-b-r12/f186.png", "frame": 186, "note": "step3 late: 13 yellow strokes + bold selected contour/dot"}
+  ],
+  "context": "Scene B [101,191), 1080x1080. Same giant 筆 below the tab strip, fully inside the right zone. Per-step filters on real Restro geometry: 01 red char contour silhouette (ghosts to ~5% after), 02 green per-stroke draft contours, 03 up to 5 blue junction markers at the strongest measured stroke-outline crossings in the lower glyph half + circular lens in the free strip below the glyph magnifying that cluster (drafts recede to ~12% reference; dashed leader stays under the strokes; covers no tabs/body/focus), 04 the 13 real strokes tightly displaced, individually tinted true-yellow with darker matching edges; the selected stroke has a bold dark contour (width 4) + center dot, both following its displacement. All analysis layers cut to opacity 0 at the step4 boundary frame."
+}

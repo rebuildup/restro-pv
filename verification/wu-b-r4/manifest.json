@@ -1,0 +1,14 @@
+{
+  "id": "wu-b-r4",
+  "wu": "WU-B",
+  "subject": "scene B v3: glyph below tab strip, per-step layer fade, corner lens with leader, tight step-4 frame, edged strokes",
+  "frames": [
+    {"file": "verification/wu-b-r4/f110.png", "frame": 110, "note": "step0 輪郭を解析: red silhouette+contour, clear of tabs"},
+    {"file": "verification/wu-b-r4/f135.png", "frame": 135, "note": "step1 輪郭線を延長: green draft contours"},
+    {"file": "verification/wu-b-r4/f146.png", "frame": 146, "note": "step2 start: junction markers + corner lens"},
+    {"file": "verification/wu-b-r4/f158.png", "frame": 158, "note": "step2 隠れた頂点を推定: drafts receded, markers remain"},
+    {"file": "verification/wu-b-r4/f170.png", "frame": 170, "note": "step3 start: strokes separating + tight frame"},
+    {"file": "verification/wu-b-r4/f178.png", "frame": 178, "note": "step3 一画ずつに分割: yellow edged strokes"}
+  ],
+  "context": "Scene B [101,191), 1080x1080. Same giant 筆, now fully below the white step-tab strip (top ~y400). Each step's analysis layer fades as the next takes over — no full-strength accumulation. Step2 adds blue junction markers at real measured stroke-outline crossings plus a circular lens parked in the empty bottom-left column (covers neither tabs, body text, nor the focal point) connected by a dashed leader line to the magnified junction. Step4 reconstructs the 13 real strokes slightly displaced, yellow-family fills with darker matching edges, one selected stroke marked, inside a thin keyline that tightly bounds the real stroke-set bbox."
+}

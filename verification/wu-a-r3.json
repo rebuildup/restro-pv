@@ -1,0 +1,15 @@
+{
+  "id": "wu-a-r3",
+  "wu": "WU-A",
+  "subject": "Scene A2 r3: registration + choreography kept; left column decluttered (kai-zoom callouts hidden, A-variant description copy ended at A2 boundary), A3 bridge re-framed into right zone",
+  "frames": [
+    {"file": "verification/wu-a2/f45c.png", "frame": 45, "note": "A2 start: push-in begins, crossing cluster centered"},
+    {"file": "verification/wu-a2/f56c.png", "frame": 56, "note": "separation begins"},
+    {"file": "verification/wu-a2/f62c.png", "frame": 62, "note": "vertical stroke separated; left column now shows only question copy"},
+    {"file": "verification/wu-a2/f76c.png", "frame": 76, "note": "red accent on restored vertical, horizontals parted"},
+    {"file": "verification/wu-a2/f86c.png", "frame": 86, "note": "comparison hold tail; bridge fade-in beginning at right"},
+    {"file": "verification/wu-a2/f90c.png", "frame": 90, "note": "A3 bridge: bunkai glyph shifted right+shrunk, clears left column"},
+    {"file": "verification/wu-a2/f95c.png", "frame": 95, "note": "bridge into scene B, glyph inside right zone, A-variant copy gone"}
+  ],
+  "context": "Changes vs r2: description comp '2'-variant A-scene copy ('HOW IT WORKS 2'/'Rebuild strokes from a connected outline' + JP headline, dumped in 0.5-4.15) is clamped to end at 1.875s — it collided with the question copy and brand stack through A2 and lingered into the A3 bridge; A1 keeps it. Combined with r2 changes: kai-zoom callout texts 192/193 hidden during A2; bunkai bridge layer 232 re-framed (x+110, scale x0.9) so the giant 解 stays right of x480. Left column during A2 now carries only the persistent brand stack + the SPEC A-scene question copy (master texts 189-191), identical in structure to the protected A1 layout."
+}

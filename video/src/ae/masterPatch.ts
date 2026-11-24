@@ -49,108 +49,46 @@ export function applyMasterPatches(): void {
   );
   m.layers.splice(pos, 1, ...clones);
 
-  // D scene recordings: re-edit the four PV ops windows as an asynchronous
-  // multi-window sequence. Each window gets its own [in,out) slot with a
-  // short opacity fade-out, and its footage is re-pointed at a verified
-  // motion-bearing segment of the source capture (segment picks and crop
-  // rationale: verification/wu-d). This resolves the v10 rejection items
-  // "表示終了後に退場して切り替わらない" and "動きがない".
-  const ops = GENERATED_COMPS.find((c) => c.name === "PV ops");
-  if (ops) {
-    // Inset the whole ops comp so no window bleeds off the right/bottom
-    // frame edge — r10-r12 repeatedly failed the cropped windows. Scale
-    // about the comp center keeps the staggered layout intact.
-    const opsCompIdx = GENERATED_COMPS.indexOf(ops);
-    const opsLayer = m.layers.find((l) => l.sourceCompIndex === opsCompIdx);
-    if (opsLayer) {
-      const sc = child(opsLayer.transform, "ADBE Scale");
-      if (sc) sc.value = [90, 90, 100];
+  // D scene recordings: the dumped "PV ops" comp baked four footage windows
+  // into a fixed layout whose crops and timing failed review (left-column
+  // typography collision, distorted windows, brand lockup hidden). SceneD
+  // now authors the whole scene — left copy plus four asynchronous footage
+  // windows fed from assets/rec — so the dumped comp is hidden for the
+  // scene window and its D-section description copy is clamped below.
+  // See verification/wu-d-mat/SEGMENTS.md for the chosen source ranges.
+
+  // A2->A3 bridge: bunkai (232) has no opacity keys in the dump, so it
+  // pops in fully opaque the frame A2B_HIDDEN releases it (3.62s) —
+  // under the still-fading authored strokes that read as a dark mass at
+  // f88-95. Give it a short fade-in so it arrives as a bridge, not a cut.
+  {
+    const bridge = m.layers.find((l) => l.index === 232);
+    const bop = bridge && child(bridge.transform, "ADBE Opacity");
+    if (bridge && bop) {
+      const k = (t: number, v: number) => ({ t, v, inT: 6612, outT: 6612 });
+      bop.keys = [k(3.55, 0), k(3.78, 100)];
+      bop.numKeys = 2;
+      bop.value = 0;
     }
-    // Per-window schedule in PV ops comp-local seconds. `src` is the source
-    // time shown at `in`; footage plays at stretch 100 so the window covers
-    // src..src+(out-in).
-    const OPS_WINDOWS: Record<
-      string,
-      { inP: number; outP: number; src: number; srcFile?: string; instantIn?: boolean; crop?: { pos: [number, number]; scale: number } }
-    > = {
-      // W1 main window: decompose-ops stroke drawing over "Retro"
-      // (40.0-41.7s: red path strokes draw across the letters with visible
-      // vertex handles; earlier 38.6-40.3 is nearly static). Retarget the
-      // dumped crop — it included a dark UI band right of the comp viewer
-      // (source x>~1072); now frames viewer x≈528-1072, y≈180-541.
-      // Schedule is staggered so at least two windows are live at any
-      // comp-local time — r6 review failed empty single-window gaps.
-      // W1 inP 0.0 + instant entrance so the window is fully visible on
-      // the D cut frame itself (r10: even a 0.08s fade left f281 blank).
-      W1: {
-        inP: 0.0,
-        outP: 1.9,
-        instantIn: true,
-        src: 39.9,
-        crop: { pos: [956, 459], scale: 110.3 },
-      },
-      // W2 small window: stroke-animate t≈5.0-6.7s — the generated strokes
-      // (small red/green rects) moving across the "Restro" text, the exact
-      // operation SPEC §5 D lists for this recording. Distinct phase from
-      // W3's 22-24.3s control-point editing; every sampled later segment
-      // in all three recordings still shows anchor UI, so operation-phase
-      // variety is the achievable distinction.
-      W2: {
-        inP: 0.0,
-        outP: 2.4,
-        instantIn: true,
-        src: 5.0,
-        srcFile: "ae-stroke-animate.mp4",
-        crop: { pos: [671, 682], scale: 53.1 },
-      },
-      // W3 center crop: stroke-animate stroke scribble animation.
-      // Segment moved to 22.0-24.3s — the control-point/path-editing
-      // motion peak (24.3s) — instead of the 22.2-23.85 slice that ended
-      // just before the visible change.
-      W3: {
-        inP: 1.0,
-        outP: 3.72,
-        src: 22.0,
-        crop: { pos: [1009, 714], scale: 64.9 },
-      },
-      // W4 wide bottom window: reprocess selection->clean reveal.
-      // Delayed to local 2.0 and src 13.9 so the 14.2-15.5s reveal lands at
-      // the scene end instead of decaying into a static white result
-      // (r8: late frames showed an over-zoomed, near-blank W4).
-      W4: {
-        inP: 2.0,
-        outP: 3.72,
-        src: 13.9,
-        crop: { pos: [907, 1052], scale: 115.4 },
-      },
-    };
-    for (const l of ops.layers) {
-      const wKey = l.name.split(" ")[0];
-      const w = OPS_WINDOWS[wKey];
-      if (!w) continue;
-      l.inPoint = w.inP;
-      l.outPoint = w.outP;
-      if (l.kind === "footage") {
-        if (w.srcFile) l.source = w.srcFile;
-        // layerLocalTime = compT - startTime; want source `src` at compT w.inP.
-        l.startTime = w.inP - w.src;
-        if (w.crop) {
-          const pos = child(l.transform, "ADBE Position");
-          const scale = child(l.transform, "ADBE Scale");
-          if (pos) pos.value = [w.crop.pos[0], w.crop.pos[1], 0];
-          if (scale) scale.value = [w.crop.scale, w.crop.scale, 100];
-        }
+    // A3 bridge framing: the dumped bunkai zoom places the giant 解 with
+    // its left tail crossing x<480 into the left copy column (r1 review:
+    // glyph collided with brand/question copy at f90-95). The layer is
+    // only visible during the A3 bridge window [3.42,4.13), so re-frame
+    // it statically: shift right ~+110px and shrink ~10% — the glyph's
+    // comp-space left ink edge (~x215) then lands at screen x≈500+.
+    if (bridge) {
+      const pos = child(bridge.transform, "ADBE Position");
+      const scale = child(bridge.transform, "ADBE Scale");
+      if (pos && Array.isArray(pos.value)) {
+        pos.value = [890, (pos.value as number[])[1] ?? 495.1, 0];
       }
-      if (w.instantIn) {
-        const opacity = child(l.transform, "ADBE Opacity");
-        if (opacity) {
-          const k = (t: number, v: number) => ({ t, v, inT: 6612, outT: 6612 });
-          opacity.keys = [k(w.inP, 100), k(w.outP - 0.1, 100), k(w.outP, 0)];
-          opacity.numKeys = 3;
-          opacity.value = 100;
+      if (scale) {
+        const shrink = (v: unknown) =>
+          Array.isArray(v) ? v.map((n) => (typeof n === "number" ? n * 0.9 : n)) : v;
+        scale.value = shrink(scale.value);
+        if (Array.isArray(scale.keys)) {
+          for (const key of scale.keys) key.v = shrink(key.v);
         }
-      } else {
-        fadeOpacity(l, w.inP, w.outP);
       }
     }
   }
@@ -164,18 +102,50 @@ export function applyMasterPatches(): void {
   const desc = GENERATED_COMPS.find((c) => c.name === "description");
   if (desc) {
     for (const l of desc.layers) {
+      if (l.inPoint === undefined || l.outPoint === undefined) continue;
+      // WU-A r2/r4: the "2"-suffixed A-scene variants ("HOW IT WORKS 2" /
+      // "Rebuild strokes from a connected outline" + JP headline 「…筆画を
+      // 復元する」, in 0.5-4.15) collide with the surrounding copy through
+      // the WHOLE A scene — r4 showed the same text-on-text overlap at
+      // f30/f44 (A1) that r2 showed at f45-95 (A2/A3). They are
+      // B-headline early-teasers duplicating the B-section copy that
+      // starts at 4.25; the A-scene authored copy is the question set
+      // (master texts 189-191) plus the giant Heading. Disable them
+      // entirely (zero-length window) rather than moving shared layout.
       if (
-        l.inPoint !== undefined &&
-        l.outPoint !== undefined &&
+        l.inPoint >= 0.4 &&
+        l.inPoint < 1.0 &&
+        / 2$/.test(l.name)
+      ) {
+        l.outPoint = l.inPoint;
+        continue;
+      }
+      if (
         l.inPoint >= 7.9 &&
         l.inPoint < 11.7 &&
         l.outPoint > 11.71
       ) {
         l.outPoint = 11.7;
+      } else if (
+        // D-section dumped copy ("After Effectsでの操作と機能" block,
+        // in 11.71-15.46) overflows the 416px description column and
+        // collides with the authored windows. SceneD authors the left
+        // column instead, so the dumped layers end at the D cut. The E
+        // block starts at 15.46+ and is untouched.
+        l.inPoint >= 11.7 &&
+        l.inPoint < 15.46 &&
+        l.outPoint > 11.708
+      ) {
+        l.outPoint = 11.708;
       }
     }
   }
 }
+
+// Scene-D: hide the dumped "PV ops" comp (master layer 13) for the scene
+// window; SceneD authors the windows itself.
+export const D_HIDDEN = new Set([13]); // PV ops
+export const D_WINDOW: [number, number] = [11.71, 15.46];
 
 // Replace a layer's opacity keys with a short fade-in at `inP` and a
 // fade-out ending at `outP`, keeping full opacity between.
@@ -207,9 +177,13 @@ export const STEP_REVEAL: Record<number, number> = {
 //     the 中->した progression), 172-179 STEP drafts + Baseline (FUDE rigs
 //     evaluate to opacity 0 — invisible), 264-267 STEP cards, 23 Lens
 //     magnifier comp (children are the same invisible drafts), 9 LENS
-//     frame. Step borders 171-177 and tab clones stay visible.
+//     frame. The tab bars (borders 171/173/175/177 + tab clones 301-304)
+//     are hidden too: they are master layers that would render UNDER the
+//     authored glyph, so SceneB re-draws them above the glyph to keep the
+//     step strip readable (white bars + black keylines, same geometry).
 export const B_HIDDEN = new Set([
-  9, 23, 166, 167, 168, 169, 172, 174, 176, 178, 179, 264, 265, 266, 267,
+  9, 23, 166, 167, 168, 169, 171, 172, 173, 174, 175, 176, 177, 178, 179,
+  264, 265, 266, 267, 301, 302, 303, 304,
 ]);
 export const B_WINDOW: [number, number] = [3.9, 7.96];
 
@@ -236,8 +210,20 @@ export const C_WINDOW: [number, number] = [7.96, 11.71];
 // without the restored-continuous-stroke proof. SceneA2 overlays the real
 // bunkai runs4 strokes aligned to the crossing and drives separation +
 // accent on the common frame timeline.
-export const A2_HIDDEN = new Set([235, 236]); // kai-zoom x2
-export const A2_WINDOW: [number, number] = [1.875, 3.75];
+// WU-A revision: SceneA2 now re-renders the ghost itself from the same
+// Restro material (PV glyph A2 FUDE layers) through the shared field
+// transform, so the dumped ghost (11) is hidden for the whole authored
+// window to avoid a dark double-image. The hide window extends to 3.92 —
+// the kai-zoom outPoint — because the pieces reappeared over the A3
+// bunkai bridge at f90-94 (the "dark mass" anomaly).
+// WU-A r1: master texts 192/193 ("After Effects AEGP Plugin & Script",
+// "Restro for Ae") were kai-zoom callouts — they label the plugin UI that
+// the hidden kai-zoom comps (235/236) used to zoom into. Orphaned, they
+// collide with the A-scene headline 「こんな文字分解」 and the giant
+// Heading at the top of the frame (f57-89). Hide them with the rest of
+// the replaced A2 material; their window [2.38,3.71] sits inside A2.
+export const A2_HIDDEN = new Set([11, 192, 193, 235, 236]); // PV A2 ghost + kai-zoom x2 + orphaned callouts
+export const A2_WINDOW: [number, number] = [1.875, 3.92];
 // bunkai (232) is the A3 bridge zoom, but it fades in at 3.42s — underneath
 // the still-opaque authored strokes that would double-image the character.
 // Hide it only until the authored fade has mostly completed (3.6s), then

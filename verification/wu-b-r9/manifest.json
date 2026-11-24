@@ -1,0 +1,14 @@
+{
+  "id": "wu-b-r9",
+  "wu": "WU-B",
+  "subject": "scene B v8: lens transform fixed (was rendering empty), steady-state step frames",
+  "frames": [
+    {"file": "verification/wu-b-r9/f112.png", "frame": 112, "note": "step0 輪郭を解析 mid"},
+    {"file": "verification/wu-b-r9/f140.png", "frame": 140, "note": "step1 輪郭線を延長 mid"},
+    {"file": "verification/wu-b-r9/f154.png", "frame": 154, "note": "step2 隠れた頂点を推定 mid: markers + working lens"},
+    {"file": "verification/wu-b-r9/f166.png", "frame": 166, "note": "step2 late"},
+    {"file": "verification/wu-b-r9/f176.png", "frame": 176, "note": "step3 一画ずつに分割 mid: only strokes"},
+    {"file": "verification/wu-b-r9/f186.png", "frame": 186, "note": "step3 late: 13 yellow strokes + selected dot"}
+  ],
+  "context": "Scene B [101,191), 1080x1080. Same giant 筆 below the tab strip, fully inside the right zone (no clipping). Real per-step geometry: 01 red char contour silhouette, 02 green per-stroke draft contours, 03 up to 5 blue junction markers at the strongest measured stroke-outline crossings + a circular lens in the free strip below the glyph that now correctly magnifies the densest junction cluster (dashed leader, covers no tabs/body/focus), 04 the 13 real strokes displaced, individually tinted true-yellow with darker matching edges, selected stroke marked by dark contour + center dot. All analysis layers cut to opacity 0 at the step4 boundary frame."
+}

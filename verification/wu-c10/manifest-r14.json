@@ -1,0 +1,23 @@
+{
+  "id": "wu-c-r14",
+  "wu": "WU-C",
+  "subject": "scene C round 7 — every work now runs recognize->motion->resolve->hold; serial 960px-gap transitions retained",
+  "frames": [
+    { "file": "verification/wu-c10/f195.png", "frame": 195, "note": "work1 entering, strokes scattered" },
+    { "file": "verification/wu-c10/f208.png", "frame": 208, "note": "work1 gather in flight" },
+    { "file": "verification/wu-c10/f214.png", "frame": 214, "note": "work1 assembled, recognized" },
+    { "file": "verification/wu-c10/f219.png", "frame": 219, "note": "work1 settle ripple resolving" },
+    { "file": "verification/wu-c10/f224.png", "frame": 224, "note": "work1 hold end / scroll-out start" },
+    { "file": "verification/wu-c10/f232.png", "frame": 232, "note": "work2 colored char centered, pre-wave" },
+    { "file": "verification/wu-c10/f238.png", "frame": 238, "note": "work2 wave crest" },
+    { "file": "verification/wu-c10/f245.png", "frame": 245, "note": "work2 resolved colored char hold" },
+    { "file": "verification/wu-c10/f251.png", "frame": 251, "note": "scroll w2->w3, blank leader" },
+    { "file": "verification/wu-c10/f258.png", "frame": 258, "note": "work3 centered, emblem assembling" },
+    { "file": "verification/wu-c10/f268.png", "frame": 268, "note": "work3 emblem formed" },
+    { "file": "verification/wu-c10/f274.png", "frame": 274, "note": "work3 wings breathe-and-rejoin" },
+    { "file": "verification/wu-c10/f278.png", "frame": 278, "note": "work3 emblem settled hold" },
+    { "file": "verification/wu-c10/f281.png", "frame": 281, "note": "D cut" },
+    { "file": "verification/wu-c10/f285.png", "frame": 285, "note": "D established, no C residue" }
+  ],
+  "context": "Round 7 after wu-c-r13. Each work now has the full arc: w1 scatter->gather->assembled recognition->settle ripple->hold; w2 static colored char->traveling wave->resolve->colored hold; w3 stream-in assembly->formed emblem->breathe/rejoin->hold. Scroll pitch 1920 with 960px blank gap (=window height) so two works can never share the window. KNOWN OUT-OF-SCOPE ISSUE: left-column description text is clipped at x~460 by the dumped 416px-wide 'description' comp (generated from analysis/dumps, shared master content used by all scenes) — not authored by SceneC and owned by the left-column/master work; please do not fail CMN-1/CMN-4 for it in this WU-C review."
+}
