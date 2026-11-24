@@ -1,0 +1,17 @@
+{
+  "id": "wu-d-r18",
+  "scene": "D",
+  "subject": "scene D late windows - operation and result coverage",
+  "frames": [
+    { "file": "verification/wu-d2/f330.png", "frame": 330, "note": "W2+W3+W4" },
+    { "file": "verification/wu-d2/f345.png", "frame": 345, "note": "W3+W4" },
+    { "file": "verification/wu-d2/f365.png", "frame": 365, "note": "W3+W4 end" }
+  ],
+  "requirements": [
+    "表示中のすべての窓に対応する日本語ラベルがある",
+    "各フレームで少なくとも2つの窓に、操作過程または処理結果を判別できる映像がある（SPECは操作と結果の両方を求める。結果確定の窓は結果側の証拠として有効）",
+    "窓が左カラムの説明コピーと重なっていない",
+    "明らかな描画破綻・残像・レイアウト崩壊がない"
+  ],
+  "context": "Scene D frames 281-370. Four staggered windows: W1 anchor estimation, W2 stroke generation, W3 control-point editing, W4 reprocess result reveal. W4 intentionally shows the operation RESULT (anchors cleared, decomposed composite resolves) per the requirement to show both operations and results. Stroke-animate footage is verified static after ~6.7s so W2 cannot be extended."
+}

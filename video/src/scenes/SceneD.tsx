@@ -18,11 +18,13 @@ const T1 = 371 / 24;
 // Master-comp seconds. PV ops local time = master t - 11.7083; each label
 // fades in/out with its window's schedule (masterPatch OPS_WINDOWS) so a
 // caption never outlives its footage — r7 review failed orphaned labels.
+// Positions assume the PV ops comp is inset to 90% about center (540,540)
+// per masterPatch — window coords *0.9 + 54 offset equivalent.
 const LABELS: { x: number; y: number; text: string; t0: number; t1: number }[] = [
-  { x: 486, y: 40, text: "頂点の推定", t0: 11.77, t1: 13.6 }, // W1 local 0.05-1.9
-  { x: 486, y: 456, text: "筆画の生成", t0: 12.27, t1: 14.1 }, // W2 local 0.55-2.4
-  { x: 794, y: 456, text: "筆画の編集", t0: 12.71, t1: 15.4 }, // W3 local 1.0-3.72
-  { x: 486, y: 740, text: "分解結果の確定", t0: 13.76, t1: 15.4 }, // W4 local 2.0-3.72
+  { x: 491, y: 88, text: "頂点の推定", t0: 11.5, t1: 13.6 }, // W1 local 0.0-1.9, instant in
+  { x: 491, y: 462, text: "筆画の生成", t0: 11.5, t1: 14.1 }, // W2 local 0.0-2.4, instant in
+  { x: 769, y: 462, text: "筆画の編集", t0: 12.71, t1: 15.4 }, // W3 local 1.0-3.72
+  { x: 491, y: 716, text: "分解結果の確定", t0: 13.71, t1: 15.4 }, // W4 local 2.0-3.72
 ];
 
 const ramp = (t: number, a: number, b: number) =>

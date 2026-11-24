@@ -1,0 +1,17 @@
+{
+  "id": "wu-d-r17",
+  "scene": "D",
+  "subject": "scene D late windows with synced labels",
+  "frames": [
+    { "file": "verification/wu-d2/f330.png", "frame": 330, "note": "W4 just entered - label now synced" },
+    { "file": "verification/wu-d2/f345.png", "frame": 345, "note": "W3+W4 mid" },
+    { "file": "verification/wu-d2/f365.png", "frame": 365, "note": "W3+W4 end" }
+  ],
+  "requirements": [
+    "表示中のすべての窓に対応する日本語ラベルがあり、ラベルなしの窓がない",
+    "窓が左カラムの説明コピーと重なっていない",
+    "各フレームで少なくとも2つの窓に判別可能な操作映像がある",
+    "明らかな描画破綻・残像・レイアウト崩壊がない"
+  ],
+  "context": "Scene D frames 281-370, ops comp inset 90%. W4's label now appears with the window (was lagging ~2 frames). The bottom window is the reprocess/result recording. Left column = description comp copy only."
+}

@@ -1,0 +1,18 @@
+{
+  "id": "wu-d-r12",
+  "scene": "D",
+  "subject": "scene D windows + left column after brand-lockup hide",
+  "frames": [
+    { "file": "verification/wu-c7/f279.png", "frame": 279, "note": "last C frame (before hide window)" },
+    { "file": "verification/wu-d2/f281.png", "frame": 281, "note": "D cut - W1 instant in" },
+    { "file": "verification/wu-d2/f295.png", "frame": 295, "note": "D early - W1+W2" },
+    { "file": "verification/wu-d2/f330.png", "frame": 330, "note": "D mid - W2+W3+W4" }
+  ],
+  "requirements": [
+    "f281 のカットフレームで録画窓が判別可能な内容で表示されている",
+    "C→D で左カラムを含めシーン要素が切り替わり、C の常時ブランドロックアップ（AFTER EFFECTS PLUGIN/Restro/筆画復元の大文字組）に依存しない",
+    "各フレームで少なくとも2つの窓に判別可能な操作映像がある",
+    "明らかな描画破綻・残留・破綻したレイアウトがない"
+  ],
+  "context": "Scene D frames 281-370. The always-on brand lockup layers (master 15-18: Heading comp, AFTER EFFECTS PLUGIN text, Ae.png, Logo) are now hidden for t in [7.96,15.46) per SPEC rejection of the 20s always-on Heading; the left column during C+D is the per-scene description comp copy only. W1 enters instantly at the cut. Judge whether the C->D transition reads as a decisive scene change and windows are legible."
+}

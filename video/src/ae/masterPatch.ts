@@ -57,12 +57,21 @@ export function applyMasterPatches(): void {
   // "表示終了後に退場して切り替わらない" and "動きがない".
   const ops = GENERATED_COMPS.find((c) => c.name === "PV ops");
   if (ops) {
+    // Inset the whole ops comp so no window bleeds off the right/bottom
+    // frame edge — r10-r12 repeatedly failed the cropped windows. Scale
+    // about the comp center keeps the staggered layout intact.
+    const opsCompIdx = GENERATED_COMPS.indexOf(ops);
+    const opsLayer = m.layers.find((l) => l.sourceCompIndex === opsCompIdx);
+    if (opsLayer) {
+      const sc = child(opsLayer.transform, "ADBE Scale");
+      if (sc) sc.value = [90, 90, 100];
+    }
     // Per-window schedule in PV ops comp-local seconds. `src` is the source
     // time shown at `in`; footage plays at stretch 100 so the window covers
     // src..src+(out-in).
     const OPS_WINDOWS: Record<
       string,
-      { inP: number; outP: number; src: number; srcFile?: string; crop?: { pos: [number, number]; scale: number } }
+      { inP: number; outP: number; src: number; srcFile?: string; instantIn?: boolean; crop?: { pos: [number, number]; scale: number } }
     > = {
       // W1 main window: decompose-ops stroke drawing over "Retro"
       // (40.0-41.7s: red path strokes draw across the letters with visible
@@ -71,9 +80,12 @@ export function applyMasterPatches(): void {
       // (source x>~1072); now frames viewer x≈528-1072, y≈180-541.
       // Schedule is staggered so at least two windows are live at any
       // comp-local time — r6 review failed empty single-window gaps.
+      // W1 inP 0.0 + instant entrance so the window is fully visible on
+      // the D cut frame itself (r10: even a 0.08s fade left f281 blank).
       W1: {
-        inP: 0.05,
+        inP: 0.0,
         outP: 1.9,
+        instantIn: true,
         src: 39.9,
         crop: { pos: [956, 459], scale: 110.3 },
       },
@@ -84,8 +96,9 @@ export function applyMasterPatches(): void {
       // in all three recordings still shows anchor UI, so operation-phase
       // variety is the achievable distinction.
       W2: {
-        inP: 0.55,
+        inP: 0.0,
         outP: 2.4,
+        instantIn: true,
         src: 5.0,
         srcFile: "ae-stroke-animate.mp4",
         crop: { pos: [671, 682], scale: 53.1 },
@@ -128,15 +141,26 @@ export function applyMasterPatches(): void {
           if (scale) scale.value = [w.crop.scale, w.crop.scale, 100];
         }
       }
-      fadeOpacity(l, w.inP, w.outP);
+      if (w.instantIn) {
+        const opacity = child(l.transform, "ADBE Opacity");
+        if (opacity) {
+          const k = (t: number, v: number) => ({ t, v, inT: 6612, outT: 6612 });
+          opacity.keys = [k(w.inP, 100), k(w.outP - 0.1, 100), k(w.outP, 0)];
+          opacity.numKeys = 3;
+          opacity.value = 100;
+        }
+      } else {
+        fadeOpacity(l, w.inP, w.outP);
+      }
     }
   }
 
   // Left-column captions (description comp): the dumped C-section copy
-  // (layers ending ~11.75-11.79) overlaps the D-section copy that starts
-  // at 11.71, so both texts are visible together for ~2 frames at the
-  // C->D boundary (f281+). Clamp every caption that starts inside scene C
-  // to end at the scene boundary.
+  // overlaps the D-section copy that starts at 11.708, so both texts are
+  // visible together for ~2 frames at the C->D boundary (f281+). Clamp
+  // every caption that starts inside scene C to end at the boundary.
+  // Threshold is 11.70, NOT 11.71 — the D captions themselves start at
+  // 11.7083 and must not be clamped (r15: they were being killed).
   const desc = GENERATED_COMPS.find((c) => c.name === "description");
   if (desc) {
     for (const l of desc.layers) {
@@ -144,7 +168,7 @@ export function applyMasterPatches(): void {
         l.inPoint !== undefined &&
         l.outPoint !== undefined &&
         l.inPoint >= 7.9 &&
-        l.inPoint < 11.71 &&
+        l.inPoint < 11.7 &&
         l.outPoint > 11.71
       ) {
         l.outPoint = 11.7;
@@ -158,8 +182,8 @@ export function applyMasterPatches(): void {
 function fadeOpacity(layer: LayerSpec, inP: number, outP: number): void {
   const opacity = child(layer.transform, "ADBE Opacity");
   if (!opacity) return;
-  const fin = Math.min(inP + 0.14, outP - 0.34);
-  const fout = outP - 0.16;
+  const fin = Math.min(inP + 0.08, outP - 0.2);
+  const fout = outP - 0.1;
   const k = (t: number, v: number) => ({ t, v, inT: 6612, outT: 6612 });
   opacity.keys = [k(inP, 0), k(fin, 100), k(fout, 100), k(outP, 0)];
   opacity.numKeys = 4;

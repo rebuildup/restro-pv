@@ -1,0 +1,19 @@
+{
+  "id": "wu-d-r13",
+  "scene": "D",
+  "subject": "scene D inset windows, instant W1 entry, no brand lockup",
+  "frames": [
+    { "file": "verification/wu-d2/f281.png", "frame": 281, "note": "D cut - W1 instant in, no lockup" },
+    { "file": "verification/wu-d2/f295.png", "frame": 295, "note": "D early - W1+W2" },
+    { "file": "verification/wu-d2/f330.png", "frame": 330, "note": "D mid - W2+W3+W4" },
+    { "file": "verification/wu-d2/f365.png", "frame": 365, "note": "D end - W3+W4" }
+  ],
+  "requirements": [
+    "f281 のカットフレームで録画窓が判別可能な内容で表示されている",
+    "窓群が 1080x1080 画面内に収まり、右端・下端で切れていない",
+    "各フレームで少なくとも2つの窓に判別可能な操作映像がある（終盤を含む）",
+    "左カラムにシーンDの説明コピーが存在し、C の常時ブランドロックアップに依存していない",
+    "明らかな描画破綻・残像・レイアウト崩壊がない"
+  ],
+  "context": "Scene D frames 281-370. Changes this round: PV ops comp inset to 90% (no edge bleed), W1 enters instantly at the cut, always-on brand lockup (master 15-18) hidden for t in [7.96,15.46), W3/W4 extended to scene end, labels synced to window fades. Left column shows only the description comp's per-scene copy (small text blocks)."
+}
