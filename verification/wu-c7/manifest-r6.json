@@ -1,0 +1,19 @@
+{
+  "id": "wu-c-r6",
+  "scene": "C->D boundary",
+  "subject": "scene C exit / scene D entry after caption-clamp fix",
+  "frames": [
+    { "file": "verification/wu-c7/f279.png", "frame": 279, "note": "last C frame" },
+    { "file": "verification/wu-d2/f281.png", "frame": 281, "note": "D cut - W1+W2 instant" },
+    { "file": "verification/wu-d2/f283.png", "frame": 283, "note": "D +0.08s" },
+    { "file": "verification/wu-d2/f295.png", "frame": 295, "note": "D early" }
+  ],
+  "requirements": [
+    "f279: C の3作品目（鏡像エンブレム）が判別可能な完成作品として保持されている",
+    "f281-283: D の録画窓が判別可能な内容で表示され、C の作品要素が残っていない",
+    "C→D の境界でシーンが明確に切り替わる",
+    "左カラムが C の説明コピーから D の説明コピーへ切り替わっている",
+    "明らかな描画破綻がない"
+  ],
+  "context": "Re-review after fixes: D captions were accidentally clamped (now restored), W1/W2 enter instantly at the cut, ops comp inset to 90%, always-on brand lockup hidden for C+D. C work3 mirror emblem should hold until its fade; D windows should be decisive from f281."
+}

@@ -243,8 +243,11 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
   const { comp, ink, waveInk, waveRed, ring, geom } = buildData();
   const rel = t - T0;
   const sy = scrollY(rel);
-  // fade the whole strip out just before the D boundary (f281)
-  const sceneOpacity = 1 - seg(rel, 3.52, 3.72);
+  // fade the whole strip out just before the D boundary (f281). Hold the
+  // emblem near-full until rel 3.65 so the last C frames still read as a
+  // finished work, then drop quickly into the cut (r5: the old 3.52-3.72
+  // fade left f279 at ~27% opacity = indistinguishable blocks).
+  const sceneOpacity = 1 - seg(rel, 3.65, 3.74);
 
   // char bbox for fit transforms (comp space ~[583,283]-[1309,997])
   const BB = { minX: 583, minY: 283, maxX: 1309, maxY: 997 };

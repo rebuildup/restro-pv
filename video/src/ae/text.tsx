@@ -55,6 +55,13 @@ export function TextLayer({ node, t }: { node: PropNode; t: number }): React.Rea
   // anchor: baseline sits ~ascent below the line-box top, and half-leading
   // adds (leading - fontSize)/2 above it.
   const baselineOffset = (leading - size) / 2 + size * 1.05;
+  // AE point text anchors each line at the justification edge: center-
+  // justified text is centered ON the position, right-justified ends at
+  // it. width:max-content makes the div exactly text-wide, so percentage
+  // translates reproduce that anchoring (previously all text was
+  // left-anchored, pushing center/right lines half a line too far right).
+  const j = typeof d.justification === "number" ? d.justification : -1;
+  const anchorX = j === 7415 ? "-50%" : "0px";
   return (
     <div
       style={{
@@ -68,7 +75,7 @@ export function TextLayer({ node, t }: { node: PropNode; t: number }): React.Rea
         whiteSpace: "pre",
         textAlign: just,
         width: "max-content",
-        transform: `translateY(${-baselineOffset}px)`,
+        transform: `translate(${anchorX}, ${-baselineOffset}px)`,
       }}
     >
       {text}

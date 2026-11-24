@@ -1,0 +1,19 @@
+{
+  "id": "wu-c-r4",
+  "scene": "C->D boundary",
+  "subject": "scene C exit and scene D entry boundary frames",
+  "frames": [
+    { "file": "verification/wu-c7/f270.png", "frame": 270, "note": "C work3 mirror emblem mid" },
+    { "file": "verification/wu-c7/f276.png", "frame": 276, "note": "C work3 near end" },
+    { "file": "verification/wu-c7/f279.png", "frame": 279, "note": "C last frames before fade" },
+    { "file": "verification/wu-c7/f281.png", "frame": 281, "note": "D start - previously showed C caption residue" },
+    { "file": "verification/wu-c7/f283.png", "frame": 283, "note": "D early - previously overlapped C text" }
+  ],
+  "requirements": [
+    "f270-279: C の3作品目（鏡像エンブレム）が判別可能な完成作品として保持されている",
+    "f281-283: C 由来の「分解し/分角」等のテキストや枠の残留が D のコピー・窓と重なっていない",
+    "C→D の境界でシーンが明確に切り替わり、前シーンの要素が透けて残らない",
+    "フレーム間に明らかな描画破綻（ゴミ・重なり・途切れ）がない"
+  ],
+  "context": "Scene C is frames ~168-280 of a 480-frame 24fps promo PV showing three stroke artworks in a scrolling window. Scene D starts at frame 281 with four async recording windows on the right and product copy on the left. Previous review r3 FAILED f281/f283 because leftover C-section caption text ('分解し'/'分角') overlapped D's 'After Effects' copy; description-comp layers starting inside C were clamped to end at 11.7s to fix this. Verify the fix and that C's mirror emblem survives to its fade."
+}
