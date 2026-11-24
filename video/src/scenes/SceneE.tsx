@@ -20,7 +20,7 @@ import {
 // Beat timing: card materializes ~18.3s, URL strengthens ~18.75s.
 // (t is seconds; PV-Master runs 24fps, scene E = frames 371-479.)
 
-const T_TILES_IN = 15.46; // f371
+const T_TILES_IN = 15.44; // f370.6 — first tile is visibly entering at the f371 cut, nothing overlaps D's last frame
 const T_TILES_OUT = 16.17; // f388
 const T_CARD_IN = 18.15; // f435.6
 const URL_IN = 18.7;

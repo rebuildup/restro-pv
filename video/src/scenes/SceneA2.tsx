@@ -199,10 +199,18 @@ export const SceneA2: React.FC<{ t: number }> = ({ t }) => {
   // into the dumped bunkai A3 bridge (onscreen from ~3.55s)
   const sceneOpacity = 1 - seg(rel, 1.62, 1.8);
 
+  // Seam fix (WU-INT): at the A1->A2 cut the translucent 元輪郭 ghost and
+  // the faint assembled-char context strokes must not read as leftover A1
+  // residue overlapping the new black cross strokes. The hero strokes
+  // (the crossing proof) arrive instantly — that IS the intentional cut —
+  // while ghost + context strokes fade in over the first ~8 frames so f45
+  // reads clean and the 元輪郭 establishes during the push-in.
+  const ghostIn = easeInOutCubic(seg(rel, 0.04, 0.38));
+
   const strokeOpacity = (item: StrokeItem, i: number): number => {
     if (i === vertIndex) return Math.max(1 - accent, 0.0); // black vert out
     if (HORIZ_NAMES.has(item.name)) return 1 - 0.3 * sep;
-    return 0.18; // context strokes: faint assembled-char ghost
+    return 0.18 * ghostIn; // context strokes: faint assembled-char ghost
   };
   const strokeTransform = (item: StrokeItem): string | undefined => {
     if (item.name === VERT_NAME) {
@@ -215,7 +223,7 @@ export const SceneA2: React.FC<{ t: number }> = ({ t }) => {
   // Ghost stays put while strokes separate — that contrast IS the proof:
   // the crossing on the ghost remains visible under the parting strokes.
   const ghostOpacity = (item: StrokeItem): number =>
-    /outline/.test(item.name) ? 0.5 : 0.32;
+    (/outline/.test(item.name) ? 0.5 : 0.32) * ghostIn;
 
   return (
     <div

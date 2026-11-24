@@ -66,9 +66,16 @@ export function applyMasterPatches(): void {
     const bop = bridge && child(bridge.transform, "ADBE Opacity");
     if (bridge && bop) {
       const k = (t: number, v: number) => ({ t, v, inT: 6612, outT: 6612 });
-      bop.keys = [k(3.55, 0), k(3.78, 100)];
-      bop.numKeys = 2;
+      // Seam fix (WU-INT r1): the bridge used to hard-cut at outPoint
+      // 4.125 (f99), one beat before the nominal A3->B boundary, leaving
+      // f100/f101 visually identical mid-fade frames; r2 then showed a
+      // too-slow fade still ghosting at f101. Fade the 解 out across
+      // f97-f101 so it is FULLY gone on the first B frame (f101 = 4.2083s)
+      // while still reading as a receding bridge on the last A3 frames.
+      bop.keys = [k(3.55, 0), k(3.78, 100), k(4.02, 100), k(4.19, 0)];
+      bop.numKeys = 4;
       bop.value = 0;
+      bridge.outPoint = 4.2;
     }
     // A3 bridge framing: the dumped bunkai zoom places the giant 解 with
     // its left tail crossing x<480 into the left copy column (r1 review:
@@ -138,6 +145,38 @@ export function applyMasterPatches(): void {
       ) {
         l.outPoint = 11.708;
       }
+      // WU-INT r2: the six B-section captions carry dumped expressions
+      // that our expression subset cannot parse (`var`/`thisLayer.name`/
+      // `indexOf`), so they silently fell back to static full opacity and
+      // popped in at f102 — the bottom caption's last line then collided
+      // with the persistent tagline 「文字の輪郭から、筆画ごとのシェイプへ。」
+      // through f102-f104. The real AE behavior is a staggered fade+rise:
+      //   i = HOW->0, つなが->1, 線が->2, else->3 ; t0 = 4.35 + i*0.12
+      //   opacity: ease(time,t0,t0+0.35,0,100)
+      //   position: value + [0, ease(time,t0,t0+0.45,12,0)]  (slides up 12px)
+      // Bake those envelopes into plain keys so the captions arrive
+      // gradually exactly like the dumped intent.
+      if (l.inPoint !== undefined && l.inPoint >= 4.2 && l.inPoint < 4.3) {
+        const op = child(l.transform, "ADBE Opacity");
+        const pos = child(l.transform, "ADBE Position");
+        if (op?.expression?.includes("t0=4.35")) {
+          const nm = l.name;
+          const i = nm.startsWith("HOW") ? 0 : nm.startsWith("つなが") ? 1 : nm.startsWith("線が") ? 2 : 3;
+          const t0 = 4.35 + i * 0.12;
+          const k = (t: number, v: number) => ({ t, v, inT: 6612, outT: 6612 });
+          op.keys = [k(t0, 0), k(t0 + 0.35, 100)];
+          op.numKeys = 2;
+          op.value = 0;
+          op.expression = "";
+          if (pos?.expression?.includes("t0=4.35") && Array.isArray(pos.value)) {
+            const [x, y, z] = pos.value as number[];
+            const kp = (t: number, yy: number) => ({ t, v: [x, yy, z ?? 0], inT: 6612, outT: 6612 });
+            pos.keys = [kp(t0, y + 12), kp(t0 + 0.45, y)];
+            pos.numKeys = 2;
+            pos.expression = "";
+          }
+        }
+      }
     }
   }
 }
@@ -193,7 +232,10 @@ export const B_WINDOW: [number, number] = [3.9, 7.96];
 // layer and let SceneE author the card. Its "restored character" child is
 // a FUDE rig that evaluates to opacity 0 anyway.
 export const E_HIDDEN = new Set([12]); // PV end
-export const E_WINDOW: [number, number] = [15.46, 20.0];
+// Window starts at 15.44 (not the dumped inPoint 15.4583): the authored E
+// tiles begin fading in at the same moment, and the dumped PV end comp must
+// already be hidden on the first E frame (f371) — WU-INT r1.
+export const E_WINDOW: [number, number] = [15.44, 20.0];
 
 // Scene-C: the dumped PV reel C chain (reel window/showreel/strip/cells)
 // renders the same 13-stroke 筆 in all three works — verified identical

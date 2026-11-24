@@ -1,0 +1,18 @@
+{
+  "id": "integration-bounds-1",
+  "wu": "WU-Q",
+  "subject": "cross-scene boundary check: frames immediately before/after each scene cut (A1->A2 f44/45, A3->B f100/101, B->C f190/191, C->D f280/281, D->E f370/371)",
+  "frames": [
+    { "file": "verification/integration/f44.png", "frame": 44, "note": "A1 last" },
+    { "file": "verification/integration/f45.png", "frame": 45, "note": "A2 first" },
+    { "file": "verification/integration/f100.png", "frame": 100, "note": "A3 last" },
+    { "file": "verification/integration/f101.png", "frame": 101, "note": "B first" },
+    { "file": "verification/integration/f190.png", "frame": 190, "note": "B last" },
+    { "file": "verification/integration/f191.png", "frame": 191, "note": "C first" },
+    { "file": "verification/integration/f280.png", "frame": 280, "note": "C last" },
+    { "file": "verification/integration/f281.png", "frame": 281, "note": "D first" },
+    { "file": "verification/integration/f370.png", "frame": 370, "note": "D last" },
+    { "file": "verification/integration/f371.png", "frame": 371, "note": "E first" }
+  ],
+  "context": "INTEGRATION CHECK (not a WU acceptance review): each scene passed its own review in isolation. Judge ONLY transition quality: does each cut read as an intentional scene change? Are there leftover elements from the outgoing scene, half-faded duplicates, black frames, or layout discontinuities? Also flag any frame that is visually broken regardless of scene boundaries."
+}

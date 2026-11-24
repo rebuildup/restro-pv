@@ -198,7 +198,11 @@ export const SceneD: React.FC<{ t: number }> = ({ t }) => {
   // D->E boundary; the dumped description block is clamped at 11.708 so
   // this is the only scene copy on the left.
   const copyIn = smooth(ramp(t, T0, T0 + 0.3));
-  const copyOut = 1 - smooth(ramp(t, T1 - 0.25, T1));
+  // Seam fix (WU-INT): the fade used to run all the way to T1, leaving a
+  // ~7%-opacity multi-line ghost at f370 that read as residue at the D->E
+  // cut. End the fade ~0.12s before the boundary so the last D frames are
+  // clean; the footage windows carry the scene tail on their own.
+  const copyOut = 1 - smooth(ramp(t, T1 - 0.45, T1 - 0.12));
   const copyOpacity = copyIn * copyOut;
 
   return (
