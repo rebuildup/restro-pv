@@ -177,3 +177,19 @@ export const E_WINDOW: [number, number] = [15.46, 20.0];
 // authors three distinct works from the same real stroke paths.
 export const C_HIDDEN = new Set([14]); // PV reel C
 export const C_WINDOW: [number, number] = [7.96, 11.71];
+
+// Scene-A2: the dumped A2 visuals cannot satisfy SPEC §5 A2. "PV A2" only
+// renders the outline ghost (its FUDE S* rigs evaluate to opacity 0) and
+// the two "kai-zoom" instances on top show stroke pieces without the
+// restored-continuous-stroke proof or accent emphasis. Hide all three for
+// the authored window; SceneA2 re-renders the real stroke paths with the
+// separation/accent direction. bunkai (232) keeps playing underneath from
+// 3.42s and carries the A3 bridge after the authored fade.
+export const A2_HIDDEN = new Set([11, 235, 236]); // PV A2 + kai-zoom x2
+export const A2_WINDOW: [number, number] = [1.5, 3.7917];
+// bunkai (232) is the A3 bridge zoom, but it fades in at 3.42s — underneath
+// the still-opaque authored panel that would double-image the character.
+// Hide it only until the authored fade has mostly completed (3.55s), then
+// let it carry the upward-scroll transition into scene B.
+export const A2B_HIDDEN = new Set([232]); // bunkai
+export const A2B_WINDOW: [number, number] = [1.5, 3.55];

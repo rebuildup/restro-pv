@@ -6,7 +6,8 @@ import {
   masterComp,
   mattePairs,
 } from "./ae/project.ts";
-import { applyMasterPatches, STEP_REVEAL, B_HIDDEN, B_WINDOW, E_HIDDEN, E_WINDOW, C_HIDDEN, C_WINDOW } from "./ae/masterPatch.ts";
+import { applyMasterPatches, STEP_REVEAL, B_HIDDEN, B_WINDOW, E_HIDDEN, E_WINDOW, C_HIDDEN, C_WINDOW, A2_HIDDEN, A2_WINDOW, A2B_HIDDEN, A2B_WINDOW } from "./ae/masterPatch.ts";
+import { SceneA2 } from "./scenes/SceneA2.tsx";
 import { SceneB } from "./scenes/SceneB.tsx";
 import { SceneC } from "./scenes/SceneC.tsx";
 import { SceneE } from "./scenes/SceneE.tsx";
@@ -35,6 +36,10 @@ const ctx: RenderCtx = {
       return false;
     if (C_HIDDEN.has(layer.index) && t >= C_WINDOW[0] && t < C_WINDOW[1])
       return false;
+    if (A2_HIDDEN.has(layer.index) && t >= A2_WINDOW[0] && t < A2_WINDOW[1])
+      return false;
+    if (A2B_HIDDEN.has(layer.index) && t >= A2B_WINDOW[0] && t < A2B_WINDOW[1])
+      return false;
     return true;
   },
 };
@@ -47,6 +52,7 @@ export const PvVideo: React.FC = () => {
   return (
     <div style={{ position: "relative", width: comp.width, height: comp.height }}>
       <CompView comp={comp} ctx={ctx} t={t} isRoot />
+      <SceneA2 t={t} />
       <SceneB t={t} />
       <SceneC t={t} />
       <SceneE t={t} />
