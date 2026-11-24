@@ -41,9 +41,11 @@
    （Kozuka Gothic Pr6N フォールバック）の微差のみ
 3. ~~全シーン再レビュー~~ → **完了**: precomp clip 化後の全シーン再レビュー
    （wu-a-r6 / wu-b-r14 / wu-c-r17 / wu-d-r28 / wu-e-r10）で全て PASS。
-   text.tsx justify 修正もこれらのフレームに含まれる。現行 HEAD は
-   独立レビュー済み描画と一致。残るは全編レンダーの集約判断のみ
-   （ユーザー承認後に実施。PR は Draft 維持）
+   text.tsx justify 修正もこれらのフレームに含まれる。**全編レンダー
+   実施済み: verification/pv-remotion-v11.mp4**（1080×1080/24fps/
+   h264+AAC/20.01s、ffprobe 確認済。抽出フレームはレビュー済みスチルと
+   コーデック誤差範囲で一致）。PR は Draft 維持、release 統合は
+   ユーザー承認待ち
 4. WU-Q 残: WU-INT を含む全レビューで series 基準の時間判定が
    適切なフレーム密度で行われているかの監査（wu-d-r27 で中間フレーム
    不足による FAIL が出た前例あり — series manifest のフレーム選定指針を
