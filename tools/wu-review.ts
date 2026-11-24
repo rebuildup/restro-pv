@@ -60,13 +60,19 @@ if (!wu) {
 const criteriaRaw = readFileSync(CRITERIA_PATH);
 const criteria = JSON.parse(criteriaRaw.toString()) as {
   version: string;
+  common?: { id: string; kind: "frame" | "series"; text: string; source: string }[];
+  manualGates?: Record<string, string[]>;
   criteria: Record<string, { id: string; kind: "frame" | "series"; text: string; source: string }[]>;
 };
-const reqs = criteria.criteria[wu];
-if (!reqs || reqs.length === 0) {
+// Common criteria (SPEC §4/§8, design-baseline) apply to EVERY work unit —
+// merging them here prevents per-WU requirement gaps.
+const wuReqs = criteria.criteria[wu];
+if (!wuReqs || wuReqs.length === 0) {
   console.error(`no fixed criteria for wu "${wu}" in ${CRITERIA_PATH}`);
   process.exit(1);
 }
+const reqs = [...(criteria.common ?? []), ...wuReqs];
+const manualGates = criteria.manualGates?.[wu] ?? [];
 const needsSeries = reqs.some((r) => r.kind === "series");
 if (needsSeries && m.frames.length < MIN_SERIES_FRAMES) {
   console.error(
@@ -177,6 +183,9 @@ const record = {
   outcome,
   perRequirement: perReq,
   missingVerdicts: missing,
+  manualGates,
+  manualGatesNote:
+    "manualGates cannot be proven by stills; WU acceptance additionally requires separate code/material evidence for each gate.",
   frames: m.frames.map((f) => ({
     file: f.file,
     frame: f.frame,
@@ -191,7 +200,11 @@ writeFileSync(
   `# ${m.id} — ${wu} ${m.subject}\n\n` +
     `- ts: ${ts}\n- model: ${model}\n- sourceSha: ${sourceSha}\n` +
     `- criteria: v${criteria.version} sha256:${criteriaSha}\n` +
-    `- outcome: **${outcome}**\n\n${verdict}\n`,
+    `- outcome: **${outcome}**\n` +
+    (manualGates.length
+      ? `- manualGates pending (${manualGates.length}): image review cannot prove these; separate evidence required\n`
+      : "") +
+    `\n${verdict}\n`,
 );
 console.log(verdict);
 console.log(`\n[evidence] ${outcome} | ${perReq.filter((p) => p.verdict === "PASS").length}/${reqs.length} criteria PASS${missing.length ? ` | MISSING verdicts: ${missing.join(",")}` : ""}`);

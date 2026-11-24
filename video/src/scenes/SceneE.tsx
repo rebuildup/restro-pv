@@ -154,7 +154,16 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
                 {tile.label} — {tile.sub}
               </div>
               {/* mini recap glyphs: B=筆 strokes, C=works strip, D=ops windows */}
-              <div style={{ position: "absolute", left: 8, right: 8, top: 46, height: TILE_H - 54 }}>
+              <div
+                style={{
+                  position: "absolute",
+                  left: 8,
+                  right: 8,
+                  top: 46,
+                  height: TILE_H - 54,
+                  overflow: "hidden",
+                }}
+              >
                 {tile.label === "B" && (
                   <div
                     style={{
@@ -216,9 +225,20 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
           );
         })}
 
-      {/* ---- hero 筆 (f389-430) ---- */}
+      {/* ---- hero 筆 (f389-430) — clipped to the right zone so separated
+          strokes cannot invade the left brand column ---- */}
       {heroP > 0 && (
-        <div style={{ position: "absolute", inset: 0, opacity: heroP }}>
+        <div
+          style={{
+            position: "absolute",
+            left: 480,
+            top: 0,
+            width: 600,
+            height: 1080,
+            opacity: heroP,
+            overflow: "hidden",
+          }}
+        >
           <div
             style={{
               position: "absolute",
@@ -226,7 +246,7 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
               top: 0,
               width: comp.width,
               height: comp.height,
-              transform: `${fitFor(600, 720, 780, 520)} scale(${1 + (1 - heroIn) * 0.05})`,
+              transform: `${fitFor(600, 720, 780 - 480, 520)} scale(${1 + (1 - heroIn) * 0.05})`,
               transformOrigin: "0 0",
             }}
           >
@@ -245,18 +265,14 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
         </div>
       )}
 
-      {/* ---- product card (f431-479) ---- */}
+      {/* ---- product lockup (f431-479): typography only, no card chrome —
+          SPEC §11 E rejects web-style framed cards ---- */}
       {cardP > 0 && (
         <div
           style={{
             position: "absolute",
-            left: 600,
-            top: 330,
-            width: 420,
-            padding: "34px 40px",
-            background: "rgba(255,255,255,0.92)",
-            border: "2px solid #111",
-            boxShadow: "0 10px 40px rgba(0,0,0,0.12)",
+            left: 540,
+            top: 300,
             opacity: cardP,
             transform: `translateY(${(1 - cardP) * 18}px)`,
             fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
@@ -283,9 +299,9 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
           })}
           <div
             style={{
-              marginTop: 22,
-              fontSize: 18,
-              color: "#666",
+              marginTop: 26,
+              fontSize: 20,
+              color: "#444",
               opacity: urlP,
             }}
           >
