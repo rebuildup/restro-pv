@@ -26,7 +26,7 @@
 | WU-D | D 実操作録画 | 制作中（素材監査済・再構成へ） | 素材監査 verification/wu-d-mat/AUDIT.md: 3本の録画は実AE操作（分解前後・筆画部品・再処理）を含み Restro UI/アンカー判読可能。デッドタイム区間（master逸脱・同一フレーム反復）を除外して区間編集で構成可能。before/afterはレイヤー構造差で示す素材のため窓キャプション設計が必要。 dumped パッチの対症療法は revert 済（e6c2eb8）、ブランド復帰済。次は authored 左カラム＋録画窓の再構成 |
 | WU-E | E 商品 | 制作中（r4合格撤回） | r4 PASS はユーザー実画像確認で撤回。v5 で hero 右ゾーン クリップ・カードの Web chrome 撤去（組版ロックアップ化）・タイル overflow 修正済。wu-e-r5: 7/9 PASS。残 FAIL は E-1/E-4 = 実 B/C/D コンポの回収タイルで、WU-C/D 未完のため仮素材では合格不可（manualGate でも証明必須） |
 | WU-Q | 独立レビュー基盤 | 技術検証済（v2.1） | criteria v2026-11-25.2: 全WU共通基準 CMN-1..4（ゾーン規律・転換残像・情報階層/装飾抑制・design-baseline 照合）を自動マージ。WU-E に E-4 実コンポタイル・E-5 Web風カード禁止を追加。manualGates で静止画不可証明条件（素材由来・輪郭由来・実操作性）を別証拠必須化。r4 見逃し原因=基準欠落を calib-e-fail-1（FAIL 8/9）で較正済 |
-| #28 | 筆画素材契約 | Issue管理中 | 座標バグで「描画不能」判定が無効だった旨をコメント済。glyph.tsx に sanitizeShapes/cleanShapes/recolorShapes/tintedStrokes を集約し SceneA2/SceneC が利用開始（初歩的な共通化）。契約の正式設計は未着手 |
+| #28 | 筆画素材契約 | 制作中（契約テスト開始） | tests/stroke-contract.test.ts で素材契約を固定: Baseline FUDE=13筆画・bunkai runs4 SPEC指定セット・有限/安定ジオメトリを検証。glyph.tsx の compStrokes/StrokeField/sanitize系が契約の実装。輪郭↔復元筆画の対応証明・座標変換保証の文書化は継続 |
 
 ## 次のアクション
 
