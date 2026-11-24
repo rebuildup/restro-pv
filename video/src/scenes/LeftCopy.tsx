@@ -8,19 +8,15 @@ import React from "react";
 interface Copy {
   head: string[];
   sub?: string;
+  // A1's giant glyph occupies the lower-left zone, so its headline sits
+  // higher; other scenes use the measured left column (y≈600).
+  top?: number;
 }
 
 const COPY: Array<{ from: number; to: number; copy: Copy }> = [
-  {
-    from: 0,
-    to: 1.88,
-    copy: { head: ["文字の輪郭から、", "筆画ごとのシェイプへ。"] },
-  },
-  {
-    from: 1.88,
-    to: 4.21,
-    copy: { head: ["こんな文字分解、", "見たことがありますか？"] },
-  },
+  // A1/A2 headlines are the dumped Heading + text layers (VISIBLE_ONLY in
+  // masterPatch) — they were positioned around the giant glyphs by the
+  // original design, so LeftCopy only covers B onward.
   {
     from: 4.21,
     to: 7.96,
@@ -59,13 +55,13 @@ export const LeftCopy: React.FC<{ t: number }> = ({ t }) => {
   const FADE = 6 / 24;
   const since = t - cur.from;
   const opacity = since < FADE ? since / FADE : 1;
-  const { head, sub } = cur.copy;
+  const { head, sub, top } = cur.copy;
   return (
     <div
       style={{
         position: "absolute",
         left: 40,
-        top: 600,
+        top: top ?? 600,
         width: 400,
         opacity,
         fontFamily: '"Noto Sans JP", sans-serif',

@@ -67,12 +67,15 @@ Remotion 側で制御する。
 
 - A2 [1.875,3.79): `PV A2`/`kai-zoom`/`bunkai` を退避し SceneA2 が交差
   筆画の分離・隠れ部マーカー・ゴーストを描画
-- B [3.9,7.96): STEP draft カード・tab・Lens magnifier・Baseline を退避し
-  SceneB が同一「筆」グリフへ工程ごとの筆画群を累積表示。SPEC §0 が
-  「保護対象」とした STEP カード構造からの逸脱だが、dumped 構造では
-  「同一文字への処理結果の累積」が表現できず受入不合格だったため、
-  SPEC の演出意図（同一文字上に処理結果を時間とともに重ねる）に忠実な
-  authored 実装を採用した。工程ラベル（master idx 166-169）は維持
+- B [3.9,7.96): STEP1-4 draft コンポが実際には同一グリフの色替えのみ
+  （"FUDE outline inset" の fill だけが工程色で異なり、幾何差分なし）と
+  ダンプ検証で判明したため、draft comps・Baseline・Lens magnifier を
+  退避。SceneB が実 Baseline 筆画を dumped 位置に再描画し、SPEC §5 B の
+  工程意味に対応する異種の幾何情報を同一文字上に累積表示する
+  （01 輪郭強調→02 接線延長→03 頂点推定+ルーペ→04 筆画分離・変位）。
+  帯状タブ・STEP border・工程ラベル（master idx 166-169,170,
+  171-177,301-304）は dumped のまま維持し、保護された演出構造を保持。
+  13筆画を4+3+3+3に機械分割する初版は工程意味を持たないため廃止
 - C [7.96,11.71): `PV reel C` を退避し SceneC が縦スクロール窓内に
   Baseline FUDE 筆画で構成した3作品を表示
 - D: dumped `PV ops` の4録画窓は維持し、in-point をダイアログの写らない

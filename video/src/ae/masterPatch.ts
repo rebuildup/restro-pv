@@ -94,16 +94,24 @@ export const STEP_REVEAL: Record<number, number> = {
 };
 
 // Left column replaced by LeftCopy (SPEC §4 per-scene copy): the persistent
-// `description`/`Heading` comps plus the A-scene headline text layers
-// ("こんな文字分解…", "Restro for Ae 2"), which duplicated the authored copy.
+// `description` comp plus the A-scene product taglines, which duplicated or
+// over-stayed the authored copy. The A-scene headlines themselves
+// (`Heading` for A1, text layers 189-191 for A2) are restored via
+// VISIBLE_ONLY — the dumped positions were designed around the giant
+// glyphs and do not collide the way the generic LeftCopy placement did.
 export const LEFT_COLUMN_REPLACED = new Set([
   10, // description
-  15, // Heading
-  189, // Ever seen text come apart like this?
-  190, // こんな文字分解
-  191, // 見たことがありますか？
   192, // After Effects AEGP Plugin & Script
   193, // Restro for Ae 2
+]);
+
+// Layers that render only inside a master-time window [t0, t1), even though
+// they sit in LEFT_COLUMN_REPLACED's sibling set or would otherwise persist.
+export const VISIBLE_ONLY = new Map<number, [number, number]>([
+  [15, [0, 1.88]], // Heading: A1 headline 「文字の輪郭から、筆画ごとのシェイプへ。」
+  [189, [1.88, 4.21]], // A2 headline group
+  [190, [1.88, 4.21]],
+  [191, [1.88, 4.21]],
 ]);
 
 // Master layers always hidden: replaced by authored scene content or debug
@@ -136,17 +144,14 @@ export const SCENE_REPLACED: { comp: string; t0: number; t1: number }[] = [
 
 // Master layers hidden only inside scene windows, by comp name + window.
 export const SCENE_HIDDEN: { indices: number[]; t0: number; t1: number }[] = [
-  // Scene B: the four STEP draft cards, their borders, tab chips, and the
-  // dumped Baseline layer are replaced by the authored cumulative stroke
-  // reveal in SceneB. Step labels (166-169) stay — they carry the captions.
+  // Scene B: the STEP1-4 draft comps are the same glyph recolored (verified
+  // in the dumps — only "FUDE outline inset" fill differs), so they cannot
+  // carry the per-step geometry SPEC §5 B requires. Hide the drafts, the
+  // dumped Baseline layer and the dumped Lens magnifier; SceneB re-renders
+  // the real strokes with cumulative per-step geometry. Tab bands, step
+  // borders and the 01-04 labels stay visible.
   {
-    indices: [
-      170, 171, 172, 173, 174, 175, 176, 177, 178, 179,
-      301, 302, 303, 304,
-      // connector lines / guide grid / dumped magnifier lens that clutter
-      // the authored glyph (SceneB carries its own push-in instead)
-      23, 180, 182, 183, 184, 185, 186, 187,
-    ],
+    indices: [23, 172, 174, 176, 178, 179],
     t0: 3.9,
     t1: 7.96,
   },

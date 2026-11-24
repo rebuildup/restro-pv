@@ -28,6 +28,8 @@ export interface StrokeItem {
   // stroke bbox center in comp space, measured at `poseT`
   center: [number, number];
   bbox: [number, number, number, number];
+  // path vertices in comp space ([x,y] pairs, worldMatrix applied)
+  points: [number, number][];
 }
 
 const SHAPE_GROUP = "ADBE Vector Shape - Group";
@@ -110,8 +112,10 @@ function measureStrokes(
       minY = 1e9,
       maxX = -1e9,
       maxY = -1e9;
+    const worldPts: [number, number][] = [];
     for (const v of pts) {
       const p = transformPoint(w.matrix, v[0], v[1], v[2] ?? 0);
+      worldPts.push([p[0], p[1]]);
       if (p[0] < minX) minX = p[0];
       if (p[0] > maxX) maxX = p[0];
       if (p[1] < minY) minY = p[1];
@@ -122,6 +126,7 @@ function measureStrokes(
       name: layer.name,
       center: [(minX + maxX) / 2, (minY + maxY) / 2],
       bbox: [minX, minY, maxX, maxY],
+      points: worldPts,
     });
   }
   return out;

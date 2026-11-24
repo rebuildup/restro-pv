@@ -13,6 +13,7 @@ import {
   STEP_REVEAL,
   sceneReplaced,
   sceneHidden,
+  VISIBLE_ONLY,
 } from "./ae/masterPatch.ts";
 import { compByIndex } from "./ae/project.ts";
 import { LeftCopy } from "./scenes/LeftCopy.tsx";
@@ -38,6 +39,8 @@ const ctx: RenderCtx = {
   layerFilter: (comp, layer, t) => {
     if (comp.name !== "master") return true;
     if (HIDDEN_ALWAYS.has(layer.index)) return false;
+    const vw = VISIBLE_ONLY.get(layer.index);
+    if (vw) return t >= vw[0] && t < vw[1];
     if (LEFT_COLUMN_REPLACED.has(layer.index)) return false;
     if (sceneHidden(layer.index, t)) return false;
     if (layer.kind === "comp") {

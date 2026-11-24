@@ -220,7 +220,7 @@ const EndCard: React.FC<{ s: number }> = ({ s }) => {
       </div>
       <div
         style={{
-          marginTop: 24,
+          marginTop: 30,
           fontSize: 30,
           fontWeight: 800,
           color: "#c0392b",
@@ -230,11 +230,11 @@ const EndCard: React.FC<{ s: number }> = ({ s }) => {
       </div>
       <div
         style={{
-          marginTop: 10,
-          fontSize: 25,
-          fontWeight: 600,
+          marginTop: 16,
+          fontSize: 18,
+          fontWeight: 500,
           letterSpacing: 0.02,
-          color: "#222",
+          color: "#666",
         }}
       >
         361do.booth.pm/items/9029239
