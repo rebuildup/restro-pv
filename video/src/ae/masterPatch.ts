@@ -67,33 +67,33 @@ export function applyMasterPatches(): void {
   }
 }
 
-// Scene-B step reveal schedule (comp seconds). Each step's UI group —
-// label, tab, border, card-matted draft, and the Baseline strokes for the
-// final step — appears at its slot and persists (cumulative, per SPEC §5 B).
-// The dump carries the per-step geometry (STEP1 outline / STEP2 extend /
-// STEP3 infer / STEP4 split drafts plus the Baseline rig); this schedule
-// reproduces the AE-side reveal timing the dump does not encode.
+// Scene-B tab reveal schedule (comp seconds): the four tab backgrounds
+// (clones 301-304) highlight progressively as each step becomes active.
+// Everything else in the B window that the dump cannot render — step
+// labels (static "した" text), STEP drafts, Baseline, STEP cards, the
+// Lens magnifier comp — is hidden by B_HIDDEN and re-authored by SceneB.
 export const STEP_REVEAL: Record<number, number> = {
-  // labels "01..04" (master idx 169,168,167,166)
-  169: 4.25,
-  168: 5.15,
-  167: 6.05,
-  166: 6.95,
-  // borders (177,175,173,171)
-  177: 4.25,
-  175: 5.15,
-  173: 6.05,
-  171: 6.95,
-  // drafts (178 STEP1 outline, 176 STEP2, 174 STEP3, 172 STEP4)
-  178: 4.25,
-  176: 5.15,
-  174: 6.05,
-  172: 6.95,
-  // Baseline final strokes join at step 4
-  179: 6.95,
-  // tab clones (300+k -> step k)
   301: 4.25,
   302: 5.15,
   303: 6.05,
   304: 6.95,
 };
+
+// Master layers hidden only inside the scene-B window [3.9, 7.96):
+//   166-169 step labels (dumped text is final-state "した"; SceneB authors
+//     the 中->した progression), 172-179 STEP drafts + Baseline (FUDE rigs
+//     evaluate to opacity 0 — invisible), 264-267 STEP cards, 23 Lens
+//     magnifier comp (children are the same invisible drafts), 9 LENS
+//     frame. Step borders 171-177 and tab clones stay visible.
+export const B_HIDDEN = new Set([
+  9, 23, 166, 167, 168, 169, 172, 174, 176, 178, 179, 264, 265, 266, 267,
+]);
+export const B_WINDOW: [number, number] = [3.9, 7.96];
+
+// Scene-E: the dumped PV end comp lays its product copy out at x≈124 in the
+// left column with no card frame, colliding with the persistent brand
+// titles; the beats show a bordered card on the right. Hide the whole comp
+// layer and let SceneE author the card. Its "restored character" child is
+// a FUDE rig that evaluates to opacity 0 anyway.
+export const E_HIDDEN = new Set([12]); // PV end
+export const E_WINDOW: [number, number] = [15.46, 20.0];
