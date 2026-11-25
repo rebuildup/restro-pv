@@ -786,6 +786,17 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                       color: TITLE_INK,
                     }}
                   >
+                    <span
+                      style={{
+                        fontSize: 18,
+                        fontWeight: 500,
+                        color: "#8a8a8a",
+                        marginRight: 10,
+                        letterSpacing: 1,
+                      }}
+                    >
+                      作例
+                    </span>
                     {title}
                   </span>
                 </div>
