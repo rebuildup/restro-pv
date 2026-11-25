@@ -463,12 +463,12 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
   );
   const p2 = slotPhase(
     u2,
-    { hold: 0.5, decomp: 0.12, anim: 0.24, recomb: 0.08 },
+    { hold: 0.5, decomp: 0.12, anim: 0.24, recomb: 0.13 },
     7.5,
   );
   const p3 = slotPhase(
     u3,
-    { hold: 0.5, decomp: 0.12, anim: 0.26, recomb: 0.09 },
+    { hold: 0.5, decomp: 0.12, anim: 0.26, recomb: 0.16 },
     5.5,
   );
   const proof1 = p1.proof;
