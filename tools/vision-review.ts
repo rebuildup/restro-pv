@@ -10,7 +10,7 @@ if (!prompt || files.length === 0) {
 }
 const key = process.env.MINIMAX_API_KEY;
 if (!key) throw new Error("MINIMAX_API_KEY not set");
-const model = process.env.VISION_MODEL ?? "MiniMax-M3.1-Flash";
+const model = process.env.VISION_MODEL ?? "MiniMax-M3";
 
 const content: unknown[] = [{ type: "text", text: prompt }];
 for (const f of files) {

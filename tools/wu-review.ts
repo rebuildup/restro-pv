@@ -28,7 +28,7 @@
 //   ts, model, sourceSha (git HEAD), criteriaVersion + criteriaSha256,
 //   frames[{file, frame, sha256}], per-criterion verdicts parsed from the
 //   response, overall PASS only if all criteria PASS.
-// Env: MINIMAX_API_KEY, VISION_MODEL (default MiniMax-M3.1-Flash)
+// Env: MINIMAX_API_KEY, VISION_MODEL (default MiniMax-M3)
 import { readFileSync, appendFileSync, mkdirSync, writeFileSync, existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { execSync } from "node:child_process";
@@ -107,7 +107,7 @@ const criteriaSha = sha256(criteriaRaw);
 
 const key = process.env.MINIMAX_API_KEY;
 if (!key) throw new Error("MINIMAX_API_KEY not set");
-const model = process.env.VISION_MODEL ?? "MiniMax-M3.1-Flash";
+const model = process.env.VISION_MODEL ?? "MiniMax-M3";
 
 const frameList = m.frames
   .map((f, i) => `画像${i + 1}: frame ${f.frame}${f.note ? ` (${f.note})` : ""} — ${f.file}`)
