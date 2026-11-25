@@ -5,42 +5,59 @@ import {
   StrokeField,
   ContourField,
   strokeContours,
-  strokeRings,
   clamp01,
   easeOutCubic,
   easeOutBack,
-  seg,
+  groupMatrixFor,
 } from "./glyph.tsx";
 import type { StrokeItem, ContourPath } from "./glyph.tsx";
-import type { CompSpec } from "../../../pv/model/types.ts";
+import type { CompSpec, PropNode } from "../../../pv/model/types.ts";
+import { child, children, evalVec } from "../ae/eval.ts";
+import { worldMatrix } from "../ae/transform.ts";
+import {
+  mIdentity,
+  mMultiply,
+  transformPoint,
+  type Mat4,
+} from "../ae/mat4.ts";
 
-// Scene B [3.9, 7.96) per SPEC §5 B. Every step now shows a REAL geometric
-// addition derived from the dumped Restro output (Baseline comp), not a
-// recolor of identical strokes:
+// Scene B [3.9, 7.96) per SPEC §5 B. Every step now shows REAL Restro
+// intermediate geometry recovered from the pre-wipe checkpoint comps — the
+// actual layers the plugin/AE pipeline produced for each processing stage,
+// not geometry back-computed from the finished strokes:
 //
-//   step 0 輪郭を解析     — only the character contour: "FUDE outline base"
-//                        (the outline Restro analyzed) as a solid silhouette
-//                        + its bezier contour stroked on top.
-//   step 1 輪郭線を延長   — the 13 decomposed stroke shells appear as draft
-//                        contours (real stroke-boundary geometry) inside the
-//                        now-translucent silhouette.
-//   step 2 隠れた頂点を推定 — junction markers pop in at REAL stroke-outline
-//                        crossing points computed from the stroke polygons
-//                        (the observable equivalent of the solver's inferred
-//                        vertices), and the lens magnifies that junction zone.
-//   step 3 一画ずつに分割 — the strokes fill in staggered, each slightly
-//                        displaced from the shared position and individually
-//                        tinted, with one stroke selected; analysis layers
-//                        recede to ghosts instead of being cut away.
+//   comp "STEP3 infer [checkpoint before wipe removal]" (20s, master-time
+//   aligned, same 1080 space as the glyph) carries the real pipeline state:
+//     FUDE outline inset / FUDE outline base — the extracted character
+//       contours (13 bezier paths each, real outline-analysis output)
+//     FUDE extend A / FUDE extend B — the real extended contour strokes
+//       (6 + 12 stroked paths) drawn for 輪郭線を延長
+//     FUDE inferred — Restro's own inferred-region render (green inferred
+//       fills at 70%, black strokes, inferred-vertex ellipses)
+//     FUDE points — 29 ellipse markers = the inferred vertex positions the
+//       solver emitted (size-0 debug ellipses; we plot their real centers)
+//     FUDE S01..S13 — the decomposed stroke set (final reconstruction)
+//   comp "STEP1 outline [checkpoint before wipe removal]" adds:
+//     FUDE scanline — the real horizontal scan line (layer Position keyed
+//       y223->y980 over 4.30-4.95s) swept across the glyph during 輪郭を解析
 //
-// The lens (SPEC: belongs to 頂点を推定) magnifies the same layered scene at
-// a focal point chosen among the measured crossings, positioned to avoid the
-// step tabs (y197-336) and the left description column.
+//   step 0 輪郭を解析     — scanline sweep + the real extracted outline
+//                        (base silhouette + inset/base contours, red role).
+//   step 1 輪郭線を延長   — the real FUDE extend A/B contour strokes draw in
+//                        staggered (green role).
+//   step 2 隠れた頂点を推定 — FUDE inferred regions + the 29 real inferred
+//                        vertex markers (blue role); the lens magnifies the
+//                        strongest real-point cluster.
+//   step 3 一画ずつに分割 — the 13 real strokes fill in staggered, displaced
+//                        and individually tinted; analysis layers cut out.
+//
+// The lens belongs to the vertex-estimation step; it is parked in the free
+// bottom-left strip (below the description comp, left of the glyph) so it
+// covers neither the step tabs, the left body text, nor the focal cluster.
 
 const T0 = 3.9;
 const T1 = 7.96;
 const STEP_T = [4.25, 5.15, 6.05, 6.95];
-const LENS_IN = 6.0;
 const STEP_LABELS = [
   "輪郭を解析",
   "輪郭線を延長",
@@ -60,12 +77,19 @@ const LABEL_POS = [
   [560, 288],
   [560, 327],
 ] as const;
-// lens: parked in the free strip under the glyph's bottom edge so it covers
-// neither the step tabs, the left-column body text, nor the focal junction
-// it magnifies; a thin dashed leader connects it to that junction. The
-// focal comp point is the strongest measured junction cluster.
-const LENS = { x: 700, y: 1024, r: 42, zoom: 2.6 };
-const LENS_FOCAL_HINT: [number, number] = [975, 855];
+// lens: bottom-center, fully inside the frame (cy+r+border <= ~1070),
+// overlapping only the glyph's bottom margin. During the vertex step that
+// strip holds no analysis content (extends/inferred/markers end ~y925
+// screen, stroke bottoms ~y979), while the strip below the glyph is too
+// shallow for a meaningful magnifier and the left column is filled with
+// description text down to the frame edge.
+const LENS = { x: 775, y: 965, r: 62, zoom: 3.0 };
+
+// Restro pipeline comps (checkpoint = state before the wipe-removal pass
+// stripped the analysis layers from the STEP drafts).
+const PROC_COMP = "STEP3 infer [checkpoint before wipe removal]";
+const SCAN_COMP = "STEP1 outline [checkpoint before wipe removal]";
+const POSE = 6.0; // static rest pose for measurement/render of unkeyed layers
 
 // Fit the measured stroke bbox into the beats layout: the giant 筆 stays on
 // the right with its top BELOW the step-tab strip (bars end at y≈340, labels
@@ -83,98 +107,64 @@ function glyphFit(strokes: StrokeItem[]): { tx: number; ty: number; s: number } 
     }
   }
   const h = maxY - minY || 1;
-  // 575px glyph height keeps the right edge inside the frame even after the
-  // step-4 outward displacement (right edge lands ~x1070, not cropped)
   const s = 575 / h;
   const tx = 478 - minX * s;
-  // stroke top lands at y=404; the outline silhouette extends ~40px higher,
-  // keeping ~20px clear of the step labels (which end at y≈344)
   const ty = 404 - minY * s;
   return { tx, ty, s };
 }
 
-// ---- junction detection -----------------------------------------------------
-// Observable "inferred vertices": points where the outlines of two different
-// decomposed strokes cross inside the glyph. Computed only from the real
-// stroke polygons — this is geometry the solver actually produced, not an
-// algorithm-internal claim.
+// ---- real inferred-vertex extraction ---------------------------------------
+// "FUDE points" stores the solver's inferred vertices as 29 size-0 ellipse
+// markers. Ellipse geometry is never emitted as paths, so we walk the vector
+// tree exactly like glyph.tsx's contour collector and read each ellipse
+// center through the same group/world matrix composition — the positions
+// ARE Restro's output, only repainted as markers.
 
-function segInt(
-  a: [number, number],
-  b: [number, number],
-  c: [number, number],
-  d: [number, number],
-): [number, number] | null {
-  const rx = b[0] - a[0];
-  const ry = b[1] - a[1];
-  const sx = d[0] - c[0];
-  const sy = d[1] - c[1];
-  const den = rx * sy - ry * sx;
-  if (Math.abs(den) < 1e-9) return null;
-  const t = ((c[0] - a[0]) * sy - (c[1] - a[1]) * sx) / den;
-  const u = ((c[0] - a[0]) * ry - (c[1] - a[1]) * rx) / den;
-  if (t < 0.001 || t > 0.999 || u < 0.001 || u > 0.999) return null;
-  return [a[0] + t * rx, a[1] + t * ry];
+const ELLIPSE = "ADBE Vector Shape - Ellipse";
+const TRANSFORM_GROUP = "ADBE Vector Transform Group";
+const SHAPE_GROUP = "ADBE Vector Shape - Group";
+const VECTOR_GROUP = "ADBE Vector Group";
+const VECTORS_GROUP = "ADBE Vectors Group";
+
+function collectEllipseCenters(
+  node: PropNode,
+  m: Mat4,
+  t: number,
+  wm: Mat4,
+  out: number[][],
+): void {
+  for (const k of children(node)) {
+    if (k.matchName === TRANSFORM_GROUP) continue;
+    const sub = children(k);
+    const tf = sub.find((c) => c.matchName === TRANSFORM_GROUP);
+    const m2 = tf ? mMultiply(m, groupMatrixFor(tf, t)) : m;
+    if (k.matchName === ELLIPSE) {
+      const ep = evalVec(child(k, "ADBE Vector Ellipse Position"), t, 2);
+      const M = mMultiply(wm, m2);
+      out.push(transformPoint(M, ep[0] ?? 0, ep[1] ?? 0, 0));
+      continue;
+    }
+    if (
+      k.matchName === VECTOR_GROUP ||
+      k.matchName === VECTORS_GROUP ||
+      k.matchName === SHAPE_GROUP ||
+      (k.properties ?? []).length > 0
+    ) {
+      collectEllipseCenters(k, m2, t, wm, out);
+    }
+  }
 }
 
-interface Junction {
-  x: number;
-  y: number;
-  n: number;
-}
-
-function computeJunctions(rings: [number, number][][][]): Junction[] {
-  const pts: { x: number; y: number }[] = [];
-  for (let i = 0; i < rings.length; i++) {
-    for (let j = i + 1; j < rings.length; j++) {
-      for (const ra of rings[i]) {
-        const na = ra.length;
-        for (const rb of rings[j]) {
-          const nb = rb.length;
-          for (let a = 0; a < na; a++) {
-            const a0 = ra[a];
-            const a1 = ra[(a + 1) % na];
-            for (let b = 0; b < nb; b++) {
-              const p = segInt(a0, a1, rb[b], rb[(b + 1) % nb]);
-              if (p) pts.push({ x: p[0], y: p[1] });
-            }
-          }
-        }
-      }
-    }
-  }
-  // cluster crossings (each stroke pair crosses twice -> enter/exit)
-  const clusters: { x: number; y: number; n: number }[] = [];
-  for (const p of pts) {
-    let best = -1;
-    let bd = 1e9;
-    for (let c = 0; c < clusters.length; c++) {
-      const d = Math.hypot(p.x - clusters[c].x, p.y - clusters[c].y);
-      if (d < bd) {
-        bd = d;
-        best = c;
-      }
-    }
-    if (best >= 0 && bd < 14) {
-      const c = clusters[best];
-      c.x = (c.x * c.n + p.x) / (c.n + 1);
-      c.y = (c.y * c.n + p.y) / (c.n + 1);
-      c.n++;
-    } else {
-      clusters.push({ x: p.x, y: p.y, n: 1 });
-    }
-  }
-  clusters.sort((a, b) => b.n - a.n);
-  // keep a readable subset: strongest first, min separation so markers do
-  // not pile up on the same crossing zone
-  const picked: Junction[] = [];
-  for (const c of clusters) {
-    if (picked.length >= 5) break;
-    if (picked.every((p) => Math.hypot(p.x - c.x, p.y - c.y) > 90)) {
-      picked.push(c);
-    }
-  }
-  return picked;
+function inferredPoints(comp: CompSpec, t: number): [number, number][] {
+  const layer = comp.layers.find((l) => l.name === "FUDE points");
+  if (!layer?.shapes) return [];
+  const cache = new Map<number, ReturnType<typeof worldMatrix>>();
+  const w = worldMatrix(layer, comp.layers, t, cache);
+  const pts: number[][] = [];
+  collectEllipseCenters(layer.shapes, mIdentity(), t, w.matrix, pts);
+  return pts
+    .map((p) => [p[0], p[1]] as [number, number])
+    .filter((p) => isFinite(p[0]) && isFinite(p[1]));
 }
 
 // ---- per-stroke step-4 presentation -----------------------------------------
@@ -208,52 +198,78 @@ function strokeOrderIndex(name: string): number {
 
 interface BData {
   comp: CompSpec;
+  scanComp: CompSpec;
   strokes: StrokeItem[];
-  outline: StrokeItem;
-  outlineRed: StrokeItem;
-  strokeContours: ContourPath[][];
-  outlineContours: ContourPath[];
-  junctions: Junction[];
-  lensFocal: [number, number];
+  outlineBase: StrokeItem;
+  outlineInset: StrokeItem;
+  extendA: ContourPath[];
+  extendB: ContourPath[];
+  inferred: StrokeItem;
+  inferredContours: ContourPath[];
+  outlineBaseContours: ContourPath[];
+  outlineInsetContours: ContourPath[];
+  points: [number, number][];
+  scanline: StrokeItem;
+  outlineBaseTint: StrokeItem;
+  edgeContours: ContourPath[][];
+  selContours: ContourPath[];
   finalItems: StrokeItem[];
   edgeColors: string[]; // darker per-stroke edge tone matching finalItems
   selIndex: number;
   rankOf: number[]; // strokes[] index -> writing-order rank
   displace: [number, number][]; // strokes[] index -> comp-space offset at full reveal
   glyphCenter: [number, number];
-  strokeBBox: [number, number, number, number]; // comp-space union of stroke points
 }
 
 let cached: BData | null = null;
 
 function glyphData(): BData {
   if (cached) return cached;
-  const { comp, strokes } = compStrokes("Baseline", {
+  const { comp, strokes } = compStrokes(PROC_COMP, {
     pattern: /^FUDE S\d+/,
-    poseT: 0.5,
+    poseT: POSE,
   });
-  const outlineRes = compStrokes("Baseline", {
+  const outlineBaseRes = compStrokes(PROC_COMP, {
     pattern: /^FUDE outline base/,
-    poseT: 0.5,
+    poseT: POSE,
   });
-  const outline = outlineRes.strokes[0];
-  if (!outline) throw new Error("FUDE outline base not found");
+  const outlineInsetRes = compStrokes(PROC_COMP, {
+    pattern: /^FUDE outline inset/,
+    poseT: POSE,
+  });
+  const outlineBase = outlineBaseRes.strokes[0];
+  const outlineInset = outlineInsetRes.strokes[0];
+  if (!outlineBase || !outlineInset)
+    throw new Error("FUDE outline base/inset not found");
 
-  const contours = strokes.map((s) => strokeContours(comp, s));
-  const outlineContours = strokeContours(comp, outline);
-  const rings = strokes.map((s) => strokeRings(comp, s));
-  const junctions = computeJunctions(rings);
-  // lens focal: strongest junction in the LOWER half of the glyph so the
-  // leader line from the bottom lens stays in the free strip under the
-  // strokes instead of crossing the character body
-  const jys = junctions.map((j) => j.y).sort((a, b) => a - b);
-  const jMidY = jys.length ? jys[Math.floor(jys.length / 2)] : 0;
-  const lower = junctions.filter((j) => j.y > jMidY);
-  const pool = lower.length ? lower : junctions;
-  const focalJ: Junction | undefined = pool[0]; // picked[] is n-sorted
-  const lensFocalPt: [number, number] = focalJ
-    ? [focalJ.x, focalJ.y]
-    : LENS_FOCAL_HINT;
+  const extendAItem = compStrokes(PROC_COMP, {
+    pattern: /^FUDE extend A/,
+    poseT: POSE,
+  }).strokes[0];
+  const extendBItem = compStrokes(PROC_COMP, {
+    pattern: /^FUDE extend B/,
+    poseT: POSE,
+  }).strokes[0];
+  const inferredItem = compStrokes(PROC_COMP, {
+    pattern: /^FUDE inferred/,
+    poseT: POSE,
+  }).strokes[0];
+  if (!extendAItem || !extendBItem || !inferredItem)
+    throw new Error("FUDE extend/inferred not found");
+
+  const scanRes = compStrokes(SCAN_COMP, {
+    pattern: /^FUDE scanline/,
+    poseT: POSE,
+  });
+  const scanline = scanRes.strokes[0];
+  if (!scanline) throw new Error("FUDE scanline not found");
+
+  const outlineBaseContours = strokeContours(comp, outlineBase, POSE);
+  const outlineInsetContours = strokeContours(comp, outlineInset, POSE);
+  const inferredContours = strokeContours(comp, inferredItem, POSE);
+  const extendA = strokeContours(comp, extendAItem, POSE);
+  const extendB = strokeContours(comp, extendBItem, POSE);
+  const points = inferredPoints(comp, POSE);
 
   // glyph centroid from stroke bbox centers
   let cx = 0;
@@ -296,8 +312,6 @@ function glyphData(): BData {
   });
 
   // per-stroke yellow-family palette; selected stroke gets a brighter tint.
-  // Wider hue/lightness spread + darker matching edge tone keep the 13
-  // strokes distinguishable as strokes (not one yellow blob) at 1080p.
   const tintOf = (i: number): [number, number, number] => {
     if (i === selIndex) return hslToRgb(52, 0.95, 0.62); // bright selected yellow
     const hue = 47 + ((i * 37) % 11); // ~47..57, clear yellows not oranges
@@ -312,115 +326,140 @@ function glyphData(): BData {
     )})`;
   });
 
-  // union bbox of all stroke points (comp space) — bounds the step-4 stage
-  // frame so it hugs the real reconstructed stroke set.
-  let bbx0 = 1e9, bby0 = 1e9, bbx1 = -1e9, bby1 = -1e9;
-  for (const s of strokes) {
-    for (const [x, y] of s.points) {
-      if (x < bbx0) bbx0 = x;
-      if (x > bbx1) bbx1 = x;
-      if (y < bby0) bby0 = y;
-      if (y > bby1) bby1 = y;
-    }
-  }
-  const strokeBBox: [number, number, number, number] = [bbx0, bby0, bbx1, bby1];
-
-  // red-tinted silhouette clone for the outline fill
-  const outlineRed = tintedStrokes([outline], () => {
+  // red-tinted outline-base clone for the silhouette fill (real extracted
+  // outline, recolored to the step-0 analysis role)
+  const outlineBaseTint = tintedStrokes([outlineBase], () => {
     const n = parseInt(ANALYSIS_RED.slice(1), 16);
     return [(n >> 16) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
   })[0];
 
+  // red-tinted scanline clone (real scan path, recolored to analysis red and
+  // widened so the sweep reads at 1080p)
+  const scanRed = tintedStrokes([scanline], () => {
+    const n = parseInt(ANALYSIS_RED.slice(1), 16);
+    return [(n >> 16) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+  })[0];
+  widenStroke(scanRed.layer.shapes, 5);
+
   cached = {
     comp,
+    scanComp: scanRes.comp,
     strokes,
-    outline,
-    outlineRed,
-    strokeContours: contours,
-    outlineContours,
-    junctions,
-    lensFocal: lensFocalPt,
+    outlineBase,
+    outlineInset,
+    extendA,
+    extendB,
+    inferred: inferredItem,
+    inferredContours,
+    outlineBaseContours,
+    outlineInsetContours,
+    points,
+    scanline: scanRed,
+    outlineBaseTint,
+    edgeContours: strokes.map((s) => strokeContours(comp, s, POSE)),
+    selContours: strokes.length
+      ? strokeContours(comp, strokes[selIndex], POSE)
+      : [],
     finalItems,
     edgeColors,
     selIndex,
     rankOf,
     displace,
     glyphCenter,
-    strokeBBox,
   };
   return cached;
 }
 
-// per-step scalar blend: target values per step, eased over 0.3s after each
-// step boundary
-function stepBlend(t: number, vals: number[]): number {
-  const step = Math.max(
+// bump every vector stroke width in a shape tree (comp units)
+function widenStroke(node: PropNode | undefined, w: number): void {
+  if (!node) return;
+  if (node.matchName === "ADBE Vector Stroke Width") {
+    node.value = w;
+    node.keys = undefined;
+  }
+  for (const p of node.properties ?? []) widenStroke(p, w);
+}
+
+// current step index from STEP_T boundaries
+function stepIndex(t: number): number {
+  return Math.max(
     0,
     STEP_T.reduce((acc, st, i) => (t >= st ? i : acc), 0),
   );
-  if (step === 0) return vals[0];
-  const prev = STEP_T[step - 1];
-  const p = easeOutCubic(clamp01((t - prev) / 0.3));
-  return vals[step - 1] * (1 - p) + vals[step] * p;
 }
+
+// per-step target value lookup (instant step semantics; ramps are applied
+// separately where a transition is wanted)
+function stepVal(t: number, vals: number[]): number {
+  return vals[stepIndex(t)];
+}
+
+const ramp = (t: number, a: number, b: number) =>
+  easeOutCubic(clamp01((t - a) / (b - a)));
 
 export const SceneB: React.FC<{ t: number }> = ({ t }) => {
   if (t < T0 || t >= T1) return null;
   const d = glyphData();
   if (!d.strokes.length) return null;
 
-  const appear = easeOutCubic(seg(t, T0 + 0.05, T0 + 0.5));
-  const step = Math.max(
-    0,
-    STEP_T.reduce((acc, st, i) => (t >= st ? i : acc), 0),
-  );
+  const appear = ramp(t, T0 + 0.05, T0 + 0.5);
+  const step = stepIndex(t);
   const fit = glyphFit(d.strokes);
   const tf = `translate(${fit.tx}px, ${fit.ty}px) scale(${fit.s})`;
 
   // ---- analysis layer visibility -------------------------------------------
-  // Each analysis layer recedes as the NEXT step takes over, so frames never
-  // stack every previous step's geometry at full strength.
-  // Hard gate: the moment reconstruction (step4) begins, every analysis
-  // layer — silhouette, drafts, junction markers, lens, leader — is gone.
-  // The last step shows only the reconstructed strokes.
-  const analysisGate = t < STEP_T[3] ? 1 : 0;
-  // red analysis layer is exclusive to step0: it drops to a barely-there
-  // ghost right after 輪郭を解析 so later steps read as their own filter
-  const outlineFillOp = stepBlend(t, [0.92, 0.05, 0.02, 0]) * appear * analysisGate;
-  const outlineContourOp = stepBlend(t, [0.95, 0.07, 0.03, 0]) * appear * analysisGate;
+  // Analysis layers fade out over the last few frames BEFORE reconstruction
+  // begins so the step4 boundary is a natural hand-off, not a hard pop.
+  const analysisGate = 1 - ramp(t, STEP_T[3] - 0.07, STEP_T[3] + 0.18);
 
-  // draft contours: staggered reveal in writing order at step1, hold as
-  // context through early step2 (markers sit on them), then recede to a
-  // faint ghost once the real strokes are reconstructed at step3.
-  const draftHold =
-    1 - 0.88 * easeOutCubic(clamp01((t - STEP_T[2]) / 0.45));
-  // hard fade to zero once reconstruction starts — step4 must show only
-  // the real strokes, no ghost analysis lines
-  const draftClear =
-    1 - easeOutCubic(clamp01((t - STEP_T[3]) / 0.35));
-  const draftGlobal = draftHold * draftClear * analysisGate;
-  const draftOp = (i: number) => {
-    const r = d.rankOf[i];
-    const p = easeOutCubic(
-      clamp01((t - (STEP_T[1] + r * 0.04)) / 0.3),
-    );
-    return p * draftGlobal * appear;
+  // step0: real extracted outline (red analysis role). The silhouette fill
+  // rides the scene fade-in so the SAME giant 筆 is already present at the
+  // B boundary (f101); the contour detail still waits for the scan beat.
+  const outlineFillOp =
+    stepVal(t, [0.9, 0.05, 0.02, 0]) *
+    ramp(t, T0 + 0.12, T0 + 0.62) *
+    appear *
+    analysisGate;
+  const outlineContourOp =
+    stepVal(t, [0.95, 0.08, 0.04, 0]) *
+    ramp(t, 4.4, 5.0) *
+    appear *
+    analysisGate;
+  const insetContourOp =
+    stepVal(t, [0.7, 0.35, 0.08, 0]) *
+    ramp(t, 4.55, 5.1) *
+    appear *
+    analysisGate;
+
+  // real scanline sweep: visible only through the 輪郭を解析 window
+  const scanOp =
+    ramp(t, 4.28, 4.42) * (1 - ramp(t, 4.95, 5.4)) * appear;
+
+  // step1: real extended contours — staggered reveal in dump order, hold as
+  // context into step2, recede before reconstruction
+  const extendPaths = [...d.extendA, ...d.extendB];
+  const extendOp = (i: number) => {
+    const reveal = ramp(t, STEP_T[1] + i * 0.03, STEP_T[1] + i * 0.03 + 0.3);
+    const hold = stepVal(t, [0, 1, 0.45, 0]);
+    return reveal * hold * appear * analysisGate;
   };
 
-  // junction markers: pop in at step2, fade during step3
-  const markerGlobal =
-    (step < 3 ? 1 : 1 - easeOutCubic(clamp01((t - STEP_T[3]) / 0.3))) *
+  // step2: Restro's own inferred render + the 29 real inferred vertex markers
+  const inferOp =
+    ramp(t, STEP_T[2] + 0.06, STEP_T[2] + 0.36) *
+    stepVal(t, [0, 0, 1, 0]) *
+    appear *
     analysisGate;
   const markerOp = (j: number) => {
-    const p = easeOutCubic(
-      clamp01((t - (STEP_T[2] + j * 0.05)) / 0.25),
+    const p = easeOutBack(
+      clamp01((t - (STEP_T[2] + 0.1 + j * 0.04)) / 0.22),
     );
-    return p * markerGlobal * appear;
+    return clamp01(p) * stepVal(t, [0, 0, 1, 0]) * appear * analysisGate;
   };
 
-  // final strokes: staggered fill+separation at step3
+  // step3: separated strokes on the same character
   const strokeP = (i: number) =>
-    easeOutCubic(clamp01((t - (STEP_T[3] + d.rankOf[i] * 0.025)) / 0.28));
+    ramp(t, STEP_T[3] + d.rankOf[i] * 0.025, STEP_T[3] + d.rankOf[i] * 0.025 + 0.28);
   const finalOp = (i: number) => strokeP(i) * appear;
   const selOp = strokeP(d.selIndex) * appear;
 
@@ -431,15 +470,53 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
     return { active, done };
   });
 
-  const lensPop = easeOutBack(clamp01((t - LENS_IN) / 0.18));
-  // lens + leader belong to the vertex-estimation step only; they cut out
-  // with the other analysis layers when reconstruction begins
-  const showLens = t >= LENS_IN && t < STEP_T[3];
-  // focal junction in screen space (same fit as the glyph layer)
-  const focalSX = d.lensFocal[0] * fit.s + fit.tx;
-  const focalSY = d.lensFocal[1] * fit.s + fit.ty;
-  // leader line: from the lens rim to the focal point, so the magnifier is
-  // anchored to a real junction instead of floating over empty space
+  // lens focal: centroid of the densest cluster of REAL inferred vertices
+  // (the solver's x≈911/985 junction columns). The lens magnifies an actual
+  // inferred-vertex zone, and the leader stays short and visible.
+  let focalComp: [number, number] | null = null;
+  if (d.points.length) {
+    let bestI = 0;
+    let bestN = -1;
+    for (let i = 0; i < d.points.length; i++) {
+      let n = 0;
+      for (let j = 0; j < d.points.length; j++) {
+        if (
+          Math.hypot(d.points[i][0] - d.points[j][0], d.points[i][1] - d.points[j][1]) <
+          120
+        )
+          n++;
+      }
+      if (n > bestN) {
+        bestN = n;
+        bestI = i;
+      }
+    }
+    let sx = 0;
+    let sy = 0;
+    let n = 0;
+    for (const p of d.points) {
+      if (
+        Math.hypot(p[0] - d.points[bestI][0], p[1] - d.points[bestI][1]) < 120
+      ) {
+        sx += p[0];
+        sy += p[1];
+        n++;
+      }
+    }
+    focalComp = [sx / n, sy / n];
+  }
+  const focalSX = focalComp ? focalComp[0] * fit.s + fit.tx : LENS.x + 200;
+  const focalSY = focalComp ? focalComp[1] * fit.s + fit.ty : LENS.y - 200;
+  // comp-space focal for the lens inner transform (fallback: un-project the
+  // screen fallback through the same fit)
+  const focalCompPt: [number, number] = focalComp ?? [
+    (focalSX - fit.tx) / fit.s,
+    (focalSY - fit.ty) / fit.s,
+  ];
+
+  const lensPop = easeOutBack(clamp01((t - (STEP_T[2] + 0.1)) / 0.2));
+  const showLens = t >= STEP_T[2] + 0.1 && t < STEP_T[3] + 0.2;
+  // leader line: from the lens rim to the focal point
   const leadDX = focalSX - LENS.x;
   const leadDY = focalSY - LENS.y;
   const leadLen = Math.hypot(leadDX, leadDY) || 1;
@@ -447,54 +524,94 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
   const leadY0 = LENS.y + (leadDY / leadLen) * (LENS.r + 6);
 
   // shared comp-space layer stack (main view and lens magnifier).
-  // lensBoost>1 raises the faint analysis layers inside the magnifier so
-  // the lens actually shows the contours the junctions were measured on.
+  // lensBoost>1 raises the faint analysis layers inside the magnifier so the
+  // lens actually shows the real inferred geometry it points to.
   const glyphLayers = (lensBoost: number) => (
     <>
-      {/* step0+: character silhouette (contour region) */}
+      {/* step0: real extracted outline — red silhouette + bold contour */}
       <StrokeField
         comp={d.comp}
-        strokes={[d.outlineRed]}
-        poseT={0.5}
+        strokes={[d.outlineBaseTint]}
+        poseT={POSE}
         opacity={Math.min(1, outlineFillOp * lensBoost)}
       />
       <ContourField
         comp={d.comp}
-        contours={[d.outlineContours]}
+        contours={[d.outlineBaseContours]}
         color={ANALYSIS_RED}
-        width={5}
+        width={6.5}
         opacity={Math.min(1, outlineContourOp * lensBoost)}
       />
-      {/* step1+: per-stroke draft contours */}
       <ContourField
         comp={d.comp}
-        contours={d.strokeContours}
-        color={DRAFT_GREEN}
-        width={3.4}
-        itemOpacity={(i) => Math.min(1, draftOp(i) * lensBoost)}
+        contours={[d.outlineInsetContours]}
+        color={ANALYSIS_RED}
+        width={3}
+        opacity={Math.min(1, insetContourOp * lensBoost)}
       />
-      {/* step2+: junction markers at real stroke crossings */}
+      {/* step0: real Restro scanline sweep (animated layer position).
+          The dumped sweep starts at comp y223 — above the glyph top — which
+          would cross the step-tab band; clip the render to comp y>=310 so
+          the visible sweep begins at the glyph's top edge, same as a
+          viewport/mask bound. */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          clipPath: "inset(310px 0 0 0)",
+        }}
+      >
+        <StrokeField
+          comp={d.scanComp}
+          strokes={[d.scanline]}
+          poseT={t}
+          strokeOpacity={() => scanOp * lensBoost}
+        />
+      </div>
+      {/* step1: real extended contours (FUDE extend A + B), per-path stagger */}
+      <ContourField
+        comp={d.comp}
+        contours={extendPaths.map((p) => [p])}
+        color={DRAFT_GREEN}
+        width={4.5}
+        itemOpacity={(i) => Math.min(1, extendOp(i) * lensBoost)}
+      />
+      {/* step2: Restro's own inferred render (real colors) + blue path read */}
+      <StrokeField
+        comp={d.comp}
+        strokes={[d.inferred]}
+        poseT={POSE}
+        strokeOpacity={() => inferOp * lensBoost}
+      />
+      <ContourField
+        comp={d.comp}
+        contours={[d.inferredContours]}
+        color={VERTEX_BLUE}
+        width={3}
+        opacity={Math.min(1, inferOp * lensBoost)}
+      />
+      {/* step2: the 29 real inferred vertex positions as markers */}
       <svg
         width={d.comp.width}
         height={d.comp.height}
         viewBox={`0 0 ${d.comp.width} ${d.comp.height}`}
         style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}
       >
-        {d.junctions.map((j, ji) => {
-          const p = markerOp(ji);
-          if (p <= 0) return null;
-          const r = 8 + 5 * p;
+        {d.points.map((p, j) => {
+          const op = markerOp(j);
+          if (op <= 0) return null;
+          const r = 9 + 4 * op;
           return (
-            <g key={ji} opacity={p}>
+            <g key={j} opacity={op}>
               <circle
-                cx={j.x}
-                cy={j.y}
+                cx={p[0]}
+                cy={p[1]}
                 r={r}
                 fill="none"
                 stroke={VERTEX_BLUE}
-                strokeWidth={3.2}
+                strokeWidth={3}
               />
-              <circle cx={j.x} cy={j.y} r={3} fill={VERTEX_BLUE} />
+              <circle cx={p[0]} cy={p[1]} r={3.2} fill={VERTEX_BLUE} />
             </g>
           );
         })}
@@ -503,7 +620,7 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
       <StrokeField
         comp={d.comp}
         strokes={d.finalItems}
-        poseT={0.5}
+        poseT={POSE}
         strokeTransform={(item, i) => {
           const p = strokeP(i);
           if (p >= 1) return undefined;
@@ -516,7 +633,7 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
           flat rectangles; same reveal + displacement as the fills */}
       <ContourField
         comp={d.comp}
-        contours={d.strokeContours}
+        contours={d.edgeContours}
         color="#4a3a12"
         width={2.6}
         itemColor={(i) => d.edgeColors[i]}
@@ -532,7 +649,7 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
           inspected one */}
       <ContourField
         comp={d.comp}
-        contours={[d.strokeContours[d.selIndex]]}
+        contours={[d.selContours]}
         color="#111"
         width={4}
         opacity={selOp}
@@ -587,7 +704,7 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
       {/* step tabs: white bars revealed progressively (dumped geometry) */}
       {LABEL_POS.map(([x, cy], i) => {
         const revealed = t >= STEP_T[i];
-        const p = easeOutCubic(clamp01((t - STEP_T[i]) / 0.25));
+        const p = ramp(t, STEP_T[i], STEP_T[i] + 0.25);
         const active = labelStates[i].active && !labelStates[i].done;
         return (
           <div
@@ -631,11 +748,12 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
             style={{
               position: "absolute",
               left: x,
-              top: y - 17,
+              top: y - 16,
               fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
               fontSize: 30,
               fontWeight: 700,
-              color: s.active ? "#111" : future ? "#b5b5b5" : "#555",
+              lineHeight: 1.15,
+              color: s.active ? "#111" : future ? "#9a9a9a" : "#4a4a4a",
               whiteSpace: "nowrap",
               textShadow: "0 0 5px #fff, 0 0 5px #fff",
               // WU-A r3: labels were fully opaque from t=3.9 even though the
@@ -651,38 +769,9 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
         );
       })}
 
-      {/* lens leader: thin line from lens rim to the focal junction */}
-      {showLens && (
-        <svg
-          width={1080}
-          height={1080}
-          style={{ position: "absolute", left: 0, top: 0, pointerEvents: "none" }}
-        >
-          <line
-            x1={leadX0}
-            y1={leadY0}
-            x2={focalSX}
-            y2={focalSY}
-            stroke={VERTEX_BLUE}
-            strokeWidth={2.5}
-            strokeDasharray="7 6"
-            opacity={0.75 * Math.min(1, lensPop)}
-          />
-          <circle
-            cx={focalSX}
-            cy={focalSY}
-            r={7}
-            fill="none"
-            stroke={VERTEX_BLUE}
-            strokeWidth={2.5}
-            opacity={Math.min(1, lensPop)}
-          />
-        </svg>
-      )}
-
-      {/* lens: magnifies the junction zone where inferred vertices appear;
-          parked in the empty bottom-left column — covers neither the tabs,
-          the body text, nor the focal point itself */}
+      {/* lens: magnifies the real inferred-vertex cluster; sits over the
+          glyph's empty bottom margin — covers neither the tabs, the body
+          text, nor the focal point itself */}
       {showLens && (
         <div
           style={{
@@ -696,7 +785,7 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
             border: "5px solid #111",
             boxShadow: "0 6px 24px rgba(0,0,0,0.25)",
             background: "#fff",
-            opacity: Math.min(1, lensPop),
+            opacity: Math.min(1, lensPop) * analysisGate,
             transform: `scale(${0.85 + 0.15 * Math.min(1, lensPop)})`,
             transformOrigin: "center",
           }}
@@ -712,13 +801,43 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
               // circle center, magnified by zoom. Algebra: screen =
               // comp*s + t, so translate = r - focalComp*s*zoom (the fit
               // offsets cancel out).
-              transform: `translate(${LENS.r - d.lensFocal[0] * fit.s * LENS.zoom}px, ${LENS.r - d.lensFocal[1] * fit.s * LENS.zoom}px) scale(${fit.s * LENS.zoom})`,
+              transform: `translate(${LENS.r - focalCompPt[0] * fit.s * LENS.zoom}px, ${LENS.r - focalCompPt[1] * fit.s * LENS.zoom}px) scale(${fit.s * LENS.zoom})`,
               transformOrigin: "0 0",
             }}
           >
-            {glyphLayers(5)}
+            {glyphLayers(6)}
           </div>
         </div>
+      )}
+
+      {/* lens leader: drawn AFTER the lens so the rim end stays visible;
+          thin dashed line from the lens rim to the focal point */}
+      {showLens && (
+        <svg
+          width={1080}
+          height={1080}
+          style={{ position: "absolute", left: 0, top: 0, pointerEvents: "none" }}
+        >
+          <line
+            x1={leadX0}
+            y1={leadY0}
+            x2={focalSX}
+            y2={focalSY}
+            stroke={VERTEX_BLUE}
+            strokeWidth={2.5}
+            strokeDasharray="7 6"
+            opacity={0.75 * Math.min(1, lensPop) * analysisGate}
+          />
+          <circle
+            cx={focalSX}
+            cy={focalSY}
+            r={7}
+            fill="none"
+            stroke={VERTEX_BLUE}
+            strokeWidth={2.5}
+            opacity={Math.min(1, lensPop) * analysisGate}
+          />
+        </svg>
       )}
     </div>
   );

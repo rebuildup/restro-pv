@@ -10,35 +10,83 @@ import {
   type StrokeItem,
 } from "./glyph.tsx";
 
-// Scene E [15.46, 20) closing, per SPEC §5 E:
-//   f371-388  B/C/D tiles recap (small, staggered, brief hold)
-//   f389-430  hero 筆 (Baseline FUDE strokes) — strokes separate slightly
-//             and reassemble; recovers the B principle on the same char
-//   f431-479  product card hold — Restro / 筆画復元 / After Effects
-//             プラグイン / BOOTHで販売中 / URL
-// Beat timing: card materializes ~18.3s, URL strengthens ~18.75s.
+// Scene E [15.458, 20) closing, per SPEC §5 E / §10.3 E / §11 E.
+// r11 redesign after user rejection of v11 (tiny unreadable tiles, wasteful
+// whitespace, duplicated product name, flat sales hierarchy):
+//
+//   f371-388  recap: ONE wide strip window on the right stage scrolling
+//             three LARGE stills of the real B/C/D outputs
+//             (assets/rec/e-band-{b,c,d}.png — right-zone crops of actual
+//             scene renders). Each still fills ~560px so the previous
+//             works read as images, not thumbnails.
+//   f389-430  hero 筆 (Baseline FUDE) — strokes restore one by one, then
+//             separate and reassemble (B principle recovered on the same
+//             character), then yield to the product lockup.
+//   f431-479  product lockup: Restro / 筆画復元 / After Effects プラグイン
+//             then a clearly separated sales group — BOOTHで販売中 /
+//             URL — as the actionable end-state. Typography only, no card
+//             chrome (SPEC §11 E rejects web-style framed cards).
+//
+// Left column: the dumped description comp's E-section product copy is
+// zeroed centrally in masterPatch (layers in >=15.44s), and the persistent
+// tagline is clamped to the same boundary — so the left column is authored
+// here with the SPEC §4 E closing line only. (Earlier flat-rect mask
+// removed: it also covered the brand lockup and caused the D->E boundary
+// FAIL in wu-d-r29.)
+//
 // (t is seconds; PV-Master runs 24fps, scene E = frames 371-479.)
 
-const T_TILES_IN = 15.44; // f370.6 — first tile is visibly entering at the f371 cut, nothing overlaps D's last frame
-const T_TILES_OUT = 16.17; // f388
-const T_CARD_IN = 18.15; // f435.6
-const URL_IN = 18.7;
+const T0 = 371 / 24; // 15.4583 — first E frame
 
-const CARD_ITEMS: { text: string; size: number; weight: number; color: string; gap?: number }[] = [
-  { text: "Restro", size: 64, weight: 800, color: "#111" },
-  { text: "筆画復元", size: 40, weight: 700, color: "#111" },
-  { text: "After Effects プラグイン", size: 26, weight: 500, color: "#444", gap: 18 },
-  { text: "BOOTHで販売中", size: 30, weight: 700, color: "#111", gap: 26 },
-  { text: "361do.booth.pm/items/9029239", size: 24, weight: 500, color: "#333", gap: 14 },
+// --- recap strip ---
+const STRIP_X = 500;
+const STRIP_Y = 306;
+const STRIP_W = 560;
+const LABEL_H = 34;
+const IMG_H = 426;
+const CELL_H_TOTAL = LABEL_H + IMG_H; // 460
+
+// Hard-cut slots per recap still. A scrolling strip let two scenes share
+// the window for ~4 frames at each boundary (r14 review: C artwork
+// carried into the D slot read as residue). Instant swaps guarantee only
+// one real output is ever visible — film-flash recap, no double image.
+const RECAP = [
+  { key: "b", label: "B — 原理", slot: [15.46, 15.72] as const },
+  { key: "c", label: "C — 作例", slot: [15.72, 16.0] as const },
+  { key: "d", label: "D — 操作", slot: [16.0, 16.3] as const },
+] as const;
+
+// --- hero window ---
+const HERO_IN = [16.3, 16.7] as const;
+const SEP_A = [17.1, 17.55] as const; // separate
+const SEP_B = [17.55, 17.95] as const; // reassemble
+const HERO_OUT = [18.2, 18.48] as const;
+
+// --- card ---
+const CARD_IN = 18.42;
+const URL_IN = 18.95;
+
+// product lockup lines; sales group is visually separated as the CTA end-state
+const LOCKUP: {
+  text: string;
+  size: number;
+  weight: number;
+  color: string;
+  gap: number;
+  ls?: number;
+  delay: number; // extra stagger after CARD_IN
+}[] = [
+  { text: "Restro", size: 92, weight: 800, color: "#111", gap: 4, ls: 2, delay: 0 },
+  { text: "筆画復元", size: 46, weight: 700, color: "#111", gap: 8, delay: 0.12 },
+  { text: "After Effects プラグイン", size: 26, weight: 500, color: "#555", gap: 56, delay: 0.24 },
+  { text: "BOOTHで販売中", size: 36, weight: 800, color: "#111", gap: 12, delay: 0.55 },
+  { text: "361do.booth.pm/items/9029239", size: 30, weight: 600, color: "#111", gap: 0, ls: 0.5, delay: 0.7 },
 ];
 
 // --- shared stroke data (Baseline FUDE = the same 筆 used across B/C) ---
 let cached: {
   comp: ReturnType<typeof compStrokes>["comp"];
   strokes: StrokeItem[];
-  // real B/C/D scene snapshots for the recap tiles (SPEC §5 E: tiles show
-  // the actual outputs — B/C are crops of the real scene renders,
-  // D is a frame-verified ops recording still; see assets/rec/e-tile-*.png)
   cx: number;
   cy: number;
 } | null = null;
@@ -75,16 +123,6 @@ const fitFor = (maxW: number, maxH: number, cx: number, cy: number) => {
   return `translate(${tx}px,${ty}px) scale(${s})`;
 };
 
-// 3 tiles must fit inside the right zone (x 480-1080) without overlap:
-// 170px wide + 40px gaps = 590px total, starting at x=485.
-const TILE_DEFS = [
-  { label: "B", sub: "原理", x: 570, accent: "#111" },
-  { label: "C", sub: "作例", x: 780, accent: "#c0392b" },
-  { label: "D", sub: "操作", x: 990, accent: "#1a5276" },
-] as const;
-const TILE_W = 170;
-const TILE_H = 200;
-
 export const SceneE: React.FC<{ t: number }> = ({ t }) => {
   const { comp, strokes, cx, cy } = buildData();
 
@@ -99,94 +137,136 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
     return {
       x: dx / len + (tx * swing) / 60,
       y: dy / len + (ty * swing) / 60,
-      rot: (i % 2 === 0 ? 1 : -1) * (4 + (i % 3) * 3),
+      rot: (i % 2 === 0 ? 1 : -1) * (1 + (i % 3)),
     };
   });
 
-  // --- tiles recap window ---
-  const tilesP =
-    t >= T_TILES_IN && t < T_TILES_OUT
-      ? 1 - seg(t, T_TILES_OUT - 0.1, T_TILES_OUT - 0.02)
-      : 0;
+  // --- recap window: visible f371-~f393, slides away as hero arrives ---
+  const recapIn = easeOutCubic(seg(t, T0, T0 + 0.3));
+  const recapOut = 1 - easeInOutCubic(seg(t, 16.1, 16.3));
+  const recapP = clamp01(Math.min(recapIn, recapOut));
 
-  // --- hero window: enters as tiles shrink away, holds, fades before card ---
-  const heroIn = easeOutCubic(seg(t, T_TILES_OUT - 0.05, T_TILES_OUT + 0.28));
+  // --- hero ---
+  const heroIn = easeOutCubic(seg(t, HERO_IN[0], HERO_IN[1]));
+  // strokes restore in writing order — the char literally rebuilds itself.
+  // Slow enough that the assembled state is only reached right before the
+  // separation beat, so restore -> separate -> reassemble all read.
+  const strokeReveal = (i: number) =>
+    clamp01((t - (HERO_IN[0] + 0.05 + i * 0.035)) / 0.36);
   const heroSep =
-    easeInOutCubic(seg(t, 16.45, 16.95)) *
-    (1 - easeInOutCubic(seg(t, 17.55, 18.0)));
-  const heroOut = 1 - seg(t, 18.0, T_CARD_IN + 0.1);
+    easeInOutCubic(seg(t, SEP_A[0], SEP_A[1])) *
+    (1 - easeInOutCubic(seg(t, SEP_B[0], SEP_B[1])));
+  const heroOut = 1 - easeInOutCubic(seg(t, HERO_OUT[0], HERO_OUT[1]));
   const heroP = clamp01(Math.min(heroIn, heroOut));
+  // subtle breathing after reassembly so the hold is not frozen
+  const breath =
+    heroP * (1 - heroSep) * Math.sin((t - SEP_B[1]) * 1.4) * 0.008;
 
   // --- card ---
-  const cardP = t >= T_CARD_IN && t < 20 ? easeOutCubic(seg(t, T_CARD_IN, T_CARD_IN + 0.45)) : 0;
-  const urlP = t >= URL_IN && t < 20 ? easeOutCubic(seg(t, URL_IN, URL_IN + 0.3)) : 0;
+  const cardBase = t >= CARD_IN ? easeOutCubic(seg(t, CARD_IN, CARD_IN + 0.45)) : 0;
+  const urlP = t >= URL_IN ? easeOutCubic(seg(t, URL_IN, URL_IN + 0.35)) : 0;
 
-  if (tilesP <= 0 && heroP <= 0 && cardP <= 0) return null;
+  // left closing copy (SPEC §4 E candidate) — covers the dumped description
+  // E block which duplicated the product name in the left column. Fades in
+  // fast so the left column reads as E copy from the first frames (r11
+  // review: the persistent A headline must not sit alone at the cut).
+  const coverOn = t >= T0;
+  const leftIn = easeOutCubic(seg(t, T0 + 0.04, T0 + 0.3));
+
+  if (!coverOn && recapP <= 0 && heroP <= 0 && cardBase <= 0) return null;
 
   return (
     <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-      {/* ---- B/C/D tiles recap (f371-388) ---- */}
-      {tilesP > 0 &&
-        TILE_DEFS.map((tile, i) => {
-          const p = easeOutCubic(clamp01((t - (T_TILES_IN + i * 0.06)) / 0.26));
-          if (p <= 0) return null;
-          return (
-            <div
-              key={tile.label}
-              style={{
-                position: "absolute",
-                left: tile.x - TILE_W / 2,
-                top: 690,
-                width: TILE_W,
-                height: TILE_H,
-                background: "rgba(255,255,255,0.9)",
-                border: `2px solid ${tile.accent}`,
-                opacity: p * tilesP,
-                transform: `translateY(${(1 - p) * 14}px) scale(${0.65 + 0.35 * p})`,
-                fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
-              }}
-            >
+      {/* ---- left column: closing line (SPEC §4 E) ---- */}
+      {coverOn && leftIn > 0 && (
+        <div
+          style={{
+            position: "absolute",
+            left: 44,
+            top: 706,
+            width: 400,
+            opacity: leftIn,
+            transform: `translateY(${(1 - leftIn) * 10}px)`,
+            fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
+            color: "#111",
+          }}
+        >
+          <div style={{ fontSize: 40, fontWeight: 800, lineHeight: 1.32, letterSpacing: 0.5 }}>
+            輪郭から筆画へ。
+          </div>
+          <div style={{ fontSize: 40, fontWeight: 800, lineHeight: 1.32, letterSpacing: 0.5 }}>
+            筆画から表現へ。
+          </div>
+        </div>
+      )}
+
+      {/* ---- B/C/D recap strip (f371-388) ---- */}
+      {recapP > 0 && (
+        <div
+          style={{
+            position: "absolute",
+            left: STRIP_X,
+            top: STRIP_Y,
+            width: STRIP_W,
+            height: CELL_H_TOTAL,
+            overflow: "hidden",
+            border: "1px solid rgba(15,15,15,0.28)",
+            background: "#fbfbfb",
+            opacity: recapP,
+            transform: `translateY(${(1 - recapIn) * 26}px) scale(${0.98 + 0.02 * recapIn})`,
+            transformOrigin: "50% 50%",
+          }}
+        >
+          {RECAP.map((r) => {
+            const on = t >= r.slot[0] && t < r.slot[1];
+            return (
               <div
-                style={{
-                  padding: "10px 16px 0",
-                  fontSize: 17,
-                  fontWeight: 800,
-                  color: tile.accent,
-                  letterSpacing: 1,
-                }}
-              >
-                {tile.label} — {tile.sub}
-              </div>
-              {/* recap snapshots: real scene/ops output stills, one per WU.
-                  B = SceneB junction/lens moment (f154 crop), C = SceneC
-                  work panel (f220 crop), D = frame-verified decompose-ops
-                  still — all in assets/rec/e-tile-*.png */}
-              <div
+                key={r.key}
                 style={{
                   position: "absolute",
-                  left: 8,
-                  right: 8,
-                  top: 46,
-                  height: TILE_H - 54,
-                  overflow: "hidden",
+                  left: 0,
+                  top: 0,
+                  width: STRIP_W,
+                  height: CELL_H_TOTAL,
+                  opacity: on ? 1 : 0,
                 }}
               >
-                <Img
-                  src={staticFile(`assets/rec/e-tile-${tile.label.toLowerCase()}.png`)}
+                <div
                   style={{
-                    position: "absolute",
-                    left: 0,
-                    top: 0,
-                    width: TILE_W - 16,
-                    height: TILE_H - 54,
-                    objectFit: "cover",
-                    display: "block",
+                    height: LABEL_H,
+                    display: "flex",
+                    alignItems: "center",
+                    padding: "0 14px",
+                    fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
+                    fontSize: 22,
+                    fontWeight: 700,
+                    color: "#111",
+                    letterSpacing: 1,
+                    borderBottom: "1px solid rgba(15,15,15,0.15)",
+                    boxSizing: "border-box",
                   }}
-                />
+                >
+                  {r.label}
+                </div>
+                <div style={{ position: "relative", width: STRIP_W, height: IMG_H, overflow: "hidden" }}>
+                  <Img
+                    src={staticFile(`assets/rec/e-band-${r.key}.png`)}
+                    style={{
+                      position: "absolute",
+                      left: 0,
+                      top: 0,
+                      width: STRIP_W,
+                      height: IMG_H,
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                  />
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
+      )}
 
       {/* ---- hero 筆 (f389-430) — clipped to the right zone so separated
           strokes cannot invade the left brand column ---- */}
@@ -209,7 +289,7 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
               top: 0,
               width: comp.width,
               height: comp.height,
-              transform: `${fitFor(600, 720, 780 - 480, 520)} scale(${1 + (1 - heroIn) * 0.05})`,
+              transform: `${fitFor(500, 720, 300, 520)} scale(${1 + breath})`,
               transformOrigin: "0 0",
             }}
           >
@@ -217,10 +297,11 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
               comp={comp}
               strokes={strokes}
               poseT={0.5}
+              strokeOpacity={(_s, i) => heroIn * strokeReveal(i)}
               strokeTransform={(s, i) => {
                 const d = dirs[i];
                 if (!d) return undefined;
-                const dist = heroSep * 46;
+                const dist = heroSep * 30;
                 return `translate(${d.x * dist}px,${d.y * dist}px) rotate(${d.rot * heroSep}deg)`;
               }}
             />
@@ -229,47 +310,45 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
       )}
 
       {/* ---- product lockup (f431-479): typography only, no card chrome —
-          SPEC §11 E rejects web-style framed cards ---- */}
-      {cardP > 0 && (
+          SPEC §11 E rejects web-style framed cards. The sales group
+          (BOOTH + URL) is set apart by a wide gap so it reads as the
+          actionable end-state, not an equal sibling of the product name. */}
+      {cardBase > 0 && (
         <div
           style={{
             position: "absolute",
             left: 540,
-            top: 300,
-            opacity: cardP,
-            transform: `translateY(${(1 - cardP) * 18}px)`,
+            top: 330,
+            width: 520,
+            opacity: cardBase,
             fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
           }}
         >
-          {CARD_ITEMS.map((it, i) => {
-            const isUrl = i === CARD_ITEMS.length - 1;
+          {LOCKUP.map((it) => {
+            const isUrl = it.text.startsWith("361do");
+            const p = clamp01(
+              (t - (CARD_IN + it.delay)) / 0.4,
+            );
+            const lp = easeOutCubic(p);
             return (
               <div
-                key={i}
+                key={it.text}
                 style={{
-                  marginTop: i === 0 ? 0 : it.gap ?? 10,
+                  marginTop: it === LOCKUP[0] ? 0 : it.gap,
                   fontSize: it.size,
                   fontWeight: it.weight,
                   color: it.color,
-                  letterSpacing: i === 0 ? 1 : 0,
-                  opacity: isUrl ? urlP : 1,
+                  letterSpacing: it.ls ?? 0,
+                  lineHeight: 1.24,
                   whiteSpace: "nowrap",
+                  opacity: lp * (isUrl ? urlP : 1),
+                  transform: `translateY(${(1 - lp) * 16}px)`,
                 }}
               >
                 {it.text}
               </div>
             );
           })}
-          <div
-            style={{
-              marginTop: 26,
-              fontSize: 20,
-              color: "#444",
-              opacity: urlP,
-            }}
-          >
-            Stroke Reconstruction for After Effects
-          </div>
         </div>
       )}
     </div>

@@ -1,0 +1,53 @@
+{
+  "id": "wu-b-r15",
+  "wu": "WU-B",
+  "subject": "scene B v13: real Restro pipeline intermediates (scanline, extend A/B, inferred, 29 solver points) replace back-computed analysis [wu-b-r15]",
+  "frames": [
+    {
+      "file": "verification/wu-b-r15/f101.png",
+      "frame": 101,
+      "note": "B window open: A3 bridge handing off, step tabs begin"
+    },
+    {
+      "file": "verification/wu-b-r15/f105.png",
+      "frame": 105,
+      "note": "step0 輪郭を解析 early: real FUDE scanline sweeping down + red extracted outline fading in"
+    },
+    {
+      "file": "verification/wu-b-r15/f115.png",
+      "frame": 115,
+      "note": "step0 mid: bold red outline base contour + inset contour on the same giant 筆"
+    },
+    {
+      "file": "verification/wu-b-r15/f130.png",
+      "frame": 130,
+      "note": "step1 輪郭線を延長 mid: real FUDE extend A/B contour strokes drawing in green, staggered"
+    },
+    {
+      "file": "verification/wu-b-r15/f145.png",
+      "frame": 145,
+      "note": "step1 late: full extend contour set held as context, outline receded to ghost"
+    },
+    {
+      "file": "verification/wu-b-r15/f160.png",
+      "frame": 160,
+      "note": "step2 隠れた頂点を推定 mid: Restro's own FUDE inferred render + 29 real solver vertex markers + enlarged lens in bottom-left free strip"
+    },
+    {
+      "file": "verification/wu-b-r15/f175.png",
+      "frame": 175,
+      "note": "step3 一画ずつに分割 mid: analysis layers cut, 13 real strokes filling in staggered with displacement + per-stroke tints"
+    },
+    {
+      "file": "verification/wu-b-r15/f188.png",
+      "frame": 188,
+      "note": "step3 late: assembled tinted 筆 with darker per-stroke edges and selected-stroke mark"
+    },
+    {
+      "file": "verification/wu-b-r15/f190.png",
+      "frame": 190,
+      "note": "B window close: final assembled stroke set before C transition"
+    }
+  ],
+  "context": "Scene B [101,191), 1080x1080@24. Same giant 筆 on the right below the four step tabs; left column keeps the dumped description captions. Geometry is now drawn ONLY from real Restro intermediate layers recovered from the pre-wipe checkpoint comps (master-time aligned, same 1080 space): step0 shows the real FUDE scanline layer (keyed y223->y980 sweep) plus the real FUDE outline base/inset extracted contours; step1 shows the real FUDE extend A (6 paths) and FUDE extend B (12 paths) contour strokes; step2 shows Restro's own FUDE inferred render (green inferred fills, vertex ellipses) plus the 29 real inferred-vertex positions emitted by the solver as FUDE points markers, with the circular lens (r=88, zoom 2.8) parked in the empty bottom-left strip below the description comp and aimed by a dashed leader at the real vertex nearest it; step3 shows the 13 real decomposed strokes filling in staggered, slightly displaced, individually yellow-tinted with darker matching edges and one selected stroke. All analysis layers cut to opacity 0 at the step4 boundary. Step tabs are the dumped white 502x26 bars with progressive 中->した label states."
+}

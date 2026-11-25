@@ -22,9 +22,15 @@ const T1 = 371 / 24;
 const FPS = 24;
 
 type Roi = { x: number; y: number; w: number; h: number };
+type Clip = {
+  srcStart: number; // seconds into the source at clip start
+  dur: number; // window frames this clip occupies
+};
 type Win = {
   file: string;
-  srcStart: number; // seconds into the source at window open
+  clips: Clip[]; // played back-to-back inside the window; sum(dur) must
+  // equal fOut - fIn. A second clip is a jump cut to a later segment of
+  // the same recording so the window keeps showing new content.
   roi: Roi; // source-pixel crop region (1920x1080 space)
   x: number;
   y: number;
@@ -33,16 +39,44 @@ type Win = {
   fIn: number; // PV-Master frames
   fOut: number;
   caption: string;
+  filter?: string; // per-window contrast treatment override
+  // Optional picture-in-picture callout: a second crop of the SAME
+  // footage timeline (same clips), positioned inside the window. Used to
+  // show the operation UI (e.g. the Restro panel button) at readable
+  // size — still real footage, no fake UI.
+  inset?: { roi: Roi; x: number; y: number; w: number; h: number; tag?: string };
 };
 
+// r29 segment re-pick (frame-accurate decode, see verification/wu-d-r29/src):
+//
+//   ae-decompose-ops: the before->after swap is a 2-frame event at
+//   source f886-887 (t~36.9). Before it: static single "Restro" text
+//   (f861-885). After it: decomposed strokes + rgb controls, then stepped
+//   part-adjustments at f954/957/990/991/1000/1030/1073 (t39.7-44.7) — all
+//   localized to the artwork band x~680-1110,y~210-500.
+//   ae-stroke-animate: NOT continuous motion — stepped jumps at
+//   f546/582/622/665/750 (t22.75/24.33/25.92/27.71/31.25) inside the same
+//   artwork band; long static stretches between. W2 is placed to contain
+//   two jumps (f622, f665).
+//   ae-reprocess: the reprocess arc is f120-170 (t5.0-7.1): partial
+//   redraw -> "Executing" dialog (x~800-1100,y~496-603, measured) ->
+//   COMPLETE "Restro". W4's roi bottom is y460 so the wait dialog is
+//   cropped out; only the redraw->result arc is shown.
 const WINDOWS: Win[] = [
   {
-    // W1 main: ae-decompose-ops 35.9s — single "Restro" text -> Decompose
-    // completes -> four stroke shape layers with red/green/blue controls.
-    // The before->after transition lands ~1s into the window.
+    // W1 main: ae-decompose-ops — clip A (35.9s, 52f): single "Restro"
+    // text -> Decompose swap at source f886 -> stroke result. clip B
+    // (40.9s, 37f): jump cut to the stepped part-adjustment phase
+    // (source events f990/991/1000 land at +0.3-0.8s of clip B) so the
+    // window keeps changing instead of freezing on the result.
     file: "ae-decompose-ops.mp4",
-    srcStart: 35.9,
-    // comp viewer (x530-1074,y111-583) + Restro panel (x1334-1609,y520-632)
+    clips: [
+      { srcStart: 35.9, dur: 52 },
+      { srcStart: 40.9, dur: 37 },
+    ],
+    // comp viewer + controls (x500-1650,y90-710); the Restro plugin panel
+    // itself (x35-235) is too far left to share this crop readably, so it
+    // is shown via the PiP inset below instead.
     roi: { x: 500, y: 90, w: 1150, h: 620 },
     x: 500,
     y: 120,
@@ -51,14 +85,26 @@ const WINDOWS: Win[] = [
     fIn: 281,
     fOut: 370,
     caption: "分解 — 文字が筆画シェイプに",
+    // PiP callout: Restro panel bottom (Decompose action row). The press
+    // is real — source f885 flips the button band (x0-200,y386-412) and
+    // it stays in the executed state; the inset makes it readable.
+    inset: {
+      roi: { x: 0, y: 250, w: 320, h: 230 },
+      x: 12,
+      y: 178,
+      w: 190,
+      h: 130,
+      tag: "Restroパネル",
+    },
   },
   {
-    // W2 aux: ae-stroke-animate 25.0s — generated strokes visibly moving
-    // across the decomposed "Restro" (animation phase).
+    // W2 aux: ae-stroke-animate 25.6s — stepped stroke motion; window
+    // contains jumps at source f622 (+0.33s) and f665 (+2.1s).
     file: "ae-stroke-animate.mp4",
-    srcStart: 25.0,
-    // comp viewer artwork (x532-1075,y109-588); strokes+anchors fill it
-    roi: { x: 480, y: 130, w: 680, h: 540 },
+    clips: [{ srcStart: 25.6, dur: 59 }],
+    // tight crop on the decomposed-artwork band (motion measured at
+    // source x~678-1057,y~213-363) so strokes stay legible at aux size
+    roi: { x: 630, y: 165, w: 500, h: 340 },
     x: 500,
     y: 480,
     w: 270,
@@ -68,37 +114,45 @@ const WINDOWS: Win[] = [
     caption: "筆画ごとの動き",
   },
   {
-    // W3 aux: ae-stroke-animate 22.7s — control-point / path editing with
-    // red anchors before the strokes start moving (edit phase).
-    file: "ae-stroke-animate.mp4",
-    srcStart: 22.7,
-    roi: { x: 480, y: 130, w: 680, h: 540 },
+    // W3 aux: ae-decompose-ops — clip A (40.7s, 26f): stepped adjustment
+    // burst (source f990/991/1000 = t~41.3-41.7). clip B (43.8s, 22f):
+    // jump cut to the next adjustment step (source f1057/1058 land at
+    // +0.25s) so the tail is not a frozen result.
+    file: "ae-decompose-ops.mp4",
+    clips: [
+      { srcStart: 40.7, dur: 26 },
+      { srcStart: 43.8, dur: 22 },
+    ],
+    roi: { x: 630, y: 165, w: 500, h: 340 },
     x: 800,
     y: 480,
     w: 260,
     h: 200,
     fIn: 313,
     fOut: 361,
-    caption: "制御点の編集",
+    caption: "分解シェイプのパーツ調整",
   },
   {
-    // W4 aux: ae-reprocess 5.0s — strokes trace/redraw into "Restro",
-    // "Executing" dialog appears ~1s in, result completes by ~1.5s.
-    // (Verified against frame-accurate decode: the t26-33 "redraw" seen in
-    // earlier -ss grabs was a seek artifact; real arc is t5.0-7.0.)
+    // W4 aux: ae-reprocess 5.4s — strokes trace/redraw into "Restro",
+    // COMPLETE lands ~t6.5-7.0 (source f156-168 = +26-38f into the window)
+    // so the finished result holds ~0.5s before the exit fade. The
+    // "Executing" wait dialog (source y~496-603) is excluded by the roi
+    // bottom edge (y460); only the redraw->result arc is visible.
     file: "ae-reprocess.mp4",
-    srcStart: 5.0,
-    // artwork+dialog: "Restro" trace (x566-1066,y207-393), Executing dialog
-    // (x826-1098,y471-603), result completes ~t6.5-7. Tight roi keeps the
-    // dialog box and strokes large enough to read at aux size.
-    roi: { x: 460, y: 200, w: 740, h: 420 },
+    clips: [{ srcStart: 5.4, dur: 45 }],
+    // artwork-only crop: "Restro" trace (x566-1066,y207-393) with margin;
+    // dialog region below y460 is outside the frame
+    roi: { x: 530, y: 170, w: 580, h: 290 },
     x: 500,
     y: 698,
     w: 480,
     h: 270,
     fIn: 320,
-    fOut: 366,
-    caption: "再処理 — 結果を再構成",
+    fOut: 365,
+    caption: "再処理 — 筆画の再構成",
+    // Reprocess footage is near-white (p50 luma ~242); needs a stronger
+    // pull to keep the traced strokes and the completed "Restro" legible.
+    filter: "contrast(1.5) brightness(0.97) saturate(1.15)",
   },
 ];
 
@@ -129,7 +183,37 @@ const FootageWindow: React.FC<{ win: Win; t: number }> = ({ win, t }) => {
   const pout = 1 - smooth(ramp(t, tOut - 0.28, tOut));
   const opacity = Math.min(pin, pout);
   if (opacity <= 0) return null;
-  const box = coverBox(win.roi, win.w, win.h);
+  const filt = win.filter ?? "contrast(1.24) brightness(1.05) saturate(1.3)";
+  const clipSeqs = (viewRoi: Roi, vw: number, vh: number) => {
+    const vb = coverBox(viewRoi, vw, vh);
+    return win.clips.map((clip, i) => {
+      const from =
+        win.fIn + win.clips.slice(0, i).reduce((a, c) => a + c.dur, 0);
+      return (
+        <Sequence key={i} from={from} durationInFrames={clip.dur} layout="none">
+          <div
+            style={{
+              position: "absolute",
+              left: vb.left,
+              top: vb.top,
+              width: vb.width,
+              height: vb.height,
+              // Screen captures render low-contrast at window size; lift
+              // them so strokes/anchors stay legible (r29 fix).
+              filter: filt,
+            }}
+          >
+            <Video
+              src={staticFile(`assets/rec/${win.file}`)}
+              trimBefore={Math.round(clip.srcStart * FPS)}
+              muted
+              style={{ width: "100%", height: "100%", display: "block" }}
+            />
+          </div>
+        </Sequence>
+      );
+    });
+  };
   return (
     <div
       style={{
@@ -138,36 +222,56 @@ const FootageWindow: React.FC<{ win: Win; t: number }> = ({ win, t }) => {
         top: win.y,
         width: win.w,
         height: win.h,
-        overflow: "hidden",
-        border: "1px solid rgba(15,15,15,0.45)",
-        background: "#0c0c0c",
         opacity,
         transform: `translateY(${(1 - pin) * 12}px) scale(${0.985 + 0.015 * pin})`,
         transformOrigin: "50% 50%",
       }}
     >
-      <Sequence
-        from={win.fIn}
-        durationInFrames={win.fOut - win.fIn}
-        layout="none"
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          overflow: "hidden",
+          border: "1px solid rgba(15,15,15,0.45)",
+          background: "#0c0c0c",
+        }}
       >
+        {clipSeqs(win.roi, win.w, win.h)}
+      </div>
+      {win.inset && (
         <div
           style={{
             position: "absolute",
-            left: box.left,
-            top: box.top,
-            width: box.width,
-            height: box.height,
+            left: win.inset.x,
+            top: win.inset.y,
+            width: win.inset.w,
+            height: win.inset.h,
+            overflow: "hidden",
+            border: "1px solid rgba(255,255,255,0.55)",
+            background: "#0c0c0c",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.45)",
           }}
         >
-          <Video
-            src={staticFile(`assets/rec/${win.file}`)}
-            trimBefore={Math.round(win.srcStart * FPS)}
-            muted
-            style={{ width: "100%", height: "100%", display: "block" }}
-          />
+          {clipSeqs(win.inset.roi, win.inset.w, win.inset.h)}
+          {win.inset.tag && (
+            <div
+              style={{
+                position: "absolute",
+                left: 0,
+                top: 0,
+                padding: "1px 5px",
+                fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
+                fontSize: 10,
+                fontWeight: 700,
+                color: "#111",
+                background: "rgba(255,255,255,0.85)",
+              }}
+            >
+              {win.inset.tag}
+            </div>
+          )}
         </div>
-      </Sequence>
+      )}
       {/* operation caption, inside the top edge so it never collides with
           the window below or the left column */}
       <div
@@ -229,7 +333,7 @@ export const SceneD: React.FC<{ t: number }> = ({ t }) => {
             そのまま動かせる。
           </div>
           <div style={{ marginTop: 18, fontSize: 20, fontWeight: 500, color: "#444", lineHeight: 1.5 }}>
-            分解・筆画の編集・再処理を
+            分解・動き・調整・再処理を
             <br />
             実際の画面で収録
           </div>
