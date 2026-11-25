@@ -1,0 +1,78 @@
+{
+  "id": "wu-e-r17",
+  "wu": "WU-E",
+  "subject": "WU-E scene E integrated: recap hard-cut slots of real B/C/D stills, hero stroke reveal, product lockup + separated BOOTH/URL sales group, closing line below brand, no dumped-caption residue (masterPatch zeroes E description layers + tagline clamp)",
+  "frames": [
+    {
+      "file": "verification/wu-e-r17/f371.png",
+      "frame": 371,
+      "note": "E start: closing line + B still entering"
+    },
+    {
+      "file": "verification/wu-e-r17/f375.png",
+      "frame": 375,
+      "note": "closing line in, B still centered"
+    },
+    {
+      "file": "verification/wu-e-r17/f382.png",
+      "frame": 382,
+      "note": "recap C still centered"
+    },
+    {
+      "file": "verification/wu-e-r17/f386.png",
+      "frame": 386,
+      "note": "D still fully visible, strip fade just starting"
+    },
+    {
+      "file": "verification/wu-e-r17/f400.png",
+      "frame": 400,
+      "note": "hero mid-restore"
+    },
+    {
+      "file": "verification/wu-e-r17/f405.png",
+      "frame": 405,
+      "note": "hero assembled"
+    },
+    {
+      "file": "verification/wu-e-r17/f412.png",
+      "frame": 412,
+      "note": "hero separating"
+    },
+    {
+      "file": "verification/wu-e-r17/f420.png",
+      "frame": 420,
+      "note": "hero fully separated, contained in zone"
+    },
+    {
+      "file": "verification/wu-e-r17/f428.png",
+      "frame": 428,
+      "note": "hero reassembling"
+    },
+    {
+      "file": "verification/wu-e-r17/f435.png",
+      "frame": 435,
+      "note": "assembled hold / card beginning"
+    },
+    {
+      "file": "verification/wu-e-r17/f445.png",
+      "frame": 445,
+      "note": "product lines + sales group entering"
+    },
+    {
+      "file": "verification/wu-e-r17/f460.png",
+      "frame": 460,
+      "note": "full lockup"
+    },
+    {
+      "file": "verification/wu-e-r17/f470.png",
+      "frame": 470,
+      "note": "static hold"
+    },
+    {
+      "file": "verification/wu-e-r17/f479.png",
+      "frame": 479,
+      "note": "final frame"
+    }
+  ],
+  "context": "Iteration on r15 FAIL (CMN-7): D slot ended 16.55 while hero entrance began 16.30, so tile and hero coexisted ~6 frames. Slots are now compressed to B t15.46-15.72 / C t15.72-16.0 / D t16.0-16.3, the window fade runs t16.1-16.3, and hero entrance starts exactly at t16.3 — the recap tile is fully gone before the first hero frame. f390 was replaced by f386 because f390 now sits inside the strip fade-out with no hero yet. All other scene-E elements unchanged from r15."
+}
