@@ -1,0 +1,43 @@
+{
+  "id": "wu-b-r19",
+  "wu": "WU-B",
+  "subject": "scene B r20: outlined white viewport masking the grid, editorial ruled step index (hairline rules + typography, red=current, no tab boxes), reduced left-column copy (kicker + JP headline + 2-line JP body + tagline), lens docked on the viewport's empty bottom-left margin showing one real intermediate (extended contours + inferred render + solver vertex markers) with dashed source-window callout [wu-b-r19]",
+  "frames": [
+    {
+      "file": "verification/wu-b-r19/small/q101.png",
+      "frame": 101,
+      "note": "B open: viewport face/keyline materializing over the A3 bridge exit, faint red silhouette of the same giant 筆, step band 01-04 listed"
+    },
+    {
+      "file": "verification/wu-b-r19/small/q110.png",
+      "frame": 110,
+      "note": "step0 輪郭を解析 active (red): real FUDE scanline sweep + bold red extracted outline base/inset contours on white viewport"
+    },
+    {
+      "file": "verification/wu-b-r19/small/q130.png",
+      "frame": 130,
+      "note": "step1 輪郭線を延長 active: real FUDE extend A/B contours in green; completed red outline receding to gray ghost"
+    },
+    {
+      "file": "verification/wu-b-r19/small/q150.png",
+      "frame": 150,
+      "note": "step2 隠れた頂点を推定 active: Restro's own FUDE inferred render + 29 real solver vertex markers + circular lens with dashed source-window callout"
+    },
+    {
+      "file": "verification/wu-b-r19/small/q160.png",
+      "frame": 160,
+      "note": "step2 late: lens fully up, leader + source rect linking lens to the densest real vertex junction"
+    },
+    {
+      "file": "verification/wu-b-r19/small/n175.png",
+      "frame": 175,
+      "note": "step3 一画ずつに分割: analysis layers gone, 13 real strokes filling staggered with per-stroke tints"
+    },
+    {
+      "file": "verification/wu-b-r19/small/n190.png",
+      "frame": 190,
+      "note": "B close: assembled tinted 筆 inside the outlined viewport"
+    }
+  ],
+  "context": "Frames are 810px downscales of the 1080x1080 renders for API payload. Scene B [101,191), 1080x1080@24. Right stage is ONE outlined viewport (white face + thin keyline, x468-1064 y356-1020) masking the background grid; the same giant 筆 is clipped inside it. Step band = four ruled rows at x540-1048 y196-342 (hairline rules, number + noun + right-aligned state 中/した, red marks the CURRENT step only). Left column B-section copy reduced to kicker + JP headline + two-line JP body + persistent tagline per v13 column discipline. All geometry drawn ONLY from real Restro intermediate layers recovered from the pre-wipe checkpoint comps: step0 real FUDE scanline sweep + real FUDE outline base/inset extracted contours; step1 real FUDE extend A (6 paths) + extend B (12 paths); step2 Restro's own FUDE inferred render + the 29 real inferred-vertex positions emitted by the solver as FUDE points markers; step3 the 13 real decomposed strokes with widened stagger and a wider per-stroke yellow palette plus stronger stroke-edge definition so the decomposition reads. Completed-step analysis desaturates toward gray ghost per v13 color semantics. The lens (r=55, zoom 1.5, hung below the viewport's bottom edge in the empty page margin, flush with the page bottom edge) shows the vertex-estimation intermediate as a readable close-up — real FUDE extend A/B contours + Restro's FUDE inferred render + the solver vertex markers — aimed by a dashed leader and a dashed source-window rect at the content-densest window inside the inferred render's neighborhood so all three layers coexist in frame. The step band fades out over the last ~0.45s and the inspected-stroke annotation mark retires in the same window so the finished glyph is the sole subject at the B->C handoff."
+}

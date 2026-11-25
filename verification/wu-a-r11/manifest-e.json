@@ -1,0 +1,14 @@
+{
+  "id": "wu-a-r11",
+  "wu": "WU-A",
+  "subject": "Scene A r11: v13 art-direction pass — giant black kanji hero cleared from the left Restro/copy column and bleeding right/bottom, left-to-right stroke separation on the hero, crossing-cluster ghost/restored-stroke proof, separated group held as the opening question through the A3 bridge",
+  "frames": [
+    { "file": "verification/wu-a-r11/f10.png", "frame": 10, "note": "A1 opening: giant hero, left brand/copy" },
+    { "file": "verification/wu-a-r11/f44.png", "frame": 44, "note": "last A1 frame before authored A2" },
+    { "file": "verification/wu-a-r11/f50.png", "frame": 50, "note": "A2 entry: hero established, push-in begins" },
+    { "file": "verification/wu-a-r11/f74.png", "frame": 74, "note": "restored vertical accent; horizontals parted" },
+    { "file": "verification/wu-a-r11/f88.png", "frame": 88, "note": "comparison hold tail" },
+    { "file": "verification/wu-a-r11/f99.png", "frame": 99, "note": "last visible A-side question frames" }
+  ],
+  "context": "Scene A r11 after the v13 art-direction rework. A1 hero stroke layers (master 239-254) are uniformly shifted +90px in x for both vector Position and separated Position_0 nodes including keys; the PV A2 ghost layer gets a static +80px x shift for the A1-tail window; kai-zoom layers 233-236 are shifted +20px and clamped to SceneA2 T0 so they do not double-image under authored A2. SceneA2 re-renders the same master stroke layers at poseT 1.46 as the hero, applies an x-rank-staggered left-to-right peel plus the SPEC crossing-cluster separation (016 vertical restored red, 015/017 horizontals part), keeps the local FUDE outline ghost registered by the measured REG2 similarity, and extends the separated group through the A3 bridge (frames 45-100) with a late rise/fade into SceneB."
+}

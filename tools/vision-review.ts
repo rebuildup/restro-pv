@@ -26,6 +26,10 @@ const res = await fetch("https://api.minimax.io/v1/chat/completions", {
   body: JSON.stringify({
     model,
     reasoning_effort: "low",
+    // MiniMax-M3 supports thinking.type="disabled"; without it the whole
+    // max_tokens budget can be consumed by reasoning and the answer comes
+    // back empty (observed on the r12 holistic review).
+    ...(model === "MiniMax-M3" ? { thinking: { type: "disabled" } } : {}),
     messages: [{ role: "user", content }],
     max_tokens: Number(process.env.VISION_MAX_TOKENS ?? 3000),
   }),

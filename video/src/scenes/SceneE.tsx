@@ -7,38 +7,43 @@ import {
   easeOutCubic,
   seg,
   StrokeField,
+  tintedStrokes,
   type StrokeItem,
 } from "./glyph.tsx";
+import { CompView, type RenderCtx } from "../ae/layer.tsx";
+import {
+  GENERATED_COMPS,
+  GENERATED_FOOTAGE,
+  compByName,
+  mattePairs,
+} from "../ae/project.ts";
 
-// Scene E [15.458, 20) closing, per SPEC §5 E / §10.3 E / §11 E.
-// r11 redesign after user rejection of v11 (tiny unreadable tiles, wasteful
-// whitespace, duplicated product name, flat sales hierarchy):
+// Scene E [15.458, 20) closing, v13 art-direction two-beat structure
+// (docs/pv-art-direction.md §E):
 //
-//   f371-388  recap: ONE wide strip window on the right stage scrolling
-//             three LARGE stills of the real B/C/D outputs
-//             (assets/rec/e-band-{b,c,d}.png — right-zone crops of actual
-//             scene renders). Each still fills ~560px so the previous
-//             works read as images, not thumbnails.
-//   f389-430  hero 筆 (Baseline FUDE) — strokes restore one by one, then
-//             separate and reassemble (B principle recovered on the same
-//             character), then yield to the product lockup.
-//   f431-479  product lockup: Restro / 筆画復元 / After Effects プラグイン
-//             then a clearly separated sales group — BOOTHで販売中 /
-//             URL — as the actionable end-state. Typography only, no card
-//             chrome (SPEC §11 E rejects web-style framed cards).
+//   Beat 1 — PAYOFF RETURN (~f371-~f417): a sub-second recap flash of the
+//     real B/C/D stills, then the multicolor separated-stroke 筆 hero from
+//     scene C reappears at full-canvas scale on the right stage and
+//     converges back into the solid black kanji hero (question -> answer
+//     ring closing the film).
+//   Beat 2 — END CARD (~f417-f479, held to end): QUIET resolution — the
+//     OFFICIAL Restro logo artwork (dumped AE "Logo" comp, rendered through
+//     the same CompView interpreter, NOT a generic-font re-typeset), the
+//     product descriptor, and BOOTH + URL as one clear CTA hierarchy. No
+//     card chrome, no rounded corners, no shadows, product name appears
+//     once (inside the logo artwork itself).
 //
 // Left column: the dumped description comp's E-section product copy is
 // zeroed centrally in masterPatch (layers in >=15.44s), and the persistent
 // tagline is clamped to the same boundary — so the left column is authored
-// here with the SPEC §4 E closing line only. (Earlier flat-rect mask
-// removed: it also covered the brand lockup and caused the D->E boundary
-// FAIL in wu-d-r29.)
+// here with the SPEC §4 E closing line only. The persistent brand lockup
+// (master layers 16-18) is scene chrome and stays untouched.
 //
 // (t is seconds; PV-Master runs 24fps, scene E = frames 371-479.)
 
 const T0 = 371 / 24; // 15.4583 — first E frame
 
-// --- recap strip ---
+// --- recap flash (compressed: "一瞬で回収") ---
 const STRIP_X = 500;
 const STRIP_Y = 306;
 const STRIP_W = 560;
@@ -46,50 +51,72 @@ const LABEL_H = 34;
 const IMG_H = 426;
 const CELL_H_TOTAL = LABEL_H + IMG_H; // 460
 
-// Hard-cut slots per recap still. A scrolling strip let two scenes share
-// the window for ~4 frames at each boundary (r14 review: C artwork
-// carried into the D slot read as residue). Instant swaps guarantee only
-// one real output is ever visible — film-flash recap, no double image.
+// D gets the widest slot and the window fade only starts AFTER its slot
+// ends — r2 review: the old fade (15.64-15.82) washed the D tile out to
+// ~30% opacity exactly while it was on screen (f378 unreadable).
 const RECAP = [
-  { key: "b", label: "B — 原理", slot: [15.46, 15.72] as const },
-  { key: "c", label: "C — 作例", slot: [15.72, 16.0] as const },
-  { key: "d", label: "D — 操作", slot: [16.0, 16.3] as const },
+  { key: "b", label: "B — 原理", slot: [15.46, 15.58] as const },
+  { key: "c", label: "C — 作例", slot: [15.58, 15.7] as const },
+  { key: "d", label: "D — 操作", slot: [15.7, 15.86] as const },
 ] as const;
+const RECAP_OUT: [number, number] = [15.86, 15.98];
 
-// --- hero window ---
-const HERO_IN = [16.3, 16.7] as const;
-const SEP_A = [17.1, 17.55] as const; // separate
-const SEP_B = [17.55, 17.95] as const; // reassemble
-const HERO_OUT = [18.2, 18.48] as const;
+// --- payoff hero ---
+// multicolor separated strokes appear ~15.95, peak ~16.4, converge to the
+// assembled black kanji ~16.45-17.0, hold ~17.0-17.5, then yield to the
+// end card.
+const HERO_IN: [number, number] = [15.94, 16.12];
+const CONVERGE: [number, number] = [16.45, 17.0]; // per-stroke window start/dur below
+const GATHER_DUR = 0.4;
+const GATHER_STAGGER = 0.012;
+const COLOR_CROSS: [number, number] = [16.8, 17.1]; // multicolor -> black
+const HERO_OUT: [number, number] = [17.32, 17.5];
 
-// --- card ---
-const CARD_IN = 18.42;
-const URL_IN = 18.95;
+// --- end card ---
+const CARD_IN = 17.45;
 
-// product lockup lines; sales group is visually separated as the CTA end-state
-const LOCKUP: {
-  text: string;
-  size: number;
-  weight: number;
-  color: string;
-  gap: number;
-  ls?: number;
-  delay: number; // extra stagger after CARD_IN
-}[] = [
-  { text: "Restro", size: 92, weight: 800, color: "#111", gap: 4, ls: 2, delay: 0 },
-  { text: "筆画復元", size: 46, weight: 700, color: "#111", gap: 8, delay: 0.12 },
-  { text: "After Effects プラグイン", size: 26, weight: 500, color: "#555", gap: 56, delay: 0.24 },
-  { text: "BOOTHで販売中", size: 36, weight: 800, color: "#111", gap: 12, delay: 0.55 },
-  { text: "361do.booth.pm/items/9029239", size: 30, weight: 600, color: "#111", gap: 0, ls: 0.5, delay: 0.7 },
+// --- official logo artwork (dumped AE "Logo" comp = Restro wordmark with
+// red-accent R + 筆画復元， vector art — not typeset text) ---
+const LOGO_COMP = compByName("Logo");
+const LOGO_CTX: RenderCtx = {
+  comps: GENERATED_COMPS,
+  footage: GENERATED_FOOTAGE,
+  camera: { fov: 40, distance: 1500 },
+  matteMap: mattePairs(),
+};
+const LOGO_SCALE = 1.3; // 416x260 -> ~541x338
+const CARD_LEFT = 505;
+const CARD_TOP = 268;
+
+// scene-C work02 palette (Restro step hues) — the "multicolor separated
+// strokes" the payoff returns with
+const PALETTE: [number, number, number][] = [
+  [0.84, 0.27, 0.13], // Restro red
+  [0.18, 0.44, 0.93], // blue
+  [0.18, 0.64, 0.42], // green
+  [0.91, 0.65, 0.18], // yellow
 ];
+const INK: [number, number, number] = [0.07, 0.07, 0.08];
 
 // --- shared stroke data (Baseline FUDE = the same 筆 used across B/C) ---
 let cached: {
   comp: ReturnType<typeof compStrokes>["comp"];
   strokes: StrokeItem[];
+  colorStrokes: StrokeItem[];
+  blackStrokes: StrokeItem[];
   cx: number;
   cy: number;
+  rank: number[];
+  scatter: { dx: number; dy: number; rot: number }[];
 } | null = null;
+
+// writing order = the S-number in the dumped layer name (same convention
+// as SceneB/SceneC)
+function strokeOrderIndex(name: string): number {
+  const m = /S(\d+)/.exec(name);
+  return m ? parseInt(m[1], 10) : 99;
+}
+
 function buildData() {
   if (cached) return cached;
   const { comp, strokes } = compStrokes("Baseline", {
@@ -108,72 +135,122 @@ function buildData() {
       if (y < minY) minY = y;
       if (y > maxY) maxY = y;
     }
-  cached = { comp, strokes, cx: (minX + maxX) / 2, cy: (minY + maxY) / 2 };
+  const cx = (minX + maxX) / 2;
+  const cy = (minY + maxY) / 2;
+
+  const rank = new Array(strokes.length).fill(0);
+  strokes
+    .map((s, i) => ({ i, k: strokeOrderIndex(s.name) }))
+    .sort((a, b) => a.k - b.k)
+    .forEach((o, r) => {
+      rank[o.i] = r;
+    });
+
+  // separated-stroke field: each stroke displaced outward from the char
+  // center with tangential jitter and a lean — reads as "exploded" pen
+  // strokes, not a broken glyph
+  const scatter = strokes.map((s, i) => {
+    const dx = s.center[0] - cx;
+    const dy = s.center[1] - cy;
+    const len = Math.hypot(dx, dy) || 1;
+    // moderate separation: the exploded char must stay recognizable as the
+    // 筆 hero (r1 review: 120-290px offsets read as abstract fragments)
+    const dist = 80 + ((i * 89) % 140); // 80-220 comp px outward
+    const swing = ((i * 47) % 60) - 30;
+    const tx = -dy / len;
+    const ty = dx / len;
+    return {
+      dx: (dx / len) * dist + tx * swing,
+      dy: (dy / len) * dist + ty * swing,
+      rot: (i % 2 === 0 ? 1 : -1) * (10 + (i % 4) * 6), // 10-28 deg
+    };
+  });
+
+  cached = {
+    comp,
+    strokes,
+    colorStrokes: tintedStrokes(strokes, (_s, i) =>
+      PALETTE[(i * 2 + 1) % PALETTE.length],
+    ),
+    blackStrokes: tintedStrokes(strokes, () => INK),
+    cx,
+    cy,
+    rank,
+    scatter,
+  };
   return cached;
 }
 
 // char bbox in comp space (same measured range as SceneC)
 const BB = { minX: 583, minY: 283, maxX: 1309, maxY: 997 };
-const fitFor = (maxW: number, maxH: number, cx: number, cy: number) => {
-  const w = BB.maxX - BB.minX;
-  const h = BB.maxY - BB.minY;
-  const s = Math.min(maxW / w, maxH / h);
-  const tx = cx - ((BB.minX + BB.maxX) / 2) * s;
-  const ty = cy - ((BB.minY + BB.maxY) / 2) * s;
-  return `translate(${tx}px,${ty}px) scale(${s})`;
-};
+// hero placement inside the right-stage clip window (x480-1080): large
+// enough to bleed the right frame edge like the scene-A kanji hero, while
+// the clip keeps separated strokes out of the left brand column
+const HERO_C: [number, number] = [375, 545];
+const HERO_S = 1.15;
+const HERO_FIT = `translate(${HERO_C[0] - ((BB.minX + BB.maxX) / 2) * HERO_S}px,${
+  HERO_C[1] - ((BB.minY + BB.maxY) / 2) * HERO_S
+}px) scale(${HERO_S})`;
 
 export const SceneE: React.FC<{ t: number }> = ({ t }) => {
-  const { comp, strokes, cx, cy } = buildData();
+  const { comp, colorStrokes, blackStrokes, rank, scatter } = buildData();
 
-  // --- hero stroke directions (radial + slight tangential jitter) ---
-  const dirs = strokes.map((s, i) => {
-    const dx = s.center[0] - cx;
-    const dy = s.center[1] - cy;
-    const len = Math.hypot(dx, dy) || 1;
-    const tx = -dy / len;
-    const ty = dx / len;
-    const swing = ((i * 53) % 40) - 20;
-    return {
-      x: dx / len + (tx * swing) / 60,
-      y: dy / len + (ty * swing) / 60,
-      rot: (i % 2 === 0 ? 1 : -1) * (1 + (i % 3)),
-    };
-  });
-
-  // --- recap window: visible f371-~f393, slides away as hero arrives ---
-  const recapIn = easeOutCubic(seg(t, T0, T0 + 0.3));
-  const recapOut = 1 - easeInOutCubic(seg(t, 16.1, 16.3));
+  // --- recap window: visible ~f371-379, gone before the payoff arrives ---
+  const recapIn = easeOutCubic(seg(t, T0, T0 + 0.12));
+  const recapOut = 1 - easeInOutCubic(seg(t, RECAP_OUT[0], RECAP_OUT[1]));
   const recapP = clamp01(Math.min(recapIn, recapOut));
 
-  // --- hero ---
+  // --- payoff hero ---
   const heroIn = easeOutCubic(seg(t, HERO_IN[0], HERO_IN[1]));
-  // strokes restore in writing order — the char literally rebuilds itself.
-  // Slow enough that the assembled state is only reached right before the
-  // separation beat, so restore -> separate -> reassemble all read.
-  const strokeReveal = (i: number) =>
-    clamp01((t - (HERO_IN[0] + 0.05 + i * 0.035)) / 0.36);
-  const heroSep =
-    easeInOutCubic(seg(t, SEP_A[0], SEP_A[1])) *
-    (1 - easeInOutCubic(seg(t, SEP_B[0], SEP_B[1])));
   const heroOut = 1 - easeInOutCubic(seg(t, HERO_OUT[0], HERO_OUT[1]));
   const heroP = clamp01(Math.min(heroIn, heroOut));
-  // subtle breathing after reassembly so the hold is not frozen
-  const breath =
-    heroP * (1 - heroSep) * Math.sin((t - SEP_B[1]) * 1.4) * 0.008;
+  // per-stroke entry stagger (writing order) + convergence progress
+  const entryP = (i: number) =>
+    clamp01((t - (HERO_IN[0] + 0.03 + rank[i] * 0.012)) / 0.26);
+  const gatherP = (i: number) =>
+    easeInOutCubic(
+      clamp01(
+        (t - (CONVERGE[0] + rank[i] * GATHER_STAGGER)) /
+          (GATHER_DUR + rank[i] * 0.004),
+      ),
+    );
+  const colorCross = easeInOutCubic(seg(t, COLOR_CROSS[0], COLOR_CROSS[1]));
 
-  // --- card ---
-  const cardBase = t >= CARD_IN ? easeOutCubic(seg(t, CARD_IN, CARD_IN + 0.45)) : 0;
-  const urlP = t >= URL_IN ? easeOutCubic(seg(t, URL_IN, URL_IN + 0.35)) : 0;
+  const strokeTransform = (s: StrokeItem, i: number) => {
+    const d = scatter[i];
+    if (!d) return undefined;
+    const g = gatherP(i);
+    const k = 1 - g;
+    // gentle drift while separated so the "peak" hold never freezes
+    const drift =
+      k *
+      Math.sin(t * 1.25 + i * 1.7) *
+      7;
+    const [cx, cy] = s.center;
+    return (
+      `translate(${d.dx * k + drift}px,${d.dy * k - drift * 0.6}px)` +
+      ` translate(${cx}px,${cy}px) rotate(${d.rot * k}deg)` +
+      ` translate(${-cx}px,${-cy}px)`
+    );
+  };
+  const strokeOpacity = (_s: StrokeItem, i: number) =>
+    heroP * entryP(i);
 
-  // left closing copy (SPEC §4 E candidate) — covers the dumped description
-  // E block which duplicated the product name in the left column. Fades in
-  // fast so the left column reads as E copy from the first frames (r11
-  // review: the persistent A headline must not sit alone at the cut).
+  // --- end card stagger ---
+  const itemP = (delay: number, dur = 0.4) =>
+    t >= CARD_IN + delay ? easeOutCubic(seg(t, CARD_IN + delay, CARD_IN + delay + dur)) : 0;
+  const logoP = itemP(0.05, 0.5);
+  const descP = itemP(0.22, 0.4);
+  const boothP = itemP(0.38, 0.4);
+  const urlP = itemP(0.52, 0.4);
+
+  // left closing copy (SPEC §4 E candidate). Hard cut at the E boundary:
+  // r4 review read the fade-in as a duplicate ghost of the same copy.
   const coverOn = t >= T0;
-  const leftIn = easeOutCubic(seg(t, T0 + 0.04, T0 + 0.3));
+  const leftIn = 1;
 
-  if (!coverOn && recapP <= 0 && heroP <= 0 && cardBase <= 0) return null;
+  const cardOn = logoP > 0 || descP > 0 || boothP > 0 || urlP > 0;
+  if (!coverOn && recapP <= 0 && heroP <= 0 && !cardOn) return null;
 
   return (
     <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
@@ -200,7 +277,7 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
         </div>
       )}
 
-      {/* ---- B/C/D recap strip (f371-388) ---- */}
+      {/* ---- B/C/D recap flash (f371-379) ---- */}
       {recapP > 0 && (
         <div
           style={{
@@ -268,8 +345,9 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
         </div>
       )}
 
-      {/* ---- hero 筆 (f389-430) — clipped to the right zone so separated
-          strokes cannot invade the left brand column ---- */}
+      {/* ---- payoff hero: multicolor separated strokes -> black kanji ----
+          clipped to the right zone so separated strokes cannot invade the
+          left brand column ---- */}
       {heroP > 0 && (
         <div
           style={{
@@ -289,66 +367,120 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
               top: 0,
               width: comp.width,
               height: comp.height,
-              transform: `${fitFor(500, 720, 300, 520)} scale(${1 + breath})`,
+              transform: HERO_FIT,
               transformOrigin: "0 0",
             }}
           >
+            {/* multicolor field (scene-C work02 palette) recedes as the
+                black kanji field converges in — question -> answer */}
             <StrokeField
               comp={comp}
-              strokes={strokes}
+              strokes={colorStrokes}
               poseT={0.5}
-              strokeOpacity={(_s, i) => heroIn * strokeReveal(i)}
-              strokeTransform={(s, i) => {
-                const d = dirs[i];
-                if (!d) return undefined;
-                const dist = heroSep * 30;
-                return `translate(${d.x * dist}px,${d.y * dist}px) rotate(${d.rot * heroSep}deg)`;
-              }}
+              strokeOpacity={strokeOpacity}
+              strokeTransform={strokeTransform}
+              opacity={1 - colorCross}
+            />
+            <StrokeField
+              comp={comp}
+              strokes={blackStrokes}
+              poseT={0.5}
+              strokeOpacity={strokeOpacity}
+              strokeTransform={strokeTransform}
+              opacity={colorCross}
             />
           </div>
         </div>
       )}
 
-      {/* ---- product lockup (f431-479): typography only, no card chrome —
-          SPEC §11 E rejects web-style framed cards. The sales group
-          (BOOTH + URL) is set apart by a wide gap so it reads as the
-          actionable end-state, not an equal sibling of the product name. */}
-      {cardBase > 0 && (
+      {/* ---- end card: official logo artwork + one CTA hierarchy ----
+          Logo comp = the real Restro lockup artwork (wordmark + 筆画復元）;
+          the product name lives inside the artwork, so no typeset
+          "Restro"/"筆画復元" is repeated here. */}
+      {cardOn && LOGO_COMP && (
         <div
           style={{
             position: "absolute",
-            left: 540,
-            top: 330,
-            width: 520,
-            opacity: cardBase,
+            left: CARD_LEFT,
+            top: CARD_TOP,
+            width: 560,
             fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
           }}
         >
-          {LOCKUP.map((it) => {
-            const isUrl = it.text.startsWith("361do");
-            const p = clamp01(
-              (t - (CARD_IN + it.delay)) / 0.4,
-            );
-            const lp = easeOutCubic(p);
-            return (
-              <div
-                key={it.text}
-                style={{
-                  marginTop: it === LOCKUP[0] ? 0 : it.gap,
-                  fontSize: it.size,
-                  fontWeight: it.weight,
-                  color: it.color,
-                  letterSpacing: it.ls ?? 0,
-                  lineHeight: 1.24,
-                  whiteSpace: "nowrap",
-                  opacity: lp * (isUrl ? urlP : 1),
-                  transform: `translateY(${(1 - lp) * 16}px)`,
-                }}
-              >
-                {it.text}
-              </div>
-            );
-          })}
+          {/* official logo artwork — outer box reserves the SCALED height
+              (CSS transforms do not affect layout) so following lines
+              cannot overlap the artwork */}
+          <div
+            style={{
+              width: 416 * LOGO_SCALE,
+              height: 260 * LOGO_SCALE,
+              marginBottom: 30,
+              opacity: logoP,
+              transform: `translateY(${(1 - logoP) * 18}px)`,
+              overflow: "visible",
+            }}
+          >
+            <div
+              style={{
+                width: 416,
+                height: 260,
+                transform: `scale(${LOGO_SCALE})`,
+                transformOrigin: "0 0",
+              }}
+            >
+              <CompView comp={LOGO_COMP} ctx={LOGO_CTX} t={0.5} isRoot={false} />
+            </div>
+          </div>
+
+          {/* what it is — product descriptor, secondary weight */}
+          <div
+            style={{
+              fontSize: 34,
+              fontWeight: 600,
+              color: "#3c3c3c",
+              letterSpacing: 0.5,
+              lineHeight: 1.3,
+              opacity: descP,
+              transform: `translateY(${(1 - descP) * 14}px)`,
+            }}
+          >
+            After Effects プラグイン
+          </div>
+
+          {/* sales CTA — clearly separated group: where to buy + URL */}
+          <div
+            style={{
+              marginTop: 58,
+              opacity: boothP,
+              transform: `translateY(${(1 - boothP) * 14}px)`,
+            }}
+          >
+            <div
+              style={{
+                fontSize: 46,
+                fontWeight: 800,
+                color: "#111",
+                letterSpacing: 1,
+                lineHeight: 1.25,
+              }}
+            >
+              BOOTHで販売中
+            </div>
+            <div
+              style={{
+                marginTop: 12,
+                fontSize: 30,
+                fontWeight: 600,
+                color: "#111",
+                letterSpacing: 0.5,
+                lineHeight: 1.3,
+                opacity: urlP,
+                transform: `translateY(${(1 - urlP) * 12}px)`,
+              }}
+            >
+              361do.booth.pm/items/9029239
+            </div>
+          </div>
         </div>
       )}
     </div>

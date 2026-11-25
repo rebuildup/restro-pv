@@ -13,35 +13,33 @@ import {
 import type { StrokeItem } from "./glyph.tsx";
 import type { CompSpec } from "../../../pv/model/types.ts";
 
-// Scene C [191,281) per SPEC §5 C: three finished works built from the real
-// Restro stroke paths (Baseline FUDE S01-S13), scrolling through one tall
-// clipped window on the right stage.
+// Scene C [191,281) per SPEC §5 C + docs/pv-art-direction.md v13 GALLERY
+// mode: three finished works, one at a time, large on a clean white
+// artboard inside the right-stage window. The reversal from technical
+// colors (B) to finished monochrome/color works IS the meaning — each
+// piece must read as a completed design, not a glyph demo.
 //
-//   Work 01 「散った筆画が集まる」— the assembled 筆 is the goal, not the
-//     start: a faint real contour guide (FUDE outline base) marks the target
-//     while the 13 ink strokes fly in from a scattered field, gathering in
-//     writing order (S01->S13) onto their slots, then settle and hold.
-//   Work 02 「時間差の波」— the finished multicolored 筆 (palette order A)
-//     holds, then a traveling per-stroke wave sweeps left->right: fills
-//     ride it and a violet crest sweeps the front, then everything resolves
-//     back to the clean colored char.
-//   Work 03 「筆画で別の構図」— on a dark ground the same strokes stream
-//     in from both outer edges and lock into a two-wing emblem: each wing
-//     is a symmetric half-mark (left-half strokes upright + right-half
-//     strokes mirrored about the char centerline), the right wing mirrors
-//     the left about the cell center, one uniform light ink. The wings
-//     part outward and rejoin once, then hold.
+//   Work 01 「墨」— the assembled 筆 as a finished ink piece: black strokes
+//     gather in writing order onto their slots while a faint guide contour
+//     marks the target, then the guide fades completely and the clean
+//     char + red seal holds still.
+//   Work 02 「彩」— the same char as a color print: palette-ordered strokes
+//     hold assembled, one traveling wave sweeps through them, then the
+//     clean multicolored char + seal resolves and holds.
+//   Work 03 「構」— the strokes recomposed into a symmetric two-wing
+//     emblem (left-half strokes upright + right-half mirrored about the
+//     char centerline; right wing mirrors left about the cell center),
+//     near-black ink on white, streamed in from both outer edges, then
+//     held still.
 //
-// Craft rules applied vs. the rejected draft: every work is composed inside
-// its cell (consistent footer: hairline + index + title), the char fills
-// the window instead of floating in margins, scatter/wave/stream motion is
-// staggered by the real writing order, and the strip gap is smaller than
-// the window so transit never parks on an empty frame.
+// Timing: the strip window is kept (SPEC scroll), but page-turn legs are
+// ~0.12s — visually hard cuts per the v13 "基本はハードカット" rule.
+// Each work owns a ~1.25s slot (near-equal): w1 rel 0-1.20, w2 1.32-2.40,
+// w3 2.52-3.71. Internal builds finish early inside each slot so the
+// finished composition holds still for the remainder.
 //
-// Window: x 490-1060, y 60-1020 (SPEC right zone). Cells are 570x960 with a
-// 300px strip gap (pitch 1260): during a scroll leg both the outgoing
-// cell's bottom and the incoming cell's top stay substantially inside the
-// window, so transit reads as continuous motion instead of blank frames.
+// Window: x 490-1060, y 60-1020 (SPEC right zone). Cells are 570x960,
+// contiguous (pitch 960), all pure white artboards.
 
 const T0 = 191 / 24;
 const T1 = 281 / 24;
@@ -51,81 +49,73 @@ const WIN_Y = 60;
 const WIN_W = 570;
 const WIN_H = 960;
 const CELL_H = 960;
-// 300px strip gap: during a scroll leg the outgoing cell's bottom and the
-// incoming cell's top are both substantially inside the window, so transit
-// frames show real pieces of both works instead of a lone sliver
-const GAP = 300;
-const PITCH = CELL_H + GAP;
-const PAD = 240;
-const CELL_TOPS = [PAD, PAD + PITCH, PAD + PITCH * 2];
-const STRIP_H = PAD + PITCH * 2 + CELL_H + PAD;
+const PITCH = CELL_H;
+const CELL_TOPS = [0, PITCH, PITCH * 2];
+const STRIP_H = PITCH * 3;
 
-const WORK_TITLES = [
-  "作品 01 — 散った筆画が集まる",
-  "作品 02 — 筆画ごとの時間差の波",
-  "作品 03 — 筆画で別の構図",
-];
-const CELL_BG = ["#f5f0e6", "#e8ecf1", "#20242e"];
-const TITLE_INK = ["#1d1d20", "#1d1d20", "#e9e7e0"];
-const RULE_INK = ["#b9ad97", "#9aa8bd", "#4a5164"];
-const STRIP_BG = "#e7e3da";
+// Work names only (v13: captions stay at work-name level). Compound
+// titles 「筆墨」「筆彩」「筆構」 name each finished piece as a treatment
+// of the 筆 stroke set — they read as print names, not process labels,
+// and keep the shared 筆 motif explicit instead of letting the glyphs
+// be mistaken for three unrelated characters.
+const WORK_TITLES = ["筆墨", "筆彩", "筆構"];
+const CELL_BG = "#ffffff";
+const TITLE_INK = "#1d1d20";
+const RULE_INK = "#d8d4c9";
+const STRIP_BG = "#ffffff";
+const SEAL_BG = "#c93b22"; // Restro red — hanko seal marking finished work
 
-// Scroll waypoints [rel seconds, strip offset]. Legs are ~0.35s; each work
-// is exactly framed while its cell top equals sy. The 0.0->0.30 drift lets
-// work 01 settle the last few px into register after entering.
+// Scroll waypoints [rel seconds, strip offset]. Page-turn legs are 0.12s
+// (~3 frames): the vertical-scroll mechanism stays (SPEC/C-3) but reads
+// as a gallery cut, not a transit. Each work is centered for ~1.1-1.2s
+// plus partial visibility through the adjacent turns.
 const SCROLL: [number, number][] = [
-  // sy stays >=240 so the work01 footer is never clipped during entry;
-  // the strip slides the last 15px down into register
-  [0.0, 255],
-  [0.3, CELL_TOPS[0]],
-  [1.36, CELL_TOPS[0]],
-  [1.71, CELL_TOPS[1]],
-  // w2's resolved char holds until rel 2.50 (~9 frames of clean read),
-  // then the leg runs 2.50-2.85 so w3 is largely inside frame by f260
-  [2.5, CELL_TOPS[1]],
-  [2.85, CELL_TOPS[2]],
+  [0.0, CELL_TOPS[0]],
+  [1.2, CELL_TOPS[0]],
+  [1.32, CELL_TOPS[1]],
+  [2.4, CELL_TOPS[1]],
+  [2.52, CELL_TOPS[2]],
   [3.75, CELL_TOPS[2]],
 ];
 
-// Palette shared by works 02/03 (Restro step hues, design-baseline §2).
-const PALETTE: [number, number, number][] = [
-  [0.84, 0.27, 0.13], // Restro red
-  [0.18, 0.44, 0.93], // blue
-  [0.18, 0.64, 0.42], // green
-  [0.91, 0.65, 0.18], // yellow
-];
+// Work 02 finished form: a vertical two-stop gradient (cobalt -> vermilion)
+// mapped across stroke center-y — an ombre print treatment that reads as
+// one designed color field instead of per-stroke layer labels. The wave
+// crest is yellow so it stays distinct from both gradient stops.
+const GRAD_TOP: [number, number, number] = [0.12, 0.32, 0.82];
+const GRAD_BOT: [number, number, number] = [0.88, 0.28, 0.1];
+const CREST: [number, number, number] = [0.93, 0.72, 0.12];
 const INK: [number, number, number] = [0.1, 0.1, 0.11];
-const GUIDE_INK = "#a99a7f"; // work01 target contour on paper
-const W3_INK: [number, number, number] = [0.92, 0.89, 0.83]; // emblem light ink
+const GUIDE_INK = "#a8a08c"; // work01 target contour on white
+const W3_INK: [number, number, number] = [0.12, 0.12, 0.13]; // emblem ink
 
 // char bbox in comp space (measured Baseline FUDE S01-S13 rest pose)
 const BB = { minX: 583, minY: 283, maxX: 1309, maxY: 997 };
 const BB_CX = (BB.minX + BB.maxX) / 2;
 const BB_CY = (BB.minY + BB.maxY) / 2;
 
-// single-char fits. Work01 needs real scatter room, so its char sits at
-// s=0.65 (~472x466px) leaving ~49px side margins the strokes can travel
-// into; work02 keeps the larger s=0.73 (~531x521px) since it never
-// displaces — presence first. Both center optically above the footer.
-const W1_S = 0.65;
-const W2_S = 0.73;
+// Gallery fit: works 01/02 share one optical size and center so the three
+// pieces sit on the same baseline grid. s=0.68 -> ~494x486px char inside
+// the 570px cell (x 38-532), centered at (285,450) — generous even margins
+// above the caption rule.
+const SINGLE_S = 0.68;
 const SINGLE_C: [number, number] = [285, 450];
-const fitFor = (s: number) =>
-  `translate(${SINGLE_C[0] - BB_CX * s}px,${SINGLE_C[1] - BB_CY * s}px) scale(${s})`;
-const W1_FIT = fitFor(W1_S);
-const W2_FIT = fitFor(W2_S);
+const SINGLE_FIT = `translate(${SINGLE_C[0] - BB_CX * SINGLE_S}px,${
+  SINGLE_C[1] - BB_CY * SINGLE_S
+}px) scale(${SINGLE_S})`;
 
-// work03 emblem: two wings side by side. Each wing shows the char's
-// left-half strokes upright plus its right-half strokes mirrored about
-// the char's vertical centerline, so every wing is a symmetric half-mark;
-// the right wing is the left wing mirrored about the cell center. One
-// uniform light ink keeps the pair reading as a single emblem.
-// Wing content spans screen x ~74-292 / ~278-496 (mirror axis 285) and
-// y ~216-644 at S=0.6 — a tall crest that parts outward and rejoins once.
+// work03 emblem: two wings side by side (unchanged geometry, S=0.6),
+// then the whole emblem is scaled 1.18 about its own center and shifted
+// to optical center (285,452) via the wrapper transform below — reads
+// ~498px wide / ~505px tall on the white board.
 const W3_S = 0.6;
 const W3_CY = 430;
 const W3_LX = 292; // screen x of comp x=BB_CX on the left wing
 const W3_MX = 285; // emblem mirror axis = cell horizontal center
+const W3_SCALE = 1.18;
+const W3_WRAPPER =
+  `translate(${W3_MX}px,452px) scale(${W3_SCALE}) ` +
+  `translate(${-W3_MX}px,${-430}px)`;
 
 interface WorkGeom {
   // per-stroke scatter offset + spin (work 01), clamped so the displaced
@@ -193,19 +183,19 @@ function buildData() {
   const n = strokes.length;
 
   // Work 01 scatter must keep every displaced stroke inside the cell.
-  // W1 fit is s=0.65 around cell (285,450): allowed comp-space stroke bbox
-  // is x ~[512,1378], y ~[10,1305] — roughly ±65 comp px of horizontal and
-  // ±270 of vertical travel beyond the rest char, which is what makes the
-  // scattered field read as scattered instead of a bent glyph.
-  const BOX_X0 = 512;
-  const BOX_X1 = 1378;
-  const BOX_Y0 = 10;
-  const BOX_Y1 = 1305;
+  // SINGLE_FIT is s=0.68 around cell (285,450): allowed comp-space stroke
+  // bbox is roughly x [548,1343], y [96,1154] — horizontal travel is
+  // tight (~±35 comp px) but vertical travel is generous (~±170), so the
+  // scattered field reads as a vertical cascade fitting the portrait cell.
+  const BOX_X0 = 548;
+  const BOX_X1 = 1343;
+  const BOX_Y0 = 96;
+  const BOX_Y1 = 1154;
   const scatter = strokes.map((s, i) => {
     const dx = s.center[0] - cx;
     const dy = s.center[1] - cy;
     const len = Math.hypot(dx, dy) || 1;
-    const dist = 170 + ((i * 89) % 180); // 170-350 comp px outward
+    const dist = 120 + ((i * 89) % 140); // 120-260 comp px outward
     const swing = ((i * 47) % 60) - 30; // tangential jitter, comp px
     const tx = -dy / len;
     const ty = dx / len;
@@ -264,18 +254,26 @@ function buildData() {
   };
 
   const ink = tintedStrokes(strokes, () => INK);
-  // work02 finished form: palette order (i*2+1)%4 — deliberately different
-  // from work03's i%4 so the two color fields never read as duplicates
-  const waveColor = tintedStrokes(strokes, (_s, i) =>
-    PALETTE[(i * 2 + 1) % PALETTE.length],
-  );
-  // crest violet — deliberately absent from the waveColor palette so the
-  // wave front reads as a distinct sweep, not another palette stroke
-  const waveRed = tintedStrokes(strokes, () => [0.5, 0.22, 0.9]);
-  // work03 is deliberately monochrome: one light ink for the whole emblem
-  // so the mirrored pair reads as a single designed mark. Each wing gets
-  // the strokes on its own half of the char; the other half is supplied
-  // mirrored about the char centerline (see the wing markup).
+  const lerp3 = (
+    a: [number, number, number],
+    b: [number, number, number],
+    t: number,
+  ): [number, number, number] => [
+    a[0] + (b[0] - a[0]) * t,
+    a[1] + (b[1] - a[1]) * t,
+    a[2] + (b[2] - a[2]) * t,
+  ];
+  const waveColor = tintedStrokes(strokes, (s) => {
+    const t = clamp01((s.center[1] - minY) / Math.max(1, maxY - minY));
+    return lerp3(GRAD_TOP, GRAD_BOT, t);
+  });
+  // crest yellow — deliberately absent from the gradient endpoints so the
+  // wave front reads as a distinct sweep, not another gradient tone
+  const waveRed = tintedStrokes(strokes, () => CREST);
+  // work03 is deliberately monochrome: one near-black ink for the whole
+  // emblem so the mirrored pair reads as a single designed mark. Each
+  // wing gets the strokes on its own half of the char; the other half is
+  // supplied mirrored about the char centerline (see the wing markup).
   const isLeft = strokes.map((s) => s.center[0] < BB_CX);
   const pick = <T,>(arr: T[]) => arr.filter((_, i) => isLeft[i]);
   const pickR = <T,>(arr: T[]) => arr.filter((_, i) => !isLeft[i]);
@@ -327,7 +325,8 @@ function scrollY(rel: number): number {
 
 // work02 traveling wave, shared by fills and contour overlays. `phase` is
 // rel*speed; each stroke's x-delay makes the disturbance sweep left->right.
-// Returns the comp-space transform string for stroke index i.
+// Returns the comp-space transform string for stroke index i. Amplitude
+// kept inside the cell margins (50 comp px ~ 34 screen px at s=0.68).
 function waveTransformAt(
   geom: WorkGeom,
   i: number,
@@ -336,7 +335,7 @@ function waveTransformAt(
   amp = 1,
 ): string {
   const w = Math.sin(phase - geom.xdelay[i] * 4.0);
-  const d = env * w * 62 * amp;
+  const d = env * w * 50 * amp;
   const rot = env * Math.sin(phase * 0.8 - geom.xdelay[i] * 3.0) * 5 * amp;
   const crest = Math.max(0, w) * env;
   const pop = 1 + crest * 0.1 * amp;
@@ -360,7 +359,7 @@ function waveTransformAtLoose(
   amp = 1,
 ): string {
   const w = Math.sin(phase - geom.xdelay[i] * 4.0);
-  const d = env * w * 62 * amp;
+  const d = env * w * 50 * amp;
   const rot = env * Math.sin(phase * 0.8 - geom.xdelay[i] * 3.0) * 5 * amp;
   const crest = Math.max(0, w) * env;
   const pop = 1 + crest * 0.1 * amp;
@@ -424,6 +423,36 @@ function gatherTransform(
   );
 }
 
+// hanko seal: small red mark stamped at the same spot on every work —
+// the series signature that says "finished piece", not demo frame.
+const Seal: React.FC = () => (
+  <div
+    style={{
+      position: "absolute",
+      left: 484,
+      top: 798,
+      width: 48,
+      height: 48,
+      background: SEAL_BG,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }}
+  >
+    <span
+      style={{
+        fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
+        fontSize: 30,
+        fontWeight: 800,
+        color: "#ffffff",
+        lineHeight: 1,
+      }}
+    >
+      筆
+    </span>
+  </div>
+);
+
 export const SceneC: React.FC<{ t: number }> = ({ t }) => {
   if (t < T0 || t >= T1) return null;
   const {
@@ -442,51 +471,43 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
   const sy = scrollY(rel);
   // hold the finished emblem until rel ~3.71, then a fast fade completes
   // before the D cut at rel 3.75 (f281)
-  const sceneOpacity = 1 - seg(rel, 3.712, 3.748);
+  const sceneOpacity = 1 - seg(rel, 3.71, 3.748);
 
-  // ---- work 01: scatter -> gather in writing order -> settle -> hold ----
-  // strokes are already scattered while the cell slides in (rel<0.30),
-  // then travel to their slots staggered by S-number rank; the last stroke
-  // lands ~rel 1.0 leaving ~0.36s of settled recognition before scroll
+  // ---- work 01 「墨」: scatter -> gather in writing order -> settle ----
+  // strokes are scattered from rel 0 (the cell is already centered), gather
+  // over ~0.31s staggered by S-number rank, settle ripple to ~0.42, then
+  // the clean ink char + seal holds still for ~0.78s before the turn.
   const gatherP = (i: number) =>
-    easeOutCubic(clamp01((rel - 0.38 - geom.rank[i] * 0.018) / 0.4));
-  const settleEnv = Math.sin(Math.PI * seg(rel, 1.0, 1.28));
+    easeOutCubic(clamp01((rel - 0.02 - geom.rank[i] * 0.009) / 0.18));
+  const settleEnv = Math.sin(Math.PI * seg(rel, 0.3, 0.42));
 
-  // ---- work 02: assembled colored char -> traveling wave -> resolve ----
-  // wave fully releases by rel 2.12 so the resolved char holds ~0.38s
-  // (~9 frames) before the scroll to work03
-  const env2 = seg(rel, 1.72, 1.85) * (1 - seg(rel, 1.98, 2.12));
+  // ---- work 02 「彩」: assembled colored char -> wave -> resolve ----
+  // the colored char is the finished piece throughout; one wave sweeps
+  // through it early in the slot and resolves by rel ~1.68, leaving ~0.7s
+  // of clean hold plus the page-turn tail.
+  const env2 = seg(rel, 1.22, 1.34) * (1 - seg(rel, 1.56, 1.68));
   const phase = rel * 6.5;
 
-  // ---- work 03: two-wing emblem streams in -> part/rejoin -> hold ----
-  // stream starts just before the dark cell clears the window bottom so
-  // strokes are visibly in flight during entry; last stroke lands ~rel
-  // 3.0, then the wings part outward and rejoin once, holding into the cut
+  // ---- work 03 「構」: two-wing emblem streams in -> holds still ----
+  // stream starts during the page-turn so strokes are visibly in flight
+  // as the cell centers; last stroke lands ~rel 2.74, then the finished
+  // emblem + seal holds still ~0.95s into the fade (no part/rejoin —
+  // stillness is the finished state).
   const w3q = (g: WorkGeom, i: number) =>
-    clamp01((rel - 2.6 - g.rank[i] * 0.012) / 0.34);
-  const w3BreathEnv = Math.sin(Math.PI * seg(rel, 3.28, 3.6));
-  const w3Part = w3BreathEnv * 46; // cell px each wing travels outward
-  const w3Tilt = w3BreathEnv * 2.4; // deg, wings lift as they part
+    clamp01((rel - 2.42 - g.rank[i] * 0.008) / 0.22);
 
-  // work03 wing transform. The LEFT wing is authored once; the right wing
+  // work03 wing transforms, static (no part/rejoin — the emblem holds
+  // still once assembled). The LEFT wing is authored once; the right wing
   // reuses the identical string wrapped in a screen-space mirror about
   // the cell center, so both wings are exact mirror images. Transform
-  // lists apply right-to-left, so the comp-space fit is rightmost and the
-  // tilt wrapper (pivoting on the emblem center) is leftmost.
-  const wingCore =
-    `translate(${W3_MX}px,${W3_CY}px) rotate(${w3Tilt}deg)` +
-    ` translate(${-W3_MX}px,${-W3_CY}px)` +
-    ` translate(${-w3Part}px,0px)` +
-    ` translate(${W3_LX - BB_CX * W3_S}px,${W3_CY - BB_CY * W3_S}px)` +
-    ` scale(${W3_S})`;
-  const wingLeft = wingCore;
-  const wingRight =
-    `translate(${2 * W3_MX}px,0px) scale(-1,1) ` + wingCore;
+  // lists apply right-to-left, so the comp-space fit is rightmost.
+  const wingLeftStatic = `translate(${W3_LX - BB_CX * W3_S}px,${W3_CY - BB_CY * W3_S}px) scale(${W3_S})`;
+  const wingRightStatic =
+    `translate(${2 * W3_MX}px,0px) scale(-1,1) ` + wingLeftStatic;
 
-  // work01 guide outline: strong while strokes are in flight, then recedes
-  // to a faint registration mark so the finished char stays clean
-  const guideOp =
-    0.14 + 0.32 * (1 - seg(rel, 1.0, 1.3)) + 0.1 * seg(rel, 0.0, 0.3);
+  // work01 guide outline: visible only while strokes are in flight,
+  // fully gone by rel ~0.38 so the held piece has no process marks
+  const guideOp = 0.4 * seg(rel, 0.0, 0.08) * (1 - seg(rel, 0.24, 0.38));
 
   return (
     <div
@@ -530,7 +551,7 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                   top,
                   width: WIN_W,
                   height: CELL_H,
-                  background: CELL_BG[w],
+                  background: CELL_BG,
                   overflow: "hidden",
                 }}
               >
@@ -542,12 +563,13 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                       top: 0,
                       width: comp.width,
                       height: comp.height,
-                      transform: W1_FIT,
+                      transform: SINGLE_FIT,
                       transformOrigin: "0 0",
                     }}
                   >
                     {/* real target contour (FUDE outline base) — the guide
-                        the scattered strokes gather onto */}
+                        the scattered strokes gather onto; fully fades so
+                        the held piece carries no process marks */}
                     <ContourField
                       comp={comp}
                       contours={[outlineContours]}
@@ -582,13 +604,13 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                       top: 0,
                       width: comp.width,
                       height: comp.height,
-                      transform: W2_FIT,
+                      transform: SINGLE_FIT,
                       transformOrigin: "0 0",
                     }}
                   >
-                    {/* work2's finished form IS the multicolored char:
-                        recognize -> wave -> resolve on the same palette
-                        strokes (order differs from work03) */}
+                    {/* work2's finished form IS the gradient char:
+                        recognize -> wave -> resolve on the same
+                        gradient strokes (work03 stays monochrome) */}
                     <StrokeField
                       comp={comp}
                       strokes={waveColor}
@@ -619,11 +641,9 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                 )}
                 {w === 2 && (
                   <>
-                    {/* left wing: half-char mark (left-half strokes upright
-                        + right-half strokes mirrored about the char
-                        centerline). k is the remaining travel fraction:
-                        k=1 fully offset off-cell, k=0 arrived — the guard
-                        must test arrival, not start */}
+                    {/* emblem wrapper: scale 1.18 about the emblem center
+                        then shift to optical center (285,452) — enlarges
+                        the mark without touching the wing geometry */}
                     <div
                       style={{
                         position: "absolute",
@@ -631,23 +651,15 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                         top: 0,
                         width: comp.width,
                         height: comp.height,
-                        transform: wingLeft,
+                        transform: W3_WRAPPER,
                         transformOrigin: "0 0",
                       }}
                     >
-                      <StrokeField
-                        comp={comp}
-                        strokes={emblemInkL}
-                        poseT={0.5}
-                        strokeTransform={(_s, i) => {
-                          const k = w3Stream(w3q(geomL, i));
-                          if (k <= 0.001) return undefined;
-                          return w3StreamOffset(geomL, i, k, -1);
-                        }}
-                      />
-                      {/* right-half strokes mirrored about comp x=BB_CX so
-                          they land inside the wing's half-char region;
-                          mx=+1 keeps their stream direction mirrored */}
+                      {/* left wing: half-char mark (left-half strokes
+                          upright + right-half strokes mirrored about the
+                          char centerline). k is the remaining travel
+                          fraction: k=1 fully offset off-cell, k=0 arrived
+                          — the guard must test arrival, not start */}
                       <div
                         style={{
                           position: "absolute",
@@ -655,46 +667,49 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                           top: 0,
                           width: comp.width,
                           height: comp.height,
-                          transform: `translate(${2 * BB_CX}px,0px) scale(-1,1)`,
+                          transform: wingLeftStatic,
                           transformOrigin: "0 0",
                         }}
                       >
                         <StrokeField
                           comp={comp}
-                          strokes={emblemInkR}
+                          strokes={emblemInkL}
                           poseT={0.5}
                           strokeTransform={(_s, i) => {
-                            const k = w3Stream(w3q(geomR, i));
+                            const k = w3Stream(w3q(geomL, i));
                             if (k <= 0.001) return undefined;
-                            return w3StreamOffset(geomR, i, k, 1);
+                            return w3StreamOffset(geomL, i, k, -1);
                           }}
                         />
+                        {/* right-half strokes mirrored about comp x=BB_CX so
+                            they land inside the wing's half-char region;
+                            mx=+1 keeps their stream direction mirrored */}
+                        <div
+                          style={{
+                            position: "absolute",
+                            left: 0,
+                            top: 0,
+                            width: comp.width,
+                            height: comp.height,
+                            transform: `translate(${2 * BB_CX}px,0px) scale(-1,1)`,
+                            transformOrigin: "0 0",
+                          }}
+                        >
+                          <StrokeField
+                            comp={comp}
+                            strokes={emblemInkR}
+                            poseT={0.5}
+                            strokeTransform={(_s, i) => {
+                              const k = w3Stream(w3q(geomR, i));
+                              if (k <= 0.001) return undefined;
+                              return w3StreamOffset(geomR, i, k, 1);
+                            }}
+                          />
+                        </div>
                       </div>
-                    </div>
-                    {/* right wing: exact screen-space mirror of the left
-                        wing about the cell center — same children, same
-                        stream/breath timing, mirrored silhouette */}
-                    <div
-                      style={{
-                        position: "absolute",
-                        left: 0,
-                        top: 0,
-                        width: comp.width,
-                        height: comp.height,
-                        transform: wingRight,
-                        transformOrigin: "0 0",
-                      }}
-                    >
-                      <StrokeField
-                        comp={comp}
-                        strokes={emblemInkL}
-                        poseT={0.5}
-                        strokeTransform={(_s, i) => {
-                          const k = w3Stream(w3q(geomL, i));
-                          if (k <= 0.001) return undefined;
-                          return w3StreamOffset(geomL, i, k, -1);
-                        }}
-                      />
+                      {/* right wing: exact screen-space mirror of the left
+                          wing about the cell center — same children, same
+                          stream timing, mirrored silhouette */}
                       <div
                         style={{
                           position: "absolute",
@@ -702,69 +717,79 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                           top: 0,
                           width: comp.width,
                           height: comp.height,
-                          transform: `translate(${2 * BB_CX}px,0px) scale(-1,1)`,
+                          transform: wingRightStatic,
                           transformOrigin: "0 0",
                         }}
                       >
                         <StrokeField
                           comp={comp}
-                          strokes={emblemInkR}
+                          strokes={emblemInkL}
                           poseT={0.5}
                           strokeTransform={(_s, i) => {
-                            const k = w3Stream(w3q(geomR, i));
+                            const k = w3Stream(w3q(geomL, i));
                             if (k <= 0.001) return undefined;
-                            return w3StreamOffset(geomR, i, k, 1);
+                            return w3StreamOffset(geomL, i, k, -1);
                           }}
                         />
+                        <div
+                          style={{
+                            position: "absolute",
+                            left: 0,
+                            top: 0,
+                            width: comp.width,
+                            height: comp.height,
+                            transform: `translate(${2 * BB_CX}px,0px) scale(-1,1)`,
+                            transformOrigin: "0 0",
+                          }}
+                        >
+                          <StrokeField
+                            comp={comp}
+                            strokes={emblemInkR}
+                            poseT={0.5}
+                            strokeTransform={(_s, i) => {
+                              const k = w3Stream(w3q(geomR, i));
+                              if (k <= 0.001) return undefined;
+                              return w3StreamOffset(geomR, i, k, 1);
+                            }}
+                          />
+                        </div>
                       </div>
                     </div>
                   </>
                 )}
-                {/* consistent footer: hairline + index + title. Every work
-                    is captioned like a finished piece, same baseline grid */}
+                {/* consistent footer: hairline + index + work name only.
+                    Same baseline grid on every piece (gallery label). */}
                 <div
                   style={{
                     position: "absolute",
                     left: 0,
-                    top: 900,
+                    top: 880,
                     width: WIN_W,
                     height: 1,
-                    background: RULE_INK[w],
-                    opacity: 0.55,
+                    background: RULE_INK,
+                    opacity: 0.7,
                   }}
                 />
                 <div
                   style={{
                     position: "absolute",
                     left: 30,
-                    top: 914,
-                    display: "flex",
-                    alignItems: "baseline",
-                    gap: 14,
+                    top: 894,
                   }}
                 >
                   <span
                     style={{
                       fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
-                      fontSize: 26,
-                      fontWeight: 800,
-                      letterSpacing: 1,
-                      color: TITLE_INK[w],
+                      fontSize: 30,
+                      fontWeight: 600,
+                      letterSpacing: 2,
+                      color: TITLE_INK,
                     }}
                   >
-                    {String(w + 1).padStart(2, "0")}
-                  </span>
-                  <span
-                    style={{
-                      fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
-                      fontSize: 22,
-                      fontWeight: 500,
-                      color: TITLE_INK[w],
-                    }}
-                  >
-                    {title.replace(/^作品 \d+ — /, "")}
+                    {title}
                   </span>
                 </div>
+                <Seal />
               </div>
             );
           })}

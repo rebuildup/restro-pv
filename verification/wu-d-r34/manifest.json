@@ -1,0 +1,14 @@
+{
+  "id": "wu-d-r35c",
+  "wu": "WU-D",
+  "subject": "scene D r35: single large curated viewport (PROOF mode) — ae-stroke-animate cropped tight to the decomposed stroke cluster (ROI x655-1075,y160-445), viewport enlarged to full right-stage width (x480-1080,w600), global grid dimmed to 30% inside the D window only, honest one-line annotation 「分解した筆画が、レイヤーとしてそのまま動く」",
+  "context": "Scene D spans PV frames 281-370. Left column keeps SPEC §4 D headline plus one explanation line. The viewport plays two clips from one recording: src f588-627 (stroke pieces at position 1, in-clip jump at src f622 = PV f315) then src f640-689 (jump cut to held state 2, in-clip jump at src f665 = PV f346, final arrangement holds to the hard cut at f371).",
+  "frames": [
+    { "file": "verification/wu-d-r34/r35c-f295.png", "frame": 295, "note": "D enter: before state, Restro + red stroke pieces pos1" },
+    { "file": "verification/wu-d-r34/r35c-f312.png", "frame": 312, "note": "state1 hold before first move" },
+    { "file": "verification/wu-d-r34/r35c-f318.png", "frame": 318, "note": "first in-clip jump landed: pieces shifted (PV f315)" },
+    { "file": "verification/wu-d-r34/r35c-f330.png", "frame": 330, "note": "state2 hold after jump cut" },
+    { "file": "verification/wu-d-r34/r35c-f350.png", "frame": 350, "note": "second in-clip jump landed: pieces shifted again (PV f346)" },
+    { "file": "verification/wu-d-r34/r35c-f370.png", "frame": 370, "note": "last D frame; hard cut to E next" }
+  ]
+}

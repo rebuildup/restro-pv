@@ -1,0 +1,48 @@
+{
+  "id": "wu-c-v13-r2",
+  "wu": "WU-C",
+  "subject": "scene C gallery redesign (v13 art direction) round 2 — three finished works one at a time on white artboards, near-equal slots, name-only captions, extended finished holds",
+  "frames": [
+    {
+      "file": "verification/wu-c-v13-r2/f200.png",
+      "frame": 200,
+      "note": "work01 筆墨: ink char settling, guide contour nearly gone"
+    },
+    {
+      "file": "verification/wu-c-v13-r2/f212.png",
+      "frame": 212,
+      "note": "work01 clean hold: black ink char + seal, no guide marks"
+    },
+    {
+      "file": "verification/wu-c-v13-r2/f226.png",
+      "frame": 226,
+      "note": "work02 筆彩: traveling wave with yellow crest through gradient char"
+    },
+    {
+      "file": "verification/wu-c-v13-r2/f240.png",
+      "frame": 240,
+      "note": "work02 resolved hold: cobalt-to-vermilion gradient char"
+    },
+    {
+      "file": "verification/wu-c-v13-r2/f255.png",
+      "frame": 255,
+      "note": "work03 筆構: two-wing emblem strokes still streaming in"
+    },
+    {
+      "file": "verification/wu-c-v13-r2/f268.png",
+      "frame": 268,
+      "note": "work03 hold: symmetric black emblem + seal"
+    },
+    {
+      "file": "verification/wu-c-v13-r2/f274.png",
+      "frame": 274,
+      "note": "work03 late hold before fade"
+    },
+    {
+      "file": "verification/wu-c-v13-r2/f281.png",
+      "frame": 281,
+      "note": "D cut boundary: scene C fully gone"
+    }
+  ],
+  "context": "Scene C spans frames 191-280 (3.75s). Right-stage window x490-1060 y60-1020, thin border. Three contiguous white artboard cells (570x960) in a vertical strip; page-turn scroll legs ~0.12s at rel 1.20-1.32 and 2.40-2.52. Works: 01 ink char gathers in writing order, guide contour fully fades by rel ~0.38, finished hold ~0.78s; 02 same char as vertical cobalt-to-vermilion gradient, one wave pass resolves by rel ~1.68, hold ~0.72s; 03 strokes stream in from both edges forming a mirrored two-wing emblem, last stroke lands ~rel 2.74, hold ~0.95s. Captions are work names only plus a small red seal. All stroke material is Baseline FUDE S01-S13. Reviewer note: keep analysis concise and proceed directly to the required verdict format."
+}

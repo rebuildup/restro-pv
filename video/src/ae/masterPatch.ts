@@ -127,6 +127,19 @@ export function applyMasterPatches(): void {
         l.outPoint = l.inPoint;
         continue;
       }
+      // B-section EN body sub ("Hidden vertices and edges are inferred..."):
+      // the v13 left column carries the JP headline + body only; this fs13
+      // English sub is unreadable over the grid and reads as ghost text
+      // (wu-b-r19/r20 reviews). Disable cleanly for the B window.
+      if (
+        l.inPoint !== undefined &&
+        l.inPoint >= 4.2 &&
+        l.inPoint < 4.3 &&
+        l.name.startsWith("Hidden vertices")
+      ) {
+        l.outPoint = l.inPoint;
+        continue;
+      }
       if (
         l.inPoint >= 7.9 &&
         l.inPoint < 11.7 &&
@@ -157,21 +170,46 @@ export function applyMasterPatches(): void {
       // Bake those envelopes into plain keys so the captions arrive
       // gradually exactly like the dumped intent.
       if (l.inPoint !== undefined && l.inPoint >= 4.2 && l.inPoint < 4.3) {
+        // WU-B r20 (v13 art direction: left column = headline + 1-2 body
+        // lines max): the dumped B-section stack was kicker + JP headline
+        // + 3-line JP body + EN body + persistent tagline — five text
+        // elements, several unreadable over the grid (r20 review FAIL).
+        // Disable the EN body layer outright and tighten the JP body to
+        // two lines; the fit pass below re-measures the edited text.
+        const bdoc = l.text?.properties?.find(
+          (p) => p.matchName === "ADBE Text Document",
+        )?.value as { text?: string } | undefined;
+        if (typeof bdoc?.text === "string") {
+          if (bdoc.text.startsWith("Hidden vertices and edges")) {
+            l.outPoint = l.inPoint;
+            continue;
+          }
+          if (bdoc.text.startsWith("線が交わると")) {
+            bdoc.text =
+              "線が交わると、文字の輪郭はひとつにつながる。\rRestroは輪郭を延長し、隠れた頂点まで推定して筆画を分け直す。";
+          }
+        }
         const op = child(l.transform, "ADBE Opacity");
         const pos = child(l.transform, "ADBE Position");
         if (op?.expression?.includes("t0=4.35")) {
           const nm = l.name;
           const i = nm.startsWith("HOW") ? 0 : nm.startsWith("つなが") ? 1 : nm.startsWith("線が") ? 2 : 3;
-          const t0 = 4.35 + i * 0.12;
+          // r20: the dumped stagger (t0=4.35+i*0.12, 0.35s fade, 12px rise)
+          // left captions mid-fade at f110, where the half-visible lines
+          // read as残像 over the grid (two consecutive review FAILs).
+          // Compress: earlier start, tighter stagger, shorter envelopes —
+          // the group still arrives in reading order but is decisive by
+          // ~f112 instead of smearing across f104-f116.
+          const t0 = 4.3 + i * 0.06;
           const k = (t: number, v: number) => ({ t, v, inT: 6612, outT: 6612 });
-          op.keys = [k(t0, 0), k(t0 + 0.35, 100)];
+          op.keys = [k(t0, 0), k(t0 + 0.34, 100)];
           op.numKeys = 2;
           op.value = 0;
           op.expression = "";
           if (pos?.expression?.includes("t0=4.35") && Array.isArray(pos.value)) {
             const [x, y, z] = pos.value as number[];
             const kp = (t: number, yy: number) => ({ t, v: [x, yy, z ?? 0], inT: 6612, outT: 6612 });
-            pos.keys = [kp(t0, y + 12), kp(t0 + 0.45, y)];
+            pos.keys = [kp(t0, y + 10), kp(t0 + 0.42, y)];
             pos.numKeys = 2;
             pos.expression = "";
           }
@@ -278,12 +316,132 @@ export function applyMasterPatches(): void {
       }
     }
   }
+
+  // Scene-A hero column clearance (WU-A r9/r10/r12 / pv-art-direction v13):
+  // the dumped A1 giant-解 stroke group (master layers 239-254, window
+  // [0,1.5)) reaches x≈357-420 and its ズレ excursion dips to ~x391, both
+  // colliding with the left copy column (Restro / 筆画復元 ends ~x455).
+  // The art direction reserves x<~460 for brand+copy and wants the hero
+  // cropped by the RIGHT/BOTTOM frame edges instead. Shift the whole hero
+  // group +130px right — a uniform translation that preserves the
+  // protected A1 choreography (ズレ・復帰 untouched) while clearing the
+  // column (post-shift excursion min ~x521; r12 review still saw the
+  // left edge inside the column zone at f10/f36, so +40 over r11's +90).
+  // SceneA2 re-renders the same layers, so it inherits the shift through
+  // worldMatrix automatically; its comp-space constants (CROSSINGS,
+  // GHOST_ZONE, REG_TX) are bumped by the same +40 to stay registered.
+  {
+    const HERO_SHIFT = 130;
+    for (const l of m.layers) {
+      if (l.index < 239 || l.index > 254) continue;
+      // Some stroke layers use a single ADBE Position vector, others use
+      // separated dimensions (ADBE Position_0/_1/_2 scalars with keys).
+      for (const mn of ["ADBE Position", "ADBE Position_0"]) {
+        const pos = child(l.transform, mn);
+        if (!pos) continue;
+        if (Array.isArray(pos.value) && typeof pos.value[0] === "number") {
+          pos.value = pos.value.map((v, i) =>
+            i === 0 ? (v as number) + HERO_SHIFT : v,
+          );
+        } else if (typeof pos.value === "number") {
+          pos.value = (pos.value as number) + HERO_SHIFT;
+        }
+        if (Array.isArray(pos.keys)) {
+          for (const k of pos.keys) {
+            const kv = (k as { v?: unknown }).v;
+            if (Array.isArray(kv) && typeof kv[0] === "number") {
+              (k as { v: number[] }).v = kv.map((v, i) =>
+                i === 0 ? (v as number) + HERO_SHIFT : v,
+              );
+            } else if (typeof kv === "number") {
+              (k as { v: number }).v = (kv as number) + HERO_SHIFT;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Scene-A PV A2 ghost (master layer 11, window [1.5,3.79)): the dumped
+  // "outline ghost state" that carries the A1 tail into the A2 cut. Its
+  // reconstruction glyph reaches x≈431 — inside the left copy column
+  // (wu-a-r10 FAIL at f40). It is invisible during the authored A2
+  // (verified: hiding it at f60 produces a zero-pixel diff — SceneA2's
+  // own hero+ghost cover the window), so a static +80px x shift only
+  // affects the visible A1-tail frames and cannot desync the A2 ghost
+  // registration (REG2 is measured against SceneA2's own ghost source,
+  // not this layer).
+  {
+    const l = m.layers.find((x) => x.index === 11);
+    const pos = l ? child(l.transform, "ADBE Position") : undefined;
+    if (pos && Array.isArray(pos.value)) {
+      pos.value = pos.value.map((v, i) => (i === 0 ? (v as number) + 80 : v));
+    }
+  }
+
+  // Scene-A kai-zoom rig (master layers 233-236, window [1.5,3.92)): the
+  // dumped A1 tail zoom that flies the giant 解 in from off-screen left
+  // (Null 234 Position_0 keys 0->896 over t 1.5-1.708) and then keeps
+  // rendering the zoomed glyph UNDER SceneA2 until f94 — the "old hero
+  // residue / double image" flagged in wu-a-r10. Two fixes:
+  //  1. shift the two child comp instances right so the entrance sweep
+  //     and the resting glyph clear the left copy column (same zone rule);
+  //  2. clamp the rig's outPoint to SceneA2's T0 (45/24 = 1.875s) so the
+  //     authored SceneA2 hero is the ONLY giant-解 on screen from the A2
+  //     cut onward — SceneA2's own driftUp carries the A3 bridge.
+  // Note: the null's Pos0 lives in pre-scale space (~8.3x attenuation —
+  // a +160 key shift moved the rig only ~19 screen px), and child
+  // Position offsets apply 1:1 in comp space, so the clearance uses a
+  // modest static child offset plus the outPoint clamp.
+  {
+    const KZ_CHILD_POS_X = 50; // +50 screen px margin on the resting glyph (r12: r11's +20 still read as column bleed at f36)
+    const kzOut = 45 / 24;
+    for (const l of m.layers) {
+      if (l.index < 233 || l.index > 236) continue;
+
+      l.outPoint = Math.min(l.outPoint ?? kzOut, kzOut);
+      if (l.index !== 235 && l.index !== 236) continue;
+      const pos = child(l.transform, "ADBE Position");
+      if (Array.isArray(pos?.value)) {
+        pos.value = pos.value.map((v, i) =>
+          i === 0 ? (v as number) + KZ_CHILD_POS_X : v,
+        );
+      }
+    }
+  }
+
+  dimGridForSceneD(m);
 }
 
 // Scene-D: hide the dumped "PV ops" comp (master layer 13) for the scene
 // window; SceneD authors the windows itself.
 export const D_HIDDEN = new Set([13]); // PV ops
 export const D_WINDOW: [number, number] = [11.71, 15.46];
+
+// Scene-D legibility (WU-D r35 review): the global "grid-solid" background
+// (master layer 257, in 0-20s) draws its grid lines across the persistent
+// left brand lockup, and the r35 stills showed the collision costing
+// D-4/D-7. Dim — not remove — the grid inside the D window only: the
+// checkerboard texture stays as the scene's ground, but line contrast
+// drops enough that the brand lockup and authored copy read cleanly.
+// Fades bracket the window so A/C/E keep the full-strength grid.
+function dimGridForSceneD(m: ReturnType<typeof masterComp>): void {
+  const grid = m.layers.find((l) => l.index === 257);
+  const op = grid ? child(grid.transform, "ADBE Opacity") : undefined;
+  if (!grid || !op) return;
+  const k = (t: number, v: number) => ({ t, v, inT: 6612, outT: 6612 });
+  op.keys = [
+    k(D_WINDOW[0] - 0.11, 100),
+    k(D_WINDOW[0] + 0.14, 30),
+    // Hold the dimmed grid through the LAST D frame (r35: restoring it
+    // inside the window read as a premature scene transition); the
+    // restore runs just past the boundary into early E.
+    k(D_WINDOW[1], 30),
+    k(D_WINDOW[1] + 0.16, 100),
+  ];
+  op.numKeys = 4;
+  op.value = 30;
+}
 
 // Replace a layer's opacity keys with a short fade-in at `inP` and a
 // fade-out ending at `outP`, keeping full opacity between.

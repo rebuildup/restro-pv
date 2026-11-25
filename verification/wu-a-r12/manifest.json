@@ -1,0 +1,16 @@
+{
+  "id": "wu-a-r12",
+  "wu": "WU-A",
+  "subject": "Scene A r12: A1 hero shifted further right (+130px masterPatch, kai-zoom +50) to clear the left brand/copy column at f10-f44; SceneA2 hold-fit reframes the FULL separated stroke union inside the frame during the comparison hold (ZF=0.758/SCF); DRIFT_UP reduced 300->170 and bridge fade retimed so the separated group stays recognizable while carrying the opening question into the A3 bridge",
+  "frames": [
+    { "file": "verification/wu-a-r12/f10.png", "frame": 10, "note": "A1 opening: hero must clear left column" },
+    { "file": "verification/wu-a-r12/f36.png", "frame": 36, "note": "A1 kai-zoom tail: hero must clear left column" },
+    { "file": "verification/wu-a-r12/f44.png", "frame": 44, "note": "last A1 frame before authored A2" },
+    { "file": "verification/wu-a-r12/f50.png", "frame": 50, "note": "A2 entry: hero established, push-in begins" },
+    { "file": "verification/wu-a-r12/f74.png", "frame": 74, "note": "restored vertical accent; FULL group must fit frame" },
+    { "file": "verification/wu-a-r12/f88.png", "frame": 88, "note": "comparison hold tail: no right/bottom clipping" },
+    { "file": "verification/wu-a-r12/f93.png", "frame": 93, "note": "A3 bridge: group still recognizable, not exited" },
+    { "file": "verification/wu-a-r12/f96.png", "frame": 96, "note": "bridge overlap: question persists as B viewport opens" }
+  ],
+  "context": "Scene A r12 after the r11 wu-review FAIL fixes. masterPatch HERO_SHIFT 90->130 (layers 239-254, both vector and separated Position nodes incl. keys) and KZ_CHILD_POS_X 20->50. SceneA2 comp-space constants follow the +40 x bump (CROSSINGS x1066, GHOST_ZONE x904-1224, REG_TX 117, ghost mask center 1066). New hold-fit: fitK eases rel 0.7-1.45 blending zoom Z1->ZF=0.758 and SC->SCF=(671,583), framing the measured fully-separated union (comp x610-1394 y187-938) into screen ~x482-1076 y315-885. DRIFT_UP 300->170 eased; sceneOpacity fade retimed to seg(2.14,2.30) eased so the group is ~full at f96-97, fading f98-100, clear at T1. Ghost contour, hidden-part contour, origin echo, and crossing->restored correspondence markers (origin ring + accent track + displaced ring via redDelta) are unchanged from r11."
+}

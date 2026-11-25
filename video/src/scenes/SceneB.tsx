@@ -51,9 +51,9 @@ import {
 //   step 3 一画ずつに分割 — the 13 real strokes fill in staggered, displaced
 //                        and individually tinted; analysis layers cut out.
 //
-// The lens belongs to the vertex-estimation step; it is parked in the free
-// bottom-left strip (below the description comp, left of the glyph) so it
-// covers neither the step tabs, the left body text, nor the focal cluster.
+// The lens belongs to the vertex-estimation step; it is parked over the
+// glyph's bottom margin so it covers neither the step band, the left body
+// text, nor the focal cluster.
 
 const T0 = 3.9;
 const T1 = 7.96;
@@ -68,22 +68,34 @@ const ANALYSIS_RED = "#D64520";
 const DRAFT_GREEN = "#2FA36B";
 const VERTEX_BLUE = "#2F6FED";
 
-// dumped step-label anchor positions (master layers 169-166). Labels sit on
-// the tab bars re-authored below (dumped geometry: white 502x26 bars at
-// x546-1048, centers y = 211/249/288/327).
-const LABEL_POS = [
-  [560, 211],
-  [560, 249],
-  [560, 288],
-  [560, 327],
-] as const;
-// lens: bottom-center, fully inside the frame (cy+r+border <= ~1070),
-// overlapping only the glyph's bottom margin. During the vertex step that
-// strip holds no analysis content (extends/inferred/markers end ~y925
-// screen, stroke bottoms ~y979), while the strip below the glyph is too
-// shallow for a meaningful magnifier and the left column is filled with
-// description text down to the frame edge.
-const LENS = { x: 775, y: 965, r: 62, zoom: 3.0 };
+// Outlined viewport (art direction v13 §B): one white face + thin keyline
+// framing the glyph stage on the right. The face masks the background grid
+// inside the stage so analysis contours stop competing with grid lines;
+// the glyph is clipped to the same rect. The step band sits above it.
+const VIEW = { x: 468, y: 356, w: 596, h: 664 }; // -> x1064, y1020
+
+// Step band: four rows, number + short noun + right-aligned state only.
+// Rows live at x540-1048, y196-342 — clear of the viewport top (y356) and
+// the left column (x<460).
+const ROW = { x: 540, w: 508, h: 32, gap: 6, y0: 196 };
+
+// lens: r20 review FAIL twice — bottom-center covered the hero's
+// converging center-bottom strokes, and even docked inside the viewport
+// it read as covering the subject. Now it hangs BELOW the viewport's
+// bottom edge in the empty page margin (reviewer-suggested zone): center
+// (560,1025) r55 -> y970-1080, flush with the page bottom; the viewport
+// portion (y970-1020) is the glyph's verified-empty bottom-left margin
+// (~1% ink, grid only below y1020 which the opaque white lens covers).
+// Bottom-left keeps the leader short to the focal junction near
+// (606,502). zoom 1.5 -> ~44-comp-unit window (~73px source) frames the
+// inferred render plus its corner vertex markers together — r21 review:
+// a tighter window showed "lines + dots only" with no readable inferred
+// geometry, so the window was widened to guarantee the three layers
+// (extend contours / inferred render / solver markers) coexist.
+const LENS = { x: 560, y: 1025, r: 55, zoom: 1.5 };
+// inner (content) radius: the 5px keyline border is inside the box
+// (boxSizing border-box), so the magnified area is r-5.
+const LENS_IR = LENS.r - 5;
 
 // Restro pipeline comps (checkpoint = state before the wipe-removal pass
 // stripped the analysis layers from the STEP drafts).
@@ -179,16 +191,14 @@ function hslToRgb(h: number, s: number, l: number): [number, number, number] {
   return [r + m, g + m, b + m];
 }
 
-function hexToRgb(hex: string): [number, number, number] {
+// Completed-step analysis recedes to a gray ghost (v13 color semantics:
+// グレー=ゴースト/休眠状態) so the step-role colors stay meaningful and the
+// brand red is not confused with the "current step" indicator.
+function mixGray(hex: string, k: number): string {
   const n = parseInt(hex.slice(1), 16);
-  return [(n >> 16) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+  const ch = (c: number) => Math.round(c + (143 - c) * k);
+  return `rgb(${ch((n >> 16) & 255)},${ch((n >> 8) & 255)},${ch(n & 255)})`;
 }
-const STEP_RGB = [ANALYSIS_RED, DRAFT_GREEN, VERTEX_BLUE, "#E8A52F"].map(
-  (h) => {
-    const [r, g, b] = hexToRgb(h);
-    return `${Math.round(r * 255)},${Math.round(g * 255)},${Math.round(b * 255)}`;
-  },
-);
 
 // stroke writing order = the S-number in the dumped layer name
 function strokeOrderIndex(name: string): number {
@@ -209,6 +219,9 @@ interface BData {
   outlineBaseContours: ContourPath[];
   outlineInsetContours: ContourPath[];
   points: [number, number][];
+  // comp-space vertices of the step-2 analysis strokes (extend A/B +
+  // inferred render) — used only to aim the lens at content-dense windows
+  analysisPts: [number, number][];
   scanline: StrokeItem;
   outlineBaseTint: StrokeItem;
   edgeContours: ContourPath[][];
@@ -314,8 +327,8 @@ function glyphData(): BData {
   // per-stroke yellow-family palette; selected stroke gets a brighter tint.
   const tintOf = (i: number): [number, number, number] => {
     if (i === selIndex) return hslToRgb(52, 0.95, 0.62); // bright selected yellow
-    const hue = 47 + ((i * 37) % 11); // ~47..57, clear yellows not oranges
-    const light = 0.53 + (((i * 11) % 5) - 2) * 0.02;
+    const hue = 45 + ((i * 31) % 17); // ~45..61, readable yellow family
+    const light = 0.52 + (((i * 13) % 7) - 3) * 0.025;
     return hslToRgb(hue, 0.8, light);
   };
   const finalItems = tintedStrokes(strokes, (_item, i) => tintOf(i));
@@ -339,7 +352,7 @@ function glyphData(): BData {
     const n = parseInt(ANALYSIS_RED.slice(1), 16);
     return [(n >> 16) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
   })[0];
-  widenStroke(scanRed.layer.shapes, 5);
+  widenStroke(scanRed.layer.shapes, 6);
 
   cached = {
     comp,
@@ -354,6 +367,11 @@ function glyphData(): BData {
     outlineBaseContours,
     outlineInsetContours,
     points,
+    analysisPts: [
+      ...extendAItem.points,
+      ...extendBItem.points,
+      ...inferredItem.points,
+    ],
     scanline: scanRed,
     outlineBaseTint,
     edgeContours: strokes.map((s) => strokeContours(comp, s, POSE)),
@@ -416,17 +434,17 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
   // rides the scene fade-in so the SAME giant 筆 is already present at the
   // B boundary (f101); the contour detail still waits for the scan beat.
   const outlineFillOp =
-    stepVal(t, [0.9, 0.05, 0.02, 0]) *
+    stepVal(t, [0.5, 0.18, 0.14, 0]) *
     ramp(t, T0 + 0.12, T0 + 0.62) *
     appear *
     analysisGate;
   const outlineContourOp =
-    stepVal(t, [0.95, 0.08, 0.04, 0]) *
+    stepVal(t, [1, 0.4, 0.35, 0]) *
     ramp(t, 4.4, 5.0) *
     appear *
     analysisGate;
   const insetContourOp =
-    stepVal(t, [0.7, 0.35, 0.08, 0]) *
+    stepVal(t, [0.9, 0.55, 0.45, 0]) *
     ramp(t, 4.55, 5.1) *
     appear *
     analysisGate;
@@ -434,6 +452,14 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
   // real scanline sweep: visible only through the 輪郭を解析 window
   const scanOp =
     ramp(t, 4.28, 4.42) * (1 - ramp(t, 4.95, 5.4)) * appear;
+
+  // ghost desaturation per completed step (smooth 0.4s ramps)
+  const outlineGhost =
+    0.4 * ramp(t, STEP_T[1], STEP_T[1] + 0.4) +
+    0.3 * ramp(t, STEP_T[2], STEP_T[2] + 0.4);
+  const extendGhost = 0.6 * ramp(t, STEP_T[2], STEP_T[2] + 0.4);
+  const outlineGhostColor = mixGray(ANALYSIS_RED, outlineGhost);
+  const extendGhostColor = mixGray(DRAFT_GREEN, extendGhost);
 
   // step1: real extended contours — staggered reveal in dump order, hold as
   // context into step2, recede before reconstruction
@@ -457,11 +483,16 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
     return clamp01(p) * stepVal(t, [0, 0, 1, 0]) * appear * analysisGate;
   };
 
-  // step3: separated strokes on the same character
+  // step3: separated strokes on the same character. r20: widen the
+  // per-stroke stagger (0.025->0.045 rank spacing, 0.28->0.24 ramp) so the
+  // 13 strokes read as a sequence, not a simultaneous pop.
   const strokeP = (i: number) =>
-    ramp(t, STEP_T[3] + d.rankOf[i] * 0.025, STEP_T[3] + d.rankOf[i] * 0.025 + 0.28);
+    ramp(t, STEP_T[3] + d.rankOf[i] * 0.045, STEP_T[3] + d.rankOf[i] * 0.045 + 0.24);
   const finalOp = (i: number) => strokeP(i) * appear;
-  const selOp = strokeP(d.selIndex) * appear;
+  // r21: the inspected-stroke mark retires before the B->C handoff so the
+  // finished glyph carries no leftover annotation chrome.
+  const selOp =
+    strokeP(d.selIndex) * appear * (1 - ramp(t, 7.3, 7.78));
 
   // all four step items list from the start of B; state tracks progress
   const labelStates = STEP_T.map((st, i) => {
@@ -470,40 +501,57 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
     return { active, done };
   });
 
-  // lens focal: centroid of the densest cluster of REAL inferred vertices
-  // (the solver's x≈911/985 junction columns). The lens magnifies an actual
-  // inferred-vertex zone, and the leader stays short and visible.
+  // lens focal: pick the window that shows the most REAL intermediate
+  // content — solver vertex markers plus vertices of the analysis strokes
+  // they annotate (extend A/B + inferred render). r19 defect history: a
+  // fixed centroid missed the junction; a markers-only argmax landed on a
+  // bare-marker cluster with no strokes ("unclear information"); an
+  // inferred-bbox-restricted pool was too narrow. Scoring markers+stroke
+  // vertices together always lands where the lens magnifies actual
+  // geometry, and the focal is the centroid of everything inside the
+  // winning window so the content sits centered.
+  // r21: aim INSIDE the inferred render's neighborhood. The step-2 hero is
+  // Restro's own inferred-region render; its corner vertices are the
+  // "FUDE points" markers the lens must show sitting on real geometry.
+  // The previous global argmax drifted to the extend-B column (markers on
+  // bare skeleton, no inferred fills) and read as "lines + dots only".
   let focalComp: [number, number] | null = null;
   if (d.points.length) {
-    let bestI = 0;
-    let bestN = -1;
-    for (let i = 0; i < d.points.length; i++) {
-      let n = 0;
-      for (let j = 0; j < d.points.length; j++) {
-        if (
-          Math.hypot(d.points[i][0] - d.points[j][0], d.points[i][1] - d.points[j][1]) <
-          120
-        )
-          n++;
-      }
-      if (n > bestN) {
-        bestN = n;
-        bestI = i;
+    const winR = LENS_IR / (fit.s * LENS.zoom);
+    const ib = d.inferred.bbox;
+    const M = 80;
+    const pool = d.points.filter(
+      (p) =>
+        p[0] >= ib[0] - M &&
+        p[0] <= ib[2] + M &&
+        p[1] >= ib[1] - M &&
+        p[1] <= ib[3] + M,
+    );
+    const candidates = pool.length ? pool : d.points;
+    let bestScore = -1;
+    let bestWin: [number, number][] = [];
+    for (const c of candidates) {
+      const nearPts = d.points.filter(
+        (p) => Math.hypot(p[0] - c[0], p[1] - c[1]) < winR,
+      );
+      const nearStrokes = d.analysisPts.filter(
+        (p) => Math.hypot(p[0] - c[0], p[1] - c[1]) < winR,
+      );
+      const score = nearPts.length + nearStrokes.length;
+      if (score > bestScore) {
+        bestScore = score;
+        bestWin = [...nearPts, ...nearStrokes];
       }
     }
-    let sx = 0;
-    let sy = 0;
-    let n = 0;
-    for (const p of d.points) {
-      if (
-        Math.hypot(p[0] - d.points[bestI][0], p[1] - d.points[bestI][1]) < 120
-      ) {
+    if (bestWin.length) {
+      let sx = 0;
+      let sy = 0;
+      for (const p of bestWin) {
         sx += p[0];
         sy += p[1];
-        n++;
       }
+      focalComp = [sx / bestWin.length, sy / bestWin.length];
     }
-    focalComp = [sx / n, sy / n];
   }
   const focalSX = focalComp ? focalComp[0] * fit.s + fit.tx : LENS.x + 200;
   const focalSY = focalComp ? focalComp[1] * fit.s + fit.ty : LENS.y - 200;
@@ -520,8 +568,8 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
   const leadDX = focalSX - LENS.x;
   const leadDY = focalSY - LENS.y;
   const leadLen = Math.hypot(leadDX, leadDY) || 1;
-  const leadX0 = LENS.x + (leadDX / leadLen) * (LENS.r + 6);
-  const leadY0 = LENS.y + (leadDY / leadLen) * (LENS.r + 6);
+  const leadX0 = LENS.x + (leadDX / leadLen) * (LENS_IR + 6);
+  const leadY0 = LENS.y + (leadDY / leadLen) * (LENS_IR + 6);
 
   // shared comp-space layer stack (main view and lens magnifier).
   // lensBoost>1 raises the faint analysis layers inside the magnifier so the
@@ -538,15 +586,15 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
       <ContourField
         comp={d.comp}
         contours={[d.outlineBaseContours]}
-        color={ANALYSIS_RED}
-        width={6.5}
+        color={outlineGhostColor}
+        width={8}
         opacity={Math.min(1, outlineContourOp * lensBoost)}
       />
       <ContourField
         comp={d.comp}
         contours={[d.outlineInsetContours]}
-        color={ANALYSIS_RED}
-        width={3}
+        color={outlineGhostColor}
+        width={4.5}
         opacity={Math.min(1, insetContourOp * lensBoost)}
       />
       {/* step0: real Restro scanline sweep (animated layer position).
@@ -572,8 +620,8 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
       <ContourField
         comp={d.comp}
         contours={extendPaths.map((p) => [p])}
-        color={DRAFT_GREEN}
-        width={4.5}
+        color={extendGhostColor}
+        width={6}
         itemOpacity={(i) => Math.min(1, extendOp(i) * lensBoost)}
       />
       {/* step2: Restro's own inferred render (real colors) + blue path read */}
@@ -587,7 +635,7 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
         comp={d.comp}
         contours={[d.inferredContours]}
         color={VERTEX_BLUE}
-        width={3}
+        width={4.5}
         opacity={Math.min(1, inferOp * lensBoost)}
       />
       {/* step2: the 29 real inferred vertex positions as markers */}
@@ -600,7 +648,7 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
         {d.points.map((p, j) => {
           const op = markerOp(j);
           if (op <= 0) return null;
-          const r = 9 + 4 * op;
+          const r = 7 + 3 * op;
           return (
             <g key={j} opacity={op}>
               <circle
@@ -611,7 +659,7 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
                 stroke={VERTEX_BLUE}
                 strokeWidth={3}
               />
-              <circle cx={p[0]} cy={p[1]} r={3.2} fill={VERTEX_BLUE} />
+              <circle cx={p[0]} cy={p[1]} r={3} fill={VERTEX_BLUE} />
             </g>
           );
         })}
@@ -635,7 +683,7 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
         comp={d.comp}
         contours={d.edgeContours}
         color="#4a3a12"
-        width={2.6}
+        width={3.5}
         itemColor={(i) => d.edgeColors[i]}
         itemOpacity={(i) => strokeP(i) * appear * 0.95}
         itemTransform={(i) => {
@@ -651,7 +699,7 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
         comp={d.comp}
         contours={[d.selContours]}
         color="#111"
-        width={4}
+        width={5}
         opacity={selOp}
         itemTransform={() => {
           const p = strokeP(d.selIndex);
@@ -660,111 +708,194 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
           return `translate(${dx * p}px, ${dy * p}px)`;
         }}
       />
+    </>
+  );
+
+  // Lens content (r19): the vertex-estimation intermediate as a readable
+  // close-up — the extended contours the solver vertices sit on (real
+  // FUDE extend A/B paths, held as step-1 context in the main view) +
+  // Restro's own inferred render + the 29 real solver vertex markers.
+  // Without the strokes the markers read as abstract debug targets; with
+  // them the lens proves "vertices placed on the extended/inferred
+  // skeleton" — the actual information step 03 computes.
+  const lensLayers = (
+    <>
+      <ContourField
+        comp={d.comp}
+        contours={extendPaths.map((p) => [p])}
+        color={DRAFT_GREEN}
+        width={6}
+        opacity={0.85}
+      />
+      <StrokeField
+        comp={d.comp}
+        strokes={[d.inferred]}
+        poseT={POSE}
+        opacity={1}
+      />
+      <ContourField
+        comp={d.comp}
+        contours={[d.inferredContours]}
+        color={VERTEX_BLUE}
+        width={4.5}
+        opacity={1}
+      />
       <svg
         width={d.comp.width}
         height={d.comp.height}
         viewBox={`0 0 ${d.comp.width} ${d.comp.height}`}
         style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}
       >
-        <g
-          opacity={selOp}
-          transform={(() => {
-            const p = strokeP(d.selIndex);
-            if (p >= 1) return undefined;
-            const [dx, dy] = d.displace[d.selIndex];
-            return `translate(${dx * p}px, ${dy * p}px)`;
-          })()}
-        >
-          <circle
-            cx={d.strokes[d.selIndex].center[0]}
-            cy={d.strokes[d.selIndex].center[1]}
-            r={9}
-            fill="#111"
-          />
-        </g>
+        {d.points.map((p, j) => (
+          <g key={j} opacity={1}>
+            <circle
+              cx={p[0]}
+              cy={p[1]}
+              r={17}
+              fill="none"
+              stroke={VERTEX_BLUE}
+              strokeWidth={4.2}
+            />
+            <circle cx={p[0]} cy={p[1]} r={5.5} fill={VERTEX_BLUE} />
+          </g>
+        ))}
       </svg>
     </>
   );
 
+  // viewport face fades in as the A3 bridge exits (~f100); it is rendered
+  // UNDER the clipped glyph so the glyph's own `appear` ramp is unaffected
+  // while the grid inside the stage is masked.
+  const viewOp = ramp(t, 3.98, 4.22);
+  // r20: the step band retires before the B->C handoff so the finished
+  // 筆 is the sole subject on the last frames (reviewer: band lingering
+  // at "竣工" read as leftover chrome).
+  const bandOut = 1 - ramp(t, 7.45, 7.9);
+
   return (
     <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-      {/* character: same giant 筆, analysis layers accumulate per step */}
+      {/* viewport face: white panel masking the background grid */}
       <div
         style={{
           position: "absolute",
-          inset: 0,
-          opacity: 1,
-          transform: tf,
-          transformOrigin: "0 0",
+          left: VIEW.x,
+          top: VIEW.y,
+          width: VIEW.w,
+          height: VIEW.h,
+          background: "#fff",
+          opacity: viewOp,
+        }}
+      />
+      {/* glyph + analysis layers, clipped to the viewport rect */}
+      <div
+        style={{
+          position: "absolute",
+          left: VIEW.x,
+          top: VIEW.y,
+          width: VIEW.w,
+          height: VIEW.h,
+          overflow: "hidden",
         }}
       >
-        {glyphLayers(1)}
-      </div>
-
-      {/* step tabs: white bars revealed progressively (dumped geometry) */}
-      {LABEL_POS.map(([x, cy], i) => {
-        const revealed = t >= STEP_T[i];
-        const p = ramp(t, STEP_T[i], STEP_T[i] + 0.25);
-        const active = labelStates[i].active && !labelStates[i].done;
-        return (
+        <div
+          style={{
+            position: "absolute",
+            left: -VIEW.x,
+            top: -VIEW.y,
+            width: 1080,
+            height: 1080,
+          }}
+        >
           <div
-            key={i}
             style={{
               position: "absolute",
-              left: x - 14,
-              top: cy - 13,
-              width: 502,
-              height: 26,
-              borderRadius: 7,
-              background: "#fff",
-              border: "1.5px solid #111",
-              opacity: revealed ? p * appear : 0,
-              transform: `scaleX(${0.6 + 0.4 * p})`,
-              transformOrigin: "left center",
+              inset: 0,
+              transform: tf,
+              transformOrigin: "0 0",
             }}
           >
-            {active && (
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  borderRadius: 6,
-                  background: `rgba(${STEP_RGB[i]},0.16)`,
-                }}
-              />
-            )}
+            {glyphLayers(1)}
           </div>
-        );
-      })}
+        </div>
+      </div>
+      {/* viewport keyline */}
+      <div
+        style={{
+          position: "absolute",
+          left: VIEW.x,
+          top: VIEW.y,
+          width: VIEW.w,
+          height: VIEW.h,
+          border: "1.5px solid #111",
+          opacity: viewOp,
+          boxSizing: "border-box",
+        }}
+      />
 
-      {/* step labels: active reads 中, completed reads した */}
-      {labelStates.map((s, i) => {
-        const [x, y] = LABEL_POS[i];
-        const future = i > step && !s.active;
-        const state = s.active && !s.done ? "中" : s.done ? "した" : "";
+      {/* step band (r20 redesign): editorial index, NOT app-UI tabs. The
+          r19 boxed rows (white fill + keyline border + red side bar) read
+          as "Web UI table" chrome. Now a ruled list: hairline rules above
+          the first row and below every row, plain typography, red reserved
+          for the CURRENT step's number + state (v13 color semantics). */}
+      {STEP_LABELS.map((label, i) => {
+        const s = labelStates[i];
+        const active = s.active && !s.done;
+        const state = active ? "中" : s.done ? "した" : "";
+        const y = ROW.y0 + i * (ROW.h + ROW.gap);
         return (
           <div
             key={i}
             style={{
               position: "absolute",
-              left: x,
-              top: y - 16,
-              fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
-              fontSize: 30,
-              fontWeight: 700,
-              lineHeight: 1.15,
-              color: s.active ? "#111" : future ? "#9a9a9a" : "#4a4a4a",
-              whiteSpace: "nowrap",
-              textShadow: "0 0 5px #fff, 0 0 5px #fff",
-              // WU-A r3: labels were fully opaque from t=3.9 even though the
-              // whole scene fades in over 3.95-4.4 — during the A3 bridge
-              // they floated over the incoming bunkai glyph. Gate with the
-              // same `appear` envelope as glyph/tabs.
-              opacity: appear,
+              left: ROW.x,
+              top: y,
+              width: ROW.w,
+              height: ROW.h,
+              display: "flex",
+              alignItems: "center",
+              borderTop:
+                i === 0 ? "1px solid rgba(17,17,17,0.35)" : undefined,
+              borderBottom: "1px solid rgba(17,17,17,0.35)",
+              opacity: appear * bandOut,
             }}
           >
-            {String(i + 1).padStart(2, "0")} {STEP_LABELS[i]}
-            {state ? ` ${state}` : ""}
+            <span
+              style={{
+                fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
+                fontSize: 20,
+                fontWeight: 700,
+                lineHeight: 1,
+                color: active ? ANALYSIS_RED : s.done ? "#111" : "#bdbdbd",
+                width: 38,
+                letterSpacing: "0.06em",
+              }}
+            >
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <span
+              style={{
+                fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
+                fontSize: 24,
+                fontWeight: 700,
+                lineHeight: 1,
+                color: active ? "#111" : s.done ? "#3f3f3f" : "#a8a8a8",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {label}
+            </span>
+            <span
+              style={{
+                marginLeft: "auto",
+                fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
+                fontSize: 22,
+                fontWeight: 700,
+                lineHeight: 1,
+                color: active ? ANALYSIS_RED : "#5a5a5a",
+              }}
+            >
+              {state}
+            </span>
           </div>
         );
       })}
@@ -782,8 +913,8 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
             height: LENS.r * 2,
             borderRadius: "50%",
             overflow: "hidden",
+            boxSizing: "border-box",
             border: "5px solid #111",
-            boxShadow: "0 6px 24px rgba(0,0,0,0.25)",
             background: "#fff",
             opacity: Math.min(1, lensPop) * analysisGate,
             transform: `scale(${0.85 + 0.15 * Math.min(1, lensPop)})`,
@@ -801,11 +932,11 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
               // circle center, magnified by zoom. Algebra: screen =
               // comp*s + t, so translate = r - focalComp*s*zoom (the fit
               // offsets cancel out).
-              transform: `translate(${LENS.r - focalCompPt[0] * fit.s * LENS.zoom}px, ${LENS.r - focalCompPt[1] * fit.s * LENS.zoom}px) scale(${fit.s * LENS.zoom})`,
+              transform: `translate(${LENS_IR - focalCompPt[0] * fit.s * LENS.zoom}px, ${LENS_IR - focalCompPt[1] * fit.s * LENS.zoom}px) scale(${fit.s * LENS.zoom})`,
               transformOrigin: "0 0",
             }}
           >
-            {glyphLayers(6)}
+            {lensLayers}
           </div>
         </div>
       )}
@@ -818,23 +949,36 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
           height={1080}
           style={{ position: "absolute", left: 0, top: 0, pointerEvents: "none" }}
         >
+          {/* source window: dashed rect marking exactly which comp region
+              the lens magnifies (screen radius = LENS.r / LENS.zoom) */}
+          <rect
+            x={focalSX - LENS_IR / LENS.zoom}
+            y={focalSY - LENS_IR / LENS.zoom}
+            width={(2 * LENS_IR) / LENS.zoom}
+            height={(2 * LENS_IR) / LENS.zoom}
+            fill="none"
+            stroke={VERTEX_BLUE}
+            strokeWidth={2}
+            strokeDasharray="5 4"
+            opacity={0.85 * Math.min(1, lensPop) * analysisGate}
+          />
           <line
             x1={leadX0}
             y1={leadY0}
             x2={focalSX}
             y2={focalSY}
             stroke={VERTEX_BLUE}
-            strokeWidth={2.5}
-            strokeDasharray="7 6"
-            opacity={0.75 * Math.min(1, lensPop) * analysisGate}
+            strokeWidth={3}
+            strokeDasharray="8 5"
+            opacity={0.9 * Math.min(1, lensPop) * analysisGate}
           />
           <circle
             cx={focalSX}
             cy={focalSY}
-            r={7}
+            r={9}
             fill="none"
             stroke={VERTEX_BLUE}
-            strokeWidth={2.5}
+            strokeWidth={3}
             opacity={Math.min(1, lensPop) * analysisGate}
           />
         </svg>
