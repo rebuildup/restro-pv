@@ -259,6 +259,25 @@ export function applyMasterPatches(): void {
       doc.fontSize = Math.max(12, Math.min(doc.fontSize, need));
     }
   }
+
+  // Persistent tagline 「文字の輪郭から、筆画ごとのシェイプへ。」 lives in
+  // the Heading and overlay comps with a 0-20s window. SceneE replaces it
+  // with the closing line 「輪郭から筆画へ。／筆画から表現へ。」 — the old
+  // tagline lingering into E duplicated the message (wu-e-r12 FAIL).
+  // End both at the E window start so the handoff is clean.
+  for (const compName of ["Heading", "overlay"]) {
+    const comp = GENERATED_COMPS.find((c) => c.name === compName);
+    for (const l of comp?.layers ?? []) {
+      const t = (
+        l.text?.properties?.find(
+          (p) => p.matchName === "ADBE Text Document",
+        )?.value as { text?: string } | undefined
+      )?.text;
+      if (typeof t === "string" && t.includes("筆画ごとのシェイプ")) {
+        l.outPoint = Math.min(l.outPoint ?? 20, 15.44);
+      }
+    }
+  }
 }
 
 // Scene-D: hide the dumped "PV ops" comp (master layer 13) for the scene
