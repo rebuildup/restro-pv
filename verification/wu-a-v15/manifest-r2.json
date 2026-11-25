@@ -1,0 +1,88 @@
+{
+  "id": "wu-a-v15-r2",
+  "wu": "WU-A",
+  "subject": "Scene A v15 r2: completed kanji holds f45-55, per-stroke decomposition cascade (guide contour highlight -> axis peel, crossing trio first then 11 strokes L->R), solo comparison hold f83-90, sequential handoff to bunkai bridge f93+ (no double hero), grid dimmed for A window",
+  "frames": [
+    {
+      "file": "verification/wu-a-v15/f30.png",
+      "frame": 30,
+      "note": "A1 hero protected"
+    },
+    {
+      "file": "verification/wu-a-v15/f48.png",
+      "frame": 48,
+      "note": "A2 establish: completed kanji"
+    },
+    {
+      "file": "verification/wu-a-v15/f55.png",
+      "frame": 55,
+      "note": "push-in ends, cascade begins"
+    },
+    {
+      "file": "verification/wu-a-v15/f58.png",
+      "frame": 58,
+      "note": "crossing trio peel starts"
+    },
+    {
+      "file": "verification/wu-a-v15/f62.png",
+      "frame": 62,
+      "note": "crossing strokes part"
+    },
+    {
+      "file": "verification/wu-a-v15/f66.png",
+      "frame": 66,
+      "note": "horizontals part, cascade L->R underway"
+    },
+    {
+      "file": "verification/wu-a-v15/f70.png",
+      "frame": 70,
+      "note": "mid cascade"
+    },
+    {
+      "file": "verification/wu-a-v15/f74.png",
+      "frame": 74,
+      "note": "late cascade"
+    },
+    {
+      "file": "verification/wu-a-v15/f78.png",
+      "frame": 78,
+      "note": "cascade tail"
+    },
+    {
+      "file": "verification/wu-a-v15/f82.png",
+      "frame": 82,
+      "note": "hold-fit reframe begins"
+    },
+    {
+      "file": "verification/wu-a-v15/f86.png",
+      "frame": 86,
+      "note": "comparison hold"
+    },
+    {
+      "file": "verification/wu-a-v15/f90.png",
+      "frame": 90,
+      "note": "hold tail / cluster receding"
+    },
+    {
+      "file": "verification/wu-a-v15/f92.png",
+      "frame": 92,
+      "note": "handoff to bridge"
+    },
+    {
+      "file": "verification/wu-a-v15/f94.png",
+      "frame": 94,
+      "note": "bridge arrives"
+    },
+    {
+      "file": "verification/wu-a-v15/f96.png",
+      "frame": 96,
+      "note": "SceneB viewport opens"
+    },
+    {
+      "file": "verification/wu-a-v15/f100.png",
+      "frame": 100,
+      "note": "last A frame"
+    }
+  ],
+  "context": "v15 redesign for the whole-film M3 motion-legibility FAIL. Per-stroke guide contours (real Restro stroke boundary geometry) precede each peel so contour->shape correspondence is drawn explicitly. Camera stays in bleed framing through the whole cascade; hold-fit reframe only after all strokes settle. bunkai A3 bridge hidden until 3.9s with opacity retimed to 3.92-4.1 so it arrives as the authored cluster exits."
+}

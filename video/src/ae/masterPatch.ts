@@ -72,8 +72,17 @@ export function applyMasterPatches(): void {
       // too-slow fade still ghosting at f101. Fade the 解 out across
       // f97-f101 so it is FULLY gone on the first B frame (f101 = 4.2083s)
       // while still reading as a receding bridge on the last A3 frames.
-      bop.keys = [k(3.55, 0), k(3.78, 100), k(4.02, 100), k(4.19, 0)];
-      bop.numKeys = 4;
+      // v15 (WU-A M3 whole-film FAIL): the bridge used to fade in at
+      // 3.55-3.78 — underneath the still-opaque authored stroke cluster,
+      // producing a double-hero at f87-94 that the reviewer read as
+      // 主役二重化. The authored A2 cluster now holds solo through ~f90
+      // and exits by ~f94, so the bridge fade is delayed to arrive AS
+      // the cluster leaves: invisible until 3.9 (A2B_WINDOW), fading
+      // 3.92-4.1, gone by outPoint 4.2 on the first B frames.
+      bop.keys = [
+        k(3.55, 0), k(3.9, 0), k(4.1, 100), k(4.16, 100), k(4.2, 0),
+      ];
+      bop.numKeys = 5;
       bop.value = 0;
       bridge.outPoint = 4.2;
     }
@@ -421,10 +430,17 @@ export const D_WINDOW: [number, number] = [11.71, 15.46];
 
 // Grid dimming windows (whole-film v13 review + WU-D r35): the global
 // "grid-solid" background (master layer 257, in 0-20s) competes with the
-// B diagram's own rules and crossed the left brand lockup in D. Dim —
-// not remove — inside each window only; A/C/E keep the full-strength
-// grid. Each window gets fade brackets so boundaries stay clean.
+// B diagram's own rules, crossed the left brand lockup in D, and
+// scattered the gaze under the A hero (M3 critique). Dim — not remove —
+// inside each window only; C/E keep the full-strength grid. Each window
+// gets fade brackets so boundaries stay clean.
 const GRID_DIM_WINDOWS: { in: number; out: number; level: number }[] = [
+  // A: the giant-解 hero is the only subject through the whole A2/A3
+  // window; the full-strength perspective grid competed with it and
+  // scattered the gaze (whole-film M3 critique). Dim — not remove — for
+  // the authored A window only; ends before the B window's own dim so
+  // the B/D timings below are unchanged. A1 [0,1.875) is untouched.
+  { in: 1.95, out: 3.68, level: 45 }, // A2/A3 hero vs grid
   { in: 3.85, out: 7.9, level: 35 }, // B: diagram lines vs grid 混線
   { in: 11.6, out: 15.62, level: 30 }, // D: lockup collision (r35)
 ];
@@ -547,12 +563,12 @@ export const C_WINDOW: [number, number] = [7.96, 11.71];
 // the replaced A2 material; their window [2.38,3.71] sits inside A2.
 export const A2_HIDDEN = new Set([11, 192, 193, 235, 236]); // PV A2 ghost + kai-zoom x2 + orphaned callouts
 export const A2_WINDOW: [number, number] = [1.875, 3.92];
-// bunkai (232) is the A3 bridge zoom, but it fades in at 3.42s — underneath
-// the still-opaque authored strokes that would double-image the character.
-// Hide it only until the authored fade has mostly completed (3.6s), then
-// let it carry the upward-scroll transition into scene B.
+// bunkai (232) is the A3 bridge zoom. v15: hidden until 3.9s — its
+// opacity fade was retimed to 3.92-4.1 above so it arrives exactly as
+// the authored A2 stroke cluster exits (~f94), giving a sequential
+// handoff instead of the f87-94 double-hero the M3 critique flagged.
 export const A2B_HIDDEN = new Set([232]); // bunkai
-export const A2B_WINDOW: [number, number] = [1.875, 3.62];
+export const A2B_WINDOW: [number, number] = [1.875, 3.9];
 
 // A2 tail: once the authored comparison hold ends (~f85), the giant-解
 // ghost would double-image the incoming bunkai A3 bridge. Hide PV A2 for

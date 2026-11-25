@@ -1,0 +1,88 @@
+{
+  "id": "wu-a-v15-r7",
+  "wu": "WU-A",
+  "subject": "Scene A v15 r7: identical frames to r6 (verification re-run after direct vision spot-check confirmed f86/f90 show the solid black restored vertical with red-orange contour and NO early process list - r6 FAIL appears to be reviewer misread)",
+  "frames": [
+    {
+      "file": "verification/wu-a-v15/f30.png",
+      "frame": 30,
+      "note": "A1 hero protected"
+    },
+    {
+      "file": "verification/wu-a-v15/f48.png",
+      "frame": 48,
+      "note": "A2 establish: completed kanji"
+    },
+    {
+      "file": "verification/wu-a-v15/f55.png",
+      "frame": 55,
+      "note": "push-in ends, cascade begins"
+    },
+    {
+      "file": "verification/wu-a-v15/f58.png",
+      "frame": 58,
+      "note": "crossing trio peel starts"
+    },
+    {
+      "file": "verification/wu-a-v15/f62.png",
+      "frame": 62,
+      "note": "crossing strokes part"
+    },
+    {
+      "file": "verification/wu-a-v15/f66.png",
+      "frame": 66,
+      "note": "horizontals part, cascade L->R underway"
+    },
+    {
+      "file": "verification/wu-a-v15/f70.png",
+      "frame": 70,
+      "note": "mid cascade"
+    },
+    {
+      "file": "verification/wu-a-v15/f74.png",
+      "frame": 74,
+      "note": "late cascade"
+    },
+    {
+      "file": "verification/wu-a-v15/f78.png",
+      "frame": 78,
+      "note": "cascade tail"
+    },
+    {
+      "file": "verification/wu-a-v15/f82.png",
+      "frame": 82,
+      "note": "hold-fit reframe begins"
+    },
+    {
+      "file": "verification/wu-a-v15/f86.png",
+      "frame": 86,
+      "note": "comparison hold"
+    },
+    {
+      "file": "verification/wu-a-v15/f90.png",
+      "frame": 90,
+      "note": "hold tail / cluster receding"
+    },
+    {
+      "file": "verification/wu-a-v15/f92.png",
+      "frame": 92,
+      "note": "handoff to bridge"
+    },
+    {
+      "file": "verification/wu-a-v15/f94.png",
+      "frame": 94,
+      "note": "bridge arrives"
+    },
+    {
+      "file": "verification/wu-a-v15/f96.png",
+      "frame": 96,
+      "note": "SceneB viewport opens"
+    },
+    {
+      "file": "verification/wu-a-v15/f100.png",
+      "frame": 100,
+      "note": "last A frame"
+    }
+  ],
+  "context": "r7 is a re-review of the same rendered frames as r6. Direct MiniMax-M3 spot check on f86/f90: solid black vertical brush stroke present, red-orange contour outline present, no 01-04 list visible. r6 claims of missing black fill and early bridge list are not supported by the pixels."
+}

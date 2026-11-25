@@ -64,6 +64,17 @@ const CLIPS: Clip[] = [
   { srcStart: 26.67, dur: 50 },
 ];
 
+// Jump-accent frames (PV frame numbers): the two moments the footage
+// actually moves the stroke pieces. A short zoom punch on the viewport
+// at each jump makes the operation->result correspondence readable —
+// without it the cut reads as "another static arrangement" (v14 M3
+// critique: 操作→結果の対応がやや抽象).
+const JUMP_FRAMES = [315, 346];
+const punch = (frame: number, jump: number) => {
+  const x = (frame - jump) / 8; // 8-frame pulse
+  return x > 0 && x < 1 ? Math.sin(Math.PI * x) : 0;
+};
+
 const WIN = {
   file: "ae-stroke-animate.mp4",
   roi: ROI,
@@ -190,6 +201,8 @@ export const SceneD: React.FC<{ t: number }> = ({ t }) => {
                       width: vb.width,
                       height: vb.height,
                       filter: WIN.filter,
+                      transform: `scale(${1 + 0.06 * punch(t * FPS, JUMP_FRAMES[i])})`,
+                      transformOrigin: "50% 50%",
                     }}
                   >
                     <Video

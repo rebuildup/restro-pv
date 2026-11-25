@@ -1,0 +1,88 @@
+{
+  "id": "wu-a-v15-r6",
+  "wu": "WU-A",
+  "subject": "Scene A v15 r6: A2 scene fade now fully out by t=3.845 (f92) before bunkai bridge fades in at 3.92; during the comparison hold only the restored vertical keeps its accent contour (0.9) - crossing horizontal origin guides and all non-cross echoes fade out across the hold-fit reframe",
+  "frames": [
+    {
+      "file": "verification/wu-a-v15/f30.png",
+      "frame": 30,
+      "note": "A1 hero protected"
+    },
+    {
+      "file": "verification/wu-a-v15/f48.png",
+      "frame": 48,
+      "note": "A2 establish: completed kanji"
+    },
+    {
+      "file": "verification/wu-a-v15/f55.png",
+      "frame": 55,
+      "note": "push-in ends, cascade begins"
+    },
+    {
+      "file": "verification/wu-a-v15/f58.png",
+      "frame": 58,
+      "note": "crossing trio peel starts"
+    },
+    {
+      "file": "verification/wu-a-v15/f62.png",
+      "frame": 62,
+      "note": "crossing strokes part"
+    },
+    {
+      "file": "verification/wu-a-v15/f66.png",
+      "frame": 66,
+      "note": "horizontals part, cascade L->R underway"
+    },
+    {
+      "file": "verification/wu-a-v15/f70.png",
+      "frame": 70,
+      "note": "mid cascade"
+    },
+    {
+      "file": "verification/wu-a-v15/f74.png",
+      "frame": 74,
+      "note": "late cascade"
+    },
+    {
+      "file": "verification/wu-a-v15/f78.png",
+      "frame": 78,
+      "note": "cascade tail"
+    },
+    {
+      "file": "verification/wu-a-v15/f82.png",
+      "frame": 82,
+      "note": "hold-fit reframe begins"
+    },
+    {
+      "file": "verification/wu-a-v15/f86.png",
+      "frame": 86,
+      "note": "comparison hold"
+    },
+    {
+      "file": "verification/wu-a-v15/f90.png",
+      "frame": 90,
+      "note": "hold tail / cluster receding"
+    },
+    {
+      "file": "verification/wu-a-v15/f92.png",
+      "frame": 92,
+      "note": "handoff to bridge"
+    },
+    {
+      "file": "verification/wu-a-v15/f94.png",
+      "frame": 94,
+      "note": "bridge arrives"
+    },
+    {
+      "file": "verification/wu-a-v15/f96.png",
+      "frame": 96,
+      "note": "SceneB viewport opens"
+    },
+    {
+      "file": "verification/wu-a-v15/f100.png",
+      "frame": 100,
+      "note": "last A frame"
+    }
+  ],
+  "context": "v15 r6: sceneOpacity seg 1.85-1.97 (was 1.85-2.02) so no A2 residue under the A3 bridge/SceneB at f92+. guideOp rework: VERT keeps accent anchor to scene end; crossing horizontals fade 1.5->1.9; non-cross echoes already at 0.22. Addresses r5 FAILs on f92 double-exposure and hold clutter."
+}

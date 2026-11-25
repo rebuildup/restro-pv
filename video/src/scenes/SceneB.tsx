@@ -5,6 +5,7 @@ import {
   StrokeField,
   ContourField,
   strokeContours,
+  strokeRings,
   clamp01,
   easeOutCubic,
   easeOutBack,
@@ -226,6 +227,12 @@ interface BData {
   outlineBaseTint: StrokeItem;
   edgeContours: ContourPath[][];
   selContours: ContourPath[];
+  // real anchor vertices of the extracted outline (base+inset rings) and of
+  // the extend A/B paths — plotted as dots so step2's blue solver markers
+  // read as NEWLY INFERRED vertices against existing junctions, and step1's
+  // green nodes mark the extension joints (v15 M3: markers indistinguishable)
+  existingVerts: [number, number][];
+  extendVerts: [number, number][];
   finalItems: StrokeItem[];
   edgeColors: string[]; // darker per-stroke edge tone matching finalItems
   selIndex: number;
@@ -279,9 +286,20 @@ function glyphData(): BData {
 
   const outlineBaseContours = strokeContours(comp, outlineBase, POSE);
   const outlineInsetContours = strokeContours(comp, outlineInset, POSE);
+  // rings carry every bezier anchor (690 pts) — subsample to a dotted
+  // measured-contour baseline so it reads as vertex evidence, not a blob
+  const existingVertsAll = [
+    ...strokeRings(comp, outlineBase, POSE).flat(),
+    ...strokeRings(comp, outlineInset, POSE).flat(),
+  ];
+  const existingVerts = existingVertsAll.filter((_, i) => i % 10 === 0);
   const inferredContours = strokeContours(comp, inferredItem, POSE);
   const extendA = strokeContours(comp, extendAItem, POSE);
   const extendB = strokeContours(comp, extendBItem, POSE);
+  const extendVerts = [
+    ...strokeRings(comp, extendAItem, POSE).flat(),
+    ...strokeRings(comp, extendBItem, POSE).flat(),
+  ];
   const points = inferredPoints(comp, POSE);
 
   // glyph centroid from stroke bbox centers
@@ -315,21 +333,25 @@ function glyphData(): BData {
     rankOf[o.i] = r;
   });
 
-  // outward displacement per stroke (comp units)
+  // outward displacement per stroke (comp units) — kept small: the split
+  // must read as strokes peeling off ONE parent glyph, not parts flying
+  // away into separate shapes (v15 review)
   const displace: [number, number][] = strokes.map((s, i) => {
     const dx = s.center[0] - glyphCenter[0];
     const dy = s.center[1] - glyphCenter[1];
     const d = Math.hypot(dx, dy) || 1;
-    const dist = 5 + (rankOf[i] % 3) * 3;
+    const dist = 4 + (rankOf[i] % 3) * 2;
     return [(dx / d) * dist, (dy / d) * dist];
   });
 
-  // per-stroke yellow-family palette; selected stroke gets a brighter tint.
+  // per-stroke palette: ONE tight yellow-amber family — separation is
+  // carried by the staggered reveal + darker per-stroke edges, not by a
+  // rainbow that reads as decorative palette (v15 review)
   const tintOf = (i: number): [number, number, number] => {
     if (i === selIndex) return hslToRgb(52, 0.95, 0.62); // bright selected yellow
-    const hue = 45 + ((i * 31) % 17); // ~45..61, readable yellow family
-    const light = 0.52 + (((i * 13) % 7) - 3) * 0.025;
-    return hslToRgb(hue, 0.8, light);
+    const hue = 50 + ((i * 7) % 5); // ~50..54, same amber family
+    const light = 0.54 + (((i * 11) % 5) - 2) * 0.02;
+    return hslToRgb(hue, 0.82, light);
   };
   const finalItems = tintedStrokes(strokes, (_item, i) => tintOf(i));
   const edgeColors = strokes.map((_s, i) => {
@@ -378,6 +400,8 @@ function glyphData(): BData {
     selContours: strokes.length
       ? strokeContours(comp, strokes[selIndex], POSE)
       : [],
+    existingVerts,
+    extendVerts,
     finalItems,
     edgeColors,
     selIndex,
@@ -397,6 +421,68 @@ function widenStroke(node: PropNode | undefined, w: number): void {
   }
   for (const p of node.properties ?? []) widenStroke(p, w);
 }
+
+// DrawnContours: ContourField variant where each item draws ON along its
+// real bezier path (dash reveal over pathLength=1) instead of fading in.
+// This is what makes each step read as an operation producing geometry —
+// the scanline finds the contour, the extension strokes literally draw
+// outward, the inferred boundary draws around the inferred regions —
+// rather than four static layer swaps (whole-film M3 v14 critique).
+const DrawnContours: React.FC<{
+  comp: CompSpec;
+  contours: ContourPath[][];
+  color: string;
+  width: number;
+  itemOpacity?: (i: number) => number;
+  itemColor?: (i: number) => string | undefined;
+  itemTransform?: (i: number) => string | undefined;
+  // draw fraction 0..1 per item; <1 renders a partial dash from path start
+  itemProgress: (i: number) => number;
+}> = ({
+  comp,
+  contours,
+  color,
+  width,
+  itemOpacity,
+  itemColor,
+  itemTransform,
+  itemProgress,
+}) => (
+  <svg
+    width={comp.width}
+    height={comp.height}
+    viewBox={`0 0 ${comp.width} ${comp.height}`}
+    style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}
+  >
+    {contours.map((paths, i) => {
+      const p = clamp01(itemProgress(i));
+      const op = itemOpacity ? itemOpacity(i) : 1;
+      if (p <= 0 || op <= 0) return null;
+      return (
+        <g
+          key={i}
+          opacity={op}
+          transform={itemTransform ? itemTransform(i) : undefined}
+        >
+          {paths.map((cp, j) => (
+            <path
+              key={j}
+              d={cp.d}
+              transform={cp.matrix}
+              fill="none"
+              stroke={itemColor ? itemColor(i) ?? color : color}
+              strokeWidth={width}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              pathLength={1}
+              strokeDasharray={p >= 1 ? undefined : `${p} 1.4`}
+            />
+          ))}
+        </g>
+      );
+    })}
+  </svg>
+);
 
 // current step index from STEP_T boundaries
 function stepIndex(t: number): number {
@@ -432,63 +518,113 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
 
   // step0: real extracted outline (red analysis role). The silhouette fill
   // rides the scene fade-in so the SAME giant 筆 is already present at the
-  // B boundary (f101); the contour detail still waits for the scan beat.
+  // B boundary (f101); the contour detail DRAWS ON along the real bezier
+  // paths while the scanline sweeps — input (sweep) -> output (contour)
+  // as one continuous operation, not a pop.
   const outlineFillOp =
     stepVal(t, [0.5, 0.18, 0.14, 0]) *
     ramp(t, T0 + 0.12, T0 + 0.62) *
     appear *
     analysisGate;
   const outlineContourOp =
-    stepVal(t, [1, 0.4, 0.35, 0]) *
-    ramp(t, 4.4, 5.0) *
-    appear *
-    analysisGate;
+    stepVal(t, [1, 0.75, 0.5, 0]) * appear * analysisGate;
   const insetContourOp =
-    stepVal(t, [0.9, 0.55, 0.45, 0]) *
-    ramp(t, 4.55, 5.1) *
-    appear *
-    analysisGate;
+    stepVal(t, [0.9, 0.75, 0.55, 0]) * appear * analysisGate;
 
   // real scanline sweep: visible only through the 輪郭を解析 window
   const scanOp =
     ramp(t, 4.28, 4.42) * (1 - ramp(t, 4.95, 5.4)) * appear;
 
-  // ghost desaturation per completed step (smooth 0.4s ramps)
+  // ---- per-step draw-on schedules ---------------------------------------
+  // Each step's real intermediate geometry draws along its own path across
+  // most of its window, so the ~0.9s step reads as work in progress.
+  // Progress is independent of the hold/ghost opacity gates below.
+  const extendPaths = [...d.extendA, ...d.extendB];
+  const baseItems = d.outlineBaseContours.map((c) => [c]);
+  const insetItems = d.outlineInsetContours.map((c) => [c]);
+  const extendItems = extendPaths.map((c) => [c]);
+  const inferItems = d.inferredContours.map((c) => [c]);
+  const drawBase = (i: number) =>
+    clamp01((t - (4.45 + i * 0.028)) / 0.34);
+  const drawInset = (i: number) =>
+    clamp01((t - (4.6 + i * 0.022)) / 0.32);
+  const drawExtend = (i: number) =>
+    clamp01((t - (STEP_T[1] + 0.08 + i * 0.036)) / 0.34);
+  const drawInfer = (i: number) =>
+    clamp01((t - (STEP_T[2] + 0.42 + i * 0.015)) / 0.3);
+
+  // ghost desaturation per completed step (smooth 0.4s ramps). The red
+  // outline stays nearly full-strength through step1 so the green
+  // extensions visibly ATTACH to it; it only grays out once step2 starts.
   const outlineGhost =
-    0.4 * ramp(t, STEP_T[1], STEP_T[1] + 0.4) +
-    0.3 * ramp(t, STEP_T[2], STEP_T[2] + 0.4);
+    0.3 * ramp(t, STEP_T[1] + 0.2, STEP_T[1] + 0.6) +
+    0.35 * ramp(t, STEP_T[2], STEP_T[2] + 0.4);
   const extendGhost = 0.6 * ramp(t, STEP_T[2], STEP_T[2] + 0.4);
   const outlineGhostColor = mixGray(ANALYSIS_RED, outlineGhost);
   const extendGhostColor = mixGray(DRAFT_GREEN, extendGhost);
 
-  // step1: real extended contours — staggered reveal in dump order, hold as
-  // context into step2, recede before reconstruction
-  const extendPaths = [...d.extendA, ...d.extendB];
-  const extendOp = (i: number) => {
-    const reveal = ramp(t, STEP_T[1] + i * 0.03, STEP_T[1] + i * 0.03 + 0.3);
-    const hold = stepVal(t, [0, 1, 0.45, 0]);
-    return reveal * hold * appear * analysisGate;
-  };
+  // step1: real extended contours — draw on staggered in dump order, hold
+  // as context into step2, recede before reconstruction
+  const extendOp = stepVal(t, [0, 1, 0.45, 0]) * appear * analysisGate;
 
-  // step2: Restro's own inferred render + the 29 real inferred vertex markers
+  // step2: Restro's own inferred render + the 29 real inferred vertex
+  // markers. Markers pop in angular order around the glyph centroid so the
+  // inference visibly propagates across the skeleton instead of appearing
+  // as an unordered dot dump.
   const inferOp =
     ramp(t, STEP_T[2] + 0.06, STEP_T[2] + 0.36) *
     stepVal(t, [0, 0, 1, 0]) *
     appear *
     analysisGate;
+  const markerRank = new Map<number, number>();
+  {
+    const orderIdx = d.points
+      .map((p, j) => ({
+        j,
+        a: Math.atan2(
+          p[1] - d.glyphCenter[1],
+          p[0] - d.glyphCenter[0],
+        ),
+      }))
+      .sort((a, b) => a.a - b.a);
+    orderIdx.forEach((o, r) => markerRank.set(o.j, r));
+  }
   const markerOp = (j: number) => {
+    const r = markerRank.get(j) ?? j;
     const p = easeOutBack(
-      clamp01((t - (STEP_T[2] + 0.1 + j * 0.04)) / 0.22),
+      clamp01((t - (STEP_T[2] + 0.12 + r * 0.016)) / 0.2),
     );
     return clamp01(p) * stepVal(t, [0, 0, 1, 0]) * appear * analysisGate;
   };
 
-  // step3: separated strokes on the same character. r20: widen the
-  // per-stroke stagger (0.025->0.045 rank spacing, 0.28->0.24 ramp) so the
-  // 13 strokes read as a sequence, not a simultaneous pop.
+  // step3: separated strokes on the same character. Each stroke first
+  // flashes its own source contour in vertex-blue at the displaced reveal
+  // position, then the yellow fill + edge draw over it — the eye can trace
+  // every separated stroke back to the analyzed geometry (v14 M3: "yellow
+  // components lose traceability to source outline").
   const strokeP = (i: number) =>
     ramp(t, STEP_T[3] + d.rankOf[i] * 0.045, STEP_T[3] + d.rankOf[i] * 0.045 + 0.24);
+  const strokeStart = (i: number) => STEP_T[3] + d.rankOf[i] * 0.045;
   const finalOp = (i: number) => strokeP(i) * appear;
+  const blueLeadOp = (i: number) => {
+    const s0 = strokeStart(i);
+    const p =
+      ramp(t, s0 - 0.18, s0 - 0.04) * (1 - ramp(t, s0 + 0.02, s0 + 0.32));
+    return clamp01(p) * appear;
+  };
+  // real vertex dots: outline anchor points ride the outline's own ghost
+  // schedule; extend joints ride the extend hold. In step2 the blue solver
+  // markers pop ON TOP of these existing vertices, so "hidden vertex
+  // inference" reads as new dots appearing among known junctions.
+  const vertBaseOp =
+    ramp(t, 4.5, 4.9) *
+    stepVal(t, [0.8, 0.65, 0.18, 0]) *
+    appear *
+    analysisGate;
+  // extend joints recede once inference starts so the blue solver markers
+  // own the "new vertices" read
+  const vertExtendOp =
+    extendOp * 0.9 * (1 - 0.55 * ramp(t, STEP_T[2], STEP_T[2] + 0.4));
   // r21: the inspected-stroke mark retires before the B->C handoff so the
   // finished glyph carries no leftover annotation chrome.
   const selOp =
@@ -583,20 +719,44 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
         poseT={POSE}
         opacity={Math.min(1, outlineFillOp * lensBoost)}
       />
-      <ContourField
+      <DrawnContours
         comp={d.comp}
-        contours={[d.outlineBaseContours]}
+        contours={baseItems}
         color={outlineGhostColor}
         width={8}
-        opacity={Math.min(1, outlineContourOp * lensBoost)}
+        itemOpacity={() => Math.min(1, outlineContourOp * lensBoost)}
+        itemProgress={drawBase}
       />
-      <ContourField
+      <DrawnContours
         comp={d.comp}
-        contours={[d.outlineInsetContours]}
+        contours={insetItems}
         color={outlineGhostColor}
         width={4.5}
-        opacity={Math.min(1, insetContourOp * lensBoost)}
+        itemOpacity={() => Math.min(1, insetContourOp * lensBoost)}
+        itemProgress={drawInset}
       />
+      {/* step0/1: the REAL anchor vertices of the extracted outline, plotted
+          as dots so later inferred markers have a visible baseline */}
+      <svg
+        width={d.comp.width}
+        height={d.comp.height}
+        viewBox={`0 0 ${d.comp.width} ${d.comp.height}`}
+        style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}
+      >
+        {vertBaseOp > 0 &&
+          d.existingVerts.map((p, j) => (
+            <circle
+              key={j}
+              cx={p[0]}
+              cy={p[1]}
+              r={4}
+              fill="none"
+              stroke={outlineGhostColor}
+              strokeWidth={2.2}
+              opacity={Math.min(1, vertBaseOp * lensBoost)}
+            />
+          ))}
+      </svg>
       {/* step0: real Restro scanline sweep (animated layer position).
           The dumped sweep starts at comp y223 — above the glyph top — which
           would cross the step-tab band; clip the render to comp y>=310 so
@@ -616,14 +776,37 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
           strokeOpacity={() => scanOp * lensBoost}
         />
       </div>
-      {/* step1: real extended contours (FUDE extend A + B), per-path stagger */}
-      <ContourField
+      {/* step1: real extended contours (FUDE extend A + B), drawn on along
+          their real paths in dump order */}
+      <DrawnContours
         comp={d.comp}
-        contours={extendPaths.map((p) => [p])}
+        contours={extendItems}
         color={extendGhostColor}
-        width={6}
-        itemOpacity={(i) => Math.min(1, extendOp(i) * lensBoost)}
+        width={7}
+        itemOpacity={() => Math.min(1, extendOp * lensBoost)}
+        itemProgress={drawExtend}
       />
+      {/* step1: real vertices of the extend A/B paths as joint nodes */}
+      <svg
+        width={d.comp.width}
+        height={d.comp.height}
+        viewBox={`0 0 ${d.comp.width} ${d.comp.height}`}
+        style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}
+      >
+        {vertExtendOp > 0 &&
+          d.extendVerts.map((p, j) => (
+            <circle
+              key={j}
+              cx={p[0]}
+              cy={p[1]}
+              r={4.5}
+              fill="none"
+              stroke={extendGhostColor}
+              strokeWidth={2.4}
+              opacity={Math.min(1, vertExtendOp * lensBoost)}
+            />
+          ))}
+      </svg>
       {/* step2: Restro's own inferred render (real colors) + blue path read */}
       <StrokeField
         comp={d.comp}
@@ -631,12 +814,13 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
         poseT={POSE}
         strokeOpacity={() => inferOp * lensBoost}
       />
-      <ContourField
+      <DrawnContours
         comp={d.comp}
-        contours={[d.inferredContours]}
+        contours={inferItems}
         color={VERTEX_BLUE}
         width={4.5}
-        opacity={Math.min(1, inferOp * lensBoost)}
+        itemOpacity={() => Math.min(1, stepVal(t, [0, 0, 1, 0]) * appear * analysisGate * lensBoost)}
+        itemProgress={drawInfer}
       />
       {/* step2: the 29 real inferred vertex positions as markers */}
       <svg
@@ -648,9 +832,11 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
         {d.points.map((p, j) => {
           const op = markerOp(j);
           if (op <= 0) return null;
-          const r = 7 + 3 * op;
+          const r = 8 + 3 * op;
           return (
             <g key={j} opacity={op}>
+              {/* double ring + solid core: reads as "inferred vertex",
+                  distinct from the hollow measured-point dots */}
               <circle
                 cx={p[0]}
                 cy={p[1]}
@@ -659,11 +845,55 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
                 stroke={VERTEX_BLUE}
                 strokeWidth={3}
               />
-              <circle cx={p[0]} cy={p[1]} r={3} fill={VERTEX_BLUE} />
+              <circle
+                cx={p[0]}
+                cy={p[1]}
+                r={r * 0.55}
+                fill="none"
+                stroke={VERTEX_BLUE}
+                strokeWidth={2}
+              />
+              <circle cx={p[0]} cy={p[1]} r={3.5} fill={VERTEX_BLUE} />
             </g>
           );
         })}
       </svg>
+      {/* step3 parent-contour ghost: the real extracted outline stays as a
+          faint gray reference under the separating strokes so the split
+          visibly happens ON the same giant 筆, not on a new diagram.
+          Lives only inside the step3 window and retires before B->C. */}
+      <DrawnContours
+        comp={d.comp}
+        contours={baseItems}
+        color="#8f8f8f"
+        width={5}
+        itemOpacity={() =>
+          Math.min(
+            1,
+            0.3 *
+              ramp(t, STEP_T[3] + 0.02, STEP_T[3] + 0.2) *
+              (1 - ramp(t, 7.5, 7.82)),
+          )
+        }
+        itemProgress={() => 1}
+      />
+      {/* step3 traceability lead: each stroke's own contour flashes in
+          vertex-blue at its displaced reveal position just before the
+          yellow fill arrives, so the separated strokes visibly descend
+          from the analyzed geometry */}
+      <ContourField
+        comp={d.comp}
+        contours={d.edgeContours}
+        color={VERTEX_BLUE}
+        width={4.5}
+        itemOpacity={(i) => blueLeadOp(i)}
+        itemTransform={(i) => {
+          const p = strokeP(i);
+          if (p >= 1) return undefined;
+          const [dx, dy] = d.displace[i];
+          return `translate(${dx * p}px, ${dy * p}px)`;
+        }}
+      />
       {/* step3: separated strokes on the same character */}
       <StrokeField
         comp={d.comp}
@@ -678,8 +908,9 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
         strokeOpacity={(_item, i) => finalOp(i)}
       />
       {/* matching darker edge per stroke so the fills read as strokes, not
-          flat rectangles; same reveal + displacement as the fills */}
-      <ContourField
+          flat rectangles; the edge DRAWS ON along the stroke's real contour
+          in sync with the fill reveal + displacement */}
+      <DrawnContours
         comp={d.comp}
         contours={d.edgeContours}
         color="#4a3a12"
@@ -692,6 +923,11 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
           const [dx, dy] = d.displace[i];
           return `translate(${dx * p}px, ${dy * p}px)`;
         }}
+        // edge contour leads the fill by ~0.05s: each stroke reads as
+        // "boundary drawn -> interior filled" rather than a color pop
+        itemProgress={(i) =>
+          clamp01((t - (strokeStart(i) - 0.05)) / 0.24)
+        }
       />
       {/* selected stroke: dark contour + center dot mark it as the
           inspected one */}
