@@ -27,15 +27,18 @@
 | WU-A | A1〜A3 導入 | **独立レビュー合格（wu-a-r8: 9/9 PASS）** | v11指摘（縦画が画面に収まらない・ゴースト対応不明瞭）を再設計で解消: 交差クラスタ構図、runs4 014除去（SPEC指定は015/016/017）、元輪郭ghostを交差近傍に局所化＋実測登録行列、尾fade加速でA3へクリーンに受け渡し |
 | WU-B | B 工程 | **独立レビュー合格（wu-b-r18: 8/8 PASS）** | v11指摘（逆算幾何・薄い輪郭・小レンズ・工程帯組版不良）を解消: 実Restro処理中間情報（スキャンライン・延長A/B・推定頂点・ソルバ点）へ置換、レンズを画面内へ、f101から実輪郭シルエットを表示 |
 | WU-C | C 作品例 | **独立レビュー合格（wu-c-r18: 9/9 PASS、6R）** | v11指摘（説明文切断・稚拙さ・囲み/余白不適切）を解消: W3エンブレムを真の左右対称二翼へ再構築、transit脚を圧縮し筆画が飛行中に見える構成、説明文切断は masterPatch の caption fit pass で中央対応 |
-| WU-D | D 実操作録画 | **制作中（wu-d-r29: 8/10、境界FAILは解消）** | v11指摘（低コントラスト・処理待ちdialog再混入・状態説明不一致）へ: per-window コントラストフィルタ、W4のdialog領域をROIで完全除去、全素材をフレーム精度で再監査（jump-cut区間特定）、W1に実パネルPiP追加。r29残FAIL=W4結果がほぼ白で判読不能・PiP小・W2ジャンプが弱い → r30 で反復中 |
+| WU-D | D 実操作録画 | **独立レビュー合格（wu-d-r33: 10/10 PASS）** | r29-r32 で判読性を反復後、全タイムラインスキャンで実行証拠を発見: ae-decompose-ops source f161-190 に「Executing Script」ダイアログ（t6.7-7.9s、Restroパネル表示中）— 分解実行のトリガー。W1 を clip A（実行dialog PiP）→clip B（検証済みf886 before→after ジャンプカット）へ再構成。正直証拠原則: 3録画全走査でクリック/押下状態は存在しないと確認し、シーンは script-execution→result のみを主張。W4結果のコントラスト/ROI、PiP拡大、W2ジャンプ識別も修正 |
 | WU-E | E 商品 | **独立レビュー合格（wu-e-r17: 9/9 PASS）** | v11指摘（小さすぎるタイル・無駄な余白・製品名重複・販売階層不足）を解消: 回収を実B/C/Dスチルのハードカットスロット化、hero筆画復元、組版ロックアップ＋分離したBOOTH/URL販売群。統合後に mask 撤去・closing line をブランド下へ移動し r17 で再PASS |
 | WU-Q | 独立レビュー基盤 | 技術検証済（v2.1 / criteria 2026-11-25.3） | exemption guard 追加: manifest の subject/context に評価除外文言（do not fail / exempt / 忠実 / 不合格としない 等）があると wu-review.ts が拒否。CMN-1..4 全WU自動マージ、manualGates で静止画不可証明条件を別証拠必須化 |
-| WU-INT | シーン境界の統合検証 | **制作中（wu-int-r6 レビュー実行中）** | v12統合ツリーで26フレームのシーム再検証を実施中。既修正: description comp caption fit pass（fontSize縮小＋端anchor中央寄せ、切断解消をf220で確認）、E-section dumped copy 全層zero化、tagline を15.44sでclamp、SceneE mask撤去でブランドロックアップ復帰（f375確認）、closing line のブランド重なり解消（f460確認） |
+| WU-INT | シーン境界の統合検証 | **独立レビュー合格（wu-int-r6: 7/7 PASS）** | v12統合ツリーで23フレームのシーム再検証 PASS。修正済み: description comp caption fit pass（fontSize縮小＋端anchor中央寄せ、切断解消をf220で確認）、E-section dumped copy 全層zero化、tagline を15.44sでclamp、SceneE mask撤去でブランドロックアップ復帰（f375確認）、closing line のブランド重なり解消（f460確認）。SceneD r33 変更後の D→E 境界は wu-d-r33 の密フレーム（f371-390）で再確認済 |
 | #28 | 筆画素材契約 | 技術検証済（文書化済） | docs/stroke-material-contract.md + tests/stroke-contract.test.ts（16/16 pass） |
 
 ## 次のアクション
 
-1. wu-d-r30（WU-D判読性）完了待ち → 統合
-2. wu-int-r6 結果確認 → FAILなら境界修正
-3. 全WU収束後に全編QA集約 → v12 フルレンダー → ユーザー目視受入
-4. PR #27 は Draft 維持。release 統合はユーザー承認待ち
+1. **全WU収束・v12 レンダー済み**: `verification/pv-remotion-v12.mp4`
+   （1080×1080/24fps/h264+AAC/20.01s、ffprobe確認。抽出フレームは
+   レビュー済みスチルとコーデック誤差範囲で一致）。全WU独立レビュー
+   PASS: wu-a-r8 9/9, wu-b-r18 8/8, wu-c-r18 9/9, wu-d-r33 10/10,
+   wu-e-r17 9/9, wu-int-r6 7/7
+2. ユーザーによる v12 実映像の目視受入待ち。PR #27 は Draft 維持。
+   release 統合はユーザー承認待ち
