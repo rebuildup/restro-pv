@@ -97,7 +97,12 @@ const ROW = { x: 540, w: 508, h: 32, gap: 6, y0: 196 };
 // a tighter window showed "lines + dots only" with no readable inferred
 // geometry, so the window was widened to guarantee the three layers
 // (extend contours / inferred render / solver markers) coexist.
-const LENS = { x: 560, y: 1005, r: 55, zoom: 1.5 };
+// wu-b-v20: zoom raised to 1.8 — at 1.5 the effective magnification was
+// only ~1.24x on screen and the lens read as a decorative badge, not a
+// processing magnifier. 1.8x frames the inferred-region corner cluster
+// (solver markers 0-2 + inferred boundary + junction contours) inside
+// the r55 circle.
+const LENS = { x: 560, y: 1005, r: 55, zoom: 1.8 };
 // inner (content) radius: the 5px keyline border is inside the box
 // (boxSizing border-box), so the magnified area is r-5.
 const LENS_IR = LENS.r - 5;
@@ -296,7 +301,7 @@ function glyphData(): BData {
     ...strokeRings(comp, outlineBase, POSE).flat(),
     ...strokeRings(comp, outlineInset, POSE).flat(),
   ];
-  const existingVerts = existingVertsAll.filter((_, i) => i % 10 === 0);
+  const existingVerts = existingVertsAll.filter((_, i) => i % 16 === 0);
   const inferredContours = strokeContours(comp, inferredItem, POSE);
   const extendA = strokeContours(comp, extendAItem, POSE);
   const extendB = strokeContours(comp, extendBItem, POSE);
@@ -521,7 +526,13 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
   // ---- analysis layer visibility -------------------------------------------
   // Analysis layers fade out over the last few frames BEFORE reconstruction
   // begins so the step4 boundary is a natural hand-off, not a hard pop.
-  const analysisGate = 1 - ramp(t, STEP_T[3] - 0.07, STEP_T[3] + 0.18);
+  // wu-b-v20: the analysis stack retires BEFORE the split populates so a
+  // partial yellow fill never shares the frame with a fading blue
+  // inferred boundary (v19-r4 FAIL: blue outline visible over partial
+  // fill at f170-178). Fade now runs 6.80->6.96 — fully drawn inferred
+  // boundary holds ~0.1s, then hands off to the gray ghosts as the first
+  // strokes start at 6.95.
+  const analysisGate = 1 - ramp(t, STEP_T[3] - 0.15, STEP_T[3] + 0.01);
 
   // step0: real extracted outline (red analysis role). The silhouette fill
   // rides the scene fade-in so the SAME giant 筆 is already present at the
@@ -623,14 +634,15 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
   const finalOp = (i: number) => strokeP(i) * appear;
   const blueLeadOp = (i: number) => {
     const s0 = strokeStart(i);
-    // wu-b-v19: the lead must be GONE before the fill finishes drawing —
-    // previously it lingered to s0+0.32 while strokeP completed at
-    // s0+0.24, leaving a fading blue fringe on the finished stroke
-    // (pixel-verified: 409 bluish px still on the glyph at f182). The
-    // window is also shortened (in s0-0.14, out by s0+0.13) so fewer
-    // strokes flash blue simultaneously during the stagger.
+    // wu-b-v20: the lead persists THROUGH the whole fill draw and
+    // vanishes exactly at completion — v19-r4 FAIL: the v19 window
+    // (out by s0+0.13) disappeared mid-draw while strokeP kept going to
+    // s0+0.24, leaving a partial yellow fill with no blue source
+    // contour (f170-178). The out ramp now ends at s0+0.27, just past
+    // the s0+0.24 draw completion, so blue is present for the entire
+    // "boundary -> fill" beat and gone the moment the stroke is done.
     const p =
-      ramp(t, s0 - 0.14, s0 - 0.02) * (1 - ramp(t, s0 + 0.01, s0 + 0.13));
+      ramp(t, s0 - 0.14, s0 - 0.02) * (1 - ramp(t, s0 + 0.16, s0 + 0.27));
     return clamp01(p) * appear;
   };
   // real vertex dots: outline anchor points ride the outline's own ghost
@@ -643,7 +655,7 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
   // v18 review: baseline dots stayed at the same emphasis as the markers.
   const vertBaseOp =
     ramp(t, 4.5, 4.9) *
-    stepVal(t, [0.8, 0.6, 0.06, 0]) *
+    stepVal(t, [0.55, 0.4, 0.05, 0]) *
     (1 - 0.6 * ramp(t, STEP_T[2] + 0.1, STEP_T[2] + 0.5)) *
     appear *
     analysisGate;
@@ -663,60 +675,68 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
     return { active, done };
   });
 
-  // lens focal: pick the window that shows the most REAL intermediate
-  // content — solver vertex markers plus vertices of the analysis strokes
-  // they annotate (extend A/B + inferred render). r19 defect history: a
-  // fixed centroid missed the junction; a markers-only argmax landed on a
-  // bare-marker cluster with no strokes ("unclear information"); an
-  // inferred-bbox-restricted pool was too narrow. Scoring markers+stroke
-  // vertices together always lands where the lens magnifies actual
-  // geometry, and the focal is the centroid of everything inside the
-  // winning window so the content sits centered.
-  // r21: aim INSIDE the inferred render's neighborhood. The step-2 hero is
-  // Restro's own inferred-region render; its corner vertices are the
-  // "FUDE points" markers the lens must show sitting on real geometry.
-  // The previous global argmax drifted to the extend-B column (markers on
-  // bare skeleton, no inferred fills) and read as "lines + dots only".
+  // lens focal (wu-b-v20 redesign): the magnifier must enlarge REAL
+  // inferred geometry, not an abstract marker field. Restro's own
+  // inferred-region render is the step-2 hero; its bbox center is where
+  // the solver's corner markers, the inferred boundary contours and the
+  // underlying stroke junctions coincide (probe wu-b-v20: markers 0-2
+  // sit on/inside the inferred patch at comp ~(690-849, 357-416),
+  // marker0 only 0.5 comp units off a stroke vertex). The previous
+  // density-argmax could drift onto bare-marker clusters and — worse —
+  // the lens drew ALL 29 markers at full size, which reviewers twice
+  // read as an abstract "bicycle" icon.
+  const lensWinR = LENS_IR / (fit.s * LENS.zoom); // comp-space half window
   let focalComp: [number, number] | null = null;
-  if (d.points.length) {
-    const winR = LENS_IR / (fit.s * LENS.zoom);
+  {
     const ib = d.inferred.bbox;
-    const M = 80;
-    const pool = d.points.filter(
-      (p) =>
-        p[0] >= ib[0] - M &&
-        p[0] <= ib[2] + M &&
-        p[1] >= ib[1] - M &&
-        p[1] <= ib[3] + M,
-    );
-    const candidates = pool.length ? pool : d.points;
-    let bestScore = -1;
-    let bestWin: [number, number][] = [];
-    for (const c of candidates) {
-      const nearPts = d.points.filter(
-        (p) => Math.hypot(p[0] - c[0], p[1] - c[1]) < winR,
-      );
-      const nearStrokes = d.analysisPts.filter(
-        (p) => Math.hypot(p[0] - c[0], p[1] - c[1]) < winR,
-      );
-      const score = nearPts.length + nearStrokes.length;
-      if (score > bestScore) {
-        bestScore = score;
-        bestWin = [...nearPts, ...nearStrokes];
+    if (ib && isFinite(ib[0])) {
+      focalComp = [(ib[0] + ib[2]) / 2, (ib[1] + ib[3]) / 2];
+    } else if (d.points.length) {
+      // fallback: densest solver-marker window (legacy behavior)
+      let bestScore = -1;
+      let bestWin: [number, number][] = [];
+      for (const c of d.points) {
+        const nearPts = d.points.filter(
+          (p) => Math.hypot(p[0] - c[0], p[1] - c[1]) < lensWinR,
+        );
+        const nearStrokes = d.analysisPts.filter(
+          (p) => Math.hypot(p[0] - c[0], p[1] - c[1]) < lensWinR,
+        );
+        const score = nearPts.length + nearStrokes.length;
+        if (score > bestScore) {
+          bestScore = score;
+          bestWin = [...nearPts, ...nearStrokes];
+        }
+      }
+      if (bestWin.length) {
+        let sx = 0;
+        let sy = 0;
+        for (const p of bestWin) {
+          sx += p[0];
+          sy += p[1];
+        }
+        focalComp = [sx / bestWin.length, sy / bestWin.length];
       }
     }
-    if (bestWin.length) {
-      let sx = 0;
-      let sy = 0;
-      for (const p of bestWin) {
-        sx += p[0];
-        sy += p[1];
+  }
+  // leader target: the solver marker nearest the focal point — a real
+  // inferred vertex sitting on the magnified boundary/junction, so the
+  // leader lands on geometry instead of an abstract window corner.
+  let vertexComp: [number, number] | null = null;
+  if (focalComp && d.points.length) {
+    let bd = Infinity;
+    for (const p of d.points) {
+      const dd = Math.hypot(p[0] - focalComp[0], p[1] - focalComp[1]);
+      if (dd < bd) {
+        bd = dd;
+        vertexComp = p;
       }
-      focalComp = [sx / bestWin.length, sy / bestWin.length];
     }
   }
   const focalSX = focalComp ? focalComp[0] * fit.s + fit.tx : LENS.x + 200;
   const focalSY = focalComp ? focalComp[1] * fit.s + fit.ty : LENS.y - 200;
+  const vertexSX = vertexComp ? vertexComp[0] * fit.s + fit.tx : focalSX;
+  const vertexSY = vertexComp ? vertexComp[1] * fit.s + fit.ty : focalSY;
   // comp-space focal for the lens inner transform (fallback: un-project the
   // screen fallback through the same fit)
   const focalCompPt: [number, number] = focalComp ?? [
@@ -847,10 +867,10 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
               key={j}
               cx={p[0]}
               cy={p[1]}
-              r={4.5}
+              r={3.6}
               fill="none"
               stroke={extendGhostColor}
-              strokeWidth={2.4}
+              strokeWidth={2}
               opacity={Math.min(1, vertExtendOp * lensBoost)}
             />
           ))}
@@ -925,27 +945,12 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
         }
         itemProgress={() => 1}
       />
-      {/* step3 source-stroke ghost: every stroke's OWN analyzed contour
-          held as a faint gray reference at its original (undisplaced)
-          position — the exact shape each yellow fill + dark edge lands
-          on. This is the traceability anchor the silhouette ghost alone
-          could not give (wu-b-v19 review: "yellow fills do not match the
-          analyzed geometry"): source contour -> edge -> fill now read as
-          one stroke's journey. Retires with the parent ghost. */}
-      <ContourField
-        comp={d.comp}
-        contours={d.edgeContours}
-        color="#a8a8a8"
-        width={3.5}
-        itemOpacity={() =>
-          Math.min(
-            1,
-            0.3 *
-              ramp(t, STEP_T[3] + 0.02, STEP_T[3] + 0.2) *
-              (1 - ramp(t, 7.4, 7.68)),
-          )
-        }
-      />
+      {/* wu-b-v20: the permanent per-stroke gray source-ghost was
+          REMOVED — with the blue lead now persisting through each fill
+          draw, the same edgeContours rendered twice (static gray +
+          transient blue) was redundant chrome; v19-r4 FAIL counted the
+          stacked contour sets toward the tech-demo read. The parent
+          silhouette ghost above still anchors the split to one glyph. */}
       {/* step3 traceability lead: each stroke's own contour flashes in
           vertex-blue at its displaced reveal position just before the
           yellow fill arrives, so the separated strokes visibly descend
@@ -1016,27 +1021,32 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
     </>
   );
 
-  // Lens content (r19): the vertex-estimation intermediate as a readable
-  // close-up — Restro's own inferred render + the 29 real solver vertex
-  // markers + the inferred boundary contours. wu-b-v19 r4: the green
-  // extend A/B layer was dropped — at 1.5x it stacked a third line system
-  // under the markers and two reviewers read the composite as an
-  // abstract "bicycle" icon rather than vertices on geometry. Two layers
-  // (inferred fill + blue markers/boundary) read cleaner.
+  // Lens content (wu-b-v20 redesign): a true processing magnifier —
+  // the SAME step-2 analysis stack the main view shows, cropped to the
+  // inferred-region window and synced to the same draw-on/propagation
+  // clocks, plus the junction geometry the inferred vertices sit on.
+  // v19-r4 FAIL: the old lens drew all 29 solver markers as giant static
+  // rings over a bare fill and read as an abstract "bicycle" icon. Now:
+  //   - only markers INSIDE the magnified window are drawn, at markerOp
+  //     progress (they pop in sync with the main view, not pre-lit)
+  //   - the inferred render + boundary use inferOp/drawInfer so the lens
+  //     shows the geometry at the same stage of completion as the scene
+  //   - extend contours + measured anchor dots give the junction context
+  //     that makes "inferred vertex ON real geometry" readable
+  const lensMarkerOp = (j: number) => Math.min(1, markerOp(j));
+  const vertLensOp =
+    stepVal(t, [0, 0, 1, 0]) * appear * analysisGate * 0.55;
   const lensLayers = (
     <>
-      <StrokeField
+      {/* junction context: prior-step extension contours + measured
+          anchor dots, dimmed so the inferred content stays primary */}
+      <DrawnContours
         comp={d.comp}
-        strokes={[d.inferred]}
-        poseT={POSE}
-        opacity={1}
-      />
-      <ContourField
-        comp={d.comp}
-        contours={[d.inferredContours]}
-        color={VERTEX_BLUE}
-        width={4.5}
-        opacity={1}
+        contours={extendItems}
+        color={extendGhostColor}
+        width={5}
+        itemOpacity={() => Math.min(1, extendOp * 0.85)}
+        itemProgress={drawExtend}
       />
       <svg
         width={d.comp.width}
@@ -1044,19 +1054,82 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
         viewBox={`0 0 ${d.comp.width} ${d.comp.height}`}
         style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}
       >
-        {d.points.map((p, j) => (
-          <g key={j} opacity={1}>
+        {vertLensOp > 0 &&
+          d.existingVerts.map((p, j) => (
             <circle
+              key={j}
               cx={p[0]}
               cy={p[1]}
-              r={17}
+              r={3.4}
               fill="none"
-              stroke={VERTEX_BLUE}
-              strokeWidth={4.2}
+              stroke="#8a8a8a"
+              strokeWidth={1.8}
+              opacity={vertLensOp}
             />
-            <circle cx={p[0]} cy={p[1]} r={5.5} fill={VERTEX_BLUE} />
-          </g>
-        ))}
+          ))}
+      </svg>
+      {/* Restro's own inferred-region render, synced to the main view */}
+      <StrokeField
+        comp={d.comp}
+        strokes={[d.inferred]}
+        poseT={POSE}
+        opacity={Math.min(1, inferOp)}
+      />
+      {/* inferred boundary contours drawing on along their real paths */}
+      <DrawnContours
+        comp={d.comp}
+        contours={inferItems}
+        color={VERTEX_BLUE}
+        width={4}
+        itemOpacity={() =>
+          Math.min(
+            1,
+            stepVal(t, [0, 0, 1, 0]) * appear * analysisGate,
+          )
+        }
+        itemProgress={drawInfer}
+      />
+      {/* solver vertex markers — ONLY those inside the magnified window,
+          at their real propagation progress, sized to read as vertices
+          on the geometry rather than decorative rings */}
+      <svg
+        width={d.comp.width}
+        height={d.comp.height}
+        viewBox={`0 0 ${d.comp.width} ${d.comp.height}`}
+        style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}
+      >
+        {d.points.map((p, j) => {
+          if (
+            focalComp &&
+            Math.hypot(p[0] - focalComp[0], p[1] - focalComp[1]) >
+              lensWinR * 1.45
+          )
+            return null;
+          const op = lensMarkerOp(j);
+          if (op <= 0) return null;
+          const r = 8 + 2.5 * op;
+          return (
+            <g key={j} opacity={op}>
+              <circle
+                cx={p[0]}
+                cy={p[1]}
+                r={r}
+                fill="none"
+                stroke={VERTEX_BLUE}
+                strokeWidth={3}
+              />
+              <circle
+                cx={p[0]}
+                cy={p[1]}
+                r={r * 0.55}
+                fill="none"
+                stroke={VERTEX_BLUE}
+                strokeWidth={2}
+              />
+              <circle cx={p[0]} cy={p[1]} r={3} fill={VERTEX_BLUE} />
+            </g>
+          );
+        })}
       </svg>
     </>
   );
@@ -1066,17 +1139,33 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
   // while the grid inside the stage is masked.
   const viewOp = ramp(t, 3.98, 4.22);
   // r20: the step band retires before the B->C handoff so the finished
-  // 筆 is the sole subject on the last frames (reviewer: band lingering
-  // at "竣工" read as leftover chrome). wu-b-v19: the fade now completes
-  // by ~7.74s (f186) instead of trailing to 7.9 — together with the
-  // tightened ghost/sel/blue-lead retire windows this leaves ~5 clean
-  // settle frames (f186-190) of yellow strokes + dark edges only before
-  // the hard cut into C, replacing the old fade-tail "white flash" where
-  // faint rows ghosted over the incoming gallery.
-  const bandOut = 1 - ramp(t, 7.36, 7.66);
+  // 筆 is the sole subject on the last frames. wu-b-v20: the fade is
+  // stretched to 7.50->7.90 (was 7.36->7.66) — v19-r4 FAIL read the
+  // earlier window as the band "suddenly vanishing" around f182; the
+  // slower ramp dissolves the rows across ~10 frames ending just
+  // before the C cut at 7.96, so no chrome pops off mid-hold.
+  const bandOut = 1 - ramp(t, 7.5, 7.9);
 
   return (
     <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+      {/* grid veil (wu-b-v20): the master perspective grid stays at 35%
+          through the whole B window and v19-r4 FAIL counted it toward
+          the tech-demo read. The left column (x<~460) keeps brand +
+          description untouched; a soft-edged white veil covers only the
+          diagram zone so the stage reads as one white field like the
+          viewport face, while the glyph/band/lens draw above it. */}
+      <div
+        style={{
+          position: "absolute",
+          left: 470,
+          top: 0,
+          width: 610,
+          height: 1080,
+          background:
+            "linear-gradient(90deg, rgba(255,255,255,0) 0px, rgba(255,255,255,0.78) 36px)",
+          opacity: viewOp,
+        }}
+      />
       {/* viewport face: white panel masking the background grid */}
       <div
         style={{
@@ -1129,8 +1218,8 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
           top: VIEW.y,
           width: VIEW.w,
           height: VIEW.h,
-          border: "1.5px solid #111",
-          opacity: viewOp,
+          border: "1px solid rgba(17,17,17,0.55)",
+          opacity: viewOp * 0.85,
           boxSizing: "border-box",
         }}
       />
@@ -1143,7 +1232,12 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
       {STEP_LABELS.map((label, i) => {
         const s = labelStates[i];
         const active = s.active && !s.done;
-        const state = active ? "中" : s.done ? "した" : "";
+        // wu-b-v20: only the ACTIVE step carries a status word. v19-r4
+        // FAIL: done rows kept "した" while later rows showed "中", so
+        // 2-3 status words were always on screen and read as overlapping
+        // labels (f126/134/142/154/162/166). Done/pending rows now carry
+        // state in the number+label color alone — one status word max.
+        const state = active ? "中" : "";
         const y = ROW.y0 + i * (ROW.h + ROW.gap);
         return (
           <div
@@ -1261,27 +1355,49 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
             height={(2 * LENS_IR) / LENS.zoom}
             fill="none"
             stroke={VERTEX_BLUE}
-            strokeWidth={2}
-            strokeDasharray="5 4"
-            opacity={0.85 * Math.min(1, lensPop) * analysisGate}
+            strokeWidth={1.5}
+            strokeDasharray="6 5"
+            opacity={0.6 * Math.min(1, lensPop) * analysisGate}
           />
+          {/* wu-b-v20: the leader now continues PAST the source-window
+              edge to the relevant vertex itself — v19-r4 FAIL: it
+              stopped at the dashed rect border, so the magnified target
+              was never identified. Rim -> window edge stays dashed;
+              window edge -> vertex is a short solid segment ending in a
+              ring on the solver marker nearest the focal point. */}
           <line
             x1={leadX0}
             y1={leadY0}
             x2={leadX1}
             y2={leadY1}
             stroke={VERTEX_BLUE}
-            strokeWidth={2.5}
-            strokeDasharray="8 5"
+            strokeWidth={1.5}
+            strokeDasharray="11 8"
+            opacity={0.55 * Math.min(1, lensPop) * analysisGate}
+          />
+          <line
+            x1={leadX1}
+            y1={leadY1}
+            x2={vertexSX}
+            y2={vertexSY}
+            stroke={VERTEX_BLUE}
+            strokeWidth={1.8}
             opacity={0.9 * Math.min(1, lensPop) * analysisGate}
           />
           <circle
-            cx={leadX1}
-            cy={leadY1}
-            r={9}
+            cx={vertexSX}
+            cy={vertexSY}
+            r={7}
             fill="none"
             stroke={VERTEX_BLUE}
-            strokeWidth={3}
+            strokeWidth={2.6}
+            opacity={Math.min(1, lensPop) * analysisGate}
+          />
+          <circle
+            cx={vertexSX}
+            cy={vertexSY}
+            r={2.4}
+            fill={VERTEX_BLUE}
             opacity={Math.min(1, lensPop) * analysisGate}
           />
         </svg>
