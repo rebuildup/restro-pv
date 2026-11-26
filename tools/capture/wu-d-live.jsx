@@ -31,7 +31,9 @@
     tl.property("ADBE Transform Group").property("ADBE Position").setValue([W / 2, H / 2 + 200, 0]);
     try { comp.openInViewer(); } catch (e) {}
     log("VIEWER_READY");
-    $.sleep(20000);
+    // 15s lead-in so the screen capture shows the comp viewer
+    // rendering the new comp before Decompose runs.
+    $.sleep(15000);
     for (var i = 1; i <= comp.numLayers; i++) comp.layer(i).selected = false;
     tl.selected = true;
     var env = $;
