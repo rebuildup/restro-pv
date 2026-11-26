@@ -46,7 +46,7 @@
 | WU-A | 基準 PASS 9/9（wu-a-r12）・全編批評で要再確認 | hero bleed/hold-fit/bridge 残存修正済。A→B シームは f98 二重露出を解消し M3 PASS 確認 |
 | WU-B | **独立レビュー PASS 8/8**（wu-b-v21-r1） | v20（1a7c28c）は wu-b-v20-r1 で FAIL 5/8（レンズleader画面外逸脱・マーカー未snap・工程色重なり・青lead/黄塗り同居）。v21 で LENS を VIEW パネル内へ移動（540,972 r46 zoom1.8、probe-lens.ts でインク0件確認）・ゴースト脱色ランプを段階ハンドオフ化・青lead細線化。PASS 確認済（30770a7） |
 | WU-C | **PASS 9/9**（wu-c-v13-r2） | ギャラリー化完了。v14 で作品名に「作例」prefix追加（製品名との混同解消） |
-| WU-D | **要件未達 — 実操作録画は未取得（自動収録は環境要因で未完）** | 監査で指摘の通り、ae-decompose-auto.mp4 は JSX生成コンポのレンダリングであり AUDIT.md の「実操作の収録」要件を満たさない。Decompose 実行経路自体は完全実証済み: tools/capture/wu-d-live.jsx が findMenuCommandId+executeCommand で restro.reply.v1（items=13 created=13）を取得し 13個の STROKE_* ShapeLayer を実生成（複数回 DONE 確認、14bf93a）。未完は画面録画側のみ: AE 2027 の Welcome/Crash Repair ダイアログ・home/workspace 二重ウィンドウ構造・GPU描画 viewer（PrintWindow では黒画面）が無人 gdigrab 収録を阻害。手動収録仕様（約5-10秒）にフォールバック予定。SceneD は現状暫定素材を使用中 |
+| WU-D | **実操作録画を自動取得済み（SceneD 組込は未了）** | 実操作経路を確立: 常駐 AE + `-r` 委譲実行 + `.tmp/wu-d-go` ゲート + WGC ウィンドウキャプチャ（GPU viewer も取得可・occlusion 不問）。`verification/wu-d-live/` に実収録 mp4（実 Decompose 実行中の workspace ウィンドウ）と restro.reply.v1 ログ（items=13 created=13, STROKE_* 13層）を保存。手順は同ディレクトリ CAPTURE-NOTES.md。SceneD の ROI/CLIPS をこの実素材に合わせる作業と再レビューが残る。暫定素材（ae-stroke-animate.mp4）はまだ使用中 — 「実操作録画」とは呼ばないこと |
 | WU-E | **PASS 9/9**（wu-e-v13-r5） | ペイオフ回収+正規 Logo comp 終了カード。v14 で終了カード中の左ロックアップを消去（重複解消・M3確認済） |
 | WU-INT | シーム全4箇所 M3 PASS | A→B(f98修正), B→C, C→D, D→E を v13 ツリーで検証済 |
 | WU-Q | 運用中 | 評価モデル M3 既定化 + thinking disabled で安定化 |

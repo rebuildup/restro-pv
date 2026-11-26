@@ -31,9 +31,13 @@
     tl.property("ADBE Transform Group").property("ADBE Position").setValue([W / 2, H / 2 + 200, 0]);
     try { comp.openInViewer(); } catch (e) {}
     log("VIEWER_READY");
-    // 15s lead-in so the screen capture shows the comp viewer
-    // rendering the new comp before Decompose runs.
-    $.sleep(15000);
+    // Gate: wait for .tmp/wu-d-go flag file so the orchestrator can bring
+    // the comp workspace window to the front before Decompose runs.
+    // Falls through after ~180s so unattended runs still complete.
+    var goFile = new File(ROOT + "/.tmp/wu-d-go");
+    var waited = 0;
+    while (!goFile.exists && waited < 180000) { $.sleep(500); waited += 500; }
+    log("GO waitedMs=" + waited);
     for (var i = 1; i <= comp.numLayers; i++) comp.layer(i).selected = false;
     tl.selected = true;
     var env = $;
