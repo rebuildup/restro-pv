@@ -2,6 +2,7 @@ import React from "react";
 import { Composition } from "remotion";
 import { PvVideo, CompOnly } from "./PvVideo.tsx";
 import { ProtoHookA, ProtoHookB } from "./scenes/ProtoHook.tsx";
+import { PvFull } from "./film/PvFull.tsx";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -44,6 +45,14 @@ export const RemotionRoot: React.FC = () => {
         id="Proto-Hook-B"
         component={ProtoHookB}
         durationInFrames={96}
+        fps={24}
+        width={1080}
+        height={1080}
+      />
+      <Composition
+        id="PV-Full"
+        component={PvFull}
+        durationInFrames={480}
         fps={24}
         width={1080}
         height={1080}
