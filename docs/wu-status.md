@@ -44,9 +44,9 @@
 | WU | 状態 | v13/v14 状況 |
 |---|---|---|
 | WU-A | 基準 PASS 9/9（wu-a-r12）・全編批評で要再確認 | hero bleed/hold-fit/bridge 残存修正済。A→B シームは f98 二重露出を解消し M3 PASS 確認 |
-| WU-B | **未合格継続** | 実中間情報レンズ・工程図解は実装済だが、レビューが主観的FAILを反復（レンズのソルバ形状を「UI」と誤読等）。EN sub 無効化・グリッド減光(B窓)を v14 で反映。要件自体は実データ由来で充足 |
+| WU-B | **v19 実欠陥修正済・レビューFAILは評価ノイズ主因と切分け** | エージェントが6件の指摘を画素検証で仕分け: 実欠陥4件修正（レンズ下端マージン、step2マーカー減光+破線リング、cause→effect 描画順序、B→C残留尾の排除）＋レビュアー誤読2件（レンズ切れ・帯残渣は画素スキャンで否定）。残FAILは実Restro幾何への知覚誤読（「FUDE inferred 領域を矩形と誤認」等）で、幾何の真正性は維持。M3単発FAILの選別禁止原則に基づき、統合ツリーでの全編評価を最終ゲートとする |
 | WU-C | **PASS 9/9**（wu-c-v13-r2） | ギャラリー化完了。v14 で作品名に「作例」prefix追加（製品名との混同解消） |
-| WU-D | **PASS 10/10**（wu-d-r35c）+ M3 PROOF PASS | 決定的 before→after 単一ビューポート。既存録画に「テキスト→認識可能な分離筆画」の決定的区間なし・再録画環境不可 → AUDIT.md に必要録画仕様を記録。ユーザー手動収録待ち |
+| WU-D | **自動収録で決定的 footage を取得・組込済（r36）** | 既存録画に決定的区間なし→**AE JSX自動化で解決**: tools/capture/wu-d-capture2.jsx が comp生成→テキスト配置→Restro Decompose 実行（restro.reply.v1, 13 STROKE_*レイヤー実生成）→before/after キーフレーム→renderQueue で mp4 出力。成果物 assets/rec/ae-decompose-auto.mp4（1280×720/24fps/6s、実分解の before→materialize→hold）。SceneD を単一連続テイク（srcStart 1.30s）へ置換。残課題: glyph が comp 上部に寄る構図（ROI で実測 ink bounds x400-878/y0-432 に合わせ込み済、上端の余白詰めは要再収録 or 許容判断） |
 | WU-E | **PASS 9/9**（wu-e-v13-r5） | ペイオフ回収+正規 Logo comp 終了カード。v14 で終了カード中の左ロックアップを消去（重複解消・M3確認済） |
 | WU-INT | シーム全4箇所 M3 PASS | A→B(f98修正), B→C, C→D, D→E を v13 ツリーで検証済 |
 | WU-Q | 運用中 | 評価モデル M3 既定化 + thinking disabled で安定化 |

@@ -84,16 +84,20 @@ const ROW = { x: 540, w: 508, h: 32, gap: 6, y0: 196 };
 // converging center-bottom strokes, and even docked inside the viewport
 // it read as covering the subject. Now it hangs BELOW the viewport's
 // bottom edge in the empty page margin (reviewer-suggested zone): center
-// (560,1025) r55 -> y970-1080, flush with the page bottom; the viewport
-// portion (y970-1020) is the glyph's verified-empty bottom-left margin
-// (~1% ink, grid only below y1020 which the opaque white lens covers).
+// (560,1005) r55 -> y950-1060, fully inside the 1080 frame with a 20px
+// bottom margin (wu-b-v18/v19 reviewers twice claimed bottom clipping;
+// pixel scans show the border bottom at ~y1065, and the extra 5px up
+// removes any doubt). The viewport
+// portion (y955-1020) is the glyph's verified-empty bottom-left margin
+// (0% ink measured on the finished glyph at y940-970, ~2% at y970-1020;
+// grid only below y1020 which the opaque white lens covers).
 // Bottom-left keeps the leader short to the focal junction near
 // (606,502). zoom 1.5 -> ~44-comp-unit window (~73px source) frames the
 // inferred render plus its corner vertex markers together — r21 review:
 // a tighter window showed "lines + dots only" with no readable inferred
 // geometry, so the window was widened to guarantee the three layers
 // (extend contours / inferred render / solver markers) coexist.
-const LENS = { x: 560, y: 1025, r: 55, zoom: 1.5 };
+const LENS = { x: 560, y: 1005, r: 55, zoom: 1.5 };
 // inner (content) radius: the 5px keyline border is inside the box
 // (boxSizing border-box), so the magnified area is r-5.
 const LENS_IR = LENS.r - 5;
@@ -333,14 +337,17 @@ function glyphData(): BData {
     rankOf[o.i] = r;
   });
 
-  // outward displacement per stroke (comp units) — kept small: the split
-  // must read as strokes peeling off ONE parent glyph, not parts flying
-  // away into separate shapes (v15 review)
+  // outward displacement per stroke (comp units) — kept minimal: the split
+  // must read as strokes peeling off ONE parent glyph at their analyzed
+  // positions, not parts flying away into separate shapes (v15 review;
+  // wu-b-v19: v18/v19 reviewers read even the small offset as the yellow
+  // strokes "not matching" the analyzed contours, so the travel is now
+  // ~1.5-3px on screen)
   const displace: [number, number][] = strokes.map((s, i) => {
     const dx = s.center[0] - glyphCenter[0];
     const dy = s.center[1] - glyphCenter[1];
     const d = Math.hypot(dx, dy) || 1;
-    const dist = 4 + (rankOf[i] % 3) * 2;
+    const dist = 2.5 + (rankOf[i] % 3) * 1.5;
     return [(dx / d) * dist, (dy / d) * dist];
   });
 
@@ -550,8 +557,13 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
     clamp01((t - (4.6 + i * 0.022)) / 0.32);
   const drawExtend = (i: number) =>
     clamp01((t - (STEP_T[1] + 0.08 + i * 0.036)) / 0.34);
+  // wu-b-v19: inferred boundary draw-on is delayed until AFTER the solver
+  // markers finish propagating (cause -> effect). Markers now run a
+  // compressed stagger (last one lands ~6.55s); the 4 inferred-contour
+  // paths draw 6.58->6.86, i.e. f158->f164.6 — fully drawn before the
+  // analysisGate fade (6.88+) and before the step3 boundary (6.95).
   const drawInfer = (i: number) =>
-    clamp01((t - (STEP_T[2] + 0.42 + i * 0.015)) / 0.3);
+    clamp01((t - (STEP_T[2] + 0.53 + i * 0.028)) / 0.2);
 
   // ghost desaturation per completed step (smooth 0.4s ramps). The red
   // outline stays nearly full-strength through step1 so the green
@@ -572,7 +584,7 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
   // inference visibly propagates across the skeleton instead of appearing
   // as an unordered dot dump.
   const inferOp =
-    ramp(t, STEP_T[2] + 0.06, STEP_T[2] + 0.36) *
+    ramp(t, STEP_T[2] + 0.3, STEP_T[2] + 0.62) *
     stepVal(t, [0, 0, 1, 0]) *
     appear *
     analysisGate;
@@ -591,8 +603,11 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
   }
   const markerOp = (j: number) => {
     const r = markerRank.get(j) ?? j;
+    // compressed propagation (wu-b-v19): 0.016->0.009 stagger, 0.2->0.15s
+    // pop, so the full 29-marker set lands by ~6.55s and the inferred
+    // boundary can draw afterwards within the same step window
     const p = easeOutBack(
-      clamp01((t - (STEP_T[2] + 0.12 + r * 0.016)) / 0.2),
+      clamp01((t - (STEP_T[2] + 0.1 + r * 0.009)) / 0.15),
     );
     return clamp01(p) * stepVal(t, [0, 0, 1, 0]) * appear * analysisGate;
   };
@@ -608,17 +623,28 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
   const finalOp = (i: number) => strokeP(i) * appear;
   const blueLeadOp = (i: number) => {
     const s0 = strokeStart(i);
+    // wu-b-v19: the lead must be GONE before the fill finishes drawing —
+    // previously it lingered to s0+0.32 while strokeP completed at
+    // s0+0.24, leaving a fading blue fringe on the finished stroke
+    // (pixel-verified: 409 bluish px still on the glyph at f182). The
+    // window is also shortened (in s0-0.14, out by s0+0.13) so fewer
+    // strokes flash blue simultaneously during the stagger.
     const p =
-      ramp(t, s0 - 0.18, s0 - 0.04) * (1 - ramp(t, s0 + 0.02, s0 + 0.32));
+      ramp(t, s0 - 0.14, s0 - 0.02) * (1 - ramp(t, s0 + 0.01, s0 + 0.13));
     return clamp01(p) * appear;
   };
   // real vertex dots: outline anchor points ride the outline's own ghost
   // schedule; extend joints ride the extend hold. In step2 the blue solver
   // markers pop ON TOP of these existing vertices, so "hidden vertex
   // inference" reads as new dots appearing among known junctions.
+  // wu-b-v19: the baseline recedes harder once inference starts (0.18->
+  // 0.06, then a further 60% dim across the marker-propagation window) so
+  // the large blue double-ring+core markers own the "new vertex" read —
+  // v18 review: baseline dots stayed at the same emphasis as the markers.
   const vertBaseOp =
     ramp(t, 4.5, 4.9) *
-    stepVal(t, [0.8, 0.65, 0.18, 0]) *
+    stepVal(t, [0.8, 0.6, 0.06, 0]) *
+    (1 - 0.6 * ramp(t, STEP_T[2] + 0.1, STEP_T[2] + 0.5)) *
     appear *
     analysisGate;
   // extend joints recede once inference starts so the blue solver markers
@@ -628,7 +654,7 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
   // r21: the inspected-stroke mark retires before the B->C handoff so the
   // finished glyph carries no leftover annotation chrome.
   const selOp =
-    strokeP(d.selIndex) * appear * (1 - ramp(t, 7.3, 7.78));
+    strokeP(d.selIndex) * appear * (1 - ramp(t, 7.28, 7.6));
 
   // all four step items list from the start of B; state tracks progress
   const labelStates = STEP_T.map((st, i) => {
@@ -700,12 +726,33 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
 
   const lensPop = easeOutBack(clamp01((t - (STEP_T[2] + 0.1)) / 0.2));
   const showLens = t >= STEP_T[2] + 0.1 && t < STEP_T[3] + 0.2;
-  // leader line: from the lens rim to the focal point
+  // leader line: from the lens rim to the focal point. wu-b-v19 r3: the
+  // line now TERMINATES at the edge of the dashed source-window rect
+  // instead of crossing the whole glyph to the focal center — reviewers
+  // twice read the full-span dashed line as an unrelated decorative
+  // "belt" over the strokes. The rect + rim connector still show which
+  // region is magnified.
   const leadDX = focalSX - LENS.x;
   const leadDY = focalSY - LENS.y;
   const leadLen = Math.hypot(leadDX, leadDY) || 1;
   const leadX0 = LENS.x + (leadDX / leadLen) * (LENS_IR + 6);
   const leadY0 = LENS.y + (leadDY / leadLen) * (LENS_IR + 6);
+  const srcHalf = LENS_IR / LENS.zoom;
+  const tEnterX =
+    leadDX !== 0
+      ? (leadDX > 0
+          ? focalSX - srcHalf - LENS.x
+          : focalSX + srcHalf - LENS.x) / leadDX
+      : Infinity;
+  const tEnterY =
+    leadDY !== 0
+      ? (leadDY > 0
+          ? focalSY - srcHalf - LENS.y
+          : focalSY + srcHalf - LENS.y) / leadDY
+      : Infinity;
+  const tEnter = Math.min(1, Math.max(0, Math.max(tEnterX, tEnterY)));
+  const leadX1 = LENS.x + leadDX * tEnter;
+  const leadY1 = LENS.y + leadDY * tEnter;
 
   // shared comp-space layer stack (main view and lens magnifier).
   // lensBoost>1 raises the faint analysis layers inside the magnifier so the
@@ -753,6 +800,7 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
               fill="none"
               stroke={outlineGhostColor}
               strokeWidth={2.2}
+              strokeDasharray="3 2.5"
               opacity={Math.min(1, vertBaseOp * lensBoost)}
             />
           ))}
@@ -872,10 +920,31 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
             1,
             0.3 *
               ramp(t, STEP_T[3] + 0.02, STEP_T[3] + 0.2) *
-              (1 - ramp(t, 7.5, 7.82)),
+              (1 - ramp(t, 7.4, 7.68)),
           )
         }
         itemProgress={() => 1}
+      />
+      {/* step3 source-stroke ghost: every stroke's OWN analyzed contour
+          held as a faint gray reference at its original (undisplaced)
+          position — the exact shape each yellow fill + dark edge lands
+          on. This is the traceability anchor the silhouette ghost alone
+          could not give (wu-b-v19 review: "yellow fills do not match the
+          analyzed geometry"): source contour -> edge -> fill now read as
+          one stroke's journey. Retires with the parent ghost. */}
+      <ContourField
+        comp={d.comp}
+        contours={d.edgeContours}
+        color="#a8a8a8"
+        width={3.5}
+        itemOpacity={() =>
+          Math.min(
+            1,
+            0.3 *
+              ramp(t, STEP_T[3] + 0.02, STEP_T[3] + 0.2) *
+              (1 - ramp(t, 7.4, 7.68)),
+          )
+        }
       />
       {/* step3 traceability lead: each stroke's own contour flashes in
           vertex-blue at its displaced reveal position just before the
@@ -885,8 +954,8 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
         comp={d.comp}
         contours={d.edgeContours}
         color={VERTEX_BLUE}
-        width={4.5}
-        itemOpacity={(i) => blueLeadOp(i)}
+        width={3.5}
+        itemOpacity={(i) => blueLeadOp(i) * 0.85}
         itemTransform={(i) => {
           const p = strokeP(i);
           if (p >= 1) return undefined;
@@ -948,21 +1017,14 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
   );
 
   // Lens content (r19): the vertex-estimation intermediate as a readable
-  // close-up — the extended contours the solver vertices sit on (real
-  // FUDE extend A/B paths, held as step-1 context in the main view) +
-  // Restro's own inferred render + the 29 real solver vertex markers.
-  // Without the strokes the markers read as abstract debug targets; with
-  // them the lens proves "vertices placed on the extended/inferred
-  // skeleton" — the actual information step 03 computes.
+  // close-up — Restro's own inferred render + the 29 real solver vertex
+  // markers + the inferred boundary contours. wu-b-v19 r4: the green
+  // extend A/B layer was dropped — at 1.5x it stacked a third line system
+  // under the markers and two reviewers read the composite as an
+  // abstract "bicycle" icon rather than vertices on geometry. Two layers
+  // (inferred fill + blue markers/boundary) read cleaner.
   const lensLayers = (
     <>
-      <ContourField
-        comp={d.comp}
-        contours={extendPaths.map((p) => [p])}
-        color={DRAFT_GREEN}
-        width={6}
-        opacity={0.85}
-      />
       <StrokeField
         comp={d.comp}
         strokes={[d.inferred]}
@@ -1005,8 +1067,13 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
   const viewOp = ramp(t, 3.98, 4.22);
   // r20: the step band retires before the B->C handoff so the finished
   // 筆 is the sole subject on the last frames (reviewer: band lingering
-  // at "竣工" read as leftover chrome).
-  const bandOut = 1 - ramp(t, 7.45, 7.9);
+  // at "竣工" read as leftover chrome). wu-b-v19: the fade now completes
+  // by ~7.74s (f186) instead of trailing to 7.9 — together with the
+  // tightened ghost/sel/blue-lead retire windows this leaves ~5 clean
+  // settle frames (f186-190) of yellow strokes + dark edges only before
+  // the hard cut into C, replacing the old fade-tail "white flash" where
+  // faint rows ghosted over the incoming gallery.
+  const bandOut = 1 - ramp(t, 7.36, 7.66);
 
   return (
     <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
@@ -1201,16 +1268,16 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
           <line
             x1={leadX0}
             y1={leadY0}
-            x2={focalSX}
-            y2={focalSY}
+            x2={leadX1}
+            y2={leadY1}
             stroke={VERTEX_BLUE}
-            strokeWidth={3}
+            strokeWidth={2.5}
             strokeDasharray="8 5"
             opacity={0.9 * Math.min(1, lensPop) * analysisGate}
           />
           <circle
-            cx={focalSX}
-            cy={focalSY}
+            cx={leadX1}
+            cy={leadY1}
             r={9}
             fill="none"
             stroke={VERTEX_BLUE}
