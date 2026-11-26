@@ -8,6 +8,7 @@ import {
   seg,
 } from "../scenes/glyph.tsx";
 import { filmField, FIT, BB_CX } from "./glyphData.ts";
+import { MUSIC } from "./musicSync.ts";
 import type { StrokeItem } from "../scenes/glyph.tsx";
 
 // Act 4 — application (abs f234-408, local 0-174): two proofs that the
@@ -52,15 +53,24 @@ export const ApplyAct: React.FC = () => {
   const backNormal = (i: number) =>
     easeInOutCubic(clamp01((f - 68 - fd.rank[i] * 1.2) / 26));
 
-  // palette crossfade (local 102-122)
-  const colorP = seg(f, 102, 122);
+  // palette sweep centered on the 14.5s section boundary: each stroke
+  // crossfades ink->color staggered along the radial direction (top->bottom
+  // wave), not a global opacity blend
+  const PALETTE_AT = MUSIC.paletteHit - START; // 114
+  const paletteMix = (i: number) =>
+    seg(f, PALETTE_AT - 10 + fd.radial[i].y * 6 + fd.rank[i] * 0.4, PALETTE_AT + 8 + fd.radial[i].y * 6 + fd.rank[i] * 0.4);
 
-  // per-stroke independent motion on the colored hold (local 112+):
-  // direction mostly tangential with per-stroke spread, unique amplitude,
-  // speed and phase per stroke — the "each shape moves on its own" proof.
+  // per-stroke independent motion on the colored hold: starts on the
+  // 14.58s accent, direction mostly tangential with per-stroke spread,
+  // unique amplitude, speed and phase per stroke.
+  const DANCE_AT = MUSIC.danceHit - START; // 116
+  // resolve: last ~20f damp all motion back to the composed glyph so the
+  // CTA inherits a clean finished image instead of a hard cut from chaos
+  const RESOLVE_AT = 150;
+  const resolveP = seg(f, RESOLVE_AT, 172);
   const dance = (i: number): { dx: number; dy: number; rot: number; scl: number } => {
-    if (f < 112) return { dx: 0, dy: 0, rot: 0, scl: 1 };
-    const w = (f - 112) / 62; // 0..1 across the hold
+    if (f < DANCE_AT) return { dx: 0, dy: 0, rot: 0, scl: 1 };
+    const w = (f - DANCE_AT) / (RESOLVE_AT - DANCE_AT); // 0..1 across the hold
     const ramp = Math.min(1, w * 2.5);
     const spread = ((i * 47) % 5 - 2) * 0.32; // -0.64..+0.64 rad
     const ang = Math.atan2(fd.tangent[i].y, fd.tangent[i].x) + spread;
@@ -91,7 +101,14 @@ export const ApplyAct: React.FC = () => {
     } else if (f >= 68) {
       const tp = backNormal(i);
       const d = dance(i);
-      st = { ox: d.dx, oy: d.dy, rot: d.rot, scl: d.scl, sx: -1 + 2 * tp };
+      const damp = 1 - resolveP; // resolve: motion dies back to the glyph
+      st = {
+        ox: d.dx * damp,
+        oy: d.dy * damp,
+        rot: d.rot * damp,
+        scl: 1 + (d.scl - 1) * damp,
+        sx: -1 + 2 * tp,
+      };
     }
     return st;
   };
@@ -122,24 +139,22 @@ export const ApplyAct: React.FC = () => {
         transformOrigin: "0 0",
       }}
     >
-      {/* ink field — fades out during the palette crossfade */}
-      <div style={{ opacity: 1 - colorP }}>
-        <StrokeField
-          comp={fd.comp}
-          strokes={fd.strokes}
-          poseT={0.5}
-          strokeTransform={strokeTransform}
-        />
-      </div>
-      {/* palette field — fades in over the same motion */}
-      <div style={{ opacity: colorP }}>
-        <StrokeField
-          comp={fd.comp}
-          strokes={fd.strokesColor}
-          poseT={0.5}
-          strokeTransform={strokeTransform}
-        />
-      </div>
+      {/* ink field — per-stroke fade as the palette sweep passes */}
+      <StrokeField
+        comp={fd.comp}
+        strokes={fd.strokes}
+        poseT={0.5}
+        strokeTransform={strokeTransform}
+        strokeOpacity={(_s, i) => 1 - paletteMix(i)}
+      />
+      {/* palette field — same motion, colors arrive as a top->bottom wave */}
+      <StrokeField
+        comp={fd.comp}
+        strokes={fd.strokesColor}
+        poseT={0.5}
+        strokeTransform={strokeTransform}
+        strokeOpacity={(_s, i) => paletteMix(i)}
+      />
     </div>
   );
 };

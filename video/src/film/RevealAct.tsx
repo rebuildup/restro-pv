@@ -64,9 +64,14 @@ export const RevealAct: React.FC = () => {
   const cap1 = seg(f, 30, 40) * (1 - seg(f, 66, 76));
   const cap2 = seg(f, 70, 80);
 
-  // S01-S13 index labels ride the separated contours — the explicit
-  // "13 independent shapes" proof the v3 critique asked for
-  const labelP = seg(f, 70, 78) * (1 - seg(f, 80, 84));
+  // numbered proof beat aligned to the 7.0s section boundary: contours
+  // crossfade from ink to 13 distinct hues (countable at a glance) while
+  // minimal S01-S13 indices ride each stroke — filmic, not a UI diagram
+  const labelP = seg(f, 68, 76) * (1 - seg(f, 80, 84));
+  const labelHue = (i: number) =>
+    `hsl(${Math.round((i * 137.508) % 360)}, 62%, 46%)`;
+  const labelItemOp = (i: number) =>
+    clamp01((labelP * 14 - fd.rank[i]) / 4);
 
   return (
     <div
@@ -91,6 +96,17 @@ export const RevealAct: React.FC = () => {
       >
         <StrokeField comp={fd.comp} strokes={fd.strokes} poseT={0.5} />
       </div>
+      {/* paper veil dims the grid once contours take over — line-work is
+          the hero, not the graph paper */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundColor: "#f7f7f7",
+          opacity: 0.4 * seg(f, 36, 50),
+          pointerEvents: "none",
+        }}
+      />
       <div
         style={{
           position: "absolute",
@@ -130,6 +146,19 @@ export const RevealAct: React.FC = () => {
             pointerEvents: "none",
           }}
         >
+          <ContourField
+            comp={fd.comp}
+            contours={fd.contours}
+            color="#3a3a3a"
+            width={3.2}
+            itemColor={(i) => labelHue(i)}
+            itemOpacity={labelItemOp}
+            itemTransform={(i) => {
+              const s = fd.strokes[i];
+              const st = sepState(i);
+              return xform(s, st.dx, st.dy, st.rot, 1);
+            }}
+          />
           {fd.strokes.map((s, i) => {
             const st = sepState(i);
             const [cx, cy] = s.center;
@@ -146,17 +175,15 @@ export const RevealAct: React.FC = () => {
                   top: 0,
                   transform: `translate(${lx}px,${ly}px) rotate(${st.rot}deg) translate(-50%,-50%)`,
                   fontFamily: "'Noto Sans JP', monospace",
-                  fontSize: 34,
+                  fontSize: 30,
                   fontWeight: 800,
                   color: "#111",
-                  backgroundColor: "rgba(247,247,247,0.9)",
-                  border: "2px solid #111",
-                  borderRadius: 8,
-                  padding: "2px 12px",
+                  textShadow: "0 0 6px #f7f7f7, 0 0 6px #f7f7f7",
                   letterSpacing: 1,
+                  opacity: labelItemOp(i),
                 }}
               >
-                S{String(fd.rank[i] + 1).padStart(2, "0")}
+                {String(fd.rank[i] + 1).padStart(2, "0")}
               </div>
             );
           })}

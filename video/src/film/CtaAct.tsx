@@ -8,7 +8,9 @@ import {
 } from "../ae/project.ts";
 import type { RenderCtx } from "../ae/layer.tsx";
 import { CompView } from "../ae/layer.tsx";
-import { seg, easeOutBack } from "../scenes/glyph.tsx";
+import { seg, easeOutBack, StrokeField } from "../scenes/glyph.tsx";
+import { filmField, FIT } from "./glyphData.ts";
+import { MUSIC } from "./musicSync.ts";
 
 // Act 5 — CTA (abs f408-480, local 0-72): official Restro logo artwork
 // (dumped "Logo" comp = wordmark + 筆画復元 vector art) plus one clear
@@ -31,12 +33,38 @@ const JP = "'Noto Sans JP', 'Hiragino Sans', sans-serif";
 export const CtaAct: React.FC = () => {
   const f = useCurrentFrame() - START;
   const logoP = seg(f, 4, 22);
+  // final accent hit (~19.74s): one restrained scale bump locks the card
+  const END_HIT_AT = MUSIC.endHit - START; // 66
+  const hit =
+    f > END_HIT_AT && f < END_HIT_AT + 8
+      ? Math.sin(((f - END_HIT_AT) / 8) * Math.PI)
+      : 0;
   const descP = seg(f, 14, 30);
   const boothP = seg(f, 24, 40);
   const urlP = seg(f, 32, 48);
+  const fd = filmField();
+  // authored entrance: the resolved glyph lingers 10f and dissolves into
+  // the logo card — the brand inherits the film's final image
+  const glyphOut = 1 - seg(f, 0, 10);
 
   return (
     <div style={{ position: "absolute", inset: 0 }}>
+      {glyphOut > 0 && (
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: 1080,
+            height: 1080,
+            transform: FIT,
+            transformOrigin: "0 0",
+            opacity: glyphOut,
+          }}
+        >
+          <StrokeField comp={fd.comp} strokes={fd.strokes} poseT={0.5} />
+        </div>
+      )}
       {LOGO_COMP && (
         <>
           {/* official logo artwork, optically centered */}
@@ -48,7 +76,7 @@ export const CtaAct: React.FC = () => {
               width: 416 * LOGO_SCALE,
               height: 260 * LOGO_SCALE,
               opacity: logoP,
-              transform: `translateY(${(1 - logoP) * 20}px) scale(${0.94 + 0.06 * easeOutBack(logoP)})`,
+              transform: `translateY(${(1 - logoP) * 20}px) scale(${(0.94 + 0.06 * easeOutBack(logoP)) * (1 + 0.03 * hit)})`,
               transformOrigin: "540px 480px",
             }}
           >

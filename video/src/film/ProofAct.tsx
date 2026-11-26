@@ -16,8 +16,9 @@ export const ProofAct: React.FC = () => {
   const local = f - START;
   if (f >= END) return null;
 
-  // gentle push-in over the clip
-  const push = 1 + 0.05 * (local / (END - START));
+  // punch-in drift: tighter on the workspace so the STROKE layers and the
+  // script dialog read at feed size (was too wide per critique)
+  const push = 1.1 + 0.14 * (local / (END - START));
 
   return (
     <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>

@@ -2,6 +2,7 @@ import React from "react";
 import { useCurrentFrame } from "remotion";
 import { StrokeField, easeOutBack, easeOutCubic, clamp01, seg } from "../scenes/glyph.tsx";
 import { filmField, xform, FIT } from "./glyphData.ts";
+import { MUSIC } from "./musicSync.ts";
 
 // Act 1 — hook (f0-96): whole-glyph slam on the first accent, radial burst
 // into 13 separated strokes on the phrase hit, held as an exploded proof,
@@ -18,7 +19,7 @@ export const HookAct: React.FC = () => {
   const enterScale = 1.12 - 0.12 * easeOutCubic(enterP);
   const enterOp = 1;
 
-  const EXPLODE_AT = 14;
+  const EXPLODE_AT = MUSIC.explodeHit;
   const punchP = clamp01((f - EXPLODE_AT) / 5);
   const punch = punchP > 0 && punchP < 1 ? Math.sin(punchP * Math.PI) : 0;
   const shakeAmp = punchP > 0 && punchP < 1 ? 2.5 * (1 - punchP) : 0;
@@ -35,7 +36,7 @@ export const HookAct: React.FC = () => {
     return { dx, dy, rot: rot * p, scl: 1 + 0.07 * p };
   };
 
-  const REJOIN_AT = 60;
+  const REJOIN_AT = MUSIC.rejoinHit;
   const rejoin = (i: number) => {
     const p = easeOutBack(clamp01((f - REJOIN_AT - fd.rank[i] * 1.6) / 16));
     const e = explode(i);
@@ -48,7 +49,14 @@ export const HookAct: React.FC = () => {
   };
 
   const state = (i: number) => {
-    if (f < EXPLODE_AT) return { dx: 0, dy: 0, rot: 0, scl: 1 };
+    if (f < EXPLODE_AT) {
+      // pre-detonation tremor on the hero stroke — the glyph feels loaded
+      if (i === fd.heroIdx && f > 4) {
+        const j = Math.sin(f * 2.4) * 1.6 * clamp01((f - 4) / 8);
+        return { dx: j, dy: -j * 0.6, rot: 0, scl: 1 };
+      }
+      return { dx: 0, dy: 0, rot: 0, scl: 1 };
+    }
     if (f < REJOIN_AT) return explode(i);
     return rejoin(i);
   };
@@ -80,7 +88,7 @@ export const HookAct: React.FC = () => {
           top: 0,
           width: 1080,
           height: 1080,
-          transform: `${FIT} scale(${enterScale * (1 + 0.035 * punch)})`,
+          transform: `${FIT} scale(${enterScale * (1 + 0.06 * punch)})`,
           transformOrigin: "540px 540px",
           opacity: enterOp,
         }}
@@ -113,6 +121,16 @@ export const HookAct: React.FC = () => {
       >
         1文字を、13の独立したストロークに。
       </div>
+      {/* detonation flash — 3f paper-white spike on the burst beat */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          backgroundColor: "#ffffff",
+          opacity: f >= EXPLODE_AT && f < EXPLODE_AT + 3 ? 0.85 : 0,
+          pointerEvents: "none",
+        }}
+      />
     </div>
   );
 };

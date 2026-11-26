@@ -28,6 +28,7 @@ export interface FilmField {
   strokes: StrokeItem[]; // ink/accent-tinted clean clones
   strokesColor: StrokeItem[]; // vertical-third palette clones (apply act)
   rank: number[];
+  heroIdx: number; // index into strokes[] of the accent (red) stroke
   radial: { x: number; y: number }[];
   tangent: { x: number; y: number }[];
   contours: ContourPath[][];
@@ -72,7 +73,8 @@ export function filmField(): FilmField {
   const third = (y: number) => (y < BB_CY - 160 ? TOP : y > BB_CY + 160 ? BOT : INK);
   const colored = tintedStrokes(strokes, (s) => third(s.center[1]));
   const contours = tinted.map((s) => strokeContours(comp, s, 0.5));
-  cached = { comp, strokes: tinted, strokesColor: colored, rank, radial, tangent, contours };
+  const heroIdx = rank.indexOf(HERO_RANK);
+  cached = { comp, strokes: tinted, strokesColor: colored, rank, heroIdx, radial, tangent, contours };
   return cached;
 }
 

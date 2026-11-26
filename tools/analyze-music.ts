@@ -123,16 +123,20 @@ function tempoAndBeats(novelty: number[], hopSec: number, dur: number) {
   return { bpm, period, beats };
 }
 
-function strongOnsets(novelty: number[], hopSec: number): number[] {
+function strongOnsets(
+  novelty: number[],
+  hopSec: number,
+): { t: number; s: number }[] {
   const sorted = [...novelty].sort((a, b) => a - b);
   const thr = sorted[Math.floor(sorted.length * 0.92)];
   const minGap = Math.floor(0.08 / hopSec);
-  const out: number[] = [];
+  const out: { t: number; s: number }[] = [];
   let last = -1e9;
   for (let i = 1; i < novelty.length - 1; i++) {
+    if (!Number.isFinite(novelty[i])) continue;
     if (novelty[i] <= thr || novelty[i] < novelty[i - 1] || novelty[i] < novelty[i + 1]) continue;
     if (i - last < minGap) continue;
-    out.push(Number((i * hopSec).toFixed(3)));
+    out.push({ t: Number((i * hopSec).toFixed(3)), s: novelty[i] });
     last = i;
   }
   return out;
@@ -178,16 +182,27 @@ const { flux, hopSec } = spectralFlux(x);
 const k = 43;
 const novelty = flux.map((_, i) => {
   let s = 0, n = 0;
-  for (let j = Math.max(0, i - k / 2); j <= Math.min(flux.length - 1, i + k / 2); j++) { s += flux[j]; n++; }
+  for (let j = Math.max(0, Math.floor(i - k / 2)); j <= Math.min(flux.length - 1, Math.ceil(i + k / 2)); j++) { s += flux[j]; n++; }
   const local = s / n;
   const mean = flux.reduce((a, b) => a + b, 0) / flux.length;
-  return local < mean * 0.2 ? 0 : flux[i] / (local + 1e-9);
+  if (local < mean * 0.2) return 0;
+  const r = flux[i] / (local + 1e-9);
+  return Number.isFinite(r) ? r : 0;
 });
 
 const { bpm, beats } = tempoAndBeats(novelty, hopSec, dur);
 const env = rmsEnvelope(x);
 const sec = sections(env.t, env.v);
 sec.push(Number(dur.toFixed(2)));
+
+const onsetList = strongOnsets(novelty, hopSec);
+// top accents inside the 20s film window, ranked by onset strength
+const accents = onsetList
+  .filter((o) => o.t < 20.5 && Number.isFinite(o.s))
+  .sort((a, b) => b.s - a.s)
+  .slice(0, 60)
+  .map((o) => ({ t: o.t, s: Number(o.s.toFixed(2)) }))
+  .sort((a, b) => a.t - b.t);
 
 const doc = {
   source: src,
@@ -196,7 +211,8 @@ const doc = {
   hopSec: Number(hopSec.toFixed(4)),
   tempoBpm: Number(bpm.toFixed(2)),
   beatsSec: beats.map((b) => Number(b.toFixed(3))),
-  strongOnsetsSec: strongOnsets(novelty, hopSec),
+  strongOnsetsSec: onsetList.map((o) => o.t),
+  accentsSec: accents,
   sectionsSec: sec,
   rmsEnvelope: env,
 };
@@ -204,4 +220,4 @@ writeFileSync(out, JSON.stringify(doc, null, 1));
 console.log(`duration=${dur.toFixed(2)}s bpm=${bpm.toFixed(1)} beats=${beats.length} onsets=${doc.strongOnsetsSec.length}`);
 console.log(`sections=${JSON.stringify(sec)}`);
 console.log(`first beats=${beats.slice(0, 12).map((b) => b.toFixed(2)).join(",")}`);
-console.log(`onsets(30)=${doc.strongOnsetsSec.slice(0, 30).join(",")}`);
+console.log(`top accents=${JSON.stringify(accents.slice(0, 25))}`);
