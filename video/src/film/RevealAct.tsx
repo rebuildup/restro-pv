@@ -133,6 +133,10 @@ export const RevealAct: React.FC = () => {
           {fd.strokes.map((s, i) => {
             const st = sepState(i);
             const [cx, cy] = s.center;
+            // push labels further along the radial direction so clustered
+            // lower strokes (S10-S13) don't overlap their chips
+            const lx = cx + st.dx + fd.radial[i].x * 55;
+            const ly = cy + st.dy + fd.radial[i].y * 55;
             return (
               <div
                 key={i}
@@ -140,9 +144,9 @@ export const RevealAct: React.FC = () => {
                   position: "absolute",
                   left: 0,
                   top: 0,
-                  transform: `translate(${cx + st.dx}px,${cy + st.dy}px) rotate(${st.rot}deg) translate(-50%,-50%)`,
+                  transform: `translate(${lx}px,${ly}px) rotate(${st.rot}deg) translate(-50%,-50%)`,
                   fontFamily: "'Noto Sans JP', monospace",
-                  fontSize: 40,
+                  fontSize: 34,
                   fontWeight: 800,
                   color: "#111",
                   backgroundColor: "rgba(247,247,247,0.9)",
