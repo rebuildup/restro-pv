@@ -64,6 +64,10 @@ export const RevealAct: React.FC = () => {
   const cap1 = seg(f, 30, 40) * (1 - seg(f, 66, 76));
   const cap2 = seg(f, 70, 80);
 
+  // S01-S13 index labels ride the separated contours — the explicit
+  // "13 independent shapes" proof the v3 critique asked for
+  const labelP = seg(f, 70, 78) * (1 - seg(f, 80, 84));
+
   return (
     <div
       style={{
@@ -112,6 +116,48 @@ export const RevealAct: React.FC = () => {
           }}
         />
       </div>
+      {labelP > 0 && (
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: 1080,
+            height: 1080,
+            transform: FIT,
+            transformOrigin: "0 0",
+            opacity: labelP,
+            pointerEvents: "none",
+          }}
+        >
+          {fd.strokes.map((s, i) => {
+            const st = sepState(i);
+            const [cx, cy] = s.center;
+            return (
+              <div
+                key={i}
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  top: 0,
+                  transform: `translate(${cx + st.dx}px,${cy + st.dy}px) rotate(${st.rot}deg) translate(-50%,-50%)`,
+                  fontFamily: "'Noto Sans JP', monospace",
+                  fontSize: 40,
+                  fontWeight: 800,
+                  color: "#111",
+                  backgroundColor: "rgba(247,247,247,0.9)",
+                  border: "2px solid #111",
+                  borderRadius: 8,
+                  padding: "2px 12px",
+                  letterSpacing: 1,
+                }}
+              >
+                S{String(fd.rank[i] + 1).padStart(2, "0")}
+              </div>
+            );
+          })}
+        </div>
+      )}
       <Caption text="輪郭 — ひとつながった形" p={cap1} />
       <Caption text="筆画 — Restro が分けた13のシェイプ" p={cap2} />
     </div>
