@@ -1,5 +1,5 @@
 import React from "react";
-import { useCurrentFrame, Video, staticFile } from "remotion";
+import { useCurrentFrame, OffthreadVideo, Sequence, staticFile } from "remotion";
 import { seg } from "../scenes/glyph.tsx";
 
 // Act 3 — proof (abs f180-234): real-operation footage. Cropped 1080x1080
@@ -29,11 +29,13 @@ export const ProofAct: React.FC = () => {
           transformOrigin: "540px 540px",
         }}
       >
-        <Video
-          src={staticFile(SRC)}
-          trimAfter={END - START}
-          style={{ width: "100%", height: "100%", objectFit: "cover" }}
-        />
+        <Sequence from={START} durationInFrames={END - START}>
+          <OffthreadVideo
+            src={staticFile(SRC)}
+            trimAfter={END - START}
+            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          />
+        </Sequence>
       </div>
       {/* soft entry: 6f fade from paper so the hard cut into AE UI does not
           read as a glitch */}

@@ -1,6 +1,6 @@
 import React from "react";
 import { useCurrentFrame } from "remotion";
-import { StrokeField, easeOutBack, easeOutCubic, clamp01 } from "../scenes/glyph.tsx";
+import { StrokeField, easeOutBack, easeOutCubic, clamp01, seg } from "../scenes/glyph.tsx";
 import { filmField, xform, FIT } from "./glyphData.ts";
 
 // Act 1 — hook (f0-96): whole-glyph slam on the first accent, radial burst
@@ -57,6 +57,10 @@ export const HookAct: React.FC = () => {
   // act can continue the same object without a visible cut
   const push = f > 88 ? 1 + 0.04 * easeOutCubic(clamp01((f - 88) / 8)) : 1;
 
+  // proposition caption: appears as the strokes separate, holds through the
+  // exploded proof, exits before the rejoin
+  const capOp = seg(f, 20, 28) * (1 - seg(f, 84, 92));
+
   return (
     <div
       style={{
@@ -90,6 +94,24 @@ export const HookAct: React.FC = () => {
             return xform(s, st.dx, st.dy, st.rot, st.scl);
           }}
         />
+      </div>
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          bottom: 84,
+          textAlign: "center",
+          fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
+          fontSize: 42,
+          fontWeight: 800,
+          color: "#111",
+          letterSpacing: 2,
+          opacity: capOp,
+          transform: `translateY(${(1 - capOp) * 16}px)`,
+        }}
+      >
+        1文字を、13の独立したストロークに。
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ import {
 } from "../ae/project.ts";
 import type { RenderCtx } from "../ae/layer.tsx";
 import { CompView } from "../ae/layer.tsx";
-import { seg } from "../scenes/glyph.tsx";
+import { seg, easeOutBack } from "../scenes/glyph.tsx";
 
 // Act 5 — CTA (abs f408-480, local 0-72): official Restro logo artwork
 // (dumped "Logo" comp = wordmark + 筆画復元 vector art) plus one clear
@@ -48,7 +48,8 @@ export const CtaAct: React.FC = () => {
               width: 416 * LOGO_SCALE,
               height: 260 * LOGO_SCALE,
               opacity: logoP,
-              transform: `translateY(${(1 - logoP) * 20}px)`,
+              transform: `translateY(${(1 - logoP) * 20}px) scale(${0.94 + 0.06 * easeOutBack(logoP)})`,
+              transformOrigin: "540px 480px",
             }}
           >
             <div
