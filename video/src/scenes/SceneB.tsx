@@ -82,27 +82,17 @@ const ROW = { x: 540, w: 508, h: 32, gap: 6, y0: 196 };
 
 // lens: r20 review FAIL twice — bottom-center covered the hero's
 // converging center-bottom strokes, and even docked inside the viewport
-// it read as covering the subject. Now it hangs BELOW the viewport's
-// bottom edge in the empty page margin (reviewer-suggested zone): center
-// (560,1005) r55 -> y950-1060, fully inside the 1080 frame with a 20px
-// bottom margin (wu-b-v18/v19 reviewers twice claimed bottom clipping;
-// pixel scans show the border bottom at ~y1065, and the extra 5px up
-// removes any doubt). The viewport
-// portion (y955-1020) is the glyph's verified-empty bottom-left margin
-// (0% ink measured on the finished glyph at y940-970, ~2% at y970-1020;
-// grid only below y1020 which the opaque white lens covers).
-// Bottom-left keeps the leader short to the focal junction near
-// (606,502). zoom 1.5 -> ~44-comp-unit window (~73px source) frames the
-// inferred render plus its corner vertex markers together — r21 review:
-// a tighter window showed "lines + dots only" with no readable inferred
-// geometry, so the window was widened to guarantee the three layers
-// (extend contours / inferred render / solver markers) coexist.
-// wu-b-v20: zoom raised to 1.8 — at 1.5 the effective magnification was
-// only ~1.24x on screen and the lens read as a decorative badge, not a
-// processing magnifier. 1.8x frames the inferred-region corner cluster
-// (solver markers 0-2 + inferred boundary + junction contours) inside
-// the r55 circle.
-const LENS = { x: 560, y: 1005, r: 55, zoom: 1.8 };
+// it read as covering the subject. wu-b-v20 hung it BELOW the viewport's
+// bottom edge in the page margin; wu-b-v20-r1 FAIL read that straddle as
+// a clipped circle. v21 docks it fully inside the panel's verified-empty
+// bottom-left margin instead: probe wu-b-v21 measured zero stroke-ink
+// samples inside every candidate; (540,972,r46) spans x494-586,y926-1018
+// — inside VIEW (468-1064 x 356-1020) with margin and 18px clear of the
+// nearest stroke centerline. r46 keeps the magnified window at ~±30 comp
+// units around the inferred corner so solver markers 0-2 still fit;
+// zoom stays 1.8 (lower zooms shrink the window below the marker
+// cluster, higher zooms crop it).
+const LENS = { x: 540, y: 972, r: 46, zoom: 1.8 };
 // inner (content) radius: the 5px keyline border is inside the box
 // (boxSizing border-box), so the magnified area is r-5.
 const LENS_IR = LENS.r - 5;
@@ -545,9 +535,9 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
     appear *
     analysisGate;
   const outlineContourOp =
-    stepVal(t, [1, 0.75, 0.5, 0]) * appear * analysisGate;
+    stepVal(t, [1, 0.55, 0.3, 0]) * appear * analysisGate;
   const insetContourOp =
-    stepVal(t, [0.9, 0.75, 0.55, 0]) * appear * analysisGate;
+    stepVal(t, [0.9, 0.6, 0.35, 0]) * appear * analysisGate;
 
   // real scanline sweep: visible only through the 輪郭を解析 window
   const scanOp =
@@ -577,18 +567,20 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
     clamp01((t - (STEP_T[2] + 0.53 + i * 0.028)) / 0.2);
 
   // ghost desaturation per completed step (smooth 0.4s ramps). The red
-  // outline stays nearly full-strength through step1 so the green
-  // extensions visibly ATTACH to it; it only grays out once step2 starts.
+  // outline stays strong enough through early step1 so the green
+  // extensions visibly ATTACH to it, then grays out as the next step's
+  // color takes over — wu-b-v20-r1 FAIL: full-strength red under the
+  // green read as two overlapping filters instead of a step hand-off.
   const outlineGhost =
-    0.3 * ramp(t, STEP_T[1] + 0.2, STEP_T[1] + 0.6) +
-    0.35 * ramp(t, STEP_T[2], STEP_T[2] + 0.4);
-  const extendGhost = 0.6 * ramp(t, STEP_T[2], STEP_T[2] + 0.4);
+    0.45 * ramp(t, STEP_T[1] + 0.05, STEP_T[1] + 0.45) +
+    0.3 * ramp(t, STEP_T[2], STEP_T[2] + 0.4);
+  const extendGhost = 0.7 * ramp(t, STEP_T[2], STEP_T[2] + 0.4);
   const outlineGhostColor = mixGray(ANALYSIS_RED, outlineGhost);
   const extendGhostColor = mixGray(DRAFT_GREEN, extendGhost);
 
   // step1: real extended contours — draw on staggered in dump order, hold
   // as context into step2, recede before reconstruction
-  const extendOp = stepVal(t, [0, 1, 0.45, 0]) * appear * analysisGate;
+  const extendOp = stepVal(t, [0, 1, 0.35, 0]) * appear * analysisGate;
 
   // step2: Restro's own inferred render + the 29 real inferred vertex
   // markers. Markers pop in angular order around the glyph centroid so the
@@ -959,8 +951,8 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
         comp={d.comp}
         contours={d.edgeContours}
         color={VERTEX_BLUE}
-        width={3.5}
-        itemOpacity={(i) => blueLeadOp(i) * 0.85}
+        width={2.2}
+        itemOpacity={(i) => blueLeadOp(i) * 0.6}
         itemTransform={(i) => {
           const p = strokeP(i);
           if (p >= 1) return undefined;
@@ -1102,7 +1094,7 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
           if (
             focalComp &&
             Math.hypot(p[0] - focalComp[0], p[1] - focalComp[1]) >
-              lensWinR * 1.45
+              lensWinR * 1.6
           )
             return null;
           const op = lensMarkerOp(j);
@@ -1334,6 +1326,25 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
             }}
           >
             {lensLayers}
+          </div>
+          {/* magnifier affordance: the zoom factor printed on the lens
+              rim so the circle reads as an instrument, not a badge
+              (wu-b-v20-r1 FAIL: lens looked decorative) */}
+          <div
+            style={{
+              position: "absolute",
+              left: "50%",
+              bottom: 3,
+              transform: "translateX(-50%)",
+              fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
+              fontSize: 12,
+              fontWeight: 700,
+              lineHeight: 1,
+              color: "#555",
+              letterSpacing: "0.04em",
+            }}
+          >
+            {LENS.zoom}×
           </div>
         </div>
       )}

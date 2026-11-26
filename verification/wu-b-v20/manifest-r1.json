@@ -1,0 +1,28 @@
+{
+  "id": "wu-b-v20-r1",
+  "wu": "WU-B",
+  "subject": "scene B v20 redesign addressing the 5 real defects from wu-b-v19-r4 FAIL: (1) step-band now shows a single status word per step with a cross-fade instead of stacked duplicated 中/した labels; (2) lens is a true magnifier (zoom 1.8) whose focal is fixed on Restro's own inferred-region render neighborhood where solver markers 0-2, inferred boundary and stroke junctions coincide, with a leader to the actual vertex; (3) UI chrome reduced — source-contour ghost removed, baseline vertex dots dimmed, grid veiled; (4) blue source-contour lead now persists through the entire fill draw and vanishes at strokeP completion (~s0+0.27) instead of disappearing mid-fill; (5) analysis stack (inferred boundary, markers, lens, band) retires 6.80-6.96s BEFORE the split populates at 6.95s so no partial yellow fill shares a frame with a fading blue boundary. Same 4 engineering steps drawing on real Restro intermediate geometry: scanline sweep -> red outline draw-on -> green extend A/B draw-on -> solver vertex pops + inferred render/boundary -> staggered per-stroke yellow split over faint gray parent-contour ghost. Step boundaries: step0 f102-123, step1 f124-144, step2 f145-166, step3 f167-194, settle after.",
+  "frames": [
+    { "file": "verification/wu-b-v20/frames/f118.png", "frame": 118, "note": "step0 tail: full red extracted outline held on the giant 筆, scanline exited" },
+    { "file": "verification/wu-b-v20/frames/f122.png", "frame": 122, "note": "step0->1 boundary: outline complete, green extend A/B contours beginning to draw on" },
+    { "file": "verification/wu-b-v20/frames/f126.png", "frame": 126, "note": "step1 early: green extended skeleton drawing outward from contour endpoints, single step-band status word" },
+    { "file": "verification/wu-b-v20/frames/f130.png", "frame": 130, "note": "step1 mid: extend paths still drawing on, staggered per path" },
+    { "file": "verification/wu-b-v20/frames/f134.png", "frame": 134, "note": "step1 late: most extend paths drawn, holding toward step2" },
+    { "file": "verification/wu-b-v20/frames/f138.png", "frame": 138, "note": "step1 tail: full extended skeleton present before solver stage" },
+    { "file": "verification/wu-b-v20/frames/f142.png", "frame": 142, "note": "step1->2 boundary: extended skeleton complete, first solver vertex markers appearing" },
+    { "file": "verification/wu-b-v20/frames/f146.png", "frame": 146, "note": "step2 early: solver markers popping in angular order on real junctions, inferred render fading in, magnifier lens appearing" },
+    { "file": "verification/wu-b-v20/frames/f150.png", "frame": 150, "note": "step2 mid: markers + inferred boundary drawn, lens magnifying the real vertex cluster with leader" },
+    { "file": "verification/wu-b-v20/frames/f154.png", "frame": 154, "note": "step2 mid-late: full inferred state held, analysis layers stable" },
+    { "file": "verification/wu-b-v20/frames/f158.png", "frame": 158, "note": "step2 late: inferred render + markers + lens at full presence" },
+    { "file": "verification/wu-b-v20/frames/f162.png", "frame": 162, "note": "step2 tail: analysis state complete before hand-off fade begins" },
+    { "file": "verification/wu-b-v20/frames/f166.png", "frame": 166, "note": "analysis fade 6.80-6.96s in progress: inferred boundary/markers/band/lens receding before split" },
+    { "file": "verification/wu-b-v20/frames/f170.png", "frame": 170, "note": "step3 early: first strokes starting — blue source-contour lead + yellow fill beginning, analysis stack gone" },
+    { "file": "verification/wu-b-v20/frames/f174.png", "frame": 174, "note": "step3 mid: strokes separating with per-stroke tints over faint gray parent-contour ghost" },
+    { "file": "verification/wu-b-v20/frames/f178.png", "frame": 178, "note": "step3 mid-late: most strokes revealed, blue leads persisting only until each fill completes" },
+    { "file": "verification/wu-b-v20/frames/f182.png", "frame": 182, "note": "step3 late: remaining strokes finishing stagger, ghost retiring" },
+    { "file": "verification/wu-b-v20/frames/f186.png", "frame": 186, "note": "step3 end: full colored stroke set on same giant 筆" },
+    { "file": "verification/wu-b-v20/frames/f190.png", "frame": 190, "note": "B late: finished glyph dominant, step band cross-faded out" },
+    { "file": "verification/wu-b-v20/frames/f194.png", "frame": 194, "note": "B close / settle: finished glyph sole subject, clean handoff toward C" }
+  ],
+  "context": "Frames are 1080x1080 stills from the Remotion PV-Master composition at 24fps, rendered from video/src/scenes/SceneB.tsx at commit 1a7c28c. Scene B occupies PV frames ~102-194 (t=4.25-8.08s). This is the v20 pass after wu-b-v19-r4 FAIL which cited: duplicated 中/した status labels in the step band, lens reading as abstract decoration rather than a magnifier, excessive UI chrome, blue lead vanishing before fill completion, and a hard band cut at f182."
+}
