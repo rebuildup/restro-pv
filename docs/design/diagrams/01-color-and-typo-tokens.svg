@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="920" viewBox="0 0 1400 920">
+  <style>
+    text { font-family: 'Yu Gothic UI', 'Meiryo', 'Hiragino Kaku Gothic ProN', sans-serif; }
+    .mono { font-family: 'Consolas', 'Cascadia Mono', monospace; }
+  </style>
+  <rect width="1400" height="920" fill="#f4f4f5" />
+  
+    <text x="24" y="34" font-size="20" font-weight="700" fill="#111111">A. テーマトークン実測一覧（AEP Source Float vs Composited sRGB・役割定義）</text>
+    <text x="24" y="56" font-size="12" fill="#52525b">左色票 = AEPソース値 / 右色票 = 白(#f7f7f7)合成後の実測Render色 | 全編共通トークンと場面限定(local exception)を峻別</text>
+    <text x="34" y="90" font-size="11" font-weight="700" fill="#52525b" class="mono">SRC / RENDER</text>
+    <text x="146" y="90" font-size="11" font-weight="700" fill="#52525b">TOKEN ROLE</text>
+    <text x="330" y="90" font-size="11" font-weight="700" fill="#52525b">AEP ORIGIN</text>
+    <text x="580" y="90" font-size="11" font-weight="700" fill="#52525b">SOURCE FLOAT</text>
+    <text x="800" y="90" font-size="11" font-weight="700" fill="#52525b">HEX (SRC → RENDERED)</text>
+    <text x="1090" y="90" font-size="11" font-weight="700" fill="#52525b">SCOPE / NOTES</text>
+    
+      <rect x="24" y="104" width="1352" height="38" rx="4" fill="#ffffff" stroke="#e4e4e7"/>
+      <rect x="34" y="109" width="44" height="28" rx="4" fill="#f7f7f7" stroke="#18181b" stroke-width="1"/>
+      <rect x="86" y="109" width="44" height="28" rx="4" fill="#f7f7f7" stroke="#18181b" stroke-width="1"/>
+      <text x="146" y="128" font-size="13" font-weight="700" fill="#18181b">BG / Solid</text>
+      <text x="330" y="128" font-size="12" fill="#52525b" class="mono">White Solid 1 / grid-solid</text>
+      <text x="580" y="128" font-size="12" fill="#3f3f46" class="mono">[0.97, 0.97, 0.97]</text>
+      <text x="800" y="128" font-size="12" font-weight="700" fill="#111111" class="mono">#f7f7f7 → #f7f7f7</text>
+      <text x="1090" y="128" font-size="12" fill="#27272a">全編下地</text>
+    
+
+      <rect x="24" y="148" width="1352" height="38" rx="4" fill="#ffffff" stroke="#e4e4e7"/>
+      <rect x="34" y="153" width="44" height="28" rx="4" fill="#303030" stroke="#18181b" stroke-width="1"/>
+      <rect x="86" y="153" width="44" height="28" rx="4" fill="#c2c2c2" stroke="#18181b" stroke-width="1"/>
+      <text x="146" y="172" font-size="13" font-weight="700" fill="#18181b">Perspective Grid</text>
+      <text x="330" y="172" font-size="12" fill="#52525b" class="mono">grid-solid FX Grid</text>
+      <text x="580" y="172" font-size="12" fill="#3f3f46" class="mono">[0.188, 0.188, 0.188]</text>
+      <text x="800" y="172" font-size="12" font-weight="700" fill="#111111" class="mono">#303030 → #c2c2c2 (on #f7f7f7)</text>
+      <text x="1090" y="172" font-size="12" fill="#27272a">3D製図面 Z=+245 Y=20°</text>
+    
+
+      <rect x="24" y="192" width="1352" height="38" rx="4" fill="#ffffff" stroke="#e4e4e7"/>
+      <rect x="34" y="197" width="44" height="28" rx="4" fill="#e30b0b" stroke="#18181b" stroke-width="1"/>
+      <rect x="86" y="197" width="44" height="28" rx="4" fill="#e51515" stroke="#18181b" stroke-width="1"/>
+      <text x="146" y="216" font-size="13" font-weight="700" fill="#18181b">Logo Red (R/元)</text>
+      <text x="330" y="216" font-size="12" fill="#52525b" class="mono">Logo FX ADBE Fill</text>
+      <text x="580" y="216" font-size="12" fill="#3f3f46" class="mono">[0.890, 0.042, 0.042]</text>
+      <text x="800" y="216" font-size="12" font-weight="700" fill="#111111" class="mono">#e30b0b → #e51515 (rendered)</text>
+      <text x="1090" y="216" font-size="12" fill="#27272a">ブランド赤 (Remotion #D64520と乖離)</text>
+    
+
+      <rect x="24" y="236" width="1352" height="38" rx="4" fill="#ffffff" stroke="#e4e4e7"/>
+      <rect x="34" y="241" width="44" height="28" rx="4" fill="#000000" stroke="#18181b" stroke-width="1"/>
+      <rect x="86" y="241" width="44" height="28" rx="4" fill="#0a0a0a" stroke="#18181b" stroke-width="1"/>
+      <text x="146" y="260" font-size="13" font-weight="700" fill="#18181b">Ink Primary</text>
+      <text x="330" y="260" font-size="12" fill="#52525b" class="mono">runs4 / Baseline @96%</text>
+      <text x="580" y="260" font-size="12" fill="#3f3f46" class="mono">[0, 0, 0] @0.96</text>
+      <text x="800" y="260" font-size="12" font-weight="700" fill="#111111" class="mono">#000000 → #0a0a0a (overlap #000)</text>
+      <text x="1090" y="260" font-size="12" fill="#27272a">墨文字本体</text>
+    
+
+      <rect x="24" y="280" width="1352" height="38" rx="4" fill="#ffffff" stroke="#e4e4e7"/>
+      <rect x="34" y="285" width="44" height="28" rx="4" fill="#ffffff" stroke="#18181b" stroke-width="1"/>
+      <rect x="86" y="285" width="44" height="28" rx="4" fill="#ffffff" stroke="#18181b" stroke-width="1"/>
+      <text x="146" y="304" font-size="13" font-weight="700" fill="#18181b">Card Matte/Tab</text>
+      <text x="330" y="304" font-size="12" fill="#52525b" class="mono">tab backgrounds / PV work</text>
+      <text x="580" y="304" font-size="12" fill="#3f3f46" class="mono">[1.0, 1.0, 1.0]</text>
+      <text x="800" y="304" font-size="12" font-weight="700" fill="#111111" class="mono">#ffffff → #ffffff</text>
+      <text x="1090" y="304" font-size="12" fill="#27272a">カード・ウィンドウ面</text>
+    
+
+      <rect x="24" y="324" width="1352" height="38" rx="4" fill="#ffffff" stroke="#e4e4e7"/>
+      <rect x="34" y="329" width="44" height="28" rx="4" fill="#000000" stroke="#18181b" stroke-width="1"/>
+      <rect x="86" y="329" width="44" height="28" rx="4" fill="#000000" stroke="#18181b" stroke-width="1"/>
+      <text x="146" y="348" font-size="13" font-weight="700" fill="#18181b">Card Border</text>
+      <text x="330" y="348" font-size="12" fill="#52525b" class="mono">STEP 1..4 border (w=2)</text>
+      <text x="580" y="348" font-size="12" fill="#3f3f46" class="mono">[0, 0, 0]</text>
+      <text x="800" y="348" font-size="12" font-weight="700" fill="#111111" class="mono">#000000 → #000000</text>
+      <text x="1090" y="348" font-size="12" fill="#27272a">2px枠線 / 1.5px区切り</text>
+    
+
+      <rect x="24" y="368" width="1352" height="38" rx="4" fill="#ffffff" stroke="#e4e4e7"/>
+      <rect x="34" y="373" width="44" height="28" rx="4" fill="#ff3b30" stroke="#18181b" stroke-width="1"/>
+      <rect x="86" y="373" width="44" height="28" rx="4" fill="#ff3b30" stroke="#18181b" stroke-width="1"/>
+      <text x="146" y="392" font-size="13" font-weight="700" fill="#18181b">B: STEP 1 Red</text>
+      <text x="330" y="392" font-size="12" fill="#52525b" class="mono">STEP1 FUDE inset</text>
+      <text x="580" y="392" font-size="12" fill="#3f3f46" class="mono">[1, 0.231, 0.188]</text>
+      <text x="800" y="392" font-size="12" font-weight="700" fill="#111111" class="mono">#ff3b30 → #ff3b30</text>
+      <text x="1090" y="392" font-size="12" fill="#27272a">B専用 輪郭解析状態色</text>
+    
+
+      <rect x="24" y="412" width="1352" height="38" rx="4" fill="#ffffff" stroke="#e4e4e7"/>
+      <rect x="34" y="417" width="44" height="28" rx="4" fill="#34c759" stroke="#18181b" stroke-width="1"/>
+      <rect x="86" y="417" width="44" height="28" rx="4" fill="#34c759" stroke="#18181b" stroke-width="1"/>
+      <text x="146" y="436" font-size="13" font-weight="700" fill="#18181b">B: STEP 2 Green</text>
+      <text x="330" y="436" font-size="12" fill="#52525b" class="mono">STEP2 FUDE inset</text>
+      <text x="580" y="436" font-size="12" fill="#3f3f46" class="mono">[0.204, 0.78, 0.349]</text>
+      <text x="800" y="436" font-size="12" font-weight="700" fill="#111111" class="mono">#34c759 → #34c759</text>
+      <text x="1090" y="436" font-size="12" fill="#27272a">B専用 輪郭延長状態色</text>
+    
+
+      <rect x="24" y="456" width="1352" height="38" rx="4" fill="#ffffff" stroke="#e4e4e7"/>
+      <rect x="34" y="461" width="44" height="28" rx="4" fill="#007aff" stroke="#18181b" stroke-width="1"/>
+      <rect x="86" y="461" width="44" height="28" rx="4" fill="#007aff" stroke="#18181b" stroke-width="1"/>
+      <text x="146" y="480" font-size="13" font-weight="700" fill="#18181b">B: STEP 3 Blue</text>
+      <text x="330" y="480" font-size="12" fill="#52525b" class="mono">STEP3 FUDE inset</text>
+      <text x="580" y="480" font-size="12" fill="#3f3f46" class="mono">[0, 0.478, 1]</text>
+      <text x="800" y="480" font-size="12" font-weight="700" fill="#111111" class="mono">#007aff → #007aff</text>
+      <text x="1090" y="480" font-size="12" fill="#27272a">B専用 頂点推定状態色</text>
+    
+
+      <rect x="24" y="500" width="1352" height="38" rx="4" fill="#ffffff" stroke="#e4e4e7"/>
+      <rect x="34" y="505" width="44" height="28" rx="4" fill="#ffcc00" stroke="#18181b" stroke-width="1"/>
+      <rect x="86" y="505" width="44" height="28" rx="4" fill="#ffcc00" stroke="#18181b" stroke-width="1"/>
+      <text x="146" y="524" font-size="13" font-weight="700" fill="#18181b">B: STEP 4 Yellow</text>
+      <text x="330" y="524" font-size="12" fill="#52525b" class="mono">STEP4 FUDE inset</text>
+      <text x="580" y="524" font-size="12" fill="#3f3f46" class="mono">[1, 0.8, 0]</text>
+      <text x="800" y="524" font-size="12" font-weight="700" fill="#111111" class="mono">#ffcc00 → #ffcc00</text>
+      <text x="1090" y="524" font-size="12" fill="#27272a">B専用 分割確定状態色</text>
+    
+
+      <rect x="24" y="544" width="1352" height="38" rx="4" fill="#ffffff" stroke="#e4e4e7"/>
+      <rect x="34" y="549" width="44" height="28" rx="4" fill="#4df24d" stroke="#18181b" stroke-width="1"/>
+      <rect x="86" y="549" width="44" height="28" rx="4" fill="#81f481" stroke="#18181b" stroke-width="1"/>
+      <text x="146" y="568" font-size="13" font-weight="700" fill="#18181b">B: Inferred Fill</text>
+      <text x="330" y="568" font-size="12" fill="#52525b" class="mono">FUDE inferred (@70%)</text>
+      <text x="580" y="568" font-size="12" fill="#3f3f46" class="mono">[0.3, 0.95, 0.3] @0.7</text>
+      <text x="800" y="568" font-size="12" font-weight="700" fill="#111111" class="mono">#4df24d → #81f481 (on #f7f7f7)</text>
+      <text x="1090" y="568" font-size="12" fill="#27272a">Restro内部推論可視化緑</text>
+    
+
+      <rect x="24" y="588" width="1352" height="38" rx="4" fill="#ffffff" stroke="#e4e4e7"/>
+      <rect x="34" y="593" width="44" height="28" rx="4" fill="#ebebf0" stroke="#18181b" stroke-width="1"/>
+      <rect x="86" y="593" width="44" height="28" rx="4" fill="#ebebf0" stroke="#18181b" stroke-width="1"/>
+      <text x="146" y="612" font-size="13" font-weight="700" fill="#18181b">Ops Border (D)</text>
+      <text x="330" y="612" font-size="12" fill="#52525b" class="mono">PV ops W1..W4 border</text>
+      <text x="580" y="612" font-size="12" fill="#3f3f46" class="mono">[0.92, 0.92, 0.94]</text>
+      <text x="800" y="612" font-size="12" font-weight="700" fill="#111111" class="mono">#ebebf0 → #ebebf0</text>
+      <text x="1090" y="612" font-size="12" fill="#27272a">操作窓枠 2px</text>
+    
+
+      <rect x="24" y="632" width="1352" height="38" rx="4" fill="#ffffff" stroke="#e4e4e7"/>
+      <rect x="34" y="637" width="44" height="28" rx="4" fill="#00005b" stroke="#18181b" stroke-width="1"/>
+      <rect x="86" y="637" width="44" height="28" rx="4" fill="#9999ff" stroke="#18181b" stroke-width="1"/>
+      <text x="146" y="656" font-size="13" font-weight="700" fill="#18181b">AE Badge (Ae.png)</text>
+      <text x="330" y="656" font-size="12" fill="#52525b" class="mono">Adobe AE App Badge</text>
+      <text x="580" y="656" font-size="12" fill="#3f3f46" class="mono">Raster PNG 240×234</text>
+      <text x="800" y="656" font-size="12" font-weight="700" fill="#111111" class="mono">#00005b → #9999ff (text/stroke)</text>
+      <text x="1090" y="656" font-size="12" fill="#27272a">AEバッジ（製品アイコンではない）</text>
+    
+    <rect x="24" y="700" width="1352" height="196" rx="8" fill="#ffffff" stroke="#d4d4d8"/>
+    <text x="42" y="728" font-size="15" font-weight="700" fill="#111111">タイポグラフィ階層（実測フォント・サイズ・スケール変換後実効px）</text>
+    <text x="42" y="756" font-size="12" fill="#18181b" class="mono">• AFTER EFFECTS PLUGIN  : MeiryoUI, 34pt × Scale [89.5%, 75.1%] × parent P-6 Scale 12%×862% → 実効高 ~25px</text>
+    <text x="42" y="780" font-size="12" fill="#18181b" class="mono">• Bottom Heading (常設) : ZenKakuGothicAntique-Bold, 32pt, Scale 98% (Opacity 90%), Leading 38.4, Tracking +15 → 実効幅 ~357px</text>
+    <text x="42" y="804" font-size="12" fill="#18181b" class="mono">• Description Heading   : KozGoPr6N-Bold, 30pt (B active) / Regular 40pt (C/D legacy layers), Leading 38.8–48, Tracking +20/+15</text>
+    <text x="42" y="828" font-size="12" fill="#18181b" class="mono">• Description Micro/Body: KozGoPr6N-Bold 13pt (HOW IT WORKS, Track +200) | Regular 15pt (Body) | Regular 13pt (EN Sub, Track +10)</text>
+    <text x="42" y="852" font-size="12" fill="#18181b" class="mono">• Step Card Tab Labels  : KozGoPr6N-Bold, 32pt, Tracking +40, Leading 38.4, [01..04] 式切替 (待機45% / 稼働100%)</text>
+    <text x="42" y="876" font-size="12" fill="#18181b" class="mono">• PV End Card CTA       : KozGoPr6N-Bold 96pt (Restro) / 40pt (筆画復元) / 34pt (BOOTHで販売中) | Regular 24pt / 22pt (URL) / 20pt (EN)</text>
+  
+</svg>

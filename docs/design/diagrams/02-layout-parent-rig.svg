@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="728" viewBox="0 0 1400 728">
+  <style>
+    text { font-family: 'Yu Gothic UI', 'Meiryo', 'Hiragino Kaku Gothic ProN', sans-serif; }
+    .mono { font-family: 'Consolas', 'Cascadia Mono', monospace; }
+  </style>
+  <rect width="1400" height="728" fill="#f4f4f5" />
+  
+    <text x="24" y="34" font-size="20" font-weight="700" fill="#111111">B. 構造レイアウトと親参照変換ツリー（kg_LayoutGrid → P 12% Null → Linked Quad → コンポ変換）</text>
+    <text x="24" y="56" font-size="12" fill="#52525b">ピクセル手打ちではなく、12×24グリッドの「ガター交点(12×12px)」を基準点にした構造連動リグ</text>
+
+    <!-- Left Box: P Node Anatomy -->
+    <rect x="24" y="84" width="440" height="360" rx="8" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.5"/>
+    <text x="42" y="112" font-size="15" font-weight="700" fill="#18181b">1. ガター交点リグ P n + 4隅子ノード (P-a..d)</text>
+    <rect x="80" y="136" width="120" height="72" fill="#f4f4f5" stroke="#a1a1aa" stroke-dasharray="4 3"/>
+    <rect x="216" y="136" width="120" height="72" fill="#f4f4f5" stroke="#a1a1aa" stroke-dasharray="4 3"/>
+    <rect x="80" y="224" width="120" height="72" fill="#f4f4f5" stroke="#a1a1aa" stroke-dasharray="4 3"/>
+    <rect x="216" y="224" width="120" height="72" fill="#f4f4f5" stroke="#a1a1aa" stroke-dasharray="4 3"/>
+    <rect x="196" y="204" width="24" height="24" fill="rgba(220,38,38,0.18)" stroke="#dc2626" stroke-width="2"/>
+    <circle cx="208" cy="216" r="4" fill="#dc2626"/>
+    <text x="208" y="176" font-size="11" font-weight="700" text-anchor="middle" fill="#dc2626" class="mono">P n (scale=12%, ap=[50,50])</text>
+    <line x1="208" y1="180" x2="208" y2="208" stroke="#dc2626" stroke-width="1"/>
+    <circle cx="196" cy="204" r="4" fill="#2563eb"/><text x="188" y="202" font-size="10" text-anchor="end" fill="#1d4ed8" class="mono">TL(-6,-6)</text>
+    <circle cx="220" cy="204" r="4" fill="#2563eb"/><text x="228" y="202" font-size="10" fill="#1d4ed8" class="mono">TR(+6,-6)</text>
+    <circle cx="196" cy="228" r="4" fill="#2563eb"/><text x="188" y="236" font-size="10" text-anchor="end" fill="#1d4ed8" class="mono">BL(-6,+6)</text>
+    <circle cx="220" cy="228" r="4" fill="#2563eb"/><text x="228" y="236" font-size="10" fill="#1d4ed8" class="mono">BR(+6,+6)</text>
+    <text x="42" y="330" font-size="12" fill="#27272a">• 100px null を Scale=[12,12,100] にすると 12×12px ガター正方形になる。</text>
+    <text x="42" y="352" font-size="12" fill="#27272a">• 4つの子 Null (pos/ap が [0/100, 0/100]) により ±6px 離れたセル角を厳密指定。</text>
+    <text x="42" y="374" font-size="12" fill="#dc2626" font-weight="700">• 注意: Scale 12% の子になったコンポ (Logo/Heading) は 833.33% (=100/0.12) で</text>
+    <text x="42" y="394" font-size="12" fill="#dc2626" font-weight="700">  スケールを打ち消している！</text>
+    <text x="42" y="422" font-size="11" fill="#52525b" class="mono">例: Logo scale = 833.33% × parent P5 (12%) = 100.0% 実寸 (416×260)</text>
+
+    <!-- Middle Box: Left Column Derivation -->
+    <rect x="484" y="84" width="440" height="360" rx="8" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.5"/>
+    <text x="502" y="112" font-size="15" font-weight="700" fill="#18181b">2. 左カラム実効ボックス導出 (Issue #30 保護境界)</text>
+    <text x="502" y="140" font-size="12" fill="#18181b" class="mono">P 1 (x=26,y=190) → child P-4 (+12,+12) = (38, 202)?</text>
+    <text x="502" y="160" font-size="12" fill="#52525b" class="mono">実 worldMatrix (master):</text>
+    <text x="502" y="182" font-size="10.5" fill="#1d4ed8" class="mono">• Ae.png [17] : parent=P-11 → x=[38..130.7], y=[187.3..280]</text>
+    <text x="502" y="204" font-size="10.5" fill="#1d4ed8" class="mono">• AFTER..[16] : parent=P-6  → pos0=(172.3, 227.2)</text>
+    <text x="502" y="226" font-size="10.5" fill="#15803d" class="mono">• Logo   [18] : parent=P 5  → y=435..695 ↔ 280..540 (-155)</text>
+    <text x="502" y="248" font-size="10.5" fill="#15803d" class="mono">• desc   [10] : pos=[32,585], Matte=Shape2(←LinkedQuad3)</text>
+    <text x="502" y="270" font-size="10.5" fill="#15803d" class="mono">• Heading[15] : parent=P-33 → y=746..812 ↔ 901..967 (+155)</text>
+    <rect x="502" y="294" width="404" height="132" rx="6" fill="#fef2f2" stroke="#ef4444"/>
+    <text x="514" y="318" font-size="12" font-weight="700" fill="#b91c1c">現行 Remotion 実装（video/src/layout/）との乖離</text>
+    <text x="514" y="340" font-size="11" fill="#7f1d1d">1. LeftCopy.tsx が top: 648/706 固定座標を使用し、B〜D中央帯の開閉と連動しない</text>
+    <text x="514" y="360" font-size="11" fill="#7f1d1d">2. SceneE/LeftCopy hideBrandLockupForEndCard(17.35s) がAEP非存在の左退場を実施</text>
+    <text x="514" y="380" font-size="11" fill="#7f1d1d">3. masterPatch.ts が 15.44s 以降 Heading を非表示にするが、本AEPは Heading 20s常設</text>
+    <text x="514" y="400" font-size="11" fill="#7f1d1d">4. pv-8495026 では Heading がシーン切替していたが、pv-2dc99e1 では単一文言へ変更</text>
+
+    <!-- Right Box: 3D Camera & Perspective -->
+    <rect x="944" y="84" width="432" height="360" rx="8" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.5"/>
+    <text x="962" y="112" font-size="15" font-weight="700" fill="#18181b">3. 3D 空間分離（製図台 grid-solid vs 巨大「解」）</text>
+    <text x="962" y="142" font-size="12" fill="#18181b" class="mono">Default AE Camera: fov=40°, focal dist=1500px (z=-1500)</text>
+    <line x1="974" y1="220" x2="1344" y2="220" stroke="#a1a1aa" stroke-dasharray="4 3"/>
+    <circle cx="990" cy="220" r="8" fill="#18181b"/><text x="990" y="244" font-size="10" text-anchor="middle" class="mono">Cam z=-1500</text>
+    <line x1="1150" y1="170" x2="1150" y2="270" stroke="#e51515" stroke-width="4"/>
+    <text x="1150" y="162" font-size="11" font-weight="700" text-anchor="middle" fill="#e51515" class="mono">Null 3 (runs4) z=-96</text>
+    <text x="1150" y="286" font-size="10" text-anchor="middle" fill="#b91c1c" class="mono">Scale ~1.07×, Yrot=+20°</text>
+    <line x1="1290" y1="160" x2="1290" y2="280" stroke="#52525b" stroke-width="4"/>
+    <text x="1290" y="152" font-size="11" font-weight="700" text-anchor="middle" fill="#3f3f46" class="mono">grid-solid z=+245</text>
+    <text x="1290" y="296" font-size="10" text-anchor="middle" fill="#52525b" class="mono">Scale ~0.86×, Yrot=+20°</text>
+    <text x="962" y="332" font-size="12" fill="#27272a">• 背景グリッド(z=+245) と 巨大「解」(z=-96) は同じ Y+20° の平行面上で</text>
+    <text x="962" y="352" font-size="12" fill="#27272a">  奥行 341px 離れて浮遊している（単なる背景テクスチャではない）。</text>
+    <text x="962" y="376" font-size="12" fill="#27272a">• bunkai [232] は xRot=-20°, yRot=+22°, zRot=+2° の傾きを追加しA2〜B導入で立体感。</text>
+    <text x="962" y="398" font-size="12" fill="#27272a">• Left Chrome・Bカード・C窓・D窓・Eカードは全て 2Dコンポ空間 (平面直交)。</text>
+
+    <!-- Bottom Wide Box: Linked Quad Table -->
+    <rect x="24" y="464" width="1352" height="240" rx="8" fill="#ffffff" stroke="#d4d4d8" stroke-width="1.5"/>
+    <text x="42" y="494" font-size="15" font-weight="700" fill="#18181b">4. Linked Quad 1..11 と Track Matte / Accordion / Card 連動対応表（05-master.ts 実測）</text>
+    <text x="42" y="524" font-size="12" fill="#18181b" class="mono">• Linked Quad [186]   : TL=P-4(L160) .. BR=P-22(L142)  (ガイド枠上段 Col0..4, y=190..268)</text>
+    <text x="42" y="548" font-size="12" fill="#18181b" class="mono">• Linked Quad 2 [185] : P 5/6/7/8 参照                    (Logo 枠: y=435..695 ↔ 280..540)</text>
+    <text x="42" y="572" font-size="12" fill="#15803d" font-weight="700" class="mono">• Linked Quad 3 [184] → Shape Layer 2 [8] (IS_TM) → description [10] をマット開閉 (h: 27px ↔ 337px)</text>
+    <text x="42" y="596" font-size="12" fill="#18181b" class="mono">• Linked Quad 4/5 [183,182]: P 9..14 参照                 (Heading 枠: y=746..812 ↔ 901..967 / 下余白)</text>
+    <text x="42" y="620" font-size="12" fill="#18181b" class="mono">• Linked Quad 6 [181] → Shape Layer 1 [233] (DIS)        (A2 右枠: P 15..18 を左展開で x=540..1086)</text>
+    <text x="42" y="644" font-size="12" fill="#7e22ce" font-weight="700" class="mono">• Linked Quad 7..10 [259..262] → STEP 1..4 card [264..267] &amp; border [177..171] &amp; text [169..166] (B アコーディオン)</text>
+    <text x="42" y="668" font-size="12" fill="#18181b" class="mono">• Linked Quad 11 [180]: [8.08..12.38s] EN, P 15..18 系右領域 (Scene C 枠ガイド)</text>
+  
+</svg>
