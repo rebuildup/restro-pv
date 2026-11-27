@@ -1,5 +1,11 @@
 # Step 1 制作メモ — 方向性確定（Issue #29 準拠）
 
+> **撤回（Issue #30）**：本書が起点となった全面再制作系列
+> （`video/src/rejected/pv-full/`、`verification/pv-full-v*.mp4`）は
+> オーナー判断により不採用。制作の正本は旧制作 `PV-Master` 経路
+> （`docs/remotion-pipeline.md`、`docs/issue30-recovery.md`）に戻る。
+> 本書は履歴として保持し、制作の参照には使わない。
+
 2026-11-27。Issue #29 Step 1 の成果物と判断の記録。実装は branch `23`
 （PR #27 Draft）の `video/src/scenes/ProtoHook.tsx`。
 

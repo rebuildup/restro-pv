@@ -1,6 +1,6 @@
 import React from "react";
 import { useCurrentFrame } from "remotion";
-import { StrokeField, easeOutBack, easeOutCubic, clamp01, seg } from "../scenes/glyph.tsx";
+import { StrokeField, easeOutBack, easeOutCubic, clamp01, seg } from "../../scenes/glyph.tsx";
 import { filmField, xform, FIT } from "./glyphData.ts";
 import { MUSIC } from "./musicSync.ts";
 

@@ -4,8 +4,8 @@ import {
   strokeContours,
   type StrokeItem,
   type ContourPath,
-} from "../scenes/glyph.tsx";
-import type { CompSpec } from "../ae/project.ts";
+} from "../../scenes/glyph.tsx";
+import type { CompSpec } from "../../ae/project.ts";
 
 // Shared real-stroke dataset for the full PV (Issue #29 Step 2).
 // Baseline FUDE S01-S13 = Restro Decompose output; geometry is never

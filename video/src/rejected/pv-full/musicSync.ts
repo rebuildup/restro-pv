@@ -1,4 +1,4 @@
-import analysis from "../music-analysis.json" with { type: "json" };
+import analysis from "./music-analysis.json" with { type: "json" };
 
 // Frame-accurate music sync points for PV-Full (24fps).
 // Derived from tools/analyze-music.ts output (spectral-flux onset strengths,

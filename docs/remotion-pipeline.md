@@ -6,9 +6,24 @@ ADR-0003 に基づく PV 映像の主経路。TypeScript/React を正本とし�
 
 ## 構成
 
-- `video/src/Root.tsx` — Remotion composition 登録（`PV-Master` が正本、
-  `PV-Comp`/`PV-Comp-Description` はデバッグ用）
-- `video/src/PvVideo.tsx` — master CompSpec の再生 + `LeftCopy` オーバーレイ
+**確定レイアウトと可変範囲（Issue #30 正本）**：サムネイルのデザインと
+旧制作のレイアウト構成（共通背景・グリッド、ブランド、左情報領域、
+右コンテンツ領域、全体の配置・視覚的階層・スケール関係）は**確定事項**。
+通常制作で編集できるのは**右側コンテンツのみ**。詳細と回収記録は
+`docs/issue30-recovery.md` を参照。
+
+- `video/src/Root.tsx` — Remotion composition 登録。`PV-Master` が唯一の
+  正式エントリ。`PV-Chrome`/`PV-Comp`/`PV-Comp-Description` はデバッグ用。
+  拒否された pv-full 系列（`video/src/rejected/pv-full/`）は登録しない
+- `video/src/PvVideo.tsx` — `PvChrome` + `PvStage` の合成のみを行う薄い殻
+- `video/src/layout/` — 確定レイアウトの単一権威
+  - `Chrome.tsx` — dumped `master` CompSpec の再生（`ae/masterPatch.ts`
+    の制作パッチ適用）+ `LeftCopy`。シーン入力を一切受けない
+  - `LeftCopy.tsx` — 左カラムの時間的コピー切替（D/E の authored 分。
+    残りは dumped `description` comp が担う）
+  - `Stage.tsx` — 右ステージ・スロット。`STAGE_SCENES` レジストリ経由でのみ
+    シーンをマウントする明示的な接続面
+  - `zones.ts` — ゾーン定数（左カラム x<460、右ステージ x≥480、安全帯）
 - `video/src/ae/` — CompSpec インタプリタ
   - `project.ts` — comp/footage 解決、matte ペア対応
   - `layer.tsx` — レイヤー種別・変換・マスク・トラックマット・ネスト comp
@@ -16,12 +31,15 @@ ADR-0003 に基づく PV 映像の主経路。TypeScript/React を正本とし�
   - `eval.ts` / `expr.ts` — プロパティ評価・式の限定解釈
   - `transform.ts` / `mat4.ts` — 2D/3D 変換
   - `masterPatch.ts` — master への制作パッチ（tab 分割、STEP_REVEAL、
-    LEFT_COLUMN_REPLACED）
-- `video/src/scenes/LeftCopy.tsx` — シーン別の左カラムコピー
+    シーン別非表示窓、LEFT_COLUMN 系コピー整形）
+- `video/src/scenes/` — 右ステージ・コンテンツのみ（SceneA2/B/C/D/E）。
+  各シーンは `{ t }` のみを受け取り、共通レイアウト・左領域・ブランド・
+  背景を所有・上書きしない。契約は `tests/pv-layout-contract.test.ts` で検証
 
-シーン本体（A2/C/D/E）は dumped コンポをそのまま使う（ADR-0005 改訂）。
-dumped で表現できない演出が必要になった場合のみ `video/src/scenes/` に
-React オーバーレイを追加し、`masterPatch.ts` の時間窓で退避させる。
+境界の原則：シーンは画面上どこにでも描画してよい（意図的な領域外展開は
+保持）が、**所有権**は layout/ にある。右コンテンツの差し替えで
+背景・左領域・ブランドの構成が変化しないことが構造上保証される
+（Chrome はシーンに依存しない）。
 
 ## コマンド
 

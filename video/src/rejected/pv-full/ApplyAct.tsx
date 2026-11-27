@@ -6,10 +6,10 @@ import {
   easeOutCubic,
   clamp01,
   seg,
-} from "../scenes/glyph.tsx";
+} from "../../scenes/glyph.tsx";
 import { filmField, FIT, BB_CX } from "./glyphData.ts";
 import { MUSIC } from "./musicSync.ts";
-import type { StrokeItem } from "../scenes/glyph.tsx";
+import type { StrokeItem } from "../../scenes/glyph.tsx";
 
 // Act 4 — application (abs f234-408, local 0-174): two proofs that the
 // strokes are independent shapes, not a flat illustration.

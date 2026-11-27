@@ -8,7 +8,7 @@ import {
   easeOutCubic,
   clamp01,
   type StrokeItem,
-} from "./glyph.tsx";
+} from "../../scenes/glyph.tsx";
 
 // Step-1 hook prototypes (Issue #29): two 4s variants built ONLY from real
 // Restro stroke geometry (Baseline FUDE S01-S13, the same decompose output

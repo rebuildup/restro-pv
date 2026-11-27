@@ -5,10 +5,10 @@ import {
   GENERATED_FOOTAGE,
   compByName,
   mattePairs,
-} from "../ae/project.ts";
-import type { RenderCtx } from "../ae/layer.tsx";
-import { CompView } from "../ae/layer.tsx";
-import { seg, easeOutBack, StrokeField } from "../scenes/glyph.tsx";
+} from "../../ae/project.ts";
+import type { RenderCtx } from "../../ae/layer.tsx";
+import { CompView } from "../../ae/layer.tsx";
+import { seg, easeOutBack, StrokeField } from "../../scenes/glyph.tsx";
 import { filmField, FIT } from "./glyphData.ts";
 import { MUSIC } from "./musicSync.ts";
 

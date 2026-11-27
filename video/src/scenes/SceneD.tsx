@@ -4,10 +4,11 @@ import { Sequence, Video, staticFile } from "remotion";
 // Scene D [281,371) per SPEC §5 D + docs/pv-art-direction.md v13:
 // PROOF mode — ONE large curated viewport showing a single decisive
 // before->after from real footage. The dumped "PV ops" comp is hidden
-// (masterPatch D_HIDDEN) and this scene authors the whole layout:
+// (masterPatch D_HIDDEN) and this scene authors the right-stage content:
 //
-//   Left column : authored copy 「After Effectsで、／そのまま動かせる。」
-//                 (SPEC §4 D) + ONE line of explanation.
+//   Left column : chrome-owned copy 「After Effectsで、／そのまま動かせる。」
+//                 (SPEC §4 D) in video/src/layout/LeftCopy.tsx (Issue #30)
+//                 + ONE line of explanation.
 //   Right stage : a single footage viewport — ae-decompose-auto.mp4,
 //                 scripted AE capture of a real Restro Decompose run:
 //                 before text -> trigger -> 13 stroke layers materialize
@@ -123,44 +124,14 @@ export const SceneD: React.FC<{ t: number }> = ({ t }) => {
   const pin = smooth(ramp(t, tIn, tIn + 0.22));
   const opacity = pin;
 
-  // Left column copy (SPEC §4 D). Fades in with the scene and HOLDS to the
-  // last D frame — r35 review failed the r34 tail fade as premature
-  // deletion. SceneD returns null for t >= T1, so the f370->f371 hard cut
-  // needs no opacity fade (no ghost is possible across a scene boundary).
-  const copyIn = smooth(ramp(t, T0, T0 + 0.3));
-  const copyOpacity = copyIn;
+  // Left-column copy moved to video/src/layout/LeftCopy.tsx (Issue #30):
+  // the left information column is confirmed layout owned by the chrome
+  // layer, not scene content.
 
   const vb = coverBox(WIN.roi, WIN.w, WIN.h);
 
   return (
     <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-      {copyOpacity > 0 && (
-        <div
-          style={{
-            position: "absolute",
-            left: 44,
-            // brand lockup (Restro/筆画復元) bottom edge is ~y550; keep a
-            // clear gap — r25 failed on perceived collision at y596.
-            top: 648,
-            width: 400,
-            opacity: copyOpacity,
-            transform: `translateY(${(1 - copyIn) * 10}px)`,
-            fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
-            color: "#111",
-          }}
-        >
-          <div style={{ fontSize: 40, fontWeight: 800, lineHeight: 1.3, letterSpacing: 0.5 }}>
-            After Effectsで、
-          </div>
-          <div style={{ fontSize: 40, fontWeight: 800, lineHeight: 1.3, letterSpacing: 0.5 }}>
-            そのまま動かせる。
-          </div>
-          <div style={{ marginTop: 14, fontSize: 20, fontWeight: 500, color: "#444", lineHeight: 1.5 }}>
-            分解した筆画がレイヤーとして動く
-          </div>
-        </div>
-      )}
-
       {opacity > 0 && (
         <div
           style={{

@@ -6,7 +6,7 @@ import {
   easeOutCubic,
   clamp01,
   seg,
-} from "../scenes/glyph.tsx";
+} from "../../scenes/glyph.tsx";
 import { filmField, xform, FIT } from "./glyphData.ts";
 
 // Act 2 — reveal (abs f96-180, local 0-84): the same glyph first reads as

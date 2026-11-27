@@ -172,7 +172,7 @@ function sections(t: number[], v: number[]): number[] {
 
 const [, , srcArg, outArg] = process.argv;
 const src = srcArg ?? "assets/audio/drums-and-somps-background-music-458414.mp3";
-const out = outArg ?? "video/src/music-analysis.json";
+const out = outArg ?? "video/src/rejected/pv-full/music-analysis.json";
 const ffmpeg = findFfmpeg();
 const x = decode(src, ffmpeg);
 const dur = x.length / SR;

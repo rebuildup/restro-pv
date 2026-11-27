@@ -1,6 +1,6 @@
 import React from "react";
 import { useCurrentFrame, OffthreadVideo, Sequence, staticFile } from "remotion";
-import { seg } from "../scenes/glyph.tsx";
+import { seg } from "../../scenes/glyph.tsx";
 
 // Act 3 — proof (abs f180-234): real-operation footage. Cropped 1080x1080
 // window of assets/rec/ae-decompose-ops.mp4 (source t=7.0-9.25s) showing the

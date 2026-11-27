@@ -35,9 +35,10 @@ import {
 //
 // Left column: the dumped description comp's E-section product copy is
 // zeroed centrally in masterPatch (layers in >=15.44s), and the persistent
-// tagline is clamped to the same boundary — so the left column is authored
-// here with the SPEC §4 E closing line only. The persistent brand lockup
-// (master layers 16-18) is scene chrome and stays untouched.
+// tagline is clamped to the same boundary — the closing line itself is
+// chrome-owned copy in video/src/layout/LeftCopy.tsx (Issue #30). The
+// persistent brand lockup (master layers 16-18) is scene chrome and
+// stays untouched.
 //
 // (t is seconds; PV-Master runs 24fps, scene E = frames 371-479.)
 
@@ -244,39 +245,16 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
   const boothP = itemP(0.38, 0.4);
   const urlP = itemP(0.52, 0.4);
 
-  // left closing copy (SPEC §4 E candidate). Hard cut at the E boundary:
-  // r4 review read the fade-in as a duplicate ghost of the same copy.
+  // Left-column closing copy moved to video/src/layout/LeftCopy.tsx
+  // (Issue #30): the left information column is confirmed layout owned by
+  // the chrome layer, not scene content. It hard-cuts at the E boundary.
   const coverOn = t >= T0;
-  const leftIn = 1;
 
   const cardOn = logoP > 0 || descP > 0 || boothP > 0 || urlP > 0;
   if (!coverOn && recapP <= 0 && heroP <= 0 && !cardOn) return null;
 
   return (
     <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-      {/* ---- left column: closing line (SPEC §4 E) ---- */}
-      {coverOn && leftIn > 0 && (
-        <div
-          style={{
-            position: "absolute",
-            left: 44,
-            top: 706,
-            width: 400,
-            opacity: leftIn,
-            transform: `translateY(${(1 - leftIn) * 10}px)`,
-            fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
-            color: "#111",
-          }}
-        >
-          <div style={{ fontSize: 40, fontWeight: 800, lineHeight: 1.32, letterSpacing: 0.5 }}>
-            輪郭から筆画へ。
-          </div>
-          <div style={{ fontSize: 40, fontWeight: 800, lineHeight: 1.32, letterSpacing: 0.5 }}>
-            筆画から表現へ。
-          </div>
-        </div>
-      )}
-
       {/* ---- B/C/D recap flash (f371-379) ---- */}
       {recapP > 0 && (
         <div
