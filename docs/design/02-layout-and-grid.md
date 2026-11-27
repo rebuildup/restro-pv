@@ -49,6 +49,8 @@
 
 ![3D Perspective Grid Plane](./assets/background-grid-plane.png)
 
+> **`[回収事実 / 実測値]`（2026-11 訂正）** `background-grid-plane.svg/.png` は旧版の手描き遠近図（左右反転）を廃止し、`05-master.ts [257]` の実パラメータ（`Position=[540,540,+245]`, `Y Rotation=+20°`, Grid `Anchor=[540,540]`, `Width=54`, `Border=2`, `#303030`）を `worldMatrix`＋ピンホールカメラ行列（`video/src/ae/layer.tsx` と同一：eye `[540,540,-1500]`, `fov=40`, `up=[0,-1,0]`）で全格子線を解析投影した実幾何書き出しへ置き換えた。検証：画面上の縦格子線間隔は左→右へ `26px→84px` と単調増加し、**右側が手前**（確定サムネイル・元AEPと整合）。`+z` はカメラから遠ざかる方向（カメラは `z=-1500` から `+z` へ注視）であり、`Y Rotation=+20°` はレイヤー右端を `-z`（カメラ側）へ倒す。再生成：`bun tools/design/render-grid.ts`。
+
 `[回収事実 / 実測値]`＋`[導出・推定]` 右側コンテンツ設計で絶対に混同してはならない空間規則：
 
 - **空間 A：傾いた 3D 製図空間（背景 `grid-solid` と A1〜A3 巨大「解」）**

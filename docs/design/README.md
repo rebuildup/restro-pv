@@ -33,6 +33,7 @@
 | [06-recordings-audit.md](./06-recordings-audit.md) | **F. 個別の録画素材監査** | 既存録画 6本（`ae-decompose-ops` 他・`wu-d-live`）の解像度・UI 実態・可否判定と、D 再収録・見切れ解消の具体仕様 | [05-recordings-audit-sheet.png](./diagrams/05-recordings-audit-sheet.png) |
 | [07-motion-design.md](./07-motion-design.md) | **G. モーション・筆画相互作用設計** | `runs4` 一次分析＋場面別曲線文法（A2交差抜き・B静→動解放・C3態・E呼吸収束）、筆画別役割と衝突回避・反単調性基準 | [06-motion-curves-and-vectors.png](./diagrams/06-motion-curves-and-vectors.png), [08-per-stroke-choreography.png](./diagrams/08-per-stroke-choreography.png) |
 | [08-quality-assurance.md](./08-quality-assurance.md) | **品質保証・受入基準** | 対象ごとの計算/構造検証 vs 視覚/時間人間レビューの分離、上位規則→子変換導出確認、Chrome復元検査・完了ゲート | [08-quality-assurance.md](./08-quality-assurance.md) |
+| [data/README.md](./data/README.md) | **機械可読コンポジションデータ** | 個別素材↔元コンポ空間の対応を JSON 化（座標・変換・親子・行列・重なり・形状同一性）。`STROKE_*`＝プロキシ図形の実測訂正を含む | `data/*.composition.json`（9件）, `verification/assembly-metrics.json` |
 
 ---
 
@@ -66,6 +67,8 @@
 | [06-motion-curves-and-vectors.svg](./diagrams/06-motion-curves-and-vectors.svg) / [PNG](./diagrams/06-motion-curves-and-vectors.png) | [07-motion-design.md](./07-motion-design.md) | 巨大「解」非対称イージング曲線・`runs4` 14画変位量・`Baseline` 放射ベクトル |
 | [07-chrome-reconciliation.svg](./diagrams/07-chrome-reconciliation.svg) / [PNG](./diagrams/07-chrome-reconciliation.png) | [02-layout-and-grid.md §5](./02-layout-and-grid.md) | Issue #30＋元AEP 左開閉構造 vs 現行 Remotion（`Chrome/LeftCopy/masterPatch`）差分と最小復元範囲 |
 | [08-per-stroke-choreography.svg](./diagrams/08-per-stroke-choreography.svg) / [PNG](./diagrams/08-per-stroke-choreography.png) | [07-motion-design.md §3](./07-motion-design.md) | 場面別（A1/A2/B/C01..03/E）の運動曲線・筆画役割分化・衝突回避ルール |
+| [motion-kai-runs4-onion.svg](./diagrams/motion-kai-runs4-onion.svg) | [07-motion-design.md §1.2](./07-motion-design.md) | 「解」runs4 実形状オニオンスキン（Null3 ローカル空間・実測キーフレーム）＋アンカー軌道 |
+| [motion-fude-onion.svg](./diagrams/motion-fude-onion.svg) | [07-motion-design.md §3.2](./07-motion-design.md) | 「筆」実筆画13画のオニオンスキン＋軌道（実測） |
 
 > **個別単体アセット一式（54点）**: `docs/design/assets/individual/`（`logo/`, `chrome/`, `kai/`, `fude/`, `scene-b/`, `scene-c-d-e/`）に各要素のクリーン透過 SVG ＋ PNG および [manifest.json](./assets/individual/manifest.json) を格納。一覧・個別リンクは [03-assets-catalog.md](./03-assets-catalog.md) を参照。
 

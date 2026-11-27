@@ -16,8 +16,8 @@
 | **Restro 公式 `Logo` 全姿** | [logo-full-clean.svg](./assets/individual/logo/logo-full-clean.svg) / [PNG](./assets/individual/logo/logo-full-clean.png) | [logo-full.png](./assets/logo-full.png) | `46-Logo.ts [1..45]` (`416×260`) | **`[回収事実 / 実測値]`** Restro＋「筆画復元」完成ブランドロゴアートワーク |
 | **`Logo` 赤アクセント6層** | [logo-red-accents.svg](./assets/individual/logo/logo-red-accents.svg) / [PNG](./assets/individual/logo/logo-red-accents.png) | [分解図](./assets/logo-layers-breakdown.png) | `46-Logo.ts` (`#e30b0b`, `416×260`) | `R` の一部＋「元」赤パーツ単体（※解体流用禁止） |
 | **`Logo` 黒32画 / 基礎7層** | [黒32層 PNG](./assets/individual/logo/logo-black-strokes.png) ([SVG](./assets/individual/logo/logo-black-strokes.svg)) / [基礎7層 PNG](./assets/individual/logo/logo-ae-restro-base.png) ([SVG](./assets/individual/logo/logo-ae-restro-base.svg)) | [分解図](./assets/logo-layers-breakdown.png) | `46-Logo.ts` (`416×260`) | ロゴ内部の役割検証・誤流用検知用の独立成分 |
-| **固定見出し `Heading`** | [heading-main.svg](./assets/individual/chrome/heading-main.svg) / [PNG](./assets/individual/chrome/heading-main.png) | — | `43-Heading.ts [1]` (`416×66`) | 「文字の輪郭から、筆画ごとのシェイプへ。」単体透過 |
-| **解説枠 `description` 各幕** | [B PNG](./assets/individual/chrome/desc-b-how-it-works.png) ([SVG](./assets/individual/chrome/desc-b-how-it-works.svg))<br>[C PNG](./assets/individual/chrome/desc-c-case-studies.png) ([SVG](./assets/individual/chrome/desc-c-case-studies.svg))<br>[D PNG](./assets/individual/chrome/desc-d-ae-workflow.png) ([SVG](./assets/individual/chrome/desc-d-ae-workflow.svg)) | — | `03-description.ts` (`416×298`) | 解説窓開門時に表示される B・C・D 正本文字組単体（D は Remotion 復元対象） |
+| **固定見出し `Heading`** | [heading-main.svg](./assets/individual/chrome/heading-main.svg) / [PNG](./assets/individual/chrome/heading-main.png) | — | `43-Heading.ts [1]` (`416×66`) | 「文字の輪郭から、筆画ごとのシェイプへ。」単体透過。**※SVGは手動再配置の参考再構成（実コンポ書き出しではない）。正本データは `data/heading.composition.json`** |
+| **解説枠 `description` 各幕** | [B PNG](./assets/individual/chrome/desc-b-how-it-works.png) ([SVG](./assets/individual/chrome/desc-b-how-it-works.svg))<br>[C PNG](./assets/individual/chrome/desc-c-case-studies.png) ([SVG](./assets/individual/chrome/desc-c-case-studies.svg))<br>[D PNG](./assets/individual/chrome/desc-d-ae-workflow.png) ([SVG](./assets/individual/chrome/desc-d-ae-workflow.svg)) | — | `03-description.ts` (`416×298`) | 解説窓開門時に表示される B・C・D 正本文字組単体（D は Remotion 復元対象）。**※SVGは参考再構成。正本データは `data/description.composition.json`** |
 | **独立製品アイコン** | — **（不在）** | — | 調査対象AEP・画像群全体に存在せず | **`[未確定・不足事項]`** `Logo` コンポ以外の独立製品アイコン（正方形マーク等）はリポジトリに存在しない。必要なら製品側正本から受領するか不要と確定すること |
 
 | 公式 `Logo` 透過 (`416×260`) | `Logo` 赤アクセント6層 (`416×260`) | `Heading` 単体 (`416×66`) | `description` B状態 (`416×298`) |
@@ -30,16 +30,20 @@
 
 | 資産 | 実物ファイル | 元コンポ / パラメータ | 備考 |
 |---|---|---|---|
-| **3D パース背景格子** | [background-grid-plane.svg](./assets/background-grid-plane.svg) / [PNG](./assets/background-grid-plane.png) | `05-master.ts [257] grid-solid` (`3000×3000` solid, `#f7f7f7` + `#303030` 54px格子, `Z=+245, Y=+20°`) | サムネイル・全編共通下地 |
+| **3D パース背景格子** | [background-grid-plane.svg](./assets/background-grid-plane.svg) / [PNG](./assets/background-grid-plane.png) | `05-master.ts [257] grid-solid` (`3000×3000` solid, `#f7f7f7` + `#303030` 54px格子, `Z=+245, Y=+20°`) | サムネイル・全編共通下地。**2026-11 再生成：手描き図を廃し、`worldMatrix`＋カメラ行列（`video/src/ae/`）で全格子線を解析投影した実幾何書き出し（右側＝手前、確定サムネイルと整合）。再生成：`bun tools/design/render-grid.ts`** |
 | **`kg_LayoutGrid` + `P` リグ** | [layout-kg-grid-overlay.svg](./assets/layout-kg-grid-overlay.svg) / [PNG](./assets/layout-kg-grid-overlay.png) | `05-master.ts [187,188]` + `P1..23` (`12×24`, マージン `32/80`, ガター `12`) | 全配置・伸縮の設計基準 |
 
 ---
 
-## 3. 実 Restro 筆画出力素材（「解」全16層・元輪郭 ＆「筆」全13画・中間7層）
+## 3. 実 Restro 筆画出力素材（「解」プロキシ群＋元輪郭 ＆「筆」全13画・中間7層）
 
 > **`[導出・推定]`** Restro プラグインが実際にベクターアウトラインから分解・生成した一次素材は、現在リポジトリ内に **「解」（`bunkai` / `kai-zoom`）と「筆」（`Baseline` / `STEP1..4`）の2文字のみ** が存在する。
+>
+> **`[回収事実 / 実測値]`（2026-11 訂正）** 「解」の `STROKE_*` レイヤー群は**グリフの筆画形状ではない**。パス実測で全て 4〜13 頂点の矩形／台形プロキシ図形（A1/A2/A3 の運動グラフィック要素）であり、「解」自体の一画分解データは AEP 内に存在しない。実グリフ形状は `Ae_Restro merged shape` 層（95〜487 頂点）と `解` テキスト層が担う。「筆」側は `FUDE S01..S13` が実筆画分解（9〜92 頂点）であり、この点は正しい。機械可読な全構成データは [`data/*.composition.json`](./data/README.md) を正本とする。
 
 ### 3.1 「解」（Giant Kai：元輪郭＋`runs4` 16レイヤー個別単体書き出し）
+
+> 以下の表で `STROKE_*` と記す16層のうち14層は**プロキシ図形**（矩形/台形）であり、グリフ筆画ではない。「役割・特性」列の運動記述（Δ・回転・開門）は**プロキシ要素自体の実測運動**として有効だが、「文字の筆画がこう動く」という意味ではない。実形状の組み上がり検証は [`verification/assembly-metrics.json`](./verification/assembly-metrics.json) を参照。
 
 - 全体確認図：[kai-original-outline.png](./assets/kai-original-outline.png) ／ [kai-strokes-exploded.png](./assets/kai-strokes-exploded.png)
 - 独立単体（透過・タイトクロップ）：[元一体輪郭 PNG](./assets/individual/kai/kai-outline-merged.png) ([SVG](./assets/individual/kai/kai-outline-merged.svg), `995×936`) ／ [16層 rest組み上がり PNG](./assets/individual/kai/kai-runs4-assembled.png) ([SVG](./assets/individual/kai/kai-runs4-assembled.svg), `847×841`)

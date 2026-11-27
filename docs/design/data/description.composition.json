@@ -1,0 +1,7386 @@
+{
+ "id": "description",
+ "title": "Description typography (03-description)",
+ "comp": {
+  "file": "pv/generated/03-description.ts",
+  "exportName": "comp_03",
+  "width": 416,
+  "height": 298,
+  "duration": 20
+ },
+ "layerIndices": [
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  21,
+  22,
+  23,
+  24,
+  25,
+  26,
+  27,
+  28,
+  29,
+  30,
+  31,
+  32,
+  33,
+  34,
+  35
+ ],
+ "space": {
+  "kind": "comp"
+ },
+ "notes": "Scene B/C/D/E explanation text layers (JP+EN pairs). desc-*.svg previews are reconstructions; this JSON is authoritative.",
+ "elements": [
+  {
+   "index": 1,
+   "name": "Hidden vertices and edges are inferred to rebuild each stroke.",
+   "kind": "text",
+   "inPoint": 4.25,
+   "outPoint": 7.91666666666667,
+   "startTime": 0,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": true,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       0,
+       259.600006103516,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "Hidden vertices and edges are inferred to rebuild each stroke.",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 13,
+    "tracking": 10,
+    "leading": 15.6000003814697,
+    "justification": 7413,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 4.3,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       0,
+       259.600006103516,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      259.600006103516,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 6.083,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       0,
+       259.600006103516,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      259.600006103516,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 7.867,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       0,
+       259.600006103516,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      259.600006103516,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 2,
+   "name": "線が交わると、文字の輪郭はひとつにつながる。 Restroは輪郭を延長し、隠れた頂点と 反対側の辺まで推定して、筆画を分け直す。",
+   "kind": "text",
+   "inPoint": 4.25,
+   "outPoint": 7.91666666666667,
+   "startTime": 0,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": true,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       0,
+       181.899993896484,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "線が交わると、文字の輪郭はひとつにつながる。\rRestroは輪郭を延長し、隠れた頂点と\r反対側の辺まで推定して、筆画を分け直す。",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 15,
+    "tracking": 20,
+    "leading": 19.4150009155273,
+    "justification": 7413,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 4.3,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       0,
+       181.899993896484,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      181.899993896484,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 6.083,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       0,
+       181.899993896484,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      181.899993896484,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 7.867,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       0,
+       181.899993896484,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      181.899993896484,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 3,
+   "name": "つながった輪郭から、 一画ずつの形を復元する 2",
+   "kind": "text",
+   "inPoint": 0.5,
+   "outPoint": 4.14998372395833,
+   "startTime": 0.5,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": true,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       0,
+       65.4000015258789,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "交わった線の輪郭から、\r筆画を復元する",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "B",
+    "fontSize": 30,
+    "tracking": 20,
+    "leading": 38.8300018310547,
+    "justification": 7413,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 0.55,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       0,
+       65.4000015258789,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      65.4000015258789,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 2.325,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       0,
+       65.4000015258789,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      65.4000015258789,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 4.1,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       0,
+       65.4000015258789,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      65.4000015258789,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 4,
+   "name": "つながった輪郭から、 一画ずつの形を復元する",
+   "kind": "text",
+   "inPoint": 4.25,
+   "outPoint": 7.91666666666667,
+   "startTime": 0,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": true,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       0,
+       65.4000015258789,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "つながった輪郭から、\r一画ずつの形を復元する",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "B",
+    "fontSize": 30,
+    "tracking": 20,
+    "leading": 38.8300018310547,
+    "justification": 7413,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 4.3,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       0,
+       65.4000015258789,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      65.4000015258789,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 6.083,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       0,
+       65.4000015258789,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      65.4000015258789,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 7.867,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       0,
+       65.4000015258789,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      65.4000015258789,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 5,
+   "name": "HOW IT WORKS 2",
+   "kind": "text",
+   "inPoint": 0.5,
+   "outPoint": 4.14998372395833,
+   "startTime": 0.5,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": true,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       0,
+       26.6000003814697,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "Rebuild strokes from a connected outline",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "B",
+    "fontSize": 13,
+    "tracking": 200,
+    "leading": 15.6000003814697,
+    "justification": 7413,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 0.55,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       0,
+       26.6000003814697,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      26.6000003814697,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 2.325,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       0,
+       26.6000003814697,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      26.6000003814697,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 4.1,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       0,
+       26.6000003814697,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      26.6000003814697,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 6,
+   "name": "HOW IT WORKS",
+   "kind": "text",
+   "inPoint": 4.25,
+   "outPoint": 7.91666666666667,
+   "startTime": 0,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": true,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       0,
+       26.6000003814697,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "HOW IT WORKS",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "B",
+    "fontSize": 13,
+    "tracking": 200,
+    "leading": 15.6000003814697,
+    "justification": 7413,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 4.3,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       0,
+       26.6000003814697,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      26.6000003814697,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 6.083,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       0,
+       26.6000003814697,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      26.6000003814697,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 7.867,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       0,
+       26.6000003814697,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      26.6000003814697,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 7,
+   "name": "drums-and-somps-background-music-458414.mp3",
+   "kind": "footage",
+   "source": "drums-and-somps-background-music-458414.mp3",
+   "inPoint": 0,
+   "outPoint": 73.2755782312925,
+   "startTime": 0,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": []
+   },
+   "masks": [],
+   "text": null,
+   "shapes": null,
+   "evals": [
+    {
+     "t": 0.05,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       0,
+       0,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": true
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 36.638,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       0,
+       0,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": true
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 73.226,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       0,
+       0,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": true
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 8,
+   "name": "つながった輪郭から筆画を復元",
+   "kind": "text",
+   "inPoint": 4.25,
+   "outPoint": 8,
+   "startTime": 0,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       282.718185424805,
+       58.0710906982422,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "つながった輪郭から筆画を復元",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 40,
+    "tracking": 15,
+    "leading": 48,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 4.3,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       282.718185424805,
+       58.0710906982422,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      281.8716278076175,
+      73.7613983154297,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 6.125,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       282.718185424805,
+       58.0710906982422,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      281.8716278076175,
+      73.7613983154297,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 7.95,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       282.718185424805,
+       58.0710906982422,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      281.8716278076175,
+      73.7613983154297,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 9,
+   "name": "線が交差すると、文字の輪郭はひとつにつながる",
+   "kind": "text",
+   "inPoint": 4.25,
+   "outPoint": 8,
+   "startTime": 0,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       361.488998413086,
+       15.3149719238281,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "線が交差すると、文字の輪郭はひとつにつながる",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 34,
+    "tracking": 15,
+    "leading": 40.8000030517578,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 4.3,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       361.488998413086,
+       15.3149719238281,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      360.6424407958985,
+      31.0052795410156,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 6.125,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       361.488998413086,
+       15.3149719238281,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      360.6424407958985,
+      31.0052795410156,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 7.95,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       361.488998413086,
+       15.3149719238281,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      360.6424407958985,
+      31.0052795410156,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 10,
+   "name": "Restroは、その輪郭から一画ずつの形を復元",
+   "kind": "text",
+   "inPoint": 4.25,
+   "outPoint": 8,
+   "startTime": 0,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       390.875305175781,
+       249.264083862305,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "Restroは、その輪郭から一画ずつの形を復元",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 40,
+    "tracking": 15,
+    "leading": 48,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 4.3,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       390.875305175781,
+       249.264083862305,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      390.0287475585935,
+      264.95439147949253,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 6.125,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       390.875305175781,
+       249.264083862305,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      390.0287475585935,
+      264.95439147949253,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 7.95,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       390.875305175781,
+       249.264083862305,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      390.0287475585935,
+      264.95439147949253,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 11,
+   "name": "Restroは、その輪郭から一画ずつの形を復元 2",
+   "kind": "text",
+   "inPoint": 4.25,
+   "outPoint": 8,
+   "startTime": 0,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       390.875305175781,
+       249.264083862305,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "Restroは、その輪郭から一画ずつの形を復元",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 40,
+    "tracking": 15,
+    "leading": 48,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 4.3,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       390.875305175781,
+       249.264083862305,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      390.0287475585935,
+      264.95439147949253,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 6.125,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       390.875305175781,
+       249.264083862305,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      390.0287475585935,
+      264.95439147949253,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 7.95,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       390.875305175781,
+       249.264083862305,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      390.0287475585935,
+      264.95439147949253,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 12,
+   "name": "Intersecting strokes form a connected outline",
+   "kind": "text",
+   "inPoint": 4.25,
+   "outPoint": 8,
+   "startTime": 0,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       420.995361328125,
+       192.442749023438,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "Intersecting strokes form a connected outline",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 40,
+    "tracking": 15,
+    "leading": 48,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 4.3,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       420.995361328125,
+       192.442749023438,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      420.1488037109375,
+      208.1330566406255,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 6.125,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       420.995361328125,
+       192.442749023438,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      420.1488037109375,
+      208.1330566406255,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 7.95,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       420.995361328125,
+       192.442749023438,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      420.1488037109375,
+      208.1330566406255,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 13,
+   "name": "Restro reconstructs the individual strokes",
+   "kind": "text",
+   "inPoint": 4.25,
+   "outPoint": 8,
+   "startTime": 0,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       381.675354003906,
+       300.847137451172,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "Restro reconstructs the individual strokes",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 40,
+    "tracking": 15,
+    "leading": 48,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 4.3,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       381.675354003906,
+       300.847137451172,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      380.8287963867185,
+      316.5374450683595,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 6.125,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       381.675354003906,
+       300.847137451172,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      380.8287963867185,
+      316.5374450683595,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 7.95,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       381.675354003906,
+       300.847137451172,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      380.8287963867185,
+      316.5374450683595,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 14,
+   "name": "文字の線は、交差する部分でつながっている  そのため、つながった領域を切り離すだけでは、文字を一画ずつに分解できない  Restroは文字の輪郭を解析し、つながっている部分も含めて、それぞれの筆画がどのような形をしているか推定する  結果として、元の文字ではひとつにつながっていた部分からも、個別に編集できる筆画のシェイプを生成できる  ここで説明するのは、単に文字を細かく切れるということではなく、筆画の形を復元できるという違い",
+   "kind": "text",
+   "inPoint": 4.25,
+   "outPoint": 8,
+   "startTime": 0,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       56.8759002685547,
+       745.680862426758,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "文字の線は、交差する部分でつながっている\r\rそのため、つながった領域を切り離すだけでは、文字を一画ずつに分解できない\r\rRestroは文字の輪郭を解析し、つながっている部分も含めて、それぞれの筆画がどのような形をしているか推定する\r\r結果として、元の文字ではひとつにつながっていた部分からも、個別に編集できる筆画のシェイプを生成できる\r\rここで説明するのは、単に文字を細かく切れるということではなく、筆画の形を復元できるという違い",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 24,
+    "tracking": 15,
+    "leading": 28.8000011444092,
+    "justification": 7413,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 4.3,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       56.8759002685547,
+       745.680862426758,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      56.0293426513672,
+      761.3711700439455,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 6.125,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       56.8759002685547,
+       745.680862426758,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      56.0293426513672,
+      761.3711700439455,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 7.95,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       56.8759002685547,
+       745.680862426758,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      56.0293426513672,
+      761.3711700439455,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 15,
+   "name": "分解した筆画で作れるアニメーション",
+   "kind": "text",
+   "inPoint": 8,
+   "outPoint": 11.75,
+   "startTime": 3.75,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       331.918640136719,
+       32.8977203369141,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "分解した筆画で作れるアニメーション",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 40,
+    "tracking": 15,
+    "leading": 48,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 8.05,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       331.918640136719,
+       32.8977203369141,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      331.0720825195315,
+      48.5880279541016,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 9.875,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       331.918640136719,
+       32.8977203369141,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      331.0720825195315,
+      48.5880279541016,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 11.7,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       331.918640136719,
+       32.8977203369141,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      331.0720825195315,
+      48.5880279541016,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 16,
+   "name": "Restroで取り出した筆画は、After Effectsで編集できる独立したシェイプになる  文字全体をまとめて動かすだけでなく、一画ずつタイミングや動きを変えられるため、書き順に合わせて文字を登場させたり、特定の筆画だけを移動・回転させたりできる  シェイプの輪郭も編集できるので、筆画の形を変えながら動かす表現にも利用できる  筆画を個別に扱えるようになると、文字アニメーションの作り方がどう変わるかを、完成した制作例で示す  制作例の映像は、どれもRestroの出力から制作したことが分かるようにする",
+   "kind": "text",
+   "inPoint": 8.04166666666667,
+   "outPoint": 11.7916666666667,
+   "startTime": 3.79166666666667,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       64.8888854980469,
+       618.648132324219,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "Restroで取り出した筆画は、After Effectsで編集できる独立したシェイプになる\r\r文字全体をまとめて動かすだけでなく、一画ずつタイミングや動きを変えられるため、書き順に合わせて文字を登場させたり、特定の筆画だけを移動・回転させたりできる\r\rシェイプの輪郭も編集できるので、筆画の形を変えながら動かす表現にも利用できる\r\r筆画を個別に扱えるようになると、文字アニメーションの作り方がどう変わるかを、完成した制作例で示す\r\r制作例の映像は、どれもRestroの出力から制作したことが分かるようにする",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 24,
+    "tracking": 15,
+    "leading": 28.8000011444092,
+    "justification": 7413,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 8.092,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       64.8888854980469,
+       618.648132324219,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      64.0423278808594,
+      634.3384399414065,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 9.917,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       64.8888854980469,
+       618.648132324219,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      64.0423278808594,
+      634.3384399414065,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 11.742,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       64.8888854980469,
+       618.648132324219,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      64.0423278808594,
+      634.3384399414065,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 17,
+   "name": "成分ごとに筆画の形に再構成します 2",
+   "kind": "text",
+   "inPoint": 8,
+   "outPoint": 11.75,
+   "startTime": 3.75,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       368.567443847656,
+       88.9223327636719,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "分解した筆画は、それぞれ自由に動かせる",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 40,
+    "tracking": 15,
+    "leading": 48,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 8.05,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       368.567443847656,
+       88.9223327636719,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      369.0170288085935,
+      104.2299499511719,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 9.875,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       368.567443847656,
+       88.9223327636719,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      369.0170288085935,
+      104.2299499511719,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 11.7,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       368.567443847656,
+       88.9223327636719,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      369.0170288085935,
+      104.2299499511719,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 18,
+   "name": "書き順に合わせて、一画ずつ文字を描く",
+   "kind": "text",
+   "inPoint": 8,
+   "outPoint": 8.95833333333333,
+   "startTime": 3.75,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       554.959945678711,
+       376.590530395508,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "書き順に合わせて、一画ずつ文字を描く",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 40,
+    "tracking": 15,
+    "leading": 48,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 8.05,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       554.959945678711,
+       376.590530395508,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      555.4095306396486,
+      391.898147583008,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 8.479,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       554.959945678711,
+       376.590530395508,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      555.4095306396486,
+      391.898147583008,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 8.908,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       554.959945678711,
+       376.590530395508,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      555.4095306396486,
+      391.898147583008,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 19,
+   "name": "Animate strokes in writing order",
+   "kind": "text",
+   "inPoint": 8,
+   "outPoint": 8.95833333333333,
+   "startTime": 3.75,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       557.951934814453,
+       424.462371826172,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "Animate strokes in writing order",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 40,
+    "tracking": 15,
+    "leading": 48,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 8.05,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       557.951934814453,
+       424.462371826172,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      558.4015197753905,
+      439.769989013672,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 8.479,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       557.951934814453,
+       424.462371826172,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      558.4015197753905,
+      439.769989013672,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 8.908,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       557.951934814453,
+       424.462371826172,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      558.4015197753905,
+      439.769989013672,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 20,
+   "name": "筆画ごとに異なる動きを付ける",
+   "kind": "text",
+   "inPoint": 8.95833333333333,
+   "outPoint": 9.875,
+   "startTime": 2.83333333333333,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       554.959945678711,
+       376.590530395508,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "筆画ごとに異なる動きを付ける",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 40,
+    "tracking": 15,
+    "leading": 48,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 9.008,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       554.959945678711,
+       376.590530395508,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      555.4095306396486,
+      391.898147583008,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 9.417,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       554.959945678711,
+       376.590530395508,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      555.4095306396486,
+      391.898147583008,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 9.825,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       554.959945678711,
+       376.590530395508,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      555.4095306396486,
+      391.898147583008,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 21,
+   "name": "Give each stroke its own motion",
+   "kind": "text",
+   "inPoint": 8.95833333333333,
+   "outPoint": 9.875,
+   "startTime": 2.83333333333333,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       557.951934814453,
+       424.462371826172,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "Give each stroke its own motion",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 40,
+    "tracking": 15,
+    "leading": 48,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 9.008,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       557.951934814453,
+       424.462371826172,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      558.4015197753905,
+      439.769989013672,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 9.417,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       557.951934814453,
+       424.462371826172,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      558.4015197753905,
+      439.769989013672,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 9.825,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       557.951934814453,
+       424.462371826172,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      558.4015197753905,
+      439.769989013672,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 22,
+   "name": "一画の形を変えて、文字そのものを変形",
+   "kind": "text",
+   "inPoint": 9.875,
+   "outPoint": 10.8333333333333,
+   "startTime": 3.75,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       554.959945678711,
+       376.590530395508,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "一画の形を変えて、文字そのものを変形",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 40,
+    "tracking": 15,
+    "leading": 48,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 9.925,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       554.959945678711,
+       376.590530395508,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      555.4095306396486,
+      391.898147583008,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 10.354,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       554.959945678711,
+       376.590530395508,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      555.4095306396486,
+      391.898147583008,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 10.783,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       554.959945678711,
+       376.590530395508,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      555.4095306396486,
+      391.898147583008,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 23,
+   "name": "Reshape individual strokes",
+   "kind": "text",
+   "inPoint": 9.875,
+   "outPoint": 10.8333333333333,
+   "startTime": 3.75,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       557.951934814453,
+       424.462371826172,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "Reshape individual strokes",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 40,
+    "tracking": 15,
+    "leading": 48,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 9.925,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       557.951934814453,
+       424.462371826172,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      558.4015197753905,
+      439.769989013672,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 10.354,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       557.951934814453,
+       424.462371826172,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      558.4015197753905,
+      439.769989013672,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 10.783,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       557.951934814453,
+       424.462371826172,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      558.4015197753905,
+      439.769989013672,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 24,
+   "name": "一画の形を変えて、文字そのものを変形 2",
+   "kind": "text",
+   "inPoint": 10.8299967447917,
+   "outPoint": 11.75,
+   "startTime": 10.8299967447917,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       554.959945678711,
+       376.590530395508,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "動きの違う作品が、同じ筆画データから生まれる",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 40,
+    "tracking": 15,
+    "leading": 48,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 10.88,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       554.959945678711,
+       376.590530395508,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      555.4095306396486,
+      391.898147583008,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 11.29,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       554.959945678711,
+       376.590530395508,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      555.4095306396486,
+      391.898147583008,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 11.7,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       554.959945678711,
+       376.590530395508,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      555.4095306396486,
+      391.898147583008,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 25,
+   "name": "Reshape individual strokes 2",
+   "kind": "text",
+   "inPoint": 10.8299967447917,
+   "outPoint": 11.75,
+   "startTime": 10.8299967447917,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       557.951934814453,
+       424.462371826172,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "Different works, from the same stroke data",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 40,
+    "tracking": 15,
+    "leading": 48,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 10.88,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       557.951934814453,
+       424.462371826172,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      558.4015197753905,
+      439.769989013672,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 11.29,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       557.951934814453,
+       424.462371826172,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      558.4015197753905,
+      439.769989013672,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 11.7,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       557.951934814453,
+       424.462371826172,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      558.4015197753905,
+      439.769989013672,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 26,
+   "name": "After Effectsでの操作と機能",
+   "kind": "text",
+   "inPoint": 11.7083333333333,
+   "outPoint": 15.4583333333333,
+   "startTime": 7.45833333333333,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       249.129455566406,
+       18.2204132080078,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "After Effectsでの操作と機能",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 40,
+    "tracking": 15,
+    "leading": 48,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 11.758,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       249.129455566406,
+       18.2204132080078,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      248.2828979492185,
+      33.9107208251953,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 13.583,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       249.129455566406,
+       18.2204132080078,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      248.2828979492185,
+      33.9107208251953,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 15.408,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       249.129455566406,
+       18.2204132080078,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      248.2828979492185,
+      33.9107208251953,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 27,
+   "name": "文字もシェイプも、After Effects上で分解・編集",
+   "kind": "text",
+   "inPoint": 11.7083333333333,
+   "outPoint": 15.4583333333333,
+   "startTime": 7.45833333333333,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       409.184844970703,
+       65.7597045898438,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "文字もシェイプも、After Effects上で分解・編集",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 40,
+    "tracking": 15,
+    "leading": 48,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 11.758,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       409.184844970703,
+       65.7597045898438,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      409.6344299316405,
+      81.0673217773438,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 13.583,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       409.184844970703,
+       65.7597045898438,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      409.6344299316405,
+      81.0673217773438,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 15.408,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       409.184844970703,
+       65.7597045898438,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      409.6344299316405,
+      81.0673217773438,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 28,
+   "name": "Decompose and edit text or shapes in After Effects",
+   "kind": "text",
+   "inPoint": 11.7083333333333,
+   "outPoint": 15.4583333333333,
+   "startTime": 7.45833333333333,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       404.00439453125,
+       277.655746459961,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "Decompose and edit text or shapes in After Effects",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 35,
+    "tracking": 15,
+    "leading": 42,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 11.758,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       404.00439453125,
+       277.655746459961,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      404.4539794921875,
+      292.963363647461,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 13.583,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       404.00439453125,
+       277.655746459961,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      404.4539794921875,
+      292.963363647461,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 15.408,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       404.00439453125,
+       277.655746459961,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      404.4539794921875,
+      292.963363647461,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 29,
+   "name": "Restroは、文字だけでなく塗りを持つシェイプの分解にも使用できる  分解に加えて、シェイプの結合や分解結果の再調整にも対応し、出力形式や元レイヤーの扱いも設定できる  操作方法にはAfter Effectsのパネルやスクリプトが用意されており、利用する作業環境に合わせて実行できる  ここでは主要機能を文章で説明し尽くすのではなく、実際のAfter Effectsでこれらの機能が動作していることをまとめて示す",
+   "kind": "text",
+   "inPoint": 11.7083333333333,
+   "outPoint": 15.4583333333333,
+   "startTime": 7.45833333333333,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       72.7901153564453,
+       651.833312988281,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "Restroは、文字だけでなく塗りを持つシェイプの分解にも使用できる\r\r分解に加えて、シェイプの結合や分解結果の再調整にも対応し、出力形式や元レイヤーの扱いも設定できる\r\r操作方法にはAfter Effectsのパネルやスクリプトが用意されており、利用する作業環境に合わせて実行できる\r\rここでは主要機能を文章で説明し尽くすのではなく、実際のAfter Effectsでこれらの機能が動作していることをまとめて示す",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 24,
+    "tracking": 15,
+    "leading": 28.8000011444092,
+    "justification": 7413,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 11.758,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       72.7901153564453,
+       651.833312988281,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      71.9435577392578,
+      667.5236206054685,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 13.583,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       72.7901153564453,
+       651.833312988281,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      71.9435577392578,
+      667.5236206054685,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 15.408,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       72.7901153564453,
+       651.833312988281,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      71.9435577392578,
+      667.5236206054685,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 30,
+   "name": "れまで見せた筆画の分解・復元・アニメーション制作に使用したツールが、After Effects用プラグイン「Restro」であることを伝える  販売先はBOOTH  最後は商品名と購入先を視認できる時間を取り、必要な情報をまとめて表示する",
+   "kind": "text",
+   "inPoint": 15.5,
+   "outPoint": 19.25,
+   "startTime": 11.25,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       72.7901153564453,
+       651.833312988281,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "れまで見せた筆画の分解・復元・アニメーション制作に使用したツールが、After Effects用プラグイン「Restro」であることを伝える\r\r販売先はBOOTH\r\r最後は商品名と購入先を視認できる時間を取り、必要な情報をまとめて表示する",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 24,
+    "tracking": 15,
+    "leading": 28.8000011444092,
+    "justification": 7413,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 15.55,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       72.7901153564453,
+       651.833312988281,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      71.9435577392578,
+      667.5236206054685,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 17.375,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       72.7901153564453,
+       651.833312988281,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      71.9435577392578,
+      667.5236206054685,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 19.2,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       72.7901153564453,
+       651.833312988281,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      71.9435577392578,
+      667.5236206054685,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 31,
+   "name": "Restro 筆画復元 After Effectsプラグイン",
+   "kind": "text",
+   "inPoint": 15.5,
+   "outPoint": 19.25,
+   "startTime": 11.25,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       17.0765533447266,
+       46.521240234375,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "Restro\r筆画復元 After Effectsプラグイン",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 40,
+    "tracking": 15,
+    "leading": 48,
+    "justification": 7413,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 15.55,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       17.0765533447266,
+       46.521240234375,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      17.5261383056641,
+      61.828857421875,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 17.375,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       17.0765533447266,
+       46.521240234375,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      17.5261383056641,
+      61.828857421875,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 19.2,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       17.0765533447266,
+       46.521240234375,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      17.5261383056641,
+      61.828857421875,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 32,
+   "name": "BOOTHで販売中",
+   "kind": "text",
+   "inPoint": 15.5,
+   "outPoint": 19.25,
+   "startTime": 11.25,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       201.611846923828,
+       225.108642578125,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "BOOTHで販売中",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 40,
+    "tracking": 15,
+    "leading": 48,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 15.55,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       201.611846923828,
+       225.108642578125,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      202.0614318847655,
+      240.416259765625,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 17.375,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       201.611846923828,
+       225.108642578125,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      202.0614318847655,
+      240.416259765625,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 19.2,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       201.611846923828,
+       225.108642578125,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      202.0614318847655,
+      240.416259765625,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 33,
+   "name": "Stroke Reconstruction Plug-in for After Effects",
+   "kind": "text",
+   "inPoint": 15.5,
+   "outPoint": 19.25,
+   "startTime": 11.25,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       432.898529052734,
+       148.044784545898,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "Stroke Reconstruction Plug-in for After Effects",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 40,
+    "tracking": 15,
+    "leading": 48,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 15.55,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       432.898529052734,
+       148.044784545898,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      433.3481140136715,
+      163.352401733398,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 17.375,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       432.898529052734,
+       148.044784545898,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      433.3481140136715,
+      163.352401733398,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 19.2,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       432.898529052734,
+       148.044784545898,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      433.3481140136715,
+      163.352401733398,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 34,
+   "name": "Available on BOOTH",
+   "kind": "text",
+   "inPoint": 15.5,
+   "outPoint": 19.25,
+   "startTime": 11.25,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       212.278503417969,
+       274.886428833008,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "Available on BOOTH",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 40,
+    "tracking": 15,
+    "leading": 48,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 15.55,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       212.278503417969,
+       274.886428833008,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      212.7280883789065,
+      290.194046020508,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 17.375,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       212.278503417969,
+       274.886428833008,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      212.7280883789065,
+      290.194046020508,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 19.2,
+     "transform": {
+      "anchor": [
+       -0.4495849609375,
+       -15.3076171875,
+       0
+      ],
+      "position": [
+       212.278503417969,
+       274.886428833008,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      212.7280883789065,
+      290.194046020508,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 35,
+   "name": "製品名と販売案内",
+   "kind": "text",
+   "inPoint": 15.4583333333333,
+   "outPoint": 19.2083333333333,
+   "startTime": 11.2083333333333,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       166.671539306641,
+       6.47348022460938,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": {
+    "text": "製品名と販売案内",
+    "fontFamily": "Kozuka Gothic Pr6N",
+    "fontStyle": "R",
+    "fontSize": 40,
+    "tracking": 15,
+    "leading": 48,
+    "justification": 7415,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 15.508,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       166.671539306641,
+       6.47348022460938,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      165.8249816894535,
+      22.163787841796882,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 17.333,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       166.671539306641,
+       6.47348022460938,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      165.8249816894535,
+      22.163787841796882,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 19.158,
+     "transform": {
+      "anchor": [
+       0.8465576171875,
+       -15.6903076171875,
+       0
+      ],
+      "position": [
+       166.671539306641,
+       6.47348022460938,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      165.8249816894535,
+      22.163787841796882,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,10119 @@
+{
+ "id": "kai-runs5-3d",
+ "title": "「解」筆画ラン runs5 (A3, 15.17-16.67s) (3D, master)",
+ "comp": {
+  "file": "pv/generated/05-master.ts",
+  "exportName": "comp_05",
+  "width": 1080,
+  "height": 1080,
+  "duration": 20
+ },
+ "layerIndices": [
+  213,
+  214,
+  215,
+  216,
+  217,
+  218,
+  219,
+  220,
+  221,
+  222,
+  223,
+  224,
+  225,
+  226,
+  227,
+  228,
+  229,
+  230
+ ],
+ "space": {
+  "kind": "layer",
+  "layerIndex": 214,
+  "layerName": "Null 3 (runs5)"
+ },
+ "notes": "3D production run runs5 (A3, 15.17-16.67s). Elements are threeDLayer children of the run's Null 3 (pos [764,540,-96], Y Rotation 20). STROKE_* layers are proxy shapes (4-13 verts), NOT glyph strokes; glyph geometry = 'Ae_Restro merged shape *' layers. relToParent maps layer coords into the Null3 local plane (pre-rotation); Null3 world matrix then applies the shared 3D placement. Z-order: smaller AE index renders in front.",
+ "elements": [
+  {
+   "index": 213,
+   "name": "▾ (A) stroke runs5",
+   "kind": "shape",
+   "inPoint": 0,
+   "outPoint": 20,
+   "startTime": 0,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       540,
+       540,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "masks": [],
+   "text": null,
+   "shapes": {
+    "items": [],
+    "hash": "97d170e1550eee4a"
+   },
+   "evals": [
+    {
+     "t": 0.05,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       540,
+       540,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 10,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       540,
+       540,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 1
+    },
+    {
+     "t": 19.95,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       540,
+       540,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 1
+    }
+   ]
+  },
+  {
+   "index": 214,
+   "name": "Null 3 (runs5)",
+   "kind": "null",
+   "inPoint": 15.1666666666667,
+   "outPoint": 16.6666666666667,
+   "startTime": 15.1666666666667,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": true,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       764,
+       540,
+       -96
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Orientation",
+      "name": "Orientation",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate X",
+      "name": "X Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Y",
+      "name": "Y Rotation",
+      "value": 20
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Z Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 0
+     }
+    ]
+   },
+   "masks": [],
+   "text": null,
+   "shapes": null,
+   "evals": [
+    {
+     "t": 15.217,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       764,
+       540,
+       -96
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 20,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      764,
+      540,
+      -96,
+      1
+     ],
+     "opacity": 0
+    },
+    {
+     "t": 15.917,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       764,
+       540,
+       -96
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 20,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      764,
+      540,
+      -96,
+      1
+     ],
+     "opacity": 0
+    },
+    {
+     "t": 16.617,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       764,
+       540,
+       -96
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 20,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      764,
+      540,
+      -96,
+      1
+     ],
+     "opacity": 0
+    }
+   ]
+  },
+  {
+   "index": 215,
+   "name": "STROKE_016_runs5",
+   "kind": "shape",
+   "inPoint": 15.1666666666667,
+   "outPoint": 16.6666666666667,
+   "startTime": 15.25,
+   "stretch": 100,
+   "parentIndex": 214,
+   "threeDLayer": true,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       189.149993896484,
+       145.080017089844,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position_0",
+      "name": "X Position",
+      "value": 189.149993896484
+     },
+     {
+      "matchName": "ADBE Position_1",
+      "name": "Y Position",
+      "value": 216.1,
+      "keys": [
+       {
+        "t": 15.1666666666667,
+        "v": 161.995297248854,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 100,
+          "speed": 0.00005062575678
+         }
+        ]
+       },
+       {
+        "t": 15.4583333333333,
+        "v": 216.1,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00010999068377
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00010999068377
+         }
+        ]
+       },
+       {
+        "t": 16.9583333333333,
+        "v": 145.080017089844,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 100,
+          "speed": -19.5184041917079
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "matchName": "ADBE Position_2",
+      "name": "Z Position",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Orientation",
+      "name": "Orientation",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate X",
+      "name": "X Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Y",
+      "name": "Y Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Z Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 96
+     }
+    ]
+   },
+   "masks": [],
+   "text": null,
+   "shapes": {
+    "items": [
+     {
+      "name": "outline",
+      "path": {
+       "vertices": [
+        [
+         154.049987792969,
+         -68.25
+        ],
+        [
+         224.25,
+         -68.25
+        ],
+        [
+         224.25,
+         358.410034179688
+        ],
+        [
+         154.049987792969,
+         358.410034179688
+        ]
+       ],
+       "inTangents": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "outTangents": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "closed": true
+      },
+      "paints": [
+       {
+        "kind": "fill",
+        "color": [
+         0,
+         0,
+         0,
+         1
+        ],
+        "opacity": 1,
+        "fillRule": "nonzero"
+       }
+      ],
+      "transform": {
+       "anchor": [
+        0,
+        0
+       ],
+       "position": [
+        0,
+        0
+       ],
+       "scale": [
+        100,
+        100
+       ],
+       "skew": 0,
+       "skewAxis": 0,
+       "rotation": 0,
+       "opacity": 1
+      },
+      "transformRaw": "",
+      "groupPath": [
+       "shell 16",
+       "outline"
+      ]
+     }
+    ],
+    "hash": "9c5521515d496d7f"
+   },
+   "evals": [
+    {
+     "t": 15.217,
+     "transform": {
+      "anchor": [
+       189.149993896484,
+       145.080017089844,
+       0
+      ],
+      "position": [
+       189.149993896484,
+       164.52363764740733,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      19.44362055756335,
+      0,
+      1
+     ],
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      764,
+      559.4436205575633,
+      -96,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 15.917,
+     "transform": {
+      "anchor": [
+       189.149993896484,
+       145.080017089844,
+       0
+      ],
+      "position": [
+       189.149993896484,
+       194.38427886319755,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      49.30426177335357,
+      0,
+      1
+     ],
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      764,
+      589.3042617733536,
+      -96,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 16.617,
+     "transform": {
+      "anchor": [
+       189.149993896484,
+       145.080017089844,
+       0
+      ],
+      "position": [
+       189.149993896484,
+       161.24018069235865,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      16.16016360251467,
+      0,
+      1
+     ],
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      764,
+      556.1601636025147,
+      -96,
+      1
+     ],
+     "opacity": 0.96
+    }
+   ]
+  },
+  {
+   "index": 216,
+   "name": "STROKE_017_runs5",
+   "kind": "shape",
+   "inPoint": 15.1666666666667,
+   "outPoint": 16.6666666666667,
+   "startTime": 15.25,
+   "stretch": 100,
+   "parentIndex": 214,
+   "threeDLayer": true,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       186.759408545183,
+       -151.950322526072,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position_0",
+      "name": "X Position",
+      "value": 253.8,
+      "keys": [
+       {
+        "t": 15.1666666666667,
+        "v": 202.72689178041,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 100,
+          "speed": 0.00005062575678
+         }
+        ]
+       },
+       {
+        "t": 15.4583333333333,
+        "v": 253.8,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00010999068377
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00010999068377
+         }
+        ]
+       },
+       {
+        "t": 16.9583333333333,
+        "v": 186.759408545183,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 100,
+          "speed": -19.5184041917079
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "matchName": "ADBE Position_1",
+      "name": "Y Position",
+      "value": -151.950322526072
+     },
+     {
+      "matchName": "ADBE Position_2",
+      "name": "Z Position",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Orientation",
+      "name": "Orientation",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate X",
+      "name": "X Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Y",
+      "name": "Y Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Z Rotation",
+      "value": 0,
+      "keys": [
+       {
+        "t": 15.1666666666667,
+        "v": 0,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 100,
+          "speed": 0.00002949711075
+         }
+        ]
+       },
+       {
+        "t": 15.4583333333333,
+        "v": 0,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 0.01,
+          "speed": 0.00002949711075
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00002113273393
+         }
+        ]
+       },
+       {
+        "t": 16.9583333333333,
+        "v": 0,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 100,
+          "speed": -0.00000133535505
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 16.666666667,
+          "speed": 0
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 96
+     }
+    ]
+   },
+   "masks": [],
+   "text": null,
+   "shapes": {
+    "items": [
+     {
+      "name": "outline",
+      "path": {
+       "vertices": [
+        [
+         -1.95001220703125,
+         219.570007324219
+        ],
+        [
+         -1.95001220703125,
+         154.830017089844
+        ],
+        [
+         366.990051269531,
+         154.830017089844
+        ],
+        [
+         366.990051269531,
+         219.570007324219
+        ]
+       ],
+       "inTangents": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "outTangents": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "closed": true
+      },
+      "paints": [
+       {
+        "kind": "fill",
+        "color": [
+         0,
+         0,
+         0,
+         1
+        ],
+        "opacity": 1,
+        "fillRule": "nonzero"
+       }
+      ],
+      "transform": {
+       "anchor": [
+        0,
+        0
+       ],
+       "position": [
+        0,
+        0
+       ],
+       "scale": [
+        100,
+        100
+       ],
+       "skew": 0,
+       "skewAxis": 0,
+       "rotation": 0,
+       "opacity": 1
+      },
+      "transformRaw": "",
+      "groupPath": [
+       "shell 17",
+       "outline"
+      ]
+     }
+    ],
+    "hash": "fe0163c685b3e8a9"
+   },
+   "evals": [
+    {
+     "t": 15.217,
+     "transform": {
+      "anchor": [
+       186.759408545183,
+       -151.950322526072,
+       0
+      ],
+      "position": [
+       205.11356421783577,
+       -151.950322526072,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      18.354155672652723,
+      0,
+      0,
+      1
+     ],
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      781.2472646463476,
+      540,
+      -102.27749095378233,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 15.917,
+     "transform": {
+      "anchor": [
+       186.759408545183,
+       -151.950322526072,
+       0
+      ],
+      "position": [
+       233.30105408049994,
+       -151.950322526072,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      46.54164553531689,
+      0,
+      -2.842170943040401e-14,
+      1
+     ],
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      807.7348408687708,
+      540,
+      -111.91818027660157,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 16.617,
+     "transform": {
+      "anchor": [
+       186.759408545183,
+       -151.950322526072,
+       0
+      ],
+      "position": [
+       202.01408591239286,
+       -151.950322526072,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      15.254677367209865,
+      0,
+      0,
+      1
+     ],
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      778.334707754437,
+      540,
+      -101.21740693951995,
+      1
+     ],
+     "opacity": 0.96
+    }
+   ]
+  },
+  {
+   "index": 217,
+   "name": "STROKE_015_runs5",
+   "kind": "shape",
+   "inPoint": 15.1666666666667,
+   "outPoint": 16.6666666666667,
+   "startTime": 15.25,
+   "stretch": 100,
+   "parentIndex": 214,
+   "threeDLayer": true,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       200.510653534869,
+       413.478525698277,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       200.510653534869,
+       413.478525698277,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Orientation",
+      "name": "Orientation",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate X",
+      "name": "X Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Y",
+      "name": "Y Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Z Rotation",
+      "value": -8,
+      "keys": [
+       {
+        "t": 15.1666666666667,
+        "v": -1.90476190476191,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 100,
+          "speed": 0.00002949711075
+         }
+        ]
+       },
+       {
+        "t": 15.4583333333333,
+        "v": -8,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 0.01,
+          "speed": 0.00002949711075
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00002113273393
+         }
+        ]
+       },
+       {
+        "t": 16.9583333333333,
+        "v": 0,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 100,
+          "speed": -0.00000133535505
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 16.666666667,
+          "speed": 0
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 96
+     }
+    ]
+   },
+   "masks": [],
+   "text": null,
+   "shapes": {
+    "items": [
+     {
+      "name": "outline",
+      "path": {
+       "vertices": [
+        [
+         57.3300170898438,
+         70.5900268554688
+        ],
+        [
+         57.3300170898438,
+         7.4100341796875
+        ],
+        [
+         352.170043945312,
+         7.4100341796875
+        ],
+        [
+         352.170043945312,
+         70.5900268554688
+        ]
+       ],
+       "inTangents": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "outTangents": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "closed": true
+      },
+      "paints": [
+       {
+        "kind": "fill",
+        "color": [
+         0,
+         0,
+         0,
+         1
+        ],
+        "opacity": 1,
+        "fillRule": "nonzero"
+       }
+      ],
+      "transform": {
+       "anchor": [
+        0,
+        0
+       ],
+       "position": [
+        0,
+        0
+       ],
+       "scale": [
+        100,
+        100
+       ],
+       "skew": 0,
+       "skewAxis": 0,
+       "rotation": 0,
+       "opacity": 1
+      },
+      "transformRaw": "",
+      "groupPath": [
+       "shell 15",
+       "outline"
+      ]
+     }
+    ],
+    "hash": "7fde5e7981320bb2"
+   },
+   "evals": [
+    {
+     "t": 15.217,
+     "transform": {
+      "anchor": [
+       200.510653534869,
+       413.478525698277,
+       0
+      ],
+      "position": [
+       200.510653534869,
+       413.478525698277,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": -2.189595494660253,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.9992698708873755,
+      -0.038206349429487925,
+      0,
+      0,
+      0.038206349429487925,
+      0.9992698708873754,
+      -1.734723475976807e-18,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -15.651106368880733,
+      7.962672802345651,
+      -2.842170943040401e-14,
+      1
+     ],
+     "world": [
+      0.9390065238465541,
+      -0.038206349429487925,
+      -0.34177042446192263,
+      0,
+      0.0359022246260577,
+      0.9992698708873754,
+      -0.013067341107824041,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      749.2927708380275,
+      547.9626728023457,
+      -90.64700635651015,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 15.917,
+     "transform": {
+      "anchor": [
+       200.510653534869,
+       413.478525698277,
+       0
+      ],
+      "position": [
+       200.510653534869,
+       413.478525698277,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": -5.553846650256284,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.9953056828338195,
+      -0.09678118473497112,
+      0,
+      0,
+      0.09678118473497113,
+      0.9953056828338194,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -39.075680976657736,
+      21.346657942120373,
+      0,
+      1
+     ],
+     "world": [
+      0.9352814055852199,
+      -0.09678118473497112,
+      -0.34041459229567544,
+      0,
+      0.09094456512637017,
+      0.9953056828338194,
+      -0.033101114674282846,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      727.2808709340505,
+      561.3466579421204,
+      -82.63532999181545,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 16.617,
+     "transform": {
+      "anchor": [
+       200.510653534869,
+       413.478525698277,
+       0
+      ],
+      "position": [
+       200.510653534869,
+       413.478525698277,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": -1.8203511676940938,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.9994953403744993,
+      -0.031765776704873405,
+      0,
+      0,
+      0.031765776704873405,
+      0.9994953403744993,
+      -1.734723475976807e-18,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -13.033276888270052,
+      6.578042565068472,
+      -5.684341886080802e-14,
+      1
+     ],
+     "world": [
+      0.9392183958598168,
+      -0.031765776704873405,
+      -0.3418475395682243,
+      0,
+      0.029850065963102447,
+      0.9994953403744993,
+      -0.01086453550145199,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      751.7527258834332,
+      546.5780425650685,
+      -91.54235677067079,
+      1
+     ],
+     "opacity": 0.96
+    }
+   ]
+  },
+  {
+   "index": 218,
+   "name": "STROKE_014_runs5",
+   "kind": "shape",
+   "inPoint": 15.1666666666667,
+   "outPoint": 16.6666666666667,
+   "startTime": 15.25,
+   "stretch": 100,
+   "parentIndex": 214,
+   "threeDLayer": true,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -111.956425469586,
+       -26.0038130007324,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       -111.956425469586,
+       -26.0038130007324,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Orientation",
+      "name": "Orientation",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate X",
+      "name": "X Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Y",
+      "name": "Y Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Z Rotation",
+      "value": 11,
+      "keys": [
+       {
+        "t": 15.1666666666667,
+        "v": 2.61904761904762,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 100,
+          "speed": 0.00002949711075
+         }
+        ]
+       },
+       {
+        "t": 15.4583333333333,
+        "v": 11,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 0.01,
+          "speed": 0.00002949711075
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00002113273393
+         }
+        ]
+       },
+       {
+        "t": 16.9583333333333,
+        "v": 0,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 100,
+          "speed": -0.00000133535505
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 16.666666667,
+          "speed": 0
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 96
+     }
+    ]
+   },
+   "masks": [],
+   "text": null,
+   "shapes": {
+    "items": [
+     {
+      "name": "outline",
+      "path": {
+       "vertices": [
+        [
+         -15.2100219726562,
+         110.369995117188
+        ],
+        [
+         31.1227416992188,
+         16.6947174072266
+        ],
+        [
+         51.8699951171875,
+         -62.010009765625
+        ],
+        [
+         113.489990234375,
+         -50.3100280761719
+        ],
+        [
+         85.0377349853516,
+         49.9800720214844
+        ],
+        [
+         40.1699829101562,
+         140.010009765625
+        ],
+        [
+         16.98486328125,
+         125.668472290039
+        ]
+       ],
+       "inTangents": [
+        [
+         11.0152740478516,
+         4.43365478515625
+        ],
+        [
+         -11.1887359619141,
+         33.1949615478516
+        ],
+        [
+         -5.20367431640625,
+         26.6562042236328
+        ],
+        [
+         -20.5399932861328,
+         -3.89997863769531
+        ],
+        [
+         12.0522918701172,
+         -32.6475372314453
+        ],
+        [
+         19.0027008056641,
+         -27.7865142822266
+        ],
+        [
+         7.96910095214844,
+         4.33445739746094
+        ]
+       ],
+       "outTangents": [
+        [
+         20.7768249511719,
+         -28.3689575195312
+        ],
+        [
+         8.67594909667969,
+         -25.7399749755859
+        ],
+        [
+         20.5399932861328,
+         3.89999389648438
+        ],
+        [
+         -6.98204040527344,
+         34.0878295898438
+        ],
+        [
+         -11.6324005126953,
+         31.5101165771484
+        ],
+        [
+         -7.28262329101562,
+         -5.43048095703125
+        ],
+        [
+         -10.4278259277344,
+         -5.67178344726562
+        ]
+       ],
+       "closed": true
+      },
+      "paints": [
+       {
+        "kind": "fill",
+        "color": [
+         0,
+         0,
+         0,
+         1
+        ],
+        "opacity": 1,
+        "fillRule": "nonzero"
+       }
+      ],
+      "transform": {
+       "anchor": [
+        0,
+        0
+       ],
+       "position": [
+        0,
+        0
+       ],
+       "scale": [
+        100,
+        100
+       ],
+       "skew": 0,
+       "skewAxis": 0,
+       "rotation": 0,
+       "opacity": 1
+      },
+      "transformRaw": "",
+      "groupPath": [
+       "shell 14",
+       "outline"
+      ]
+     }
+    ],
+    "hash": "8eef0a86389ce191"
+   },
+   "evals": [
+    {
+     "t": 15.217,
+     "transform": {
+      "anchor": [
+       -111.956425469586,
+       -26.0038130007324,
+       0
+      ],
+      "position": [
+       -111.956425469586,
+       -26.0038130007324,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 3.0106938051578416,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.9986197492675829,
+      0.052522341653339515,
+      0,
+      0,
+      -0.05252234165333952,
+      0.9986197492675828,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -1.5203090889673376,
+      5.844321846860339,
+      -5.684341886080802e-14,
+      1
+     ],
+     "world": [
+      0.9383956093578216,
+      0.052522341653339515,
+      -0.34154806977234203,
+      0,
+      -0.04935485687803949,
+      0.9986197492675828,
+      0.01796369882007492,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      762.5713767677837,
+      545.8443218468603,
+      -95.48002366749212,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 15.917,
+     "transform": {
+      "anchor": [
+       -111.956425469586,
+       -26.0038130007324,
+       0
+      ],
+      "position": [
+       -111.956425469586,
+       -26.0038130007324,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 7.63653914410239,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.9911309950425974,
+      0.13288848959135277,
+      -5.551115123125783e-17,
+      0,
+      -0.13288848959135277,
+      0.9911309950425973,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -4.448549525786234,
+      14.647092334285276,
+      0,
+      1
+     ],
+     "world": [
+      0.9313584822737234,
+      0.13288848959135277,
+      -0.3389867649789818,
+      0,
+      -0.1248743330563792,
+      0.9911309950425973,
+      0.045450540256366107,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      759.8197308374181,
+      554.6470923342853,
+      -94.47850645359928,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 16.617,
+     "transform": {
+      "anchor": [
+       -111.956425469586,
+       -26.0038130007324,
+       0
+      ],
+      "position": [
+       -111.956425469586,
+       -26.0038130007324,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 2.502982855579379,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.9990459493742918,
+      0.04367139840696906,
+      5.551115123125783e-17,
+      0,
+      -0.04367139840696906,
+      0.9990459493742917,
+      1.734723475976807e-18,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -1.2424349754268178,
+      4.8644847068383115,
+      -5.684341886080802e-14,
+      1
+     ],
+     "world": [
+      0.9387961064530742,
+      0.04367139840696906,
+      -0.341693838793924,
+      0,
+      -0.041037690822430306,
+      0.9990459493742917,
+      0.01493649794238394,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      762.8324930217852,
+      544.8644847068383,
+      -95.57506221163176,
+      1
+     ],
+     "opacity": 0.96
+    }
+   ]
+  },
+  {
+   "index": 219,
+   "name": "STROKE_011_runs5",
+   "kind": "shape",
+   "inPoint": 15.1666666666667,
+   "outPoint": 16.6666666666667,
+   "startTime": 15.25,
+   "stretch": 100,
+   "parentIndex": 214,
+   "threeDLayer": true,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       25.5674526042083,
+       -185.295629681918,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       25.5674526042083,
+       -185.295629681918,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Orientation",
+      "name": "Orientation",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate X",
+      "name": "X Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Y",
+      "name": "Y Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Z Rotation",
+      "value": -22,
+      "keys": [
+       {
+        "t": 15.1666666666667,
+        "v": -5.23809523809524,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 100,
+          "speed": 0.00002949711075
+         }
+        ]
+       },
+       {
+        "t": 15.4583333333333,
+        "v": -22,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 0.01,
+          "speed": 0.00002949711075
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00002113273393
+         }
+        ]
+       },
+       {
+        "t": 16.9583333333333,
+        "v": 0,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 100,
+          "speed": -0.00000133535505
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 16.666666667,
+          "speed": 0
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 96
+     }
+    ]
+   },
+   "masks": [],
+   "text": null,
+   "shapes": {
+    "items": [
+     {
+      "name": "outline",
+      "path": {
+       "vertices": [
+        [
+         -20.6699829101562,
+         -104.130004882812
+        ],
+        [
+         38.4138641357422,
+         -139.81103515625
+        ],
+        [
+         83.3625335693359,
+         -203.112884521484
+        ],
+        [
+         95.5012817382812,
+         -240.797760009766
+        ],
+        [
+         106.469970703125,
+         -303.029998779297
+        ],
+        [
+         173.549987792969,
+         -303.029998779297
+        ],
+        [
+         159.359191894531,
+         -224.564025878906
+        ],
+        [
+         144.834625244141,
+         -179.339996337891
+        ],
+        [
+         86.1448669433594,
+         -95.0509338378906
+        ],
+        [
+         19.1099853515625,
+         -53.4299926757812
+        ],
+        [
+         3.40794372558594,
+         -77.8293762207031
+        ]
+       ],
+       "inTangents": [
+        [
+         9.36492919921875,
+         7.42864990234375
+        ],
+        [
+         -17.4313507080078,
+         15.2529296875
+        ],
+        [
+         -10.1487121582031,
+         23.8782653808594
+        ],
+        [
+         -3.23966979980469,
+         12.7983093261719
+        ],
+        [
+         -2.28349304199219,
+         20.9610595703125
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         6.6328125,
+         -25.7757873535156
+        ],
+        [
+         6.05355834960938,
+         -14.6488647460938
+        ],
+        [
+         25.8640289306641,
+         -22.7194366455078
+        ],
+        [
+         24.0774993896484,
+         -10.8043975830078
+        ],
+        [
+         5.69828796386719,
+         7.81475830078125
+        ]
+       ],
+       "outTangents": [
+        [
+         21.19140625,
+         -9.11897277832031
+        ],
+        [
+         19.57763671875,
+         -17.1310119628906
+        ],
+        [
+         5.17030334472656,
+         -12.1648254394531
+        ],
+        [
+         5.17596435546875,
+         -20.4476623535156
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         -3.03057861328125,
+         26.4319152832031
+        ],
+        [
+         -3.94647216796875,
+         15.3362426757812
+        ],
+        [
+         -13.1011352539062,
+         31.7031555175781
+        ],
+        [
+         -19.8894805908203,
+         17.4712524414062
+        ],
+        [
+         -4.5809326171875,
+         -8.52767944335938
+        ],
+        [
+         -7.01377868652344,
+         -9.61885070800781
+        ]
+       ],
+       "closed": true
+      },
+      "paints": [
+       {
+        "kind": "fill",
+        "color": [
+         0,
+         0,
+         0,
+         1
+        ],
+        "opacity": 1,
+        "fillRule": "nonzero"
+       }
+      ],
+      "transform": {
+       "anchor": [
+        0,
+        0
+       ],
+       "position": [
+        0,
+        0
+       ],
+       "scale": [
+        100,
+        100
+       ],
+       "skew": 0,
+       "skewAxis": 0,
+       "rotation": 0,
+       "opacity": 1
+      },
+      "transformRaw": "",
+      "groupPath": [
+       "shell 11",
+       "outline"
+      ]
+     }
+    ],
+    "hash": "9c1e92ce4eddeb61"
+   },
+   "evals": [
+    {
+     "t": 15.217,
+     "transform": {
+      "anchor": [
+       25.5674526042083,
+       -185.295629681918,
+       0
+      ],
+      "position": [
+       25.5674526042083,
+       -185.295629681918,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": -6.021387610315683,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.9944828072545,
+      -0.10489969530560846,
+      0,
+      0,
+      0.10489969530560847,
+      0.9944828072544998,
+      6.938893903907228e-18,
+      0,
+      0,
+      0,
+      1,
+      0,
+      19.5785156591229,
+      1.6597062840680792,
+      -2.842170943040401e-14,
+      1
+     ],
+     "world": [
+      0.9345081554755084,
+      -0.10489969530560846,
+      -0.3401331522720974,
+      0,
+      0.09857346960137046,
+      0.9944828072544998,
+      -0.03587780882324318,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      782.3977866908192,
+      541.6597062840681,
+      -102.69624673183706,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 15.917,
+     "transform": {
+      "anchor": [
+       25.5674526042083,
+       -185.295629681918,
+       0
+      ],
+      "position": [
+       25.5674526042083,
+       -185.295629681918,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": -15.27307828820478,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.964681298668258,
+      -0.26341980183677055,
+      5.551115123125783e-17,
+      0,
+      0.26341980183677055,
+      0.9646812986682579,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      49.71354727437176,
+      0.19057229565885336,
+      -2.842170943040401e-14,
+      1
+     ],
+     "world": [
+      0.906503897768729,
+      -0.26341980183677055,
+      -0.3299404360341098,
+      0,
+      0.24753364395489957,
+      0.9646812986682579,
+      -0.09009487837903152,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      810.7154535268187,
+      540.1905722956589,
+      -113.0030345640081,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 16.617,
+     "transform": {
+      "anchor": [
+       25.5674526042083,
+       -185.295629681918,
+       0
+      ],
+      "position": [
+       25.5674526042083,
+       -185.295629681918,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": -5.005965711158758,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.9961856179223597,
+      -0.08725946736398668,
+      5.551115123125783e-17,
+      0,
+      0.0872594673639867,
+      0.9961856179223596,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      16.266321983903026,
+      1.5242139671734094,
+      0,
+      1
+     ],
+     "world": [
+      0.9361082740946918,
+      -0.08725946736398668,
+      -0.3407155478207753,
+      0,
+      0.08199707757564709,
+      0.9961856179223596,
+      -0.029844495534352235,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      779.2853427356014,
+      541.5242139671734,
+      -101.563409776316,
+      1
+     ],
+     "opacity": 0.96
+    }
+   ]
+  },
+  {
+   "index": 220,
+   "name": "Ae_Restro merged shape 5",
+   "kind": "shape",
+   "inPoint": 15.1666666666667,
+   "outPoint": 16.6666666666667,
+   "startTime": 15.25,
+   "stretch": 100,
+   "parentIndex": 214,
+   "threeDLayer": true,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       275.674420101047,
+       -259.161284724096,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       275.674420101047,
+       -259.161284724096,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Orientation",
+      "name": "Orientation",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate X",
+      "name": "X Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Y",
+      "name": "Y Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Z Rotation",
+      "value": 27,
+      "keys": [
+       {
+        "t": 15.1666666666667,
+        "v": 6.42857142857143,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 100,
+          "speed": 0.00002949711075
+         }
+        ]
+       },
+       {
+        "t": 15.4583333333333,
+        "v": 27,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 0.01,
+          "speed": 0.00002949711075
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00002113273393
+         }
+        ]
+       },
+       {
+        "t": 16.9583333333333,
+        "v": 0,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 100,
+          "speed": -0.00000133535505
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 16.666666667,
+          "speed": 0
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 96
+     }
+    ]
+   },
+   "masks": [],
+   "text": null,
+   "shapes": {
+    "items": [
+     {
+      "name": "outline 0",
+      "path": {
+       "vertices": [
+        [
+         177.050506591797,
+         -130.856109619141
+        ],
+        [
+         174.330017089844,
+         -136.110015869141
+        ],
+        [
+         185.057159423828,
+         -135.063903808594
+        ],
+        [
+         195.786834716797,
+         -134.271148681641
+        ],
+        [
+         206.525024414062,
+         -133.698913574219
+        ],
+        [
+         217.277740478516,
+         -133.314300537109
+        ],
+        [
+         228.051025390625,
+         -133.08447265625
+        ],
+        [
+         233.337280273438,
+         -132.9384765625
+        ],
+        [
+         238.632751464844,
+         -132.767364501953
+        ],
+        [
+         243.914306640625,
+         -132.731750488281
+        ],
+        [
+         246.059814453125,
+         -132.827575683594
+        ],
+        [
+         248.194702148438,
+         -133.059387207031
+        ],
+        [
+         248.831390380859,
+         -133.200042724609
+        ],
+        [
+         249.514770507812,
+         -133.363647460938
+        ],
+        [
+         250.14697265625,
+         -133.4140625
+        ],
+        [
+         252.388946533203,
+         -134.074005126953
+        ],
+        [
+         254.436340332031,
+         -134.996856689453
+        ],
+        [
+         256.299835205078,
+         -136.158447265625
+        ],
+        [
+         257.990142822266,
+         -137.534637451172
+        ],
+        [
+         259.517944335938,
+         -139.101257324219
+        ],
+        [
+         260.893890380859,
+         -140.834136962891
+        ],
+        [
+         262.128723144531,
+         -142.709106445312
+        ],
+        [
+         263.233062744141,
+         -144.702026367188
+        ],
+        [
+         264.217651367188,
+         -146.788726806641
+        ],
+        [
+         265.093139648438,
+         -148.945068359375
+        ],
+        [
+         265.870208740234,
+         -151.146820068359
+        ],
+        [
+         266.5595703125,
+         -153.369903564453
+        ],
+        [
+         267.171905517578,
+         -155.590087890625
+        ],
+        [
+         267.717895507812,
+         -157.783264160156
+        ],
+        [
+         268.208221435547,
+         -159.925231933594
+        ],
+        [
+         268.653564453125,
+         -161.991821289062
+        ],
+        [
+         269.965026855469,
+         -168.960235595703
+        ],
+        [
+         271.3515625,
+         -178.184875488281
+        ],
+        [
+         272.976745605469,
+         -191.473358154297
+        ],
+        [
+         274.309753417969,
+         -204.800720214844
+        ],
+        [
+         275.407867431641,
+         -218.155181884766
+        ],
+        [
+         276.328308105469,
+         -231.52490234375
+        ],
+        [
+         277.128295898438,
+         -244.898040771484
+        ],
+        [
+         277.865112304688,
+         -258.262756347656
+        ],
+        [
+         278.575134277344,
+         -271.102569580078
+        ],
+        [
+         279.261932373047,
+         -283.955139160156
+        ],
+        [
+         279.848205566406,
+         -296.814514160156
+        ],
+        [
+         280.256713867188,
+         -309.674774169922
+        ],
+        [
+         280.410034179688,
+         -322.530029296875
+        ],
+        [
+         345.930053710938,
+         -322.530029296875
+        ],
+        [
+         345.77685546875,
+         -313.311584472656
+        ],
+        [
+         345.431274414062,
+         -304.117065429688
+        ],
+        [
+         345.052001953125,
+         -294.914916992188
+        ],
+        [
+         344.160522460938,
+         -272.752746582031
+        ],
+        [
+         343.114196777344,
+         -250.597351074219
+        ],
+        [
+         342.409973144531,
+         -237.213897705078
+        ],
+        [
+         341.639739990234,
+         -223.822448730469
+        ],
+        [
+         340.760650634766,
+         -210.432250976562
+        ],
+        [
+         339.729888916016,
+         -197.052703857422
+        ],
+        [
+         338.504638671875,
+         -183.693084716797
+        ],
+        [
+         337.042114257812,
+         -170.362731933594
+        ],
+        [
+         335.299438476562,
+         -157.070983886719
+        ],
+        [
+         334.218994140625,
+         -149.887908935547
+        ],
+        [
+         332.994934082031,
+         -142.71826171875
+        ],
+        [
+         331.572967529297,
+         -135.585205078125
+        ],
+        [
+         329.898620605469,
+         -128.511901855469
+        ],
+        [
+         329.092956542969,
+         -125.668823242188
+        ],
+        [
+         329.131103515625,
+         -125.665008544922
+        ],
+        [
+         328.02197265625,
+         -121.847961425781
+        ],
+        [
+         327.918029785156,
+         -121.522872924805
+        ],
+        [
+         327.917602539062,
+         -121.521423339844
+        ],
+        [
+         327.914306640625,
+         -121.511306762695
+        ],
+        [
+         326.802917480469,
+         -118.035720825195
+        ],
+        [
+         325.444854736328,
+         -114.259307861328
+        ],
+        [
+         323.918823242188,
+         -110.549682617188
+        ],
+        [
+         322.19580078125,
+         -106.937881469727
+        ],
+        [
+         320.874176025391,
+         -104.576171875
+        ],
+        [
+         320.467926025391,
+         -103.836074829102
+        ],
+        [
+         320.408874511719,
+         -103.744644165039
+        ],
+        [
+         320.246704101562,
+         -103.454864501953
+        ],
+        [
+         319.285797119141,
+         -102.006118774414
+        ],
+        [
+         318.384948730469,
+         -100.611572265625
+        ],
+        [
+         318.200744628906,
+         -100.370162963867
+        ],
+        [
+         318.042541503906,
+         -100.131652832031
+        ],
+        [
+         317.318115234375,
+         -99.2135314941406
+        ],
+        [
+         316.012512207031,
+         -97.5025024414062
+        ],
+        [
+         313.390075683594,
+         -94.5524291992188
+        ],
+        [
+         310.550598144531,
+         -91.7821197509766
+        ],
+        [
+         307.527069091797,
+         -89.2123718261719
+        ],
+        [
+         304.352416992188,
+         -86.8639373779297
+        ],
+        [
+         301.0595703125,
+         -84.7576293945312
+        ],
+        [
+         297.496704101562,
+         -82.8450775146484
+        ],
+        [
+         293.838806152344,
+         -81.2408447265625
+        ],
+        [
+         290.09765625,
+         -79.9073486328125
+        ],
+        [
+         286.285125732422,
+         -78.8069763183594
+        ],
+        [
+         282.413024902344,
+         -77.9021606445312
+        ],
+        [
+         280.579711914062,
+         -77.5528717041016
+        ],
+        [
+         278.996276855469,
+         -77.2255859375
+        ],
+        [
+         275.050048828125,
+         -76.572265625
+        ],
+        [
+         271.049987792969,
+         -76.0500183105469
+        ],
+        [
+         270.992309570312,
+         -76.0445709228516
+        ],
+        [
+         270.557922363281,
+         -75.9852294921875
+        ],
+        [
+         263.099243164062,
+         -75.1817169189453
+        ],
+        [
+         255.596099853516,
+         -74.6584777832031
+        ],
+        [
+         248.061737060547,
+         -74.3682403564453
+        ],
+        [
+         240.509429931641,
+         -74.2636871337891
+        ],
+        [
+         232.952423095703,
+         -74.2975158691406
+        ],
+        [
+         225.403930664062,
+         -74.4224243164062
+        ],
+        [
+         217.877197265625,
+         -74.5911254882812
+        ],
+        [
+         210.385498046875,
+         -74.7563171386719
+        ],
+        [
+         210.397186279297,
+         -74.7735443115234
+        ],
+        [
+         205.916870117188,
+         -74.8515014648438
+        ],
+        [
+         190.710021972656,
+         -75.2699890136719
+        ],
+        [
+         190.118499755859,
+         -82.2476654052734
+        ],
+        [
+         189.190216064453,
+         -89.1867523193359
+        ],
+        [
+         187.967712402344,
+         -96.0819244384766
+        ],
+        [
+         186.493530273438,
+         -102.927856445312
+        ],
+        [
+         185.06396484375,
+         -108.664291381836
+        ],
+        [
+         183.433563232422,
+         -114.346435546875
+        ],
+        [
+         181.573608398438,
+         -119.953201293945
+        ],
+        [
+         179.455474853516,
+         -125.463470458984
+        ]
+       ],
+       "inTangents": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "outTangents": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "closed": true
+      },
+      "paints": [
+       {
+        "kind": "fill",
+        "color": [
+         0,
+         0,
+         0,
+         1
+        ],
+        "opacity": 1,
+        "fillRule": "evenodd"
+       }
+      ],
+      "transform": {
+       "anchor": [
+        0,
+        0
+       ],
+       "position": [
+        0,
+        0
+       ],
+       "scale": [
+        100,
+        100
+       ],
+       "skew": 0,
+       "skewAxis": 0,
+       "rotation": 0,
+       "opacity": 1
+      },
+      "transformRaw": "",
+      "groupPath": [
+       "merged geometry",
+       "outline 0"
+      ]
+     }
+    ],
+    "hash": "01a047b38dbde3e8"
+   },
+   "evals": [
+    {
+     "t": 15.217,
+     "transform": {
+      "anchor": [
+       275.674420101047,
+       -259.161284724096,
+       0
+      ],
+      "position": [
+       275.674420101047,
+       -259.161284724096,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 7.389884794478338,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.9916938849724868,
+      0.1286205213337919,
+      -5.551115123125783e-17,
+      0,
+      -0.1286205213337919,
+      0.9916938849724867,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -31.043676107246256,
+      -37.61001107338387,
+      0,
+      1
+     ],
+     "world": [
+      0.9318874257871552,
+      0.1286205213337919,
+      -0.33917928467347913,
+      0,
+      -0.12086375477900076,
+      0.9916938849724867,
+      0.04399080914120573,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      734.828486639953,
+      502.3899889266161,
+      -85.38243744844402,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 15.917,
+     "transform": {
+      "anchor": [
+       275.674420101047,
+       -259.161284724096,
+       0
+      ],
+      "position": [
+       275.674420101047,
+       -259.161284724096,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 18.74423244461496,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.946962481704083,
+      0.3213441430069081,
+      0,
+      0,
+      -0.3213441430069081,
+      0.946962481704083,
+      -1.3877787807814457e-17,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -68.65887384040855,
+      -102.33163165644487,
+      0,
+      1
+     ],
+     "world": [
+      0.8898536562184376,
+      0.3213441430069081,
+      -0.3238802437164614,
+      0,
+      -0.30196471991636326,
+      0.946962481704083,
+      0.10990616984808689,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      699.4817629006976,
+      437.66836834355513,
+      -72.51728212852453,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 16.617,
+     "transform": {
+      "anchor": [
+       275.674420101047,
+       -259.161284724096,
+       0
+      ],
+      "position": [
+       275.674420101047,
+       -259.161284724096,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 6.143685190967567,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.9942566340360375,
+      0.10702217375539139,
+      5.551115123125783e-17,
+      0,
+      -0.10702217375539139,
+      0.9942566340360374,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -26.152704962869166,
+      -30.99173378983221,
+      0,
+      1
+     ],
+     "world": [
+      0.9342956221710998,
+      0.10702217375539139,
+      -0.34005579647550244,
+      0,
+      -0.1005679469384086,
+      0.9942566340360374,
+      0.03660373920684358,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      739.4244961328009,
+      509.0082662101678,
+      -87.05524810024556,
+      1
+     ],
+     "opacity": 0.96
+    }
+   ]
+  },
+  {
+   "index": 221,
+   "name": "STROKE_010_runs5",
+   "kind": "shape",
+   "inPoint": 15.1666666666667,
+   "outPoint": 16.6666666666667,
+   "startTime": 15.25,
+   "stretch": 100,
+   "parentIndex": 214,
+   "threeDLayer": true,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       152.099975585938,
+       -292.110015869141,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position_0",
+      "name": "X Position",
+      "value": 221.1,
+      "keys": [
+       {
+        "t": 15.1666666666667,
+        "v": 168.531222950391,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 100,
+          "speed": 0.00005062575678
+         }
+        ]
+       },
+       {
+        "t": 15.4583333333333,
+        "v": 221.1,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00010999068377
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00010999068377
+         }
+        ]
+       },
+       {
+        "t": 16.9583333333333,
+        "v": 152.099975585938,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 100,
+          "speed": -19.5184041917079
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "matchName": "ADBE Position_1",
+      "name": "Y Position",
+      "value": -292.110015869141
+     },
+     {
+      "matchName": "ADBE Position_2",
+      "name": "Z Position",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Orientation",
+      "name": "Orientation",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate X",
+      "name": "X Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Y",
+      "name": "Y Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Z Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 96
+     }
+    ]
+   },
+   "masks": [],
+   "text": null,
+   "shapes": {
+    "items": [
+     {
+      "name": "outline",
+      "path": {
+       "vertices": [
+        [
+         2.72998046875,
+         -261.690002441406
+        ],
+        [
+         2.72998046875,
+         -322.530029296875
+        ],
+        [
+         301.469970703125,
+         -322.530029296875
+        ],
+        [
+         301.469970703125,
+         -261.690002441406
+        ]
+       ],
+       "inTangents": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "outTangents": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "closed": true
+      },
+      "paints": [
+       {
+        "kind": "fill",
+        "color": [
+         0,
+         0,
+         0,
+         1
+        ],
+        "opacity": 1,
+        "fillRule": "nonzero"
+       }
+      ],
+      "transform": {
+       "anchor": [
+        0,
+        0
+       ],
+       "position": [
+        0,
+        0
+       ],
+       "scale": [
+        100,
+        100
+       ],
+       "skew": 0,
+       "skewAxis": 0,
+       "rotation": 0,
+       "opacity": 1
+      },
+      "transformRaw": "",
+      "groupPath": [
+       "shell 10",
+       "outline"
+      ]
+     }
+    ],
+    "hash": "9947317bdc87393b"
+   },
+   "evals": [
+    {
+     "t": 15.217,
+     "transform": {
+      "anchor": [
+       152.099975585938,
+       -292.110015869141,
+       0
+      ],
+      "position": [
+       170.98778875629506,
+       -292.110015869141,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      18.88781317035705,
+      0,
+      0,
+      1
+     ],
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      781.7487386589675,
+      540,
+      -102.46001256763397,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 15.917,
+     "transform": {
+      "anchor": [
+       152.099975585938,
+       -292.110015869141,
+       0
+      ],
+      "position": [
+       200.001919893393,
+       -292.110015869141,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      47.90194430745498,
+      0,
+      0,
+      1
+     ],
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      809.013103587013,
+      540,
+      -112.38342985761395,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 16.617,
+     "transform": {
+      "anchor": [
+       152.099975585938,
+       -292.110015869141,
+       0
+      ],
+      "position": [
+       167.80050996257035,
+       -292.110015869141,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      15.700534376632163,
+      0,
+      -2.842170943040401e-14,
+      1
+     ],
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      778.7536762961169,
+      540,
+      -101.36989901778539,
+      1
+     ],
+     "opacity": 0.96
+    }
+   ]
+  },
+  {
+   "index": 222,
+   "name": "STROKE_007_runs5",
+   "kind": "shape",
+   "inPoint": 15.1666666666667,
+   "outPoint": 16.6666666666667,
+   "startTime": 15.25,
+   "stretch": 100,
+   "parentIndex": 214,
+   "threeDLayer": true,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -167.309997558594,
+       128.309997558594,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position_0",
+      "name": "X Position",
+      "value": -266.3,
+      "keys": [
+       {
+        "t": 15.1666666666667,
+        "v": -190.882876416752,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 100,
+          "speed": 0.00005062575678
+         }
+        ]
+       },
+       {
+        "t": 15.4583333333333,
+        "v": -266.3,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00010999068377
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00010999068377
+         }
+        ]
+       },
+       {
+        "t": 16.9583333333333,
+        "v": -167.309997558594,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 100,
+          "speed": -19.5184041917079
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "matchName": "ADBE Position_1",
+      "name": "Y Position",
+      "value": 128.309997558594
+     },
+     {
+      "matchName": "ADBE Position_2",
+      "name": "Z Position",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Orientation",
+      "name": "Orientation",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate X",
+      "name": "X Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Y",
+      "name": "Y Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Z Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 96
+     }
+    ]
+   },
+   "masks": [],
+   "text": null,
+   "shapes": {
+    "items": [
+     {
+      "name": "outline",
+      "path": {
+       "vertices": [
+        [
+         -278.070007324219,
+         156.390014648438
+        ],
+        [
+         -278.070007324219,
+         100.22998046875
+        ],
+        [
+         -56.5499877929688,
+         100.22998046875
+        ],
+        [
+         -56.5499877929688,
+         156.390014648438
+        ]
+       ],
+       "inTangents": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "outTangents": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "closed": true
+      },
+      "paints": [
+       {
+        "kind": "fill",
+        "color": [
+         0,
+         0,
+         0,
+         1
+        ],
+        "opacity": 1,
+        "fillRule": "nonzero"
+       }
+      ],
+      "transform": {
+       "anchor": [
+        0,
+        0
+       ],
+       "position": [
+        0,
+        0
+       ],
+       "scale": [
+        100,
+        100
+       ],
+       "skew": 0,
+       "skewAxis": 0,
+       "rotation": 0,
+       "opacity": 1
+      },
+      "transformRaw": "",
+      "groupPath": [
+       "shell 7",
+       "outline"
+      ]
+     }
+    ],
+    "hash": "c31e9a48c245e8fd"
+   },
+   "evals": [
+    {
+     "t": 15.217,
+     "transform": {
+      "anchor": [
+       -167.309997558594,
+       128.309997558594,
+       0
+      ],
+      "position": [
+       -194.40715712808398,
+       128.309997558594,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -27.09715956949003,
+      0,
+      -5.684341886080802e-14,
+      1
+     ],
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      738.536999108292,
+      540,
+      -86.73222560032453,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 15.917,
+     "transform": {
+      "anchor": [
+       -167.309997558594,
+       128.309997558594,
+       0
+      ],
+      "position": [
+       -236.03190924210202,
+       128.309997558594,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -68.7219116835081,
+      0,
+      -5.684341886080802e-14,
+      1
+     ],
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      699.4225267047066,
+      540,
+      -72.49572191639264,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 16.617,
+     "transform": {
+      "anchor": [
+       -167.309997558594,
+       128.309997558594,
+       0
+      ],
+      "position": [
+       -189.83456837537585,
+       128.309997558594,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -22.524570816781875,
+      0,
+      0,
+      1
+     ],
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      742.8338270171005,
+      540,
+      -88.2961430608951,
+      1
+     ],
+     "opacity": 0.96
+    }
+   ]
+  },
+  {
+   "index": 223,
+   "name": "STROKE_004_runs5",
+   "kind": "shape",
+   "inPoint": 15.1666666666667,
+   "outPoint": 16.6666666666667,
+   "startTime": 15.25,
+   "stretch": 100,
+   "parentIndex": 214,
+   "threeDLayer": true,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -167.309997558594,
+       -6.24000549316406,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position_0",
+      "name": "X Position",
+      "value": -95.3,
+      "keys": [
+       {
+        "t": 15.1666666666667,
+        "v": -150.161973443434,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 100,
+          "speed": 0.00005062575678
+         }
+        ]
+       },
+       {
+        "t": 15.4583333333333,
+        "v": -95.3,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00010999068377
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00010999068377
+         }
+        ]
+       },
+       {
+        "t": 16.9583333333333,
+        "v": -167.309997558594,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 100,
+          "speed": -19.5184041917079
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "matchName": "ADBE Position_1",
+      "name": "Y Position",
+      "value": -6.24000549316406
+     },
+     {
+      "matchName": "ADBE Position_2",
+      "name": "Z Position",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Orientation",
+      "name": "Orientation",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate X",
+      "name": "X Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Y",
+      "name": "Y Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Z Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 96
+     }
+    ]
+   },
+   "masks": [],
+   "text": null,
+   "shapes": {
+    "items": [
+     {
+      "name": "outline",
+      "path": {
+       "vertices": [
+        [
+         -278.070007324219,
+         20.6699829101562
+        ],
+        [
+         -278.070007324219,
+         -33.1499938964844
+        ],
+        [
+         -56.5499877929688,
+         -33.1499938964844
+        ],
+        [
+         -56.5499877929688,
+         20.6699829101562
+        ]
+       ],
+       "inTangents": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "outTangents": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "closed": true
+      },
+      "paints": [
+       {
+        "kind": "fill",
+        "color": [
+         0,
+         0,
+         0,
+         1
+        ],
+        "opacity": 1,
+        "fillRule": "nonzero"
+       }
+      ],
+      "transform": {
+       "anchor": [
+        0,
+        0
+       ],
+       "position": [
+        0,
+        0
+       ],
+       "scale": [
+        100,
+        100
+       ],
+       "skew": 0,
+       "skewAxis": 0,
+       "rotation": 0,
+       "opacity": 1
+      },
+      "transformRaw": "",
+      "groupPath": [
+       "shell 4",
+       "outline"
+      ]
+     }
+    ],
+    "hash": "fe488360f1fec113"
+   },
+   "evals": [
+    {
+     "t": 15.217,
+     "transform": {
+      "anchor": [
+       -167.309997558594,
+       -6.24000549316406,
+       0
+      ],
+      "position": [
+       -147.59824539858386,
+       -6.24000549316406,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      19.711752160010064,
+      0,
+      -2.842170943040401e-14,
+      1
+     ],
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      782.5229880475222,
+      540,
+      -102.74181629896673,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 15.917,
+     "transform": {
+      "anchor": [
+       -167.309997558594,
+       -6.24000549316406,
+       0
+      ],
+      "position": [
+       -117.31843709287394,
+       -6.24000549316406,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      49.99156046572,
+      0,
+      -5.684341886080802e-14,
+      1
+     ],
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      810.9767004712097,
+      540,
+      -113.09812067555941,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 16.617,
+     "transform": {
+      "anchor": [
+       -167.309997558594,
+       -6.24000549316406,
+       0
+      ],
+      "position": [
+       -150.92456216591458,
+       -6.24000549316406,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      16.38543539267937,
+      0,
+      0,
+      1
+     ],
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      779.3972727268651,
+      540,
+      -101.6041489614577,
+      1
+     ],
+     "opacity": 0.96
+    }
+   ]
+  },
+  {
+   "index": 224,
+   "name": "STROKE_005_runs5",
+   "kind": "shape",
+   "inPoint": 15.1666666666667,
+   "outPoint": 16.6666666666667,
+   "startTime": 15.25,
+   "stretch": 100,
+   "parentIndex": 214,
+   "threeDLayer": true,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -161.070029281192,
+       -110.811365266097,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       -161.070029281192,
+       -110.811365266097,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Orientation",
+      "name": "Orientation",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate X",
+      "name": "X Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Y",
+      "name": "Y Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Z Rotation",
+      "value": 18,
+      "keys": [
+       {
+        "t": 15.1666666666667,
+        "v": 4.28571428571429,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 100,
+          "speed": 0.00002949711075
+         }
+        ]
+       },
+       {
+        "t": 15.4583333333333,
+        "v": 18,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 0.01,
+          "speed": 0.00002949711075
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00002113273393
+         }
+        ]
+       },
+       {
+        "t": 16.9583333333333,
+        "v": 0,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 100,
+          "speed": -0.00000133535505
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 16.666666667,
+          "speed": 0
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 96
+     }
+    ]
+   },
+   "masks": [],
+   "text": null,
+   "shapes": {
+    "items": [
+     {
+      "name": "outline",
+      "path": {
+       "vertices": [
+        [
+         -186.810028076172,
+         -135.330017089844
+        ],
+        [
+         -135.330017089844,
+         -135.330017089844
+        ],
+        [
+         -135.330017089844,
+         122.849975585938
+        ],
+        [
+         -186.810028076172,
+         122.849975585938
+        ]
+       ],
+       "inTangents": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "outTangents": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "closed": true
+      },
+      "paints": [
+       {
+        "kind": "fill",
+        "color": [
+         0,
+         0,
+         0,
+         1
+        ],
+        "opacity": 1,
+        "fillRule": "nonzero"
+       }
+      ],
+      "transform": {
+       "anchor": [
+        0,
+        0
+       ],
+       "position": [
+        0,
+        0
+       ],
+       "scale": [
+        100,
+        100
+       ],
+       "skew": 0,
+       "skewAxis": 0,
+       "rotation": 0,
+       "opacity": 1
+      },
+      "transformRaw": "",
+      "groupPath": [
+       "shell 5",
+       "outline"
+      ]
+     }
+    ],
+    "hash": "226592be0ef6e98e"
+   },
+   "evals": [
+    {
+     "t": 15.217,
+     "transform": {
+      "anchor": [
+       -161.070029281192,
+       -110.811365266097,
+       0
+      ],
+      "position": [
+       -161.070029281192,
+       -110.811365266097,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 4.926589862985562,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.9963055485586744,
+      0.08587929850202061,
+      0,
+      0,
+      -0.08587929850202061,
+      0.9963055485586743,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -10.111467716935863,
+      13.423193916246078,
+      0,
+      1
+     ],
+     "world": [
+      0.9362209720286427,
+      0.08587929850202061,
+      -0.3407565665141968,
+      0,
+      -0.08070014308061908,
+      0.9963055485586743,
+      0.029372449982368976,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      754.4983284010805,
+      553.4231939162461,
+      -92.54167436222072,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 15.917,
+     "transform": {
+      "anchor": [
+       -161.070029281192,
+       -110.811365266097,
+       0
+      ],
+      "position": [
+       -161.070029281192,
+       -110.811365266097,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 12.496154963076638,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.9763105298710768,
+      0.21637409563729476,
+      0,
+      0,
+      -0.2163740956372948,
+      0.9763105298710768,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -27.792372593107302,
+      32.22631939257417,
+      0,
+      1
+     ],
+     "world": [
+      0.917431800515431,
+      0.21637409563729476,
+      -0.33391786735686524,
+      0,
+      -0.20332514099959031,
+      0.9763105298710768,
+      0.07400429920182951,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      737.8837125601246,
+      572.2263193925742,
+      -86.49444874234507,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 16.617,
+     "transform": {
+      "anchor": [
+       -161.070029281192,
+       -110.811365266097,
+       0
+      ],
+      "position": [
+       -161.070029281192,
+       -110.811365266097,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 4.0957901273117105,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.9974460335946697,
+      0.07142415604164364,
+      0,
+      0,
+      -0.07142415604164364,
+      0.9974460335946697,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -8.325975687642995,
+      11.221282400793598,
+      0,
+      1
+     ],
+     "world": [
+      0.9372926774010844,
+      0.07142415604164364,
+      -0.34114663536966866,
+      0,
+      -0.06711675237819378,
+      0.9974460335946697,
+      0.024428500086277883,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      756.176142085479,
+      551.2212824007936,
+      -93.1523486019863,
+      1
+     ],
+     "opacity": 0.96
+    }
+   ]
+  },
+  {
+   "index": 225,
+   "name": "Ae_Restro merged shape 4",
+   "kind": "shape",
+   "inPoint": 15.1666666666667,
+   "outPoint": 16.6666666666667,
+   "startTime": 15.25,
+   "stretch": 100,
+   "parentIndex": 214,
+   "threeDLayer": true,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -85.3643730650091,
+       297.920811195165,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position_0",
+      "name": "X Position",
+      "value": -85.3643730650091
+     },
+     {
+      "matchName": "ADBE Position_1",
+      "name": "Y Position",
+      "value": 211.9,
+      "keys": [
+       {
+        "t": 15.1666666666667,
+        "v": 277.436336888941,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 100,
+          "speed": 0.00005062575678
+         }
+        ]
+       },
+       {
+        "t": 15.4583333333333,
+        "v": 211.9,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00010999068377
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00010999068377
+         }
+        ]
+       },
+       {
+        "t": 16.9583333333333,
+        "v": 297.920811195165,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 100,
+          "speed": -19.5184041917079
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "matchName": "ADBE Position_2",
+      "name": "Z Position",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Orientation",
+      "name": "Orientation",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate X",
+      "name": "X Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Y",
+      "name": "Y Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Z Rotation",
+      "value": 3,
+      "keys": [
+       {
+        "t": 15.1666666666667,
+        "v": 0.71428571428571,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 100,
+          "speed": 0.00002949711075
+         }
+        ]
+       },
+       {
+        "t": 15.4583333333333,
+        "v": 3,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 0.01,
+          "speed": 0.00002949711075
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00001517591554
+         }
+        ]
+       },
+       {
+        "t": 16.9583333333333,
+        "v": 0,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 100,
+          "speed": -0.00000133535505
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 16.666666667,
+          "speed": 0
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 96
+     }
+    ]
+   },
+   "masks": [],
+   "text": null,
+   "shapes": {
+    "items": [
+     {
+      "name": "outline 0",
+      "path": {
+       "vertices": [
+        [
+         -166.409515380859,
+         305.167663574219
+        ],
+        [
+         -169.649993896484,
+         298.350036621094
+        ],
+        [
+         -149.760681152344,
+         298.79736328125
+        ],
+        [
+         -129.874816894531,
+         299.036560058594
+        ],
+        [
+         -109.986526489258,
+         299.127502441406
+        ],
+        [
+         -90.0900268554688,
+         299.130004882812
+        ],
+        [
+         -88.5852661132812,
+         299.047973632812
+        ],
+        [
+         -86.9893798828125,
+         298.807830810547
+        ],
+        [
+         -85.3610076904297,
+         298.413818359375
+        ],
+        [
+         -83.7588653564453,
+         297.870208740234
+        ],
+        [
+         -82.2415771484375,
+         297.181213378906
+        ],
+        [
+         -80.8678436279297,
+         296.351135253906
+        ],
+        [
+         -79.6963500976562,
+         295.384155273438
+        ],
+        [
+         -78.7271423339844,
+         294.174377441406
+        ],
+        [
+         -78.0025177001953,
+         292.807250976562
+        ],
+        [
+         -77.4876251220703,
+         291.325012207031
+        ],
+        [
+         -77.1477355957031,
+         289.769897460938
+        ],
+        [
+         -76.9480285644531,
+         288.184204101562
+        ],
+        [
+         -76.8536987304688,
+         286.610168457031
+        ],
+        [
+         -76.8299865722656,
+         285.090026855469
+        ],
+        [
+         -76.8299865722656,
+         -163.410034179688
+        ],
+        [
+         -15.2100219726562,
+         -163.410034179688
+        ],
+        [
+         -15.2100219726562,
+         285.869995117188
+        ],
+        [
+         -15.2298583984375,
+         287.471588134766
+        ],
+        [
+         -15.2171630859375,
+         287.470031738281
+        ],
+        [
+         -15.2839508056641,
+         291.698913574219
+        ],
+        [
+         -15.4379272460938,
+         295.994018554688
+        ],
+        [
+         -15.7055969238281,
+         300.328826904297
+        ],
+        [
+         -16.1134796142578,
+         304.6767578125
+        ],
+        [
+         -16.6880950927734,
+         309.011352539062
+        ],
+        [
+         -17.4559631347656,
+         313.305969238281
+        ],
+        [
+         -18.4435882568359,
+         317.5341796875
+        ],
+        [
+         -19.6775054931641,
+         321.66943359375
+        ],
+        [
+         -21.1842041015625,
+         325.685119628906
+        ],
+        [
+         -22.3624877929688,
+         328.209777832031
+        ],
+        [
+         -22.5074005126953,
+         328.538635253906
+        ],
+        [
+         -22.5810852050781,
+         328.678161621094
+        ],
+        [
+         -22.990234375,
+         329.554809570312
+        ],
+        [
+         -23.6210479736328,
+         330.647247314453
+        ],
+        [
+         -24.0112457275391,
+         331.386077880859
+        ],
+        [
+         -24.4151153564453,
+         332.022430419922
+        ],
+        [
+         -24.8618011474609,
+         332.796020507812
+        ],
+        [
+         -25.3072814941406,
+         333.428161621094
+        ],
+        [
+         -25.7445678710938,
+         334.1171875
+        ],
+        [
+         -26.3161163330078,
+         334.859771728516
+        ],
+        [
+         -26.9690246582031,
+         335.786285400391
+        ],
+        [
+         -27.6393585205078,
+         336.578979492188
+        ],
+        [
+         -28.1225891113281,
+         337.206848144531
+        ],
+        [
+         -28.6598510742188,
+         337.785797119141
+        ],
+        [
+         -29.2944641113281,
+         338.536254882812
+        ],
+        [
+         -30.1277465820312,
+         339.367614746094
+        ],
+        [
+         -30.7684936523438,
+         340.058074951172
+        ],
+        [
+         -31.3331604003906,
+         340.570220947266
+        ],
+        [
+         -31.8207244873047,
+         341.056640625
+        ],
+        [
+         -32.5882415771484,
+         341.708557128906
+        ],
+        [
+         -33.6500854492188,
+         342.671630859375
+        ],
+        [
+         -34.4242401123047,
+         343.267974853516
+        ],
+        [
+         -34.5304107666016,
+         343.358154296875
+        ],
+        [
+         -34.7282257080078,
+         343.502136230469
+        ],
+        [
+         -36.7352294921875,
+         345.048187255859
+        ],
+        [
+         -39.9917602539062,
+         347.188537597656
+        ],
+        [
+         -43.0206909179688,
+         348.875732421875
+        ],
+        [
+         -46.1587677001953,
+         350.355407714844
+        ],
+        [
+         -49.3801727294922,
+         351.656311035156
+        ],
+        [
+         -50.1346588134766,
+         351.921142578125
+        ],
+        [
+         -50.2206115722656,
+         351.9560546875
+        ],
+        [
+         -53.6651611328125,
+         353.168518066406
+        ],
+        [
+         -57.1712341308594,
+         354.236938476562
+        ],
+        [
+         -60.7214660644531,
+         355.171875
+        ],
+        [
+         -64.2984008789062,
+         355.984130859375
+        ],
+        [
+         -67.8846588134766,
+         356.684326171875
+        ],
+        [
+         -71.4628295898438,
+         357.283203125
+        ],
+        [
+         -73.2385406494141,
+         357.537231445312
+        ],
+        [
+         -73.6972503662109,
+         357.6123046875
+        ],
+        [
+         -74.1576995849609,
+         357.668701171875
+        ],
+        [
+         -75.0154876708984,
+         357.791381835938
+        ],
+        [
+         -78.5252380371094,
+         358.219604492188
+        ],
+        [
+         -79.1594696044922,
+         358.281127929688
+        ],
+        [
+         -79.6963500976562,
+         358.346862792969
+        ],
+        [
+         -79.6963500976562,
+         358.333190917969
+        ],
+        [
+         -83.7022705078125,
+         358.721801757812
+        ],
+        [
+         -88.8892822265625,
+         359.109741210938
+        ],
+        [
+         -102.834533691406,
+         359.879760742188
+        ],
+        [
+         -112.780349731445,
+         360.249816894531
+        ],
+        [
+         -122.729858398438,
+         360.50341796875
+        ],
+        [
+         -135.659301757812,
+         360.690979003906
+        ],
+        [
+         -148.589996337891,
+         360.75
+        ],
+        [
+         -149.494354248047,
+         354.833923339844
+        ],
+        [
+         -150.723480224609,
+         348.979858398438
+        ],
+        [
+         -152.227142333984,
+         343.185791015625
+        ],
+        [
+         -153.955139160156,
+         337.449859619141
+        ],
+        [
+         -155.857269287109,
+         331.770111083984
+        ],
+        [
+         -157.883239746094,
+         326.144653320312
+        ],
+        [
+         -160.563537597656,
+         319.088012695312
+        ],
+        [
+         -163.393157958984,
+         312.087951660156
+        ]
+       ],
+       "inTangents": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "outTangents": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "closed": true
+      },
+      "paints": [
+       {
+        "kind": "fill",
+        "color": [
+         0,
+         0,
+         0,
+         1
+        ],
+        "opacity": 1,
+        "fillRule": "evenodd"
+       }
+      ],
+      "transform": {
+       "anchor": [
+        0,
+        0
+       ],
+       "position": [
+        0,
+        0
+       ],
+       "scale": [
+        100,
+        100
+       ],
+       "skew": 0,
+       "skewAxis": 0,
+       "rotation": 0,
+       "opacity": 1
+      },
+      "transformRaw": "",
+      "groupPath": [
+       "merged geometry",
+       "outline 0"
+      ]
+     }
+    ],
+    "hash": "d4a341bdaa17fae3"
+   },
+   "evals": [
+    {
+     "t": 15.217,
+     "transform": {
+      "anchor": [
+       -85.3643730650091,
+       297.920811195165,
+       0
+      ],
+      "position": [
+       -85.3643730650091,
+       274.37379038736174,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0.8210983104975889,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      0.999897314854263,
+      0.014330378474930312,
+      0,
+      0,
+      -0.014330378474930313,
+      0.999897314854263,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      4.260552326896004,
+      -22.293124991590958,
+      -2.842170943040401e-14,
+      1
+     ],
+     "world": [
+      0.9395961283121951,
+      0.014330378474930312,
+      -0.34198502293740635,
+      0,
+      -0.013466150905961234,
+      0.999897314854263,
+      0.004901278099906743,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      768.0036095820565,
+      517.706875008409,
+      -97.4571947174915,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 15.917,
+     "transform": {
+      "anchor": [
+       -85.3643730650091,
+       297.920811195165,
+       0
+      ],
+      "position": [
+       -85.3643730650091,
+       238.20251193159058,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 2.0826924938461064,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      0.9993394172589272,
+      0.03634183694570292,
+      0,
+      0,
+      -0.03634183694570292,
+      0.999339417258927,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      10.770599311636943,
+      -56.41919979059173,
+      0,
+      1
+     ],
+     "world": [
+      0.9390718760587037,
+      0.03634183694570292,
+      -0.3417942107218885,
+      0,
+      -0.03415015600368173,
+      0.999339417258927,
+      0.012429640280887395,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      774.1210526945871,
+      483.58080020940827,
+      -99.68376192026943,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 16.617,
+     "transform": {
+      "anchor": [
+       -85.3643730650091,
+       297.920811195165,
+       0
+      ],
+      "position": [
+       -85.3643730650091,
+       278.34730068202606,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0.6826316878852854,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      0.9999290271098079,
+      0.011913888669671895,
+      0,
+      0,
+      -0.011913888669671897,
+      0.9999290271098078,
+      -4.336808689942018e-19,
+      0,
+      0,
+      0,
+      1,
+      0,
+      3.5433368206815885,
+      -18.535344575067256,
+      0,
+      1
+     ],
+     "world": [
+      0.939625928084719,
+      0.011913888669671895,
+      -0.34199586916759295,
+      0,
+      -0.011195393267755524,
+      0.9999290271098078,
+      0.004074789910367242,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      767.3296474633536,
+      521.4646554249327,
+      -97.21189256726066,
+      1
+     ],
+     "opacity": 0.96
+    }
+   ]
+  },
+  {
+   "index": 226,
+   "name": "STROKE_003_runs5",
+   "kind": "shape",
+   "inPoint": 15.1666666666667,
+   "outPoint": 16.6666666666667,
+   "startTime": 15.25,
+   "stretch": 100,
+   "parentIndex": 214,
+   "threeDLayer": true,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -167.309997558594,
+       -135.330017089844,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position_0",
+      "name": "X Position",
+      "value": -283.3,
+      "keys": [
+       {
+        "t": 15.1666666666667,
+        "v": -194.931153320532,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 100,
+          "speed": 0.00005062575678
+         }
+        ]
+       },
+       {
+        "t": 15.4583333333333,
+        "v": -283.3,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00010999068377
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00010999068377
+         }
+        ]
+       },
+       {
+        "t": 16.9583333333333,
+        "v": -167.309997558594,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 100,
+          "speed": -19.5184041917079
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "matchName": "ADBE Position_1",
+      "name": "Y Position",
+      "value": -135.330017089844
+     },
+     {
+      "matchName": "ADBE Position_2",
+      "name": "Z Position",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Orientation",
+      "name": "Orientation",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate X",
+      "name": "X Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Y",
+      "name": "Y Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Z Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 96
+     }
+    ]
+   },
+   "masks": [],
+   "text": null,
+   "shapes": {
+    "items": [
+     {
+      "name": "outline",
+      "path": {
+       "vertices": [
+        [
+         -278.070007324219,
+         -163.410034179688
+        ],
+        [
+         -56.5499877929688,
+         -163.410034179688
+        ],
+        [
+         -56.5499877929688,
+         -107.25
+        ],
+        [
+         -278.070007324219,
+         -107.25
+        ]
+       ],
+       "inTangents": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "outTangents": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "closed": true
+      },
+      "paints": [
+       {
+        "kind": "fill",
+        "color": [
+         0,
+         0,
+         0,
+         1
+        ],
+        "opacity": 1,
+        "fillRule": "nonzero"
+       }
+      ],
+      "transform": {
+       "anchor": [
+        0,
+        0
+       ],
+       "position": [
+        0,
+        0
+       ],
+       "scale": [
+        100,
+        100
+       ],
+       "skew": 0,
+       "skewAxis": 0,
+       "rotation": 0,
+       "opacity": 1
+      },
+      "transformRaw": "",
+      "groupPath": [
+       "shell 3",
+       "outline"
+      ]
+     }
+    ],
+    "hash": "d94e5a7a6141d97b"
+   },
+   "evals": [
+    {
+     "t": 15.217,
+     "transform": {
+      "anchor": [
+       -167.309997558594,
+       -135.330017089844,
+       0
+      ],
+      "position": [
+       -199.06067466844348,
+       -135.330017089844,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -31.750677109849562,
+      0,
+      -5.684341886080802e-14,
+      1
+     ],
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      734.1641230149183,
+      540,
+      -85.14062886420226,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 15.917,
+     "transform": {
+      "anchor": [
+       -167.309997558594,
+       -135.330017089844,
+       0
+      ],
+      "position": [
+       -247.83383337389662,
+       -135.330017089844,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -80.52383581530262,
+      0,
+      0,
+      1
+     ],
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      688.3323456869841,
+      540,
+      -68.45922613331759,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 16.617,
+     "transform": {
+      "anchor": [
+       -167.309997558594,
+       -135.330017089844,
+       0
+      ],
+      "position": [
+       -193.70281460672578,
+       -135.330017089844,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -26.392817048131974,
+      0,
+      -5.684341886080802e-14,
+      1
+     ],
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      739.198864578118,
+      540,
+      -86.97312493042982,
+      1
+     ],
+     "opacity": 0.96
+    }
+   ]
+  },
+  {
+   "index": 227,
+   "name": "STROKE_006_runs7",
+   "kind": "shape",
+   "inPoint": 15.1666666666667,
+   "outPoint": 16.6666666666667,
+   "startTime": 15.25,
+   "stretch": 100,
+   "parentIndex": 214,
+   "threeDLayer": true,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -279.543740160445,
+       159.191303580137,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       -279.543740160445,
+       159.191303580137,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Orientation",
+      "name": "Orientation",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate X",
+      "name": "X Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Y",
+      "name": "Y Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Z Rotation",
+      "value": -10,
+      "keys": [
+       {
+        "t": 15.1666666666667,
+        "v": -2.38095238095238,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 100,
+          "speed": 0.00002949711075
+         }
+        ]
+       },
+       {
+        "t": 15.4583333333333,
+        "v": -10,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 0.01,
+          "speed": 0.00002949711075
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00002113273393
+         }
+        ]
+       },
+       {
+        "t": 16.9583333333333,
+        "v": 0,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 100,
+          "speed": -0.00000133535505
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 16.666666667,
+          "speed": 0
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 96
+     }
+    ]
+   },
+   "masks": [],
+   "text": null,
+   "shapes": {
+    "items": [
+     {
+      "name": "outline",
+      "path": {
+       "vertices": [
+        [
+         -363.870025634766,
+         330.330017089844
+        ],
+        [
+         -336.362426757812,
+         275.303100585938
+        ],
+        [
+         -320.596496582031,
+         218.222839355469
+        ],
+        [
+         -308.587524414062,
+         121.239196777344
+        ],
+        [
+         -306.150024414062,
+         43.2900390625
+        ],
+        [
+         -306.150024414062,
+         -163.410034179688
+        ],
+        [
+         -246.090026855469,
+         -163.410034179688
+        ],
+        [
+         -246.090026855469,
+         44.0700073242188
+        ],
+        [
+         -256.067352294922,
+         198.163024902344
+        ],
+        [
+         -311.610015869141,
+         363.090026855469
+        ],
+        [
+         -335.230865478516,
+         345.925323486328
+        ]
+       ],
+       "inTangents": [
+        [
+         10.4704895019531,
+         3.19189453125
+        ],
+        [
+         -7.22085571289062,
+         19.2638244628906
+        ],
+        [
+         -3.97854614257812,
+         19.3732299804688
+        ],
+        [
+         -1.91372680664062,
+         32.6129760742188
+        ],
+        [
+         -0.00018310546875,
+         25.9998016357422
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         7.3525390625,
+         -50.9700317382812
+        ],
+        [
+         31.5820922851562,
+         -49.4349975585938
+        ],
+        [
+         8.15847778320312,
+         5.10586547851562
+        ]
+       ],
+       "outTangents": [
+        [
+         11.0384216308594,
+         -17.3551635742188
+        ],
+        [
+         6.94952392578125,
+         -18.5399780273438
+        ],
+        [
+         6.57733154296875,
+         -32.0277709960938
+        ],
+        [
+         1.52294921875,
+         -25.9532470703125
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         -0.000244140625,
+         51.4714660644531
+        ],
+        [
+         -8.30703735351562,
+         57.5868530273438
+        ],
+        [
+         -6.39016723632812,
+         -7.3843994140625
+        ],
+        [
+         -9.17459106445312,
+         -5.74179077148438
+        ]
+       ],
+       "closed": true
+      },
+      "paints": [
+       {
+        "kind": "fill",
+        "color": [
+         0,
+         0,
+         0,
+         1
+        ],
+        "opacity": 1,
+        "fillRule": "nonzero"
+       }
+      ],
+      "transform": {
+       "anchor": [
+        0,
+        0
+       ],
+       "position": [
+        0,
+        0
+       ],
+       "scale": [
+        100,
+        100
+       ],
+       "skew": 0,
+       "skewAxis": 0,
+       "rotation": 0,
+       "opacity": 1
+      },
+      "transformRaw": "",
+      "groupPath": [
+       "shell 6",
+       "outline"
+      ]
+     }
+    ],
+    "hash": "f41b3c6bebea11ce"
+   },
+   "evals": [
+    {
+     "t": 15.217,
+     "transform": {
+      "anchor": [
+       -279.543740160445,
+       159.191303580137,
+       0
+      ],
+      "position": [
+       -279.543740160445,
+       159.191303580137,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": -2.736994368325309,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.9988592513599297,
+      -0.04775139759924215,
+      5.551115123125783e-17,
+      0,
+      0.04775139759924215,
+      0.9988592513599296,
+      -1.734723475976807e-18,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -7.9204963730251166,
+      -13.167007019710582,
+      -2.842170943040401e-14,
+      1
+     ],
+     "world": [
+      0.9386206677066627,
+      -0.04775139759924215,
+      -0.34162998431229324,
+      0,
+      0.04487163595622179,
+      0.9988592513599296,
+      -0.016331939850893793,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      756.5571680053068,
+      526.8329929802894,
+      -93.29103069528755,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 15.917,
+     "transform": {
+      "anchor": [
+       -279.543740160445,
+       159.191303580137,
+       0
+      ],
+      "position": [
+       -279.543740160445,
+       159.191303580137,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": -6.942308312820355,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.9926683599129156,
+      -0.1208698772556776,
+      -5.551115123125783e-17,
+      0,
+      0.12086987725567762,
+      0.9926683599129155,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.290947415356413,
+      -32.621284217942616,
+      -5.684341886080802e-14,
+      1
+     ],
+     "world": [
+      0.9328031326978169,
+      -0.1208698772556776,
+      -0.33951257473227187,
+      0,
+      0.11358053173245876,
+      0.9926683599129155,
+      -0.04133993274274284,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      743.9930538242488,
+      507.3787157820574,
+      -88.71806711346055,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 16.617,
+     "transform": {
+      "anchor": [
+       -279.543740160445,
+       159.191303580137,
+       0
+      ],
+      "position": [
+       -279.543740160445,
+       159.191303580137,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": -2.2754389596176168,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.9992115066450515,
+      -0.03970346317547402,
+      0,
+      0,
+      0.039703463175474026,
+      0.9992115066450515,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -6.540864441083613,
+      -10.973333308355905,
+      0,
+      1
+     ],
+     "world": [
+      0.9389516793987246,
+      -0.03970346317547402,
+      -0.3417504627153979,
+      0,
+      0.03730905136563799,
+      0.9992115066450515,
+      -0.013579384165801034,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      757.8535979511528,
+      529.0266666916441,
+      -93.76289260638681,
+      1
+     ],
+     "opacity": 0.96
+    }
+   ]
+  },
+  {
+   "index": 228,
+   "name": "STROKE_002_runs7",
+   "kind": "shape",
+   "inPoint": 15.1666666666667,
+   "outPoint": 16.6666666666667,
+   "startTime": 15.25,
+   "stretch": 100,
+   "parentIndex": 214,
+   "threeDLayer": true,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -120.510006214563,
+       -294.070721175303,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       -120.510006214563,
+       -294.070721175303,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Orientation",
+      "name": "Orientation",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate X",
+      "name": "X Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Y",
+      "name": "Y Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Z Rotation",
+      "value": -38,
+      "keys": [
+       {
+        "t": 15.1666666666667,
+        "v": -9.04761904761905,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 100,
+          "speed": 0.00002949711075
+         }
+        ]
+       },
+       {
+        "t": 15.4583333333333,
+        "v": -38,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 0.01,
+          "speed": 0.00002949711075
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00002113273393
+         }
+        ]
+       },
+       {
+        "t": 16.9583333333333,
+        "v": 0,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 100,
+          "speed": -0.00000133535505
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 16.666666667,
+          "speed": 0
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 96
+     }
+    ]
+   },
+   "masks": [],
+   "text": null,
+   "shapes": {
+    "items": [
+     {
+      "name": "outline",
+      "path": {
+       "vertices": [
+        [
+         -179.010009765625,
+         -149.370025634766
+        ],
+        [
+         -141.283630371094,
+         -239.09326171875
+        ],
+        [
+         -132.357788085938,
+         -267.43408203125
+        ],
+        [
+         -129.894378662109,
+         -276.474731445312
+        ],
+        [
+         -129.089996337891,
+         -279.630004882812
+        ],
+        [
+         -129.089996337891,
+         -291.330017089844
+        ],
+        [
+         -115.050018310547,
+         -291.330017089844
+        ],
+        [
+         -111.841659545898,
+         -292.317199707031
+        ],
+        [
+         -104.910003662109,
+         -294.450012207031
+        ],
+        [
+         -62.010009765625,
+         -267.930023193359
+        ],
+        [
+         -98.4615478515625,
+         -184.030242919922
+        ],
+        [
+         -132.990020751953,
+         -121.290008544922
+        ],
+        [
+         -158.579162597656,
+         -138.788909912109
+        ]
+       ],
+       "inTangents": [
+        [
+         6.95993041992188,
+         3.22689819335938
+        ],
+        [
+         -10.4822082519531,
+         30.7200317382812
+        ],
+        [
+         -2.71044921875,
+         9.52749633789062
+        ],
+        [
+         -0.78524780273438,
+         3.02316284179688
+        ],
+        [
+         -0.01547241210938,
+         0.9822998046875
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         -0.88899230957031,
+         0.27352905273438
+        ],
+        [
+         -2.310546875,
+         0.7109375
+        ],
+        [
+         -14.3000335693359,
+         -8.83993530273438
+        ],
+        [
+         13.60888671875,
+         -27.3103332519531
+        ],
+        [
+         12.5811004638672,
+         -20.2999267578125
+        ],
+        [
+         9.03045654296875,
+         5.05828857421875
+        ]
+       ],
+       "outTangents": [
+        [
+         14.4942321777344,
+         -29.0391845703125
+        ],
+        [
+         3.19863891601562,
+         -9.3741455078125
+        ],
+        [
+         0.85467529296875,
+         -3.0042724609375
+        ],
+        [
+         0.24761962890625,
+         -0.9532470703125
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0.95741271972656,
+         -0.00027465820312
+        ],
+        [
+         2.310546875,
+         -0.7109375
+        ],
+        [
+         14.2999877929688,
+         8.84002685546875
+        ],
+        [
+         -10.424560546875,
+         28.6875
+        ],
+        [
+         -10.6482696533203,
+         21.3689270019531
+        ],
+        [
+         -7.71487426757812,
+         -6.950439453125
+        ],
+        [
+         -6.69140625,
+         -3.74810791015625
+        ]
+       ],
+       "closed": true
+      },
+      "paints": [
+       {
+        "kind": "fill",
+        "color": [
+         0,
+         0,
+         0,
+         1
+        ],
+        "opacity": 1,
+        "fillRule": "nonzero"
+       }
+      ],
+      "transform": {
+       "anchor": [
+        0,
+        0
+       ],
+       "position": [
+        0,
+        0
+       ],
+       "scale": [
+        100,
+        100
+       ],
+       "skew": 0,
+       "skewAxis": 0,
+       "rotation": 0,
+       "opacity": 1
+      },
+      "transformRaw": "",
+      "groupPath": [
+       "shell 2",
+       "outline"
+      ]
+     }
+    ],
+    "hash": "477794a7ba3c1134"
+   },
+   "evals": [
+    {
+     "t": 15.217,
+     "transform": {
+      "anchor": [
+       -120.510006214563,
+       -294.070721175303,
+       0
+      ],
+      "position": [
+       -120.510006214563,
+       -294.070721175303,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": -10.40057859963618,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.9835696477962957,
+      -0.18052907780706956,
+      0,
+      0,
+      0.18052907780706956,
+      0.9835696477962956,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      51.10829425766144,
+      -26.587245810146896,
+      -5.684341886080802e-14,
+      1
+     ],
+     "world": [
+      0.9242531400631739,
+      -0.18052907780706956,
+      -0.3364006319100665,
+      0,
+      0.16964184225258838,
+      0.9835696477962956,
+      -0.06174458106602473,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      812.0260869748793,
+      513.4127541898531,
+      -113.48006612713581,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 15.917,
+     "transform": {
+      "anchor": [
+       -120.510006214563,
+       -294.070721175303,
+       0
+      ],
+      "position": [
+       -120.510006214563,
+       -294.070721175303,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": -26.38077158871735,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.8958609289561593,
+      -0.4443345541028822,
+      0,
+      0,
+      0.4443345541028822,
+      0.8958609289561593,
+      -2.7755575615628914e-17,
+      0,
+      0,
+      0,
+      1,
+      0,
+      118.11598266946908,
+      -84.17101160067176,
+      -2.842170943040401e-14,
+      1
+     ],
+     "world": [
+      0.8418339041905119,
+      -0.4443345541028822,
+      -0.3064024833214523,
+      0,
+      0.4175379016506754,
+      0.8958609289561593,
+      -0.15197136787881488,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      874.9927173113764,
+      455.82898839932824,
+      -136.39804532166406,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 16.617,
+     "transform": {
+      "anchor": [
+       -120.510006214563,
+       -294.070721175303,
+       0
+      ],
+      "position": [
+       -120.510006214563,
+       -294.070721175303,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": -8.646668046546946,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.9886342548837692,
+      -0.15034064676731523,
+      5.551115123125783e-17,
+      0,
+      0.15034064676731526,
+      0.9886342548837691,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      42.841096402235735,
+      -21.45988513925522,
+      -2.842170943040401e-14,
+      1
+     ],
+     "world": [
+      0.9290123139704528,
+      -0.15034064676731523,
+      -0.3381328295520124,
+      0,
+      0.14127399637142696,
+      0.9886342548837691,
+      -0.05141952955503089,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      804.2574621555586,
+      518.5401148607448,
+      -110.65251793172146,
+      1
+     ],
+     "opacity": 0.96
+    }
+   ]
+  },
+  {
+   "index": 229,
+   "name": "STROKE_000_runs5",
+   "kind": "shape",
+   "inPoint": 15.1666666666667,
+   "outPoint": 16.6666666666667,
+   "startTime": 15.25,
+   "stretch": 100,
+   "parentIndex": 214,
+   "threeDLayer": true,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -207.611905156112,
+       -267.099361109541,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position_0",
+      "name": "X Position",
+      "value": -207.611905156112
+     },
+     {
+      "matchName": "ADBE Position_1",
+      "name": "Y Position",
+      "value": -215.1,
+      "keys": [
+       {
+        "t": 15.1666666666667,
+        "v": -254.716548604183,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 100,
+          "speed": 0.00005062575678
+         }
+        ]
+       },
+       {
+        "t": 15.4583333333333,
+        "v": -215.1,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.0000625470019
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.0000625470019
+         }
+        ]
+       },
+       {
+        "t": 16.9583333333333,
+        "v": -267.099361109541,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 100,
+          "speed": 0
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "matchName": "ADBE Position_2",
+      "name": "Z Position",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Orientation",
+      "name": "Orientation",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate X",
+      "name": "X Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Y",
+      "name": "Y Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Z Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 96
+     }
+    ]
+   },
+   "masks": [],
+   "text": null,
+   "shapes": {
+    "items": [
+     {
+      "name": "outline",
+      "path": {
+       "vertices": [
+        [
+         -238.290008544922,
+         -234.389984130859
+        ],
+        [
+         -238.290008544922,
+         -291.330017089844
+        ],
+        [
+         -111.929992675781,
+         -291.330017089844
+        ],
+        [
+         -111.929992675781,
+         -234.389984130859
+        ]
+       ],
+       "inTangents": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "outTangents": [
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ],
+        [
+         0,
+         0
+        ]
+       ],
+       "closed": true
+      },
+      "paints": [
+       {
+        "kind": "fill",
+        "color": [
+         0,
+         0,
+         0,
+         1
+        ],
+        "opacity": 1,
+        "fillRule": "nonzero"
+       }
+      ],
+      "transform": {
+       "anchor": [
+        0,
+        0
+       ],
+       "position": [
+        0,
+        0
+       ],
+       "scale": [
+        100,
+        100
+       ],
+       "skew": 0,
+       "skewAxis": 0,
+       "rotation": 0,
+       "opacity": 1
+      },
+      "transformRaw": "",
+      "groupPath": [
+       "shell 0",
+       "outline"
+      ]
+     }
+    ],
+    "hash": "3719f09349074513"
+   },
+   "evals": [
+    {
+     "t": 15.217,
+     "transform": {
+      "anchor": [
+       -207.611905156112,
+       -267.099361109541,
+       0
+      ],
+      "position": [
+       -207.611905156112,
+       -252.865247050085,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      14.234114059456033,
+      0,
+      1
+     ],
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      764,
+      554.234114059456,
+      -96,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 15.917,
+     "transform": {
+      "anchor": [
+       -207.611905156112,
+       -267.099361109541,
+       0
+      ],
+      "position": [
+       -207.611905156112,
+       -230.9998014203296,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      36.099559689211446,
+      0,
+      1
+     ],
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      764,
+      576.0995596892114,
+      -96,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 16.617,
+     "transform": {
+      "anchor": [
+       -207.611905156112,
+       -267.099361109541,
+       0
+      ],
+      "position": [
+       -207.611905156112,
+       -255.26722389515353,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": true
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      11.832137214387444,
+      0,
+      1
+     ],
+     "world": [
+      0.9396926207859084,
+      0,
+      -0.3420201433256687,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      764,
+      551.8321372143874,
+      -96,
+      1
+     ],
+     "opacity": 0.96
+    }
+   ]
+  },
+  {
+   "index": 230,
+   "name": "STROKE_001_runs6",
+   "kind": "shape",
+   "inPoint": 15.1666666666667,
+   "outPoint": 16.6666666666667,
+   "startTime": 15.25,
+   "stretch": 100,
+   "parentIndex": 214,
+   "threeDLayer": true,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       -314.760659258944,
+       -125.133674100865,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       -314.760659258944,
+       -125.133674100865,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Orientation",
+      "name": "Orientation",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate X",
+      "name": "X Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Y",
+      "name": "Y Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Z Rotation",
+      "value": -19,
+      "keys": [
+       {
+        "t": 15.1666666666667,
+        "v": -4.52380952380953,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 33.333333,
+          "speed": 0
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 100,
+          "speed": 0.00002949711075
+         }
+        ]
+       },
+       {
+        "t": 15.4583333333333,
+        "v": -19,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 0.01,
+          "speed": 0.00002949711075
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 0.01,
+          "speed": -0.00002113273393
+         }
+        ]
+       },
+       {
+        "t": 16.9583333333333,
+        "v": 0,
+        "inT": 6613,
+        "outT": 6613,
+        "inEase": [
+         {
+          "influence": 100,
+          "speed": -0.00000133535505
+         }
+        ],
+        "outEase": [
+         {
+          "influence": 16.666666667,
+          "speed": 0
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 96
+     }
+    ]
+   },
+   "masks": [],
+   "text": null,
+   "shapes": {
+    "items": [
+     {
+      "name": "outline",
+      "path": {
+       "vertices": [
+        [
+         -366.990020751953,
+         -117.389999389648
+        ],
+        [
+         -287.352111816406,
+         -243.351440429688
+        ],
+        [
+         -246.870025634766,
+         -363.090026855469
+        ],
+        [
+         -180.570007324219,
+         -348.27001953125
+        ],
+        [
+         -240.963256835938,
+         -186.461761474609
+        ],
+        [
+         -312.390014648438,
+         -73.7100219726562
+        ]
+       ],
+       "inTangents": [
+        [
+         19.9656066894531,
+         12.0470428466797
+        ],
+        [
+         -20.1910400390625,
+         45.6936645507812
+        ],
+        [
+         -10.0071105957031,
+         41.0069580078125
+        ],
+        [
+         -22.1000366210938,
+         -4.93994140625
+        ],
+        [
+         25.3544616699219,
+         -51.768798828125
+        ],
+        [
+         29.01220703125,
+         -34.0134735107422
+        ]
+       ],
+       "outTangents": [
+        [
+         33.9966125488281,
+         -36.8425140380859
+        ],
+        [
+         17.064453125,
+         -38.6180114746094
+        ],
+        [
+         22.1000061035156,
+         4.94000244140625
+        ],
+        [
+         -15.0187072753906,
+         55.634033203125
+        ],
+        [
+         -19.6142272949219,
+         40.04833984375
+        ],
+        [
+         -17.498046875,
+         -15.2501525878906
+        ]
+       ],
+       "closed": true
+      },
+      "paints": [
+       {
+        "kind": "fill",
+        "color": [
+         0,
+         0,
+         0,
+         1
+        ],
+        "opacity": 1,
+        "fillRule": "nonzero"
+       }
+      ],
+      "transform": {
+       "anchor": [
+        0,
+        0
+       ],
+       "position": [
+        0,
+        0
+       ],
+       "scale": [
+        100,
+        100
+       ],
+       "skew": 0,
+       "skewAxis": 0,
+       "rotation": 0,
+       "opacity": 1
+      },
+      "transformRaw": "",
+      "groupPath": [
+       "shell 1",
+       "outline"
+      ]
+     }
+    ],
+    "hash": "810696f78d172b35"
+   },
+   "evals": [
+    {
+     "t": 15.217,
+     "transform": {
+      "anchor": [
+       -314.760659258944,
+       -125.133674100865,
+       0
+      ],
+      "position": [
+       -314.760659258944,
+       -125.133674100865,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": -5.2002892998180945,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.9958839409781383,
+      -0.09063760865034007,
+      0,
+      0,
+      0.09063760865034008,
+      0.9958839409781381,
+      6.938893903907228e-18,
+      0,
+      0,
+      0,
+      1,
+      0,
+      10.046243530863421,
+      -29.04421104065682,
+      0,
+      1
+     ],
+     "world": [
+      0.9358247904963456,
+      -0.09063760865034007,
+      -0.3406123682290746,
+      0,
+      0.08517149201440559,
+      0.9958839409781381,
+      -0.03099988790128518,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      773.4403809125706,
+      510.9557889593432,
+      -99.4360176523105,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 15.917,
+     "transform": {
+      "anchor": [
+       -314.760659258944,
+       -125.133674100865,
+       0
+      ],
+      "position": [
+       -314.760659258944,
+       -125.133674100865,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": -13.190385794358676,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.9736172063383431,
+      -0.22818750080124967,
+      0,
+      0,
+      0.2281875008012497,
+      0.973617206338343,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      20.24967483311866,
+      -75.12582409078027,
+      0,
+      1
+     ],
+     "world": [
+      0.9149009042663322,
+      -0.22818750080124967,
+      -0.33299669645617724,
+      0,
+      0.2144261106585129,
+      0.973617206338343,
+      -0.07804472172916956,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      783.0284700139957,
+      464.87417590921973,
+      -102.9257966887214,
+      1
+     ],
+     "opacity": 0.96
+    },
+    {
+     "t": 16.617,
+     "transform": {
+      "anchor": [
+       -314.760659258944,
+       -125.133674100865,
+       0
+      ],
+      "position": [
+       -314.760659258944,
+       -125.133674100865,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": -4.323334023273473,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      0.9971545153294372,
+      -0.07538482976113592,
+      0,
+      0,
+      0.07538482976113592,
+      0.9971545153294371,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      8.537534088661573,
+      -24.084244665163624,
+      -2.842170943040401e-14,
+      1
+     ],
+     "world": [
+      0.9370187398384211,
+      -0.07538482976113592,
+      -0.3410469302508118,
+      0,
+      0.07083856824574136,
+      0.9971545153294371,
+      -0.025783130279484843,
+      0,
+      0.3420201433256687,
+      0,
+      0.9396926207859084,
+      0,
+      772.0226577828234,
+      515.9157553348364,
+      -98.92000863265181,
+      1
+     ],
+     "opacity": 0.96
+    }
+   ]
+  }
+ ]
+}
