@@ -9,10 +9,12 @@
 // ae/masterPatch). Changing them requires an explicit owner decision.
 //
 // VARIABLE: only the right-stage scene content (video/src/scenes/*,
-// supplied through Stage.tsx). Scenes may paint anywhere on screen —
-// intentional bleed outside the stage is preserved — but scene code must
-// not own or re-implement the common layout, the left column, the brand,
-// or the background.
+// supplied through Stage.tsx). Scenes may still paint anywhere on
+// screen — PvLeftGuard/PvChromeOverlay repaint the confirmed chrome
+// above them, so bleed outside the stage is preserved visually while
+// the confirmed layout cannot be damaged. Scene code must not own or
+// re-implement the common layout, the left column, the brand, or the
+// background.
 //
 // Values are measured from the recovered production, not invented:
 // SPEC §4 zone design, design-baseline §1, and the scene sources

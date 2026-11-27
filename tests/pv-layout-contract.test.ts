@@ -2,14 +2,24 @@ import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { test } from "node:test";
+import {
+  BACKGROUND_MASTER_LAYERS,
+  chromeBaseCtx,
+  chromeBgCtx,
+  chromeOverlayCtx,
+  PROTECTED_MASTER_LAYERS,
+} from "../video/src/layout/Chrome.tsx";
 import { STAGE_SCENES } from "../video/src/layout/Stage.tsx";
 
 // Issue #30 layout contract — the confirmed common composition
 // (background/grid, brand, left column, placement) is owned by
 // video/src/layout and cannot be reached or overridden by right-stage
-// scene content. These tests pin the structural guarantees; the pixel
-// -level proof (PV-Master vs PV-Chrome diffs confined to stage content)
-// is recorded in docs/issue30-recovery.md.
+// scene content. Protection is compositing order: PvLeftGuard repaints
+// the confirmed background inside the left column and PvChromeOverlay
+// repaints the protected chrome layers LAST, above the stage. These
+// tests pin the structural guarantees behaviorally (layerFilter
+// semantics, mount order, registry); the pixel-level proof is
+// tools/verify-layout.ts + docs/issue30-recovery.md.
 
 const ROOT = join(import.meta.dirname, "..");
 const VIDEO_SRC = join(ROOT, "video", "src");
@@ -23,6 +33,11 @@ const tsxFiles = (dir: string): string[] =>
         : [],
   );
 
+// Minimal stand-ins for the CompSpec/LayerSpec shapes layerFilter sees.
+const master = { name: "master" } as never;
+const otherComp = { name: "description" } as never;
+const layer = (index: number) => ({ index }) as never;
+
 test("stage registry: windows are valid and inside the 20s comp", () => {
   assert.ok(STAGE_SCENES.length >= 5, "expected the recovered A2-E scenes");
   const ids = new Set<string>();
@@ -35,8 +50,76 @@ test("stage registry: windows are valid and inside the 20s comp", () => {
   }
 });
 
+test("protected set covers description column + brand lockup + matte source", () => {
+  // Recovered master indices: description=10, Heading=15,
+  // AFTER EFFECTS PLUGIN=16, Ae.png=17, Logo=18, matte source=8.
+  for (const i of [8, 10, 15, 16, 17, 18]) {
+    assert.ok(PROTECTED_MASTER_LAYERS.has(i), `protected set missing layer ${i}`);
+  }
+});
+
+test("overlay ctx renders ONLY protected master layers; scenes cannot reach them", () => {
+  const f = chromeOverlayCtx.layerFilter;
+  assert.ok(f, "overlay ctx has no layerFilter");
+  for (const i of PROTECTED_MASTER_LAYERS) {
+    assert.equal(f(master, layer(i), 10), true, `overlay drops protected layer ${i}`);
+  }
+  for (const i of [1, 11, 13, 14, 100, 232, 257]) {
+    assert.equal(f(master, layer(i), 10), false, `overlay leaks stage layer ${i}`);
+  }
+  // Nested comps inside a kept layer still render fully.
+  assert.equal(f(otherComp, layer(1), 10), true);
+});
+
+test("base ctx excludes protected layers but keeps stage + window filters", () => {
+  const f = chromeBaseCtx.layerFilter;
+  assert.ok(f, "base ctx has no layerFilter");
+  for (const i of PROTECTED_MASTER_LAYERS) {
+    assert.equal(f(master, layer(i), 10), false, `base renders protected layer ${i}`);
+  }
+  // A normal stage layer (not protected, not in any hide window) renders in base.
+  assert.equal(f(master, layer(100), 2.0), true);
+  // B-window hidden layer is filtered by the recovered window table.
+  assert.equal(f(master, layer(166), 5.0), false);
+  assert.equal(f(otherComp, layer(1), 10), true);
+});
+
+test("left-guard ctx renders ONLY the confirmed background layers", () => {
+  const f = chromeBgCtx.layerFilter;
+  assert.ok(f, "bg ctx has no layerFilter");
+  for (const i of BACKGROUND_MASTER_LAYERS) {
+    assert.equal(f(master, layer(i), 10), true, `guard drops background layer ${i}`);
+  }
+  for (const i of [8, 10, 15, 18, 100, 232, 357]) {
+    assert.equal(f(master, layer(i), 10), false, `guard leaks non-background layer ${i}`);
+  }
+  assert.equal(f(otherComp, layer(1), 10), true);
+});
+
+test("background set excludes matte-only and disabled siblings", () => {
+  for (const i of [187, 255, 256, 259, 263, 264, 265, 266, 267]) {
+    assert.ok(!BACKGROUND_MASTER_LAYERS.has(i), `background set wrongly includes ${i}`);
+  }
+});
+
+test("official entry composites guard + overlay AFTER the stage", () => {
+  const src = read("video/src/PvVideo.tsx");
+  const baseAt = src.indexOf("<PvChromeBase");
+  const stageAt = src.indexOf("<PvStage");
+  const guardAt = src.indexOf("<PvLeftGuard");
+  const overlayAt = src.indexOf("<PvChromeOverlay");
+  assert.ok(
+    baseAt >= 0 && stageAt > baseAt && guardAt > stageAt && overlayAt > guardAt,
+    "PvVideo must render base -> stage -> leftGuard -> overlay in that order",
+  );
+});
+
 test("chrome layer never imports scene modules (scene-independent by construction)", () => {
-  for (const f of ["video/src/layout/Chrome.tsx", "video/src/layout/LeftCopy.tsx", "video/src/layout/zones.ts"]) {
+  for (const f of [
+    "video/src/layout/Chrome.tsx",
+    "video/src/layout/LeftCopy.tsx",
+    "video/src/layout/zones.ts",
+  ]) {
     const src = read(f);
     assert.ok(
       !/from\s+["'][^"']*scenes\//.test(src),
@@ -45,17 +128,16 @@ test("chrome layer never imports scene modules (scene-independent by constructio
   }
 });
 
-test("scenes do not author left-column copy (recovered anchor left:44)", () => {
-  // The left information column is confirmed layout owned by
-  // layout/LeftCopy.tsx + the dumped description comp. Scene components
-  // own right-stage content only; the recovered left-copy anchor is
-  // left:44 inside the x<460 column.
+test("recovered left-column copy is not duplicated back into scenes", () => {
+  // The D/E left lines live only in layout/LeftCopy.tsx. If a scene
+  // reintroduces them, the copy would double-render under the overlay.
   for (const f of tsxFiles(join(VIDEO_SRC, "scenes"))) {
-    const src = readFileSync(f, "utf8");
-    assert.ok(
-      !/left:\s*44\b/.test(src),
-      `${f} authors left-column copy — move it to video/src/layout/LeftCopy.tsx`,
-    );
+    // Strip comments so references in prose don't count as duplication.
+    const src = readFileSync(f, "utf8")
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/(^|[^:])\/\/[^\n]*/g, "$1");
+    assert.ok(!src.includes("そのまま動かせる。"), `${f} duplicates recovered D copy`);
+    assert.ok(!src.includes("輪郭から筆画へ。"), `${f} duplicates recovered E copy`);
   }
 });
 

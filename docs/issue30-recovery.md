@@ -49,11 +49,12 @@ comp（Chrome が再生）と、SceneD/SceneE が authored した左カラム文
 
 ```
 PV-Master (唯一の正式エントリ, video/src/Root.tsx)
-├─ PvChrome  … 確定レイアウトの単一権威。シーン入力を受けない
-│   ├─ CompView(master CompSpec + masterPatch)  … 背景/グリッド/ブランド/左領域/dumped stage 素材
-│   └─ LeftCopy                              … 左カラムの authored コピー切替
-└─ PvStage   … STAGE_SCENES レジストリの明示的スロット
-    └─ SceneA2/B/C/D/E { t }                 … 右ステージ・コンテンツのみ
+├─ PvChromeBase   … 確定レイアウトの下地。protected chrome を除く master 全体
+├─ PvStage        … STAGE_SCENES レジストリの明示的スロット
+│   └─ SceneA2/B/C/D/E { t }                 … 右ステージ・コンテンツのみ
+├─ PvLeftGuard    … 確定背景のみを左カラム x<460 にクリップ再描画
+└─ PvChromeOverlay… protected chrome（ブランド/description 列/マット源）
+                     + LeftCopy を最前面に再描画
 ```
 
 - **表示境界と権限境界の区別**：シーンは画面上どこにでも描画できる
@@ -62,14 +63,41 @@ PV-Master (唯一の正式エントリ, video/src/Root.tsx)
   これは `Chrome.tsx`/`LeftCopy.tsx` がシーンモジュールを import しない
   こと（テストで強制）と、シーンが左カラムの authored コピーを持たない
   こと（テストで強制）で担保する。
+- **保護は合成順で実装する**：「現在のシーンが正しい」ではなく
+  「将来のシーン変更でも確定画素が保たれる」ことを保証するため、
+  `PvLeftGuard`（確定背景を左カラムに限定再描画）と
+  `PvChromeOverlay`（protected master レイヤーを最前面に再描画）を
+  ステージの**後**に合成する。シーンクリップは行わないため、
+  x≥460 の領域外演出・ブリードは失われない。x<460 の左カラムは
+  Issue #30 の確定領域であり、そこへの描画はガードが上書きする。
+- **対象レイヤーの根拠**：`PROTECTED_MASTER_LAYERS` = description(10)・
+  ブランドロックアップ(15–18)・そのアルファマット源(8)。
+  `BACKGROUND_MASTER_LAYERS` = grid-solid(257)・White Solid 1(258)・
+  Linked Quad 8–10(260–262)（master スタック最下層の可視背景。
+  無効化兄弟・マット専用層は除外）。
 - **迂回経路の封鎖**：pv-full 系列は `video/src/rejected/pv-full/` へ
   移設し Root.tsx から登録解除。`PV-Master` 以外に全編を構成する
   comp は存在しない（`PV-Chrome`/`PV-Comp*` はデバッグ用）。
-- **検証**：`tests/pv-layout-contract.test.ts`（6件）がレジストリ・
-  import 境界・左コピー所在・comp 登録を常時検証。画素レベルの証明は
-  §3。
+- **検証**：`tests/pv-layout-contract.test.ts`（12件）が
+  layerFilter の意味論（base が protected を除外、overlay が protected
+  のみ、guard が背景のみ）・合成順・レジストリ・import 境界・
+  左コピー所在・comp 登録を常時検証。画素レベルの証明は §3 と
+  `bun tools/verify-layout.ts`（再実行可能な回帰チェック）。
 
 ## 3. 回帰検証の実施結果（実施済み）
+
+**恒常チェック**：`bun tools/verify-layout.ts` が PV-Master / PV-Chrome
+のスチルを契約フレーム（f0,12,60,108,156,228,324,420,468）で描画し、
+左領域 x<455 の SSIM が全フレーム ≥0.999 であることを検査する
+（report: `.tmp/layout-verify/report.json`）。合成順・layerFilter の
+構造保証は `bun test` が常時検証する。
+
+**実施結果（4平面構成）**：9/9 フレームで左領域 SSIM **1.000000**。
+PV-Master still と `pv-remotion-v18.mp4` 同フレームの全画面 SSIM は
+f60=0.9966、f324=0.9980、f468=0.9981（h264 圧縮誤差の範囲）で、
+回収忠実性を維持している。
+
+以下は境界強化前（2平面構成）に実施した初回計測の記録。
 
 `bunx remotion still` で PV-Master / PV-Chrome を代表8フレーム
 （f24 A1, f60 A2, f150 B, f230 C, f300 D, f400 E, f460 E-card, f479 終了）
@@ -121,8 +149,8 @@ PV-Master (唯一の正式エントリ, video/src/Root.tsx)
 - **編集範囲**：`video/src/scenes/`（右ステージ）と `STAGE_SCENES`。
   レイアウト変更は `video/src/layout/` — オーナー決定なしに触れない。
 - **契約テスト**：`bun test tests/pv-layout-contract.test.ts`
-- **境界の視覚確認**：`PV-Chrome` comp（chrome のみ）と PV-Master の
-  差分が右ステージに限定されること（§3 の手順を再実行可能）
+- **境界のピクセル検証**：`bun tools/verify-layout.ts`
+  （PV-Master vs PV-Chrome、左領域 SSIM ≥0.999）
 - **不採用系列**：`video/src/rejected/pv-full/`、`verification/pv-full-v*.mp4`、
   `docs/step1-plan.md`（撤回注記付きで履歴保持）
 - **コミット基点**：本記録を含む branch `23` の HEAD（PR #27 Draft）

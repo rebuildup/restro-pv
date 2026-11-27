@@ -15,10 +15,18 @@ ADR-0003 に基づく PV 映像の主経路。TypeScript/React を正本とし�
 - `video/src/Root.tsx` — Remotion composition 登録。`PV-Master` が唯一の
   正式エントリ。`PV-Chrome`/`PV-Comp`/`PV-Comp-Description` はデバッグ用。
   拒否された pv-full 系列（`video/src/rejected/pv-full/`）は登録しない
-- `video/src/PvVideo.tsx` — `PvChrome` + `PvStage` の合成のみを行う薄い殻
+- `video/src/PvVideo.tsx` — `PvChromeBase` → `PvStage` → `PvLeftGuard` →
+  `PvChromeOverlay` の4平面合成のみを行う薄い殻
 - `video/src/layout/` — 確定レイアウトの単一権威
   - `Chrome.tsx` — dumped `master` CompSpec の再生（`ae/masterPatch.ts`
-    の制作パッチ適用）+ `LeftCopy`。シーン入力を一切受けない
+    の制作パッチ適用）+ `LeftCopy`。シーン入力を一切受けない。
+    保護は3つの合成平面で実現する：
+    - `PvChromeBase` — protected chrome を除く master 全体（下地）
+    - `PvLeftGuard` — 確定背景（grid/white/quad、`BACKGROUND_MASTER_LAYERS`）
+      のみを左カラム x<460 にクリップして再描画
+    - `PvChromeOverlay` — protected chrome（`PROTECTED_MASTER_LAYERS`：
+      description 列・ブランドロックアップ・マット源）+ `LeftCopy` を
+      最前面に再描画
   - `LeftCopy.tsx` — 左カラムの時間的コピー切替（D/E の authored 分。
     残りは dumped `description` comp が担う）
   - `Stage.tsx` — 右ステージ・スロット。`STAGE_SCENES` レジストリ経由でのみ
@@ -38,8 +46,10 @@ ADR-0003 に基づく PV 映像の主経路。TypeScript/React を正本とし�
 
 境界の原則：シーンは画面上どこにでも描画してよい（意図的な領域外展開は
 保持）が、**所有権**は layout/ にある。右コンテンツの差し替えで
-背景・左領域・ブランドの構成が変化しないことが構造上保証される
-（Chrome はシーンに依存しない）。
+背景・左領域・ブランドの構成が変化しないことは、ガード/オーバーレイの
+合成順で構造保証される（Chrome はシーンに依存しない）。左カラム
+x<460 の画素は PV-Master と PV-Chrome の差分で常時検証できる
+（`bun tools/verify-layout.ts`、閾値 SSIM≥0.999）。
 
 ## コマンド
 
@@ -52,6 +62,9 @@ bun tsc -p tsconfig.json --noEmit
 # スチル（代表フレーム確認）
 cd video
 bunx remotion still src/index.ts PV-Master ../.tmp/f000.png --frame=0
+
+# レイアウト契約のピクセル検証（PV-Master vs PV-Chrome、左領域 SSIM）
+bun tools/verify-layout.ts
 
 # フルレンダー（20秒 / 音声付き）
 bunx remotion render src/index.ts PV-Master ../verification/pv-remotion-vN.mp4 \
