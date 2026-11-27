@@ -3,20 +3,26 @@
 > ← [設計パッケージ目次へ戻る](./README.md)
 > 本書は、元 AEP・制作資産から個別要素をクリーンに分離・書き出したファイル群の台帳、および素材の**由来区別（製品仕様・意匠ロゴ・実 Restro 出力・不足素材）**を定義する。
 
+> **独立単体書き出し規約（Issue #32 §3 C）**: 下記の構造解説図版（`docs/design/assets/`）に加え、**すべての独立コンポーネント・全筆画・全処理中間素材を個別のクリーン透過 SVG＋PNG（計54点）として [`assets/individual/`](./assets/individual/manifest.json) 配下へ個別に書き出し済み**である。一覧表の切り抜きではなく、後続制作で要素単位に直接配置・参照・差し替え検証できる。
+
 ---
 
-## 1. ブランド系素材（意匠アートワーク ／ 製品本体出力と混同厳禁）
+## 1. ブランド・クローム系個別アセット（意匠アートワーク ／ 製品本体出力と混同厳禁）
 
-| 資産 | 実物ファイル（SVG / PNG） | 元データ出典・寸法 | 構成・役割と使用制約 |
+| 資産 | 独立単体ファイル（SVG / PNG） | 一覧参考図 | 出典・寸法 | 構成・役割と使用制約 |
+|---|---|---|---|---|
+| **After Effects アプリバッジ** | [ae-app-icon.png](./assets/ae-app-icon.png) | — | `assets/images/Ae.png` (`240×234`) | Adobe AE 公式アプリアイコン。`master[17]` 左上専用。**製品アプリアイコンではない** |
+| **バッジ＋PLUGIN ロックアップ** | [badge-after-effects-plugin.svg](./assets/individual/chrome/badge-after-effects-plugin.svg) / [PNG](./assets/individual/chrome/badge-after-effects-plugin.png) | — | `05-master.ts [16,17]` (`380×96`) | 左上固定ロックアップ単体（透過） |
+| **Restro 公式 `Logo` 全姿** | [logo-full-clean.svg](./assets/individual/logo/logo-full-clean.svg) / [PNG](./assets/individual/logo/logo-full-clean.png) | [logo-full.png](./assets/logo-full.png) | `46-Logo.ts [1..45]` (`416×260`) | **`[回収事実 / 実測値]`** Restro＋「筆画復元」完成ブランドロゴアートワーク |
+| **`Logo` 赤アクセント6層** | [logo-red-accents.svg](./assets/individual/logo/logo-red-accents.svg) / [PNG](./assets/individual/logo/logo-red-accents.png) | [分解図](./assets/logo-layers-breakdown.png) | `46-Logo.ts` (`#e30b0b`, `416×260`) | `R` の一部＋「元」赤パーツ単体（※解体流用禁止） |
+| **`Logo` 黒32画 / 基礎7層** | [黒32層 PNG](./assets/individual/logo/logo-black-strokes.png) ([SVG](./assets/individual/logo/logo-black-strokes.svg)) / [基礎7層 PNG](./assets/individual/logo/logo-ae-restro-base.png) ([SVG](./assets/individual/logo/logo-ae-restro-base.svg)) | [分解図](./assets/logo-layers-breakdown.png) | `46-Logo.ts` (`416×260`) | ロゴ内部の役割検証・誤流用検知用の独立成分 |
+| **固定見出し `Heading`** | [heading-main.svg](./assets/individual/chrome/heading-main.svg) / [PNG](./assets/individual/chrome/heading-main.png) | — | `43-Heading.ts [1]` (`416×66`) | 「文字の輪郭から、筆画ごとのシェイプへ。」単体透過 |
+| **解説枠 `description` 各幕** | [B PNG](./assets/individual/chrome/desc-b-how-it-works.png) ([SVG](./assets/individual/chrome/desc-b-how-it-works.svg))<br>[C PNG](./assets/individual/chrome/desc-c-case-studies.png) ([SVG](./assets/individual/chrome/desc-c-case-studies.svg))<br>[D PNG](./assets/individual/chrome/desc-d-ae-workflow.png) ([SVG](./assets/individual/chrome/desc-d-ae-workflow.svg)) | — | `03-description.ts` (`416×298`) | 解説窓開門時に表示される B・C・D 正本文字組単体（D は Remotion 復元対象） |
+| **独立製品アイコン** | — **（不在）** | — | 調査対象AEP・画像群全体に存在せず | **`[未確定・不足事項]`** `Logo` コンポ以外の独立製品アイコン（正方形マーク等）はリポジトリに存在しない。必要なら製品側正本から受領するか不要と確定すること |
+
+| 公式 `Logo` 透過 (`416×260`) | `Logo` 赤アクセント6層 (`416×260`) | `Heading` 単体 (`416×66`) | `description` B状態 (`416×298`) |
 |---|---|---|---|
-| **After Effects アプリバッジ** | [ae-app-icon.png](./assets/ae-app-icon.png) | `assets/images/Ae.png` (`240×234` RGBA) | Adobe After Effects の公式アプリアイコン。`master[17]` 左上専用。**製品アプリアイコンではない** |
-| **Restro 公式 `Logo`** | [logo-full.svg](./assets/logo-full.svg) / [PNG](./assets/logo-full.png) | `pv/generated/46-Logo.ts` (`416×260`, 45層) | **`[回収事実 / 実測値]`** Restro ワードマーク＋「筆画復元」から成る**完成済みブランドロゴアートワーク** |
-| **`Logo` 構成層分解** | [logo-layers-breakdown.svg](./assets/logo-layers-breakdown.svg) / [PNG](./assets/logo-layers-breakdown.png) | `pv/generated/46-Logo.ts` | 赤強調6層 (`#e30b0b`)＋黒分解 stroke 32層＋`Ae_Restro` 基礎/合体7層。**作例や汎用筆画へ解体流用禁止** |
-| **独立製品アイコン** | — **（不在）** | 調査対象AEP・画像群全体に存在せず | **`[未確定・不足事項]`** `Logo` コンポ以外の独立製品アイコン（正方形マーク等）はリポジトリに存在しない。必要なら製品側正本から受領するか不要と確定すること |
-
-| After Effects バッジ (`Ae.png`) | 公式 `Logo` 原型 (`416×260`) | `Logo` 45層構造分解 |
-|---|---|---|
-| ![Ae Icon](./assets/ae-app-icon.png) | ![Logo Full](./assets/logo-full.png) | ![Logo Breakdown](./assets/logo-layers-breakdown.png) |
+| ![Logo Full Clean](./assets/individual/logo/logo-full-clean.png) | ![Logo Red Accents](./assets/individual/logo/logo-red-accents.png) | ![Heading Main](./assets/individual/chrome/heading-main.png) | ![Desc B](./assets/individual/chrome/desc-b-how-it-works.png) |
 
 ---
 
@@ -29,37 +35,57 @@
 
 ---
 
-## 3. 実 Restro 筆画出力素材（「解」および「筆」）
+## 3. 実 Restro 筆画出力素材（「解」全16層・元輪郭 ＆「筆」全13画・中間7層）
 
 > **`[導出・推定]`** Restro プラグインが実際にベクターアウトラインから分解・生成した一次素材は、現在リポジトリ内に **「解」（`bunkai` / `kai-zoom`）と「筆」（`Baseline` / `STEP1..4`）の2文字のみ** が存在する。
 
-### 3.1 「解」（Giant Kai & Crossing Proof）
+### 3.1 「解」（Giant Kai：元輪郭＋`runs4` 16レイヤー個別単体書き出し）
 
-| 資産 | 実物ファイル | 元出典・層数 | 実測内容と制作上の注意点 |
+- 全体確認図：[kai-original-outline.png](./assets/kai-original-outline.png) ／ [kai-strokes-exploded.png](./assets/kai-strokes-exploded.png)
+- 独立単体（透過・タイトクロップ）：[元一体輪郭 PNG](./assets/individual/kai/kai-outline-merged.png) ([SVG](./assets/individual/kai/kai-outline-merged.svg), `995×936`) ／ [16層 rest組み上がり PNG](./assets/individual/kai/kai-runs4-assembled.png) ([SVG](./assets/individual/kai/kai-runs4-assembled.svg), `847×841`)
+
+| # | master / bunkai 層 | 個別単体ファイル（SVG / PNG・寸法） | 役割・特性 |
 |---|---|---|---|
-| **分解前の一体輪郭** | [kai-original-outline.svg](./assets/kai-original-outline.svg) / [PNG](./assets/kai-original-outline.png) | `04-kai-zoom.ts [20]` (`Ae_Restro merged shape`) | 交差部が一体結合した元形状 |
-| **`runs4` 全16層分解** | [kai-strokes-exploded.svg](./assets/kai-strokes-exploded.svg) / [PNG](./assets/kai-strokes-exploded.png) | `05-master.ts [239..254]` / `02-bunkai.ts [21..36]` | **`[回収事実 / 実測値]`** 14本の独立 `STROKE_*` ＋ **2本の未分解残存 `Ae_Restro merged shape`（`[244]`, `[249]`）**。A2 交差証明の主役は右側「牛」の縦画 **`STROKE_016_runs4` (`[239]`)** と遮蔽横画 **`STROKE_017` (`[240]`)・`STROKE_015` (`[241]`)** |
+| 01 | `[239]` / `[21]` `STROKE_016_runs4` | [SVG](./assets/individual/kai/kai-01-STROKE_016_runs4.svg) / [PNG](./assets/individual/kai/kai-01-STROKE_016_runs4.png) (`107×463`) | **A2 交差主役（連続縦画・不動軸 Δ=0, 赤強調対象）** |
+| 02 | `[240]` / `[22]` `STROKE_017_runs4` | [SVG](./assets/individual/kai/kai-02-STROKE_017_runs4.svg) / [PNG](./assets/individual/kai/kai-02-STROKE_017_runs4.png) (`405×101`) | **A2 交差下遮蔽横画（Y+300 下方開門）** |
+| 03 | `[241]` / `[23]` `STROKE_015_runs4` | [SVG](./assets/individual/kai/kai-03-STROKE_015_runs4.svg) / [PNG](./assets/individual/kai/kai-03-STROKE_015_runs4.png) (`337×135`) | **A2 交差上遮蔽横画（Y-374 / +8° 上方開門）** |
+| 04 | `[242]` / `[24]` `STROKE_014_runs4` | [SVG](./assets/individual/kai/kai-04-STROKE_014_runs4.svg) / [PNG](./assets/individual/kai/kai-04-STROKE_014_runs4.png) (`190×234`) | 副筆画（Δ=(+161,+65), rot=-13°） |
+| 05 | `[243]` / `[25]` `STROKE_011_runs4` | [SVG](./assets/individual/kai/kai-05-STROKE_011_runs4.svg) / [PNG](./assets/individual/kai/kai-05-STROKE_011_runs4.png) (`169×323`) | 副筆画（Δ=(+51,+7), rot=+25°） |
+| 06 | `[244]` / `[26]` `merged shape 3/A` | [SVG](./assets/individual/kai/kai-06-merged_shape_3.svg) / [PNG](./assets/individual/kai/kai-06-merged_shape_3.png) (`277×263`) | **未分解残存 merged 層**（連結体として扱う） |
+| 07 | `[245]` / `[27]` `STROKE_010_runs4` | [SVG](./assets/individual/kai/kai-07-STROKE_010_runs4.svg) / [PNG](./assets/individual/kai/kai-07-STROKE_010_runs4.png) (`335×97`) | 水平 X 限定（Δ=(-69,0)）※左境界注意 |
+| 08 | `[246]` / `[28]` `STROKE_007_runs4` | [SVG](./assets/individual/kai/kai-08-STROKE_007_runs4.svg) / [PNG](./assets/individual/kai/kai-08-STROKE_007_runs4.png) (`258×93`) | 水平 X 限定（Δ=(+99,0)） |
+| 09 | `[247]` / `[29]` `STROKE_004_runs4` | [SVG](./assets/individual/kai/kai-09-STROKE_004_runs4.svg) / [PNG](./assets/individual/kai/kai-09-STROKE_004_runs4.png) (`258×90`) | 水平 X 限定（Δ=(-72,0)）※左境界注意 |
+| 10 | `[248]` / `[30]` `STROKE_005_runs4` | [SVG](./assets/individual/kai/kai-10-STROKE_005_runs4.svg) / [PNG](./assets/individual/kai/kai-10-STROKE_005_runs4.png) (`155×299`) | 垂直 Y＋回転（Δ=(0,+105), rot=-24°） |
+| 11 | `[249]` / `[31]` `merged shape 2/B` | [SVG](./assets/individual/kai/kai-11-merged_shape_2.svg) / [PNG](./assets/individual/kai/kai-11-merged_shape_2.png) (`212×558`) | **未分解残存 merged 層**（左下結合縦部） |
+| 12 | `[250]` / `[32]` `STROKE_003_runs4` | [SVG](./assets/individual/kai/kai-12-STROKE_003_runs4.svg) / [PNG](./assets/individual/kai/kai-12-STROKE_003_runs4.png) (`258×93`) | 水平 X 限定（Δ=(+116,0)） |
+| 13 | `[251]` / `[33]` `STROKE_006_runs6` | [SVG](./assets/individual/kai/kai-13-STROKE_006_runs6.svg) / [PNG](./assets/individual/kai/kai-13-STROKE_006_runs6.png) (`140×567`) | 左角長画（Δ=(-25,-59), rot=+4°） |
+| 14 | `[252]` / `[34]` `STROKE_002_runs6` | [SVG](./assets/individual/kai/kai-14-STROKE_002_runs6.svg) / [PNG](./assets/individual/kai/kai-14-STROKE_002_runs6.png) (`125×199`) | 垂直 Y＋回転（Δ=(0,+86), rot=-42°） |
+| 15 | `[253]` / `[35]` `STROKE_000_runs4` | [SVG](./assets/individual/kai/kai-15-STROKE_000_runs4.svg) / [PNG](./assets/individual/kai/kai-15-STROKE_000_runs4.png) (`163×93`) | 垂直 Y 限定（Δ=(0,-45)） |
+| 16 | `[254]` / `[36]` `STROKE_001_runs5` | [SVG](./assets/individual/kai/kai-16-STROKE_001_runs5.svg) / [PNG](./assets/individual/kai/kai-16-STROKE_001_runs5.png) (`151×337`) | 角左肩（Δ=(+40,-90), rot=+12°） |
 
-![解 16層分解](./assets/kai-strokes-exploded.png)
+### 3.2 「筆」（Baseline 13画＆元輪郭）＋ Scene B 中間7データ個別書き出し
 
-### 3.2 「筆」（Baseline & STEP 1..4 中間工程）
+- 全体比較図：[fude-original-outline.png](./assets/fude-original-outline.png) ／ [fude-strokes-exploded.png](./assets/fude-strokes-exploded.png) ／ [step1-4-intermediates.png](./assets/step1-4-intermediates.png)
+- 独立単体・輪郭系：[base outline PNG](./assets/individual/fude/fude-outline-base.png) ([SVG](./assets/individual/fude/fude-outline-base.svg), `733×742`) ／ [inset outline PNG](./assets/individual/fude/fude-outline-inset.png) ([SVG](./assets/individual/fude/fude-outline-inset.svg), `733×742`) ／ [13画組み上がり PNG](./assets/individual/fude/fude-13-assembled.png) ([SVG](./assets/individual/fude/fude-13-assembled.svg), `771×759`)
 
-| 資産 | 実物ファイル | 元出典・層数 | 実測内容と注意点 |
-|---|---|---|---|
-| **解析前の連結輪郭** | [fude-original-outline.svg](./assets/fude-original-outline.svg) / [PNG](./assets/fude-original-outline.png) | `01-Baseline.ts [1,2]` (`FUDE outline base` / `inset`) | 元 `1080×1080` コンポ上では `x=583..1309` へ右端はみ出しクリップ（`PV glyph` `1400×1080` で全体保持） |
-| **実分解 13画（ベクトル付）** | [fude-strokes-exploded.svg](./assets/fude-strokes-exploded.svg) / [PNG](./assets/fude-strokes-exploded.png) | `01-Baseline.ts [3..15]` (`FUDE S01..S13`) | `S01..S12` は独立、`S13`（`Ae_Restro merged shape`）は中心縦軸と下部接合を含む `92pts` 形状。`op=0` 静止から表現展開式 `var m=...` で13画分離 |
-| **STEP 1..4 中間データ** | [step1-4-intermediates.svg](./assets/step1-4-intermediates.svg) / [PNG](./assets/step1-4-intermediates.png) | `38-STEP1` / `40-STEP3 [checkpoint]` / `Baseline` | 1: `FUDE scanline` (`y223→980`), 2: `extend A(7)+B(13)`, 3: `inferred` 12緑面 (`70%`)＋**`FUDE points` 29個の推定頂点**＋`300%` レンズターゲット `(757,422)`, 4: 13画展開 |
-
-![筆 13画分解](./assets/fude-strokes-exploded.png)
-![STEP1-4 中間データ](./assets/step1-4-intermediates.png)
+| 対象 | 個別ファイル群（SVG / PNG・寸法） | 出典・備考 |
+|---|---|---|
+| **「筆」竹冠 (`S01..S06`)** | [S01](./assets/individual/fude/fude-s01.png) (`232×249`, [SVG](./assets/individual/fude/fude-s01.svg)), [S02](./assets/individual/fude/fude-s02.png) (`154×155`), [S03](./assets/individual/fude/fude-s03.png) (`289×98`), [S04](./assets/individual/fude/fude-s04.png) (`202×215`), [S05](./assets/individual/fude/fude-s05.png) (`157×157`), [S06](./assets/individual/fude/fude-s06.png) (`342×98`) | `01-Baseline.ts` 実分離 6画（S01..03左冠 / S04..06右冠） |
+| **「筆」中部・平行横画 (`S07..S12`)** | [S07](./assets/individual/fude/fude-s07.png) (`536×93`, [SVG](./assets/individual/fude/fude-s07.svg)), [S08](./assets/individual/fude/fude-s08.png) (`112×267`), [S09](./assets/individual/fude/fude-s09.png) (`697×95`), [S10](./assets/individual/fude/fude-s10.png) (`537×92`), [S11](./assets/individual/fude/fude-s11.png) (`582×95`), [S12](./assets/individual/fude/fude-s12.png) (`710×97`) | 横並列「日/聿」段差群 `S09..S12`（[SVG S08–12](./assets/individual/fude/fude-s12.svg) 含め個別保存） |
+| **「筆」中心統合軸 (`S13`)** | [fude-s13.svg](./assets/individual/fude/fude-s13.svg) / [PNG](./assets/individual/fude/fude-s13.png) (`125×574`) | `Ae_Restro merged shape`（`92pts`・主縦軸＋下部結合） |
+| **Scene B 中間素材7点** | [scanline](./assets/individual/scene-b/b-scanline.png) (`820×60`, [SVG](./assets/individual/scene-b/b-scanline.svg))<br>[extend A (7線)](./assets/individual/scene-b/b-extend-a.png) (`205×105`, [SVG](./assets/individual/scene-b/b-extend-a.svg))<br>[extend B (13線)](./assets/individual/scene-b/b-extend-b.png) (`120×454`, [SVG](./assets/individual/scene-b/b-extend-b.svg))<br>[inferred 緑補間面](./assets/individual/scene-b/b-inferred-polygons.png) (`233×162`, [SVG](./assets/individual/scene-b/b-inferred-polygons.svg))<br>[points 29頂点](./assets/individual/scene-b/b-points-29.png) (`330×591`, [SVG](./assets/individual/scene-b/b-points-29.svg))<br>[LENS 枠 420/140px](./assets/individual/scene-b/b-lens-frame.png) (`496×716`, [SVG](./assets/individual/scene-b/b-lens-frame.svg))<br>[STEP1..4 タブ帯](./assets/individual/scene-b/b-tab-strip-chrome.png) (`522×180`, [SVG](./assets/individual/scene-b/b-tab-strip-chrome.svg)) | `38-STEP1` / `40-STEP3 infer` / `05-master.ts [9,170..177]` からの純粋単体書き出し |
 
 ---
 
-## 4. 後半シーン要素と「不足している素材」の明確化
+## 4. 後半シーン個別要素と「不足している素材」の明確化
 
-| 区分 | 実物ファイル / 実体 | 現状の実測評価と不足リスト |
+| 区分 | 独立書き出し / 実物ファイル | 現状の実測評価と不足リスト |
 |---|---|---|
-| **Scene E 終着構造** | [e-end-card-clean.svg](./assets/e-end-card-clean.svg) / [PNG](./assets/e-end-card-clean.png) | `49-PV end.ts` + `11-PV glyph EE.ts` (`±5〜20px` 呼吸キー)。元 `PV end` の CTA 文字は `x=120` へ置かれ確定左領域と衝突するバグを抱える |
+| **Scene C ビューポート枠** | [c-viewport-frame.svg](./assets/individual/scene-c-d-e/c-viewport-frame.svg) / [PNG](./assets/individual/scene-c-d-e/c-viewport-frame.png) (`612×972`) | 右ステージ `600×960` 外枠単体（作例3セルの背景色・文字組から完全分離） |
+| **Scene D 窓枠マット構造** | [d-ops-window-chrome.svg](./assets/individual/scene-c-d-e/d-ops-window-chrome.svg) / [PNG](./assets/individual/scene-c-d-e/d-ops-window-chrome.png) (`600×960`) | 旧 `52-PV ops.ts` 4窓構造の可視化基準（新設計では主窓＋副窓の2系統へ統合、枠色対比強化） |
+| **Scene E 復元筆画＆CTA単体** | [e-glyph-ee.png](./assets/individual/scene-c-d-e/e-glyph-ee.png) (`733×742`, [SVG](./assets/individual/scene-c-d-e/e-glyph-ee.svg)) ／ [e-cta-typography.png](./assets/individual/scene-c-d-e/e-cta-typography.png) (`500×380`, [SVG](./assets/individual/scene-c-d-e/e-cta-typography.svg)) ／ [衝突検証図](./assets/e-end-card-clean.png) | E の右筆画 (`11-PV glyph EE`) と CTA 6階層文字 (`49-PV end [1..6]`) を完全分離して書き出し済。右カラム側再配置に即転用可能 |
 | **C: 作例用の新規文字／作例** | — **`[未確定・不足事項]`** | 現行 `pv/generated/`（`PV work A/B/C`）と `SceneC.tsx` はすべて同一「筆」1文字の色・並べ替え使い回しに留まる。異なる文字・異なる映像作品を作るための実プラグイン出力文字（例：曲線や斜画を含む別文字、テキストレイヤー分解素材等）が未生成 |
 | **D: 実 AE 操作の単一コンポ録画** | （[06-recordings-audit.md](./06-recordings-audit.md) 参照） | 既存録画6本はいずれもクリップ・コンポ切り替え分断・高視認性不足のため、新規収録（テキスト/シェイプ→`Decompose` 押下→生成→編集の連続収録）が必要 |
 | **素材取得方針（[AGENTS.md](../../AGENTS.md) 境界）** | — | このリポジトリから `Ae_Restro` 本体のコードを編集しない。新規文字の実 Restro 出力や UI 録画は実機 After Effects 上で正規の Restro プラグインを実行して新規ダンプ／収録する |
+
+> 全54点の個別SVG・PNGのメタデータとパス一覧は [assets/individual/manifest.json](./assets/individual/manifest.json) にも機械可読 JSON として収録済み。

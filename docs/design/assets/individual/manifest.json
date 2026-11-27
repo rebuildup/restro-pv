@@ -1,0 +1,434 @@
+[
+  {
+    "category": "logo",
+    "file": "individual/logo/logo-full-clean.svg",
+    "w": 416,
+    "h": 260,
+    "source": "46-Logo.ts [1..45]",
+    "notes": "公式完成ブランドロゴ全45層（意匠アートワーク、透過PNG/SVG）"
+  },
+  {
+    "category": "logo",
+    "file": "individual/logo/logo-red-accents.svg",
+    "w": 416,
+    "h": 260,
+    "source": "46-Logo.ts (6 red layers)",
+    "notes": "ブランド赤(#e30b0b)強調パーツのみ（Rの一部・元）"
+  },
+  {
+    "category": "logo",
+    "file": "individual/logo/logo-black-strokes.svg",
+    "w": 416,
+    "h": 260,
+    "source": "46-Logo.ts (32 black strokes)",
+    "notes": "ロゴ内の黒分割シェイプ32層（解体流用不可）"
+  },
+  {
+    "category": "logo",
+    "file": "individual/logo/logo-ae-restro-base.svg",
+    "w": 416,
+    "h": 260,
+    "source": "46-Logo.ts (7 Ae_Restro base/merged)",
+    "notes": "ロゴ基礎・カウンター構造パーツ7層"
+  },
+  {
+    "category": "chrome",
+    "file": "individual/chrome/heading-main.svg",
+    "w": 416,
+    "h": 66,
+    "source": "43-Heading.ts [1]",
+    "notes": "左下部固定見出し（ZenKakuGothicAntique-Bold 32pt相当, op=90%, 416×66）"
+  },
+  {
+    "category": "chrome",
+    "file": "individual/chrome/badge-after-effects-plugin.svg",
+    "w": 380,
+    "h": 96,
+    "source": "05-master.ts [16,17] + assets/images/Ae.png",
+    "notes": "AE公式バッジ＋AFTER EFFECTS PLUGINロックアップ（製品アイコンではない）"
+  },
+  {
+    "category": "chrome",
+    "file": "individual/chrome/desc-b-how-it-works.svg",
+    "w": 416,
+    "h": 298,
+    "source": "03-description.ts [1,2,4,6] (4.25..7.92s)",
+    "notes": "Scene B解説スロット実文字組（Linked Quad 3窓内 416×298）"
+  },
+  {
+    "category": "chrome",
+    "file": "individual/chrome/desc-c-case-studies.svg",
+    "w": 416,
+    "h": 298,
+    "source": "03-description.ts [15..25] (8.00..11.75s)",
+    "notes": "Scene C左解説枠の内容仕様（要416px幅フィット調整）"
+  },
+  {
+    "category": "chrome",
+    "file": "individual/chrome/desc-d-ae-workflow.svg",
+    "w": 416,
+    "h": 298,
+    "source": "03-description.ts [26..29] (11.71..15.46s)",
+    "notes": "Scene D左解説枠の正本仕様（RemotionはmasterPatch+LeftCopyで置換中）"
+  },
+  {
+    "category": "kai",
+    "file": "individual/kai/kai-outline-merged.svg",
+    "w": 995,
+    "h": 936,
+    "source": "04-kai-zoom.ts [20]",
+    "notes": "「解」分解前の一体連結シルエット単体（透過）"
+  },
+  {
+    "category": "kai",
+    "file": "individual/kai/kai-01-STROKE_016_runs4.svg",
+    "w": 107,
+    "h": 463,
+    "source": "02-bunkai.ts [21] / master [239]",
+    "notes": "A2交差証明主軸（連続縦画・不動基準・赤強調用）"
+  },
+  {
+    "category": "kai",
+    "file": "individual/kai/kai-02-STROKE_017_runs4.svg",
+    "w": 405,
+    "h": 101,
+    "source": "02-bunkai.ts [22] / master [240]",
+    "notes": "A2交差横遮蔽画（上下へ開門し016の連続性を露出）"
+  },
+  {
+    "category": "kai",
+    "file": "individual/kai/kai-03-STROKE_015_runs4.svg",
+    "w": 337,
+    "h": 135,
+    "source": "02-bunkai.ts [23] / master [241]",
+    "notes": "A2交差横遮蔽画（上下へ開門し016の連続性を露出）"
+  },
+  {
+    "category": "kai",
+    "file": "individual/kai/kai-04-STROKE_014_runs4.svg",
+    "w": 190,
+    "h": 234,
+    "source": "02-bunkai.ts [24] / master [242]",
+    "notes": "周辺副筆画"
+  },
+  {
+    "category": "kai",
+    "file": "individual/kai/kai-05-STROKE_011_runs4.svg",
+    "w": 169,
+    "h": 323,
+    "source": "02-bunkai.ts [25] / master [243]",
+    "notes": "周辺副筆画"
+  },
+  {
+    "category": "kai",
+    "file": "individual/kai/kai-06-merged_shape_3.svg",
+    "w": 277,
+    "h": 263,
+    "source": "02-bunkai.ts [26] / master [244]",
+    "notes": "未分解残存merged層（位置関係注意）"
+  },
+  {
+    "category": "kai",
+    "file": "individual/kai/kai-07-STROKE_010_runs4.svg",
+    "w": 335,
+    "h": 97,
+    "source": "02-bunkai.ts [27] / master [245]",
+    "notes": "周辺副筆画"
+  },
+  {
+    "category": "kai",
+    "file": "individual/kai/kai-08-STROKE_007_runs4.svg",
+    "w": 258,
+    "h": 93,
+    "source": "02-bunkai.ts [28] / master [246]",
+    "notes": "周辺副筆画"
+  },
+  {
+    "category": "kai",
+    "file": "individual/kai/kai-09-STROKE_004_runs4.svg",
+    "w": 258,
+    "h": 90,
+    "source": "02-bunkai.ts [29] / master [247]",
+    "notes": "周辺副筆画"
+  },
+  {
+    "category": "kai",
+    "file": "individual/kai/kai-10-STROKE_005_runs4.svg",
+    "w": 155,
+    "h": 299,
+    "source": "02-bunkai.ts [30] / master [248]",
+    "notes": "周辺副筆画"
+  },
+  {
+    "category": "kai",
+    "file": "individual/kai/kai-11-merged_shape_2.svg",
+    "w": 212,
+    "h": 558,
+    "source": "02-bunkai.ts [31] / master [249]",
+    "notes": "未分解残存merged層（位置関係注意）"
+  },
+  {
+    "category": "kai",
+    "file": "individual/kai/kai-12-STROKE_003_runs4.svg",
+    "w": 258,
+    "h": 93,
+    "source": "02-bunkai.ts [32] / master [250]",
+    "notes": "周辺副筆画"
+  },
+  {
+    "category": "kai",
+    "file": "individual/kai/kai-13-STROKE_006_runs6.svg",
+    "w": 140,
+    "h": 567,
+    "source": "02-bunkai.ts [33] / master [251]",
+    "notes": "周辺副筆画"
+  },
+  {
+    "category": "kai",
+    "file": "individual/kai/kai-14-STROKE_002_runs6.svg",
+    "w": 125,
+    "h": 199,
+    "source": "02-bunkai.ts [34] / master [252]",
+    "notes": "周辺副筆画"
+  },
+  {
+    "category": "kai",
+    "file": "individual/kai/kai-15-STROKE_000_runs4.svg",
+    "w": 163,
+    "h": 93,
+    "source": "02-bunkai.ts [35] / master [253]",
+    "notes": "周辺副筆画"
+  },
+  {
+    "category": "kai",
+    "file": "individual/kai/kai-16-STROKE_001_runs5.svg",
+    "w": 151,
+    "h": 337,
+    "source": "02-bunkai.ts [36] / master [254]",
+    "notes": "周辺副筆画"
+  },
+  {
+    "category": "kai",
+    "file": "individual/kai/kai-runs4-assembled.svg",
+    "w": 847,
+    "h": 841,
+    "source": "02-bunkai.ts [21..36]",
+    "notes": "「解」実Restro 16層 rest組み上がり全姿（透過2D正射影）"
+  },
+  {
+    "category": "fude",
+    "file": "individual/fude/fude-outline-base.svg",
+    "w": 733,
+    "h": 742,
+    "source": "01-Baseline.ts [2]",
+    "notes": "「筆」連結元輪郭（黒ベース単体・透過）"
+  },
+  {
+    "category": "fude",
+    "file": "individual/fude/fude-outline-inset.svg",
+    "w": 733,
+    "h": 742,
+    "source": "01-Baseline.ts [1]",
+    "notes": "「筆」インセット基準輪郭（offset=-4単体・透過）"
+  },
+  {
+    "category": "fude",
+    "file": "individual/fude/fude-s01.svg",
+    "w": 232,
+    "h": 249,
+    "source": "01-Baseline.ts [15] (FUDE S01 (STROKE_000_runs5))",
+    "notes": "実Restro出力「筆」FUDE S01 (STROKE_000_runs5) 単体筆画"
+  },
+  {
+    "category": "fude",
+    "file": "individual/fude/fude-s02.svg",
+    "w": 154,
+    "h": 155,
+    "source": "01-Baseline.ts [14] (FUDE S02 (STROKE_001_runs2))",
+    "notes": "実Restro出力「筆」FUDE S02 (STROKE_001_runs2) 単体筆画"
+  },
+  {
+    "category": "fude",
+    "file": "individual/fude/fude-s03.svg",
+    "w": 289,
+    "h": 98,
+    "source": "01-Baseline.ts [7] (FUDE S03 (Ae_Restro part 1))",
+    "notes": "実Restro出力「筆」FUDE S03 (Ae_Restro part 1) 単体筆画"
+  },
+  {
+    "category": "fude",
+    "file": "individual/fude/fude-s04.svg",
+    "w": 202,
+    "h": 215,
+    "source": "01-Baseline.ts [4] (FUDE S04 (Ae_Restro part 1))",
+    "notes": "実Restro出力「筆」FUDE S04 (Ae_Restro part 1) 単体筆画"
+  },
+  {
+    "category": "fude",
+    "file": "individual/fude/fude-s05.svg",
+    "w": 157,
+    "h": 157,
+    "source": "01-Baseline.ts [13] (FUDE S05 (STROKE_002_runs2))",
+    "notes": "実Restro出力「筆」FUDE S05 (STROKE_002_runs2) 単体筆画"
+  },
+  {
+    "category": "fude",
+    "file": "individual/fude/fude-s06.svg",
+    "w": 342,
+    "h": 98,
+    "source": "01-Baseline.ts [9] (FUDE S06 (Ae_Restro part 1))",
+    "notes": "実Restro出力「筆」FUDE S06 (Ae_Restro part 1) 単体筆画"
+  },
+  {
+    "category": "fude",
+    "file": "individual/fude/fude-s07.svg",
+    "w": 536,
+    "h": 93,
+    "source": "01-Baseline.ts [6] (FUDE S07 (Ae_Restro part 3))",
+    "notes": "実Restro出力「筆」FUDE S07 (Ae_Restro part 3) 単体筆画"
+  },
+  {
+    "category": "fude",
+    "file": "individual/fude/fude-s08.svg",
+    "w": 112,
+    "h": 267,
+    "source": "01-Baseline.ts [8] (FUDE S08 (Ae_Restro part 5))",
+    "notes": "実Restro出力「筆」FUDE S08 (Ae_Restro part 5) 単体筆画"
+  },
+  {
+    "category": "fude",
+    "file": "individual/fude/fude-s09.svg",
+    "w": 697,
+    "h": 95,
+    "source": "01-Baseline.ts [12] (FUDE S09 (STROKE_004_runs6))",
+    "notes": "実Restro出力「筆」FUDE S09 (STROKE_004_runs6) 単体筆画"
+  },
+  {
+    "category": "fude",
+    "file": "individual/fude/fude-s10.svg",
+    "w": 537,
+    "h": 92,
+    "source": "01-Baseline.ts [5] (FUDE S10 (Ae_Restro part 4))",
+    "notes": "実Restro出力「筆」FUDE S10 (Ae_Restro part 4) 単体筆画"
+  },
+  {
+    "category": "fude",
+    "file": "individual/fude/fude-s11.svg",
+    "w": 582,
+    "h": 95,
+    "source": "01-Baseline.ts [11] (FUDE S11 (STROKE_007_runs2))",
+    "notes": "実Restro出力「筆」FUDE S11 (STROKE_007_runs2) 単体筆画"
+  },
+  {
+    "category": "fude",
+    "file": "individual/fude/fude-s12.svg",
+    "w": 710,
+    "h": 97,
+    "source": "01-Baseline.ts [10] (FUDE S12 (STROKE_008_runs2))",
+    "notes": "実Restro出力「筆」FUDE S12 (STROKE_008_runs2) 単体筆画"
+  },
+  {
+    "category": "fude",
+    "file": "individual/fude/fude-s13.svg",
+    "w": 125,
+    "h": 574,
+    "source": "01-Baseline.ts [3] (FUDE S13 (Ae_Restro merged shape))",
+    "notes": "S13 (Ae_Restro merged shape, 92pts: 縦軸+下部結合含む実Restro出力)"
+  },
+  {
+    "category": "fude",
+    "file": "individual/fude/fude-13-assembled.svg",
+    "w": 771,
+    "h": 759,
+    "source": "01-Baseline.ts [3..15]",
+    "notes": "「筆」実Restro 13画 全組み上がり（透過）"
+  },
+  {
+    "category": "scene-b",
+    "file": "individual/scene-b/b-scanline.svg",
+    "w": 820,
+    "h": 60,
+    "source": "38-STEP1 outline [FUDE scanline]",
+    "notes": "STEP 1 輪郭スキャン走査線単体（y=223→980移動バー、透過）"
+  },
+  {
+    "category": "scene-b",
+    "file": "individual/scene-b/b-extend-a.svg",
+    "w": 205,
+    "h": 105,
+    "source": "40-STEP3 infer [FUDE extend A]",
+    "notes": "STEP 2 延長接線 A群（7本、単体透過）"
+  },
+  {
+    "category": "scene-b",
+    "file": "individual/scene-b/b-extend-b.svg",
+    "w": 120,
+    "h": 454,
+    "source": "40-STEP3 infer [FUDE extend B]",
+    "notes": "STEP 2 延長接線 B群（13本、単体透過）"
+  },
+  {
+    "category": "scene-b",
+    "file": "individual/scene-b/b-inferred-polygons.svg",
+    "w": 233,
+    "h": 162,
+    "source": "40-STEP3 infer [FUDE inferred]",
+    "notes": "STEP 3 推定隠れ領域・補間要素 (#4df24d @ 70%透過、単体)"
+  },
+  {
+    "category": "scene-b",
+    "file": "individual/scene-b/b-points-29.svg",
+    "w": 330,
+    "h": 591,
+    "source": "40-STEP3 infer [FUDE points]",
+    "notes": "STEP 3 推定隠れ頂点 29ノード群（白丸+青枠2.5px、単体透過）"
+  },
+  {
+    "category": "scene-b",
+    "file": "individual/scene-b/b-lens-frame.svg",
+    "w": 496,
+    "h": 716,
+    "source": "05-master.ts [9] LENS frame",
+    "notes": "420×420拡大円 + 140×140参照元円 + コネクタ線単体（透過）"
+  },
+  {
+    "category": "scene-b",
+    "file": "individual/scene-b/b-tab-strip-chrome.svg",
+    "w": 522,
+    "h": 180,
+    "source": "05-master.ts [170,171,173,175,177]",
+    "notes": "Scene B 上部4段累積タブ構造フレーム（幅502px・Divider +27px、透過）"
+  },
+  {
+    "category": "scene-c-d-e",
+    "file": "individual/scene-c-d-e/c-viewport-frame.svg",
+    "w": 612,
+    "h": 972,
+    "source": "59-PV reel window / 50-PV frame C",
+    "notes": "Scene C 右側作例ビューポート窓枠単体（600×960・内側透過）"
+  },
+  {
+    "category": "scene-c-d-e",
+    "file": "individual/scene-c-d-e/d-ops-window-chrome.svg",
+    "w": 600,
+    "h": 960,
+    "source": "52-PV ops.ts W1..W4",
+    "notes": "元AEP Scene D 4窓マット／枠の相対配置構造図（#ebebf0枠は対比可視化用に変換）"
+  },
+  {
+    "category": "scene-c-d-e",
+    "file": "individual/scene-c-d-e/e-glyph-ee.svg",
+    "w": 733,
+    "h": 742,
+    "source": "11-PV glyph EE.ts",
+    "notes": "Scene E 右側呼吸収束用 13画「筆」実筆画構成単体（テキスト分離・透過）"
+  },
+  {
+    "category": "scene-c-d-e",
+    "file": "individual/scene-c-d-e/e-cta-typography.svg",
+    "w": 500,
+    "h": 380,
+    "source": "49-PV end.ts [1..6]",
+    "notes": "Scene E CTAテキスト6階層（文字造形単独・右領域再配置の基準素材）"
+  }
+]

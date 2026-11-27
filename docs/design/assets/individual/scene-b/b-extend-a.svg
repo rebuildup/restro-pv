@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="205" height="105" viewBox="0 0 205 105">
+  <style>
+    text { font-family: 'Yu Gothic UI', 'Meiryo', 'Hiragino Kaku Gothic ProN', sans-serif; }
+    .mono { font-family: 'Consolas', 'Cascadia Mono', monospace; }
+  </style>
+  
+  <g transform="translate(-667.000, -334.000)">
+<path d="M773,357 C773,357 751,393 751,393 C751,393 737,416 737,416" transform="matrix(1.00000 0.00000 0.00000 1.00000 0.0000 0.0000)" fill="none" stroke="rgb(0,0,0)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M773,357 C773,357 690,357 690,357" transform="matrix(1.00000 0.00000 0.00000 1.00000 0.0000 0.0000)" fill="none" stroke="rgb(0,0,0)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M737,416 C737,416 690,416 690,416" transform="matrix(1.00000 0.00000 0.00000 1.00000 0.0000 0.0000)" fill="none" stroke="rgb(0,0,0)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M777,416 C777,416 761,386 761,386" transform="matrix(1.00000 0.00000 0.00000 1.00000 0.0000 0.0000)" fill="none" stroke="rgb(0,0,0)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M849,416 C849,416 808,358 808,358" transform="matrix(1.00000 0.00000 0.00000 1.00000 0.0000 0.0000)" fill="none" stroke="rgb(0,0,0)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M777,416 C777,416 849,416 849,416" transform="matrix(1.00000 0.00000 0.00000 1.00000 0.0000 0.0000)" fill="none" stroke="rgb(0,0,0)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+</g>
+</svg>

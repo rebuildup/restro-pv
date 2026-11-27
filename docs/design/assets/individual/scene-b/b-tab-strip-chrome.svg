@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="522" height="180" viewBox="0 0 522 180">
+  <style>
+    text { font-family: 'Yu Gothic UI', 'Meiryo', 'Hiragino Kaku Gothic ProN', sans-serif; }
+    .mono { font-family: 'Consolas', 'Cascadia Mono', monospace; }
+  </style>
+  
+  
+      <rect x="10" y="10" width="502" height="27" fill="#ffffff" />
+      <rect x="10" y="10" width="502" height="39" fill="none" stroke="#000000" stroke-width="2" />
+      <line x1="10" y1="37" x2="512" y2="37" stroke="#000000" stroke-width="1.5" />
+    
+
+      <rect x="10" y="49" width="502" height="27" fill="#ffffff" />
+      <rect x="10" y="49" width="502" height="39" fill="none" stroke="#000000" stroke-width="2" />
+      <line x1="10" y1="76" x2="512" y2="76" stroke="#000000" stroke-width="1.5" />
+    
+
+      <rect x="10" y="88" width="502" height="27" fill="#ffffff" />
+      <rect x="10" y="88" width="502" height="39" fill="none" stroke="#000000" stroke-width="2" />
+      <line x1="10" y1="115" x2="512" y2="115" stroke="#000000" stroke-width="1.5" />
+    
+
+      <rect x="10" y="127" width="502" height="27" fill="#ffffff" />
+      <rect x="10" y="127" width="502" height="39" fill="none" stroke="#000000" stroke-width="2" />
+      <line x1="10" y1="154" x2="512" y2="154" stroke="#000000" stroke-width="1.5" />
+    
+</svg>

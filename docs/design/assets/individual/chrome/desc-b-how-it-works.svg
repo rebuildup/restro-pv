@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="416" height="298" viewBox="0 0 416 298">
+  <style>
+    text { font-family: 'Yu Gothic UI', 'Meiryo', 'Hiragino Kaku Gothic ProN', sans-serif; }
+    .mono { font-family: 'Consolas', 'Cascadia Mono', monospace; }
+  </style>
+  
+  
+    <text x="0" y="24" font-size="13" font-weight="700" fill="#000000" letter-spacing="2.6">HOW IT WORKS</text>
+    <text x="0" y="64" font-size="28" font-weight="700" fill="#000000" letter-spacing="0.5">つながった輪郭から、</text>
+    <text x="0" y="102" font-size="28" font-weight="700" fill="#000000" letter-spacing="0.5">一画ずつの形を復元する</text>
+    <text x="0" y="156" font-size="14.5" fill="#000000" letter-spacing="0.3">線が交わると、文字の輪郭はひとつにつながる。</text>
+    <text x="0" y="177" font-size="14.5" fill="#000000" letter-spacing="0.3">Restroは輪郭を延長し、隠れた頂点と</text>
+    <text x="0" y="198" font-size="14.5" fill="#000000" letter-spacing="0.3">反対側の辺まで推定して、筆画を分け直す。</text>
+    <text x="0" y="246" font-size="12.5" fill="#000000" letter-spacing="0.1">Hidden vertices and edges are inferred to rebuild each stroke.</text>
+  
+</svg>

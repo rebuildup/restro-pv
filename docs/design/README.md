@@ -25,14 +25,14 @@
 
 | ファイル | 対象カテゴリ | 主な内容 | 主な図版・書き出し資産 |
 |---|---|---|---|
-| [01-theme-tokens.md](./01-theme-tokens.md) | **A. テーマトークン** | Source Float vs 合成後 sRGB 実測色、タイポ階層、線・面の役割色（共通 vs 場面例外）、現行 Remotion 色乖離 | [01-color-and-typo-tokens.png](./diagrams/01-color-and-typo-tokens.png), [ae-app-icon.png](./assets/ae-app-icon.png) |
-| [02-layout-and-grid.md](./02-layout-and-grid.md) | **B. 構造レイアウト** | `kg_LayoutGrid` 12×24、`P` 12% ガターリグ、`Linked Quad 1..11`、3D 製図面（`Z=245, Y=20°`）と 2D 空間の分離 | [layout-kg-grid-overlay.png](./assets/layout-kg-grid-overlay.png), [02-layout-parent-rig.png](./diagrams/02-layout-parent-rig.png), [background-grid-plane.png](./assets/background-grid-plane.png) |
-| [03-assets-catalog.md](./03-assets-catalog.md) | **C. 実アセット／単体書出し目録** | `Ae.png`、`Logo`（45層内訳）、`解` 16層、`筆` 13画＆輪郭、`STEP1..4` 中間データ、`PV end` の個別クリーン書き出し＋不在素材 | [logo-full.png](./assets/logo-full.png), [logo-layers-breakdown.png](./assets/logo-layers-breakdown.png), [kai-strokes-exploded.png](./assets/kai-strokes-exploded.png), [fude-strokes-exploded.png](./assets/fude-strokes-exploded.png), [step1-4-intermediates.png](./assets/step1-4-intermediates.png) |
+| [01-theme-tokens.md](./01-theme-tokens.md) | **A. テーマトークン** | Source Float vs 合成後 sRGB 実測色、タイポ階層、線・面の役割色（共通 vs 場面例外／自由度）、現行 Remotion 色乖離 | [01-color-and-typo-tokens.png](./diagrams/01-color-and-typo-tokens.png), [ae-app-icon.png](./assets/ae-app-icon.png) |
+| [02-layout-and-grid.md](./02-layout-and-grid.md) | **B. 構造レイアウト・Chrome復元** | `kg_LayoutGrid` 12×24、`P` 12% ガターリグ、上位→下位導出鎖、3D/2D 空間分離、確定 Chrome vs 現行 Remotion 復元スコープ | [layout-kg-grid-overlay.png](./assets/layout-kg-grid-overlay.png), [02-layout-parent-rig.png](./diagrams/02-layout-parent-rig.png), [07-chrome-reconciliation.png](./diagrams/07-chrome-reconciliation.png) |
+| [03-assets-catalog.md](./03-assets-catalog.md) | **C. 実アセット／個別書き出し目録** | 一覧図版＋**`assets/individual/`（全54点 SVG＋透過 PNG：Logo 4態・文字部品5態・解 16層+輪郭・筆 13画+輪郭・B 中間7層・C/D/E 4態）**、不足素材要件 | [logo-full-clean.png](./assets/individual/logo/logo-full-clean.png), [manifest.json](./assets/individual/manifest.json), [step1-4-intermediates.png](./assets/step1-4-intermediates.png) |
 | [04-structural-timesheet.md](./04-structural-timesheet.md) | **D. 全体構造変化のタイムシート** | 全 480f / 20s / 128 BPM、左カラムの中央集合↔上下分離の連続遷移（Title→Explain→End）、右ステージ全場面の因果連鎖 | [03-structural-timesheet.png](./diagrams/03-structural-timesheet.png) |
-| [05-cards-and-sheets.md](./05-cards-and-sheets.md) | **E. カード／シート系表現** | B アコーディオン（`P19..23` × `STEP 1..4` × `300%` レンズ）、C の「窓・スクロール・作例」3層分離、D の4窓マット構造と改善設計 | [04-accordion-and-cards.png](./diagrams/04-accordion-and-cards.png) |
+| [05-cards-and-sheets.md](./05-cards-and-sheets.md) | **E. カード／シート系表現** | B アコーディオン運動とZ順（`P19..23` × `300%` レンズ導出）、C 3層分離＋3作例の個別構造・運動、D 2系統因果窓 | [04-accordion-and-cards.png](./diagrams/04-accordion-and-cards.png) |
 | [06-recordings-audit.md](./06-recordings-audit.md) | **F. 個別の録画素材監査** | 既存録画 6本（`ae-decompose-ops` 他・`wu-d-live`）の解像度・UI 実態・可否判定と、D 再収録・見切れ解消の具体仕様 | [05-recordings-audit-sheet.png](./diagrams/05-recordings-audit-sheet.png) |
-| [07-motion-design.md](./07-motion-design.md) | **G. モーション設計** | 巨大「解」`runs4` 非対称キー（`f0→f9→f45`）と `bunkai`、「筆」放射式、反単調性の定量ルールと定性レビュー基準 | [06-motion-curves-and-vectors.png](./diagrams/06-motion-curves-and-vectors.png) |
-| [08-quality-assurance.md](./08-quality-assurance.md) | **品質保証・受入基準** | 対象ごとの計算/構造検証 vs 視覚/時間人間レビューの分離、上位規則→子変換導出確認、アンチケース照合表・完了ゲート | [08-quality-assurance.md](./08-quality-assurance.md) |
+| [07-motion-design.md](./07-motion-design.md) | **G. モーション・筆画相互作用設計** | `runs4` 一次分析＋場面別曲線文法（A2交差抜き・B静→動解放・C3態・E呼吸収束）、筆画別役割と衝突回避・反単調性基準 | [06-motion-curves-and-vectors.png](./diagrams/06-motion-curves-and-vectors.png), [08-per-stroke-choreography.png](./diagrams/08-per-stroke-choreography.png) |
+| [08-quality-assurance.md](./08-quality-assurance.md) | **品質保証・受入基準** | 対象ごとの計算/構造検証 vs 視覚/時間人間レビューの分離、上位規則→子変換導出確認、Chrome復元検査・完了ゲート | [08-quality-assurance.md](./08-quality-assurance.md) |
 
 ---
 
@@ -64,6 +64,10 @@
 | [04-accordion-and-cards.svg](./diagrams/04-accordion-and-cards.svg) / [PNG](./diagrams/04-accordion-and-cards.png) | [05-cards-and-sheets.md](./05-cards-and-sheets.md) | B アコーディオン 4状態・C 3層分離モデル・D ウィンドウマット構成 |
 | [05-recordings-audit-sheet.png](./diagrams/05-recordings-audit-sheet.png) | [06-recordings-audit.md](./06-recordings-audit.md) | 全6録画素材の実フレーム・UIパネル状態・欠陥・採否一覧 |
 | [06-motion-curves-and-vectors.svg](./diagrams/06-motion-curves-and-vectors.svg) / [PNG](./diagrams/06-motion-curves-and-vectors.png) | [07-motion-design.md](./07-motion-design.md) | 巨大「解」非対称イージング曲線・`runs4` 14画変位量・`Baseline` 放射ベクトル |
+| [07-chrome-reconciliation.svg](./diagrams/07-chrome-reconciliation.svg) / [PNG](./diagrams/07-chrome-reconciliation.png) | [02-layout-and-grid.md §5](./02-layout-and-grid.md) | Issue #30＋元AEP 左開閉構造 vs 現行 Remotion（`Chrome/LeftCopy/masterPatch`）差分と最小復元範囲 |
+| [08-per-stroke-choreography.svg](./diagrams/08-per-stroke-choreography.svg) / [PNG](./diagrams/08-per-stroke-choreography.png) | [07-motion-design.md §3](./07-motion-design.md) | 場面別（A1/A2/B/C01..03/E）の運動曲線・筆画役割分化・衝突回避ルール |
+
+> **個別単体アセット一式（54点）**: `docs/design/assets/individual/`（`logo/`, `chrome/`, `kai/`, `fude/`, `scene-b/`, `scene-c-d-e/`）に各要素のクリーン透過 SVG ＋ PNG および [manifest.json](./assets/individual/manifest.json) を格納。一覧・個別リンクは [03-assets-catalog.md](./03-assets-catalog.md) を参照。
 
 ---
 

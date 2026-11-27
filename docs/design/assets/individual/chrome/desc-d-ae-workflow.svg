@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="416" height="298" viewBox="0 0 416 298">
+  <style>
+    text { font-family: 'Yu Gothic UI', 'Meiryo', 'Hiragino Kaku Gothic ProN', sans-serif; }
+    .mono { font-family: 'Consolas', 'Cascadia Mono', monospace; }
+  </style>
+  
+  
+    <text x="0" y="24" font-size="13" font-weight="700" fill="#000000" letter-spacing="2.6">AE WORKFLOW</text>
+    <text x="0" y="64" font-size="25" font-weight="700" fill="#000000" letter-spacing="0.3">文字もシェイプも、</text>
+    <text x="0" y="96" font-size="25" font-weight="700" fill="#000000" letter-spacing="0.3">After Effects上で分解・編集</text>
+    <text x="0" y="144" font-size="13.5" fill="#000000">文字だけでなく塗りを持つシェイプの分解、</text>
+    <text x="0" y="164" font-size="13.5" fill="#000000">結合・再調整に対応し、実際のAE上で</text>
+    <text x="0" y="184" font-size="13.5" fill="#000000">これらの機能が動作することを示す。</text>
+    <text x="0" y="224" font-size="12" fill="#52525b">※03-description.ts [26..29] (11.71..15.46s) 正本復帰対象</text>
+  
+</svg>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="107" height="463" viewBox="0 0 107 463">
+  <style>
+    text { font-family: 'Yu Gothic UI', 'Meiryo', 'Hiragino Kaku Gothic ProN', sans-serif; }
+    .mono { font-family: 'Consolas', 'Cascadia Mono', monospace; }
+  </style>
+  
+  <g transform="translate(-676.050, -514.907)">
+<path d="M154.049987792969,-68.25 C154.049987792969,-68.25 224.25,-68.25 224.25,-68.25 C224.25,-68.25 224.25,358.410034179688 224.25,358.410034179688 C224.25,358.410034179688 154.049987792969,358.410034179688 154.049987792969,358.410034179688 C154.049987792969,358.410034179688 154.049987792969,-68.25 154.049987792969,-68.25 Z" transform="matrix(1.00000 0.00000 0.00000 1.00000 540.0000 601.1571)" fill="#e51515" />
+</g>
+</svg>

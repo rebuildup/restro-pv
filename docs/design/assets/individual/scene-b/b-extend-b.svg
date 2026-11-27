@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="454" viewBox="0 0 120 454">
+  <style>
+    text { font-family: 'Yu Gothic UI', 'Meiryo', 'Hiragino Kaku Gothic ProN', sans-serif; }
+    .mono { font-family: 'Consolas', 'Cascadia Mono', monospace; }
+  </style>
+  
+  <g transform="translate(-888.000, -477.000)">
+<path d="M911,500 C911,500 911,908 911,908" transform="matrix(1.00000 0.00000 0.00000 1.00000 0.0000 0.0000)" fill="none" stroke="rgb(0,0,0)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M985,500 C985,500 985,908 985,908" transform="matrix(1.00000 0.00000 0.00000 1.00000 0.0000 0.0000)" fill="none" stroke="rgb(0,0,0)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M911,500 C911,500 985,500 985,500" transform="matrix(1.00000 0.00000 0.00000 1.00000 0.0000 0.0000)" fill="none" stroke="rgb(0,0,0)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M911,553 C911,553 985,553 985,553" transform="matrix(1.00000 0.00000 0.00000 1.00000 0.0000 0.0000)" fill="none" stroke="rgb(0,0,0)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M985,586 C985,586 911,586 911,586" transform="matrix(1.00000 0.00000 0.00000 1.00000 0.0000 0.0000)" fill="none" stroke="rgb(0,0,0)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M985,642 C985,642 911,642 911,642" transform="matrix(1.00000 0.00000 0.00000 1.00000 0.0000 0.0000)" fill="none" stroke="rgb(0,0,0)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M911,675 C911,675 985,675 985,675" transform="matrix(1.00000 0.00000 0.00000 1.00000 0.0000 0.0000)" fill="none" stroke="rgb(0,0,0)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M911,727 C911,727 985,727 985,727" transform="matrix(1.00000 0.00000 0.00000 1.00000 0.0000 0.0000)" fill="none" stroke="rgb(0,0,0)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M985,761 C985,761 911,761 911,761" transform="matrix(1.00000 0.00000 0.00000 1.00000 0.0000 0.0000)" fill="none" stroke="rgb(0,0,0)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M985,817 C985,817 911,817 911,817" transform="matrix(1.00000 0.00000 0.00000 1.00000 0.0000 0.0000)" fill="none" stroke="rgb(0,0,0)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M911,850 C911,850 985,850 985,850" transform="matrix(1.00000 0.00000 0.00000 1.00000 0.0000 0.0000)" fill="none" stroke="rgb(0,0,0)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M911,908 C911,908 985,908 985,908" transform="matrix(1.00000 0.00000 0.00000 1.00000 0.0000 0.0000)" fill="none" stroke="rgb(0,0,0)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+</g>
+</svg>

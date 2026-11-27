@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="416" height="66" viewBox="0 0 416 66">
+  <style>
+    text { font-family: 'Yu Gothic UI', 'Meiryo', 'Hiragino Kaku Gothic ProN', sans-serif; }
+    .mono { font-family: 'Consolas', 'Cascadia Mono', monospace; }
+  </style>
+  
+  
+    <text x="8" y="34" font-size="25.5" font-weight="700" fill="#000000" fill-opacity="0.90" letter-spacing="0.4">文字の輪郭から、筆画ごとのシェイプへ。</text>
+  
+</svg>

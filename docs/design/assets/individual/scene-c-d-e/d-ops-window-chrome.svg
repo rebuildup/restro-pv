@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="960" viewBox="0 0 600 960">
+  <style>
+    text { font-family: 'Yu Gothic UI', 'Meiryo', 'Hiragino Kaku Gothic ProN', sans-serif; }
+    .mono { font-family: 'Consolas', 'Cascadia Mono', monospace; }
+  </style>
+  
+  
+    <rect x="2" y="2" width="596" height="400" fill="rgba(24,24,27,0.06)" stroke="#52525b" stroke-width="2" />
+    <text x="16" y="28" font-size="14" font-weight="700" fill="#18181b" class="mono">W1 Matte (master [480,60])</text>
+    <rect x="2" y="418" width="292" height="268" fill="rgba(24,24,27,0.06)" stroke="#52525b" stroke-width="2" />
+    <text x="16" y="444" font-size="13" font-weight="700" fill="#18181b" class="mono">W2 Matte (480,476)</text>
+    <rect x="310" y="418" width="288" height="268" fill="rgba(24,24,27,0.06)" stroke="#52525b" stroke-width="2" />
+    <text x="324" y="444" font-size="13" font-weight="700" fill="#18181b" class="mono">W3 Matte (788,476)</text>
+    <rect x="2" y="702" width="596" height="256" fill="rgba(24,24,27,0.06)" stroke="#52525b" stroke-width="2" />
+    <text x="16" y="728" font-size="14" font-weight="700" fill="#18181b" class="mono">W4 Matte (480,760)</text>
+  
+</svg>

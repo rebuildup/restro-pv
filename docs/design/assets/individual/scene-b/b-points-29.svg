@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="330" height="591" viewBox="0 0 330 591">
+  <style>
+    text { font-family: 'Yu Gothic UI', 'Meiryo', 'Hiragino Kaku Gothic ProN', sans-serif; }
+    .mono { font-family: 'Consolas', 'Cascadia Mono', monospace; }
+  </style>
+  
+  <circle cx="56.00" cy="20.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="20.00" cy="79.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="60.00" cy="79.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="132.00" cy="79.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="220.00" cy="80.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="226.00" cy="74.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="310.00" cy="79.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="242.00" cy="122.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="272.00" cy="126.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="194.00" cy="163.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="268.00" cy="163.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="194.00" cy="216.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="268.00" cy="216.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="194.00" cy="249.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="268.00" cy="249.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="194.00" cy="305.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="268.00" cy="305.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="194.00" cy="338.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="268.00" cy="338.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="194.00" cy="390.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="268.00" cy="390.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="194.00" cy="424.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="268.00" cy="424.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="194.00" cy="480.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="268.00" cy="480.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="194.00" cy="513.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="268.00" cy="513.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="194.00" cy="571.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+<circle cx="268.00" cy="571.00" r="6" fill="#ffffff" stroke="#007aff" stroke-width="2.5"/>
+</svg>
