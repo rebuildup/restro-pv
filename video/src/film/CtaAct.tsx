@@ -42,6 +42,9 @@ export const CtaAct: React.FC = () => {
   const descP = seg(f, 14, 30);
   const boothP = seg(f, 24, 40);
   const urlP = seg(f, 32, 48);
+  // final accent ripple: a thin brand-accent ring expands off the logo
+  // card on the end hit so the accent has a visible, designed consequence
+  const rippleP = f > END_HIT_AT ? (f - END_HIT_AT) / 12 : -1;
   const fd = filmField();
   // authored entrance: the resolved glyph lingers 10f and dissolves into
   // the logo card — the brand inherits the film's final image
@@ -64,6 +67,23 @@ export const CtaAct: React.FC = () => {
         >
           <StrokeField comp={fd.comp} strokes={fd.strokes} poseT={0.5} />
         </div>
+      )}
+      {rippleP >= 0 && rippleP <= 1 && (
+        <div
+          style={{
+            position: "absolute",
+            left: 228 - 24 * rippleP,
+            top: 300 - 24 * rippleP,
+            width: 624 + 48 * rippleP,
+            height: 390 + 48 * rippleP,
+            border: "3px solid rgb(212, 68, 33)",
+            borderRadius: 18,
+            opacity: 0.85 * (1 - rippleP),
+            transform: `scale(${1 + 0.06 * rippleP})`,
+            transformOrigin: "540px 495px",
+            pointerEvents: "none",
+          }}
+        />
       )}
       {LOGO_COMP && (
         <>
@@ -97,7 +117,7 @@ export const CtaAct: React.FC = () => {
               position: "absolute",
               left: 0,
               right: 0,
-              top: 742,
+              top: 726,
               textAlign: "center",
               fontFamily: JP,
               fontSize: 36,
@@ -116,7 +136,7 @@ export const CtaAct: React.FC = () => {
               position: "absolute",
               left: 0,
               right: 0,
-              top: 812,
+              top: 836,
               textAlign: "center",
               opacity: boothP,
               transform: `translateY(${(1 - boothP) * 14}px)`,
@@ -135,7 +155,7 @@ export const CtaAct: React.FC = () => {
             </div>
             <div
               style={{
-                marginTop: 14,
+                marginTop: 22,
                 fontFamily: "'Noto Sans JP', monospace",
                 fontSize: 34,
                 fontWeight: 700,
