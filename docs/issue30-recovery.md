@@ -148,8 +148,8 @@ f60=0.9966、f324=0.9980、f468=0.9981（h264 圧縮誤差の範囲）で、
   レンダー：`cd video && bunx remotion render src/index.ts PV-Master out.mp4 --codec=h264 --audio-codec=aac`
 - **編集範囲**：`video/src/scenes/`（右ステージ）と `STAGE_SCENES`。
   レイアウト変更は `video/src/layout/` — オーナー決定なしに触れない。
-- **右側再制作計画（一次ソース）**：[`docs/pv-replan.md`](./pv-replan.md)
-  および構成案画像 [`docs/images/replan/`](./images/replan/)（A2〜E の5点）
+- **右側表現・構造設計図（一次ソース）**：[`docs/pv-expression-blueprint.md`](./pv-expression-blueprint.md)
+  （実装手段から分離した理想映像表現・場面別構造設計・要素間相互作用・連続性・実現手段の切り分け）
 - **契約テスト**：`bun test tests/pv-layout-contract.test.ts`
 - **境界のピクセル検証**：`bun tools/verify-layout.ts`
   （PV-Master vs PV-Chrome、左領域 SSIM ≥0.999）
