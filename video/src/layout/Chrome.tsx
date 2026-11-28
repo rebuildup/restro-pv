@@ -26,6 +26,7 @@ import {
 } from "../ae/masterPatch.ts";
 import { LeftCopy } from "./LeftCopy.tsx";
 import { LEFT_COLUMN_MAX_X } from "./zones.ts";
+import { AE_RENDER_CAMERA } from "../design/rig.ts";
 
 // The authoritative common composition (Issue #30): background grid,
 // brand lockup, left information column (dumped description/Heading plus
@@ -97,7 +98,7 @@ const windowFilter = sceneWindowFilter(HIDE_WINDOWS);
 export const chromeBaseCtx: RenderCtx = {
   comps: GENERATED_COMPS,
   footage: GENERATED_FOOTAGE,
-  camera: { fov: 40, distance: 1500 },
+  camera: AE_RENDER_CAMERA,
   matteMap: mattePairs(),
   layerFilter: (comp, layer, t) => {
     if (comp.name === "master" && PROTECTED_MASTER_LAYERS.has(layer.index))
@@ -109,7 +110,7 @@ export const chromeBaseCtx: RenderCtx = {
 export const chromeOverlayCtx: RenderCtx = {
   comps: GENERATED_COMPS,
   footage: GENERATED_FOOTAGE,
-  camera: { fov: 40, distance: 1500 },
+  camera: AE_RENDER_CAMERA,
   matteMap: mattePairs(),
   layerFilter: (comp, layer) => {
     if (comp.name !== "master") return true;
@@ -124,7 +125,7 @@ export const chromeOverlayCtx: RenderCtx = {
 export const chromeBgCtx: RenderCtx = {
   comps: GENERATED_COMPS,
   footage: GENERATED_FOOTAGE,
-  camera: { fov: 40, distance: 1500 },
+  camera: AE_RENDER_CAMERA,
   matteMap: mattePairs(),
   layerFilter: (comp, layer) => {
     if (comp.name !== "master") return true;

@@ -17,6 +17,8 @@ import {
   compByName,
   mattePairs,
 } from "../ae/project.ts";
+import { AE_RENDER_CAMERA } from "../design/rig.ts";
+import { STAGE_MIN_X } from "../layout/zones.ts";
 
 // Scene E [15.458, 20) closing, v13 art-direction two-beat structure
 // (docs/pv-art-direction.md §E):
@@ -82,7 +84,7 @@ const LOGO_COMP = compByName("Logo");
 const LOGO_CTX: RenderCtx = {
   comps: GENERATED_COMPS,
   footage: GENERATED_FOOTAGE,
-  camera: { fov: 40, distance: 1500 },
+  camera: AE_RENDER_CAMERA,
   matteMap: mattePairs(),
 };
 const LOGO_SCALE = 1.3; // 416x260 -> ~541x338
@@ -330,7 +332,7 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
         <div
           style={{
             position: "absolute",
-            left: 480,
+            left: STAGE_MIN_X,
             top: 0,
             width: 600,
             height: 1080,

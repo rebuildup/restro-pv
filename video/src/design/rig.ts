@@ -153,6 +153,13 @@ export const AE_DEFAULT_CAMERA: CameraSpec = {
   height: 1080,
 };
 
+// RenderCtx-compatible camera derived from AE_DEFAULT_CAMERA — the single
+// authority for the approximate AE default-camera used by CompView.
+export const AE_RENDER_CAMERA = {
+  fov: AE_DEFAULT_CAMERA.fovDeg,
+  distance: -AE_DEFAULT_CAMERA.eye[2],
+} as const;
+
 export function cameraViewProjScreen(cam: CameraSpec = AE_DEFAULT_CAMERA): Mat4 {
   const view = mLookAt(cam.eye, [cam.width / 2, cam.height / 2, 0], [0, -1, 0]);
   const proj = mPerspective(cam.fovDeg, cam.width / cam.height, 1, 100000);

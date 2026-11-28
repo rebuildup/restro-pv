@@ -16,6 +16,7 @@ import type { LayerSpec } from "../ae/project.ts";
 import { compByName } from "../ae/project.ts";
 import { worldMatrix } from "../ae/transform.ts";
 import { SCENE_A2, createA2Choreo } from "../design/choreography.ts";
+import { LEFT_COLUMN_MAX_X } from "../layout/zones.ts";
 
 // Scene A2, frames [45,100) = seconds [1.875,4.17) per SPEC §3/§5 A2,
 // extended through the A3 bridge window per docs/pv-art-direction.md v13:
@@ -344,7 +345,7 @@ export const SceneA2: React.FC<{ t: number }> = ({ t }) => {
       <div
         style={{
           position: "absolute",
-          left: 460,
+          left: LEFT_COLUMN_MAX_X,
           top: 0,
           width: 620,
           height: 1080,
@@ -354,7 +355,7 @@ export const SceneA2: React.FC<{ t: number }> = ({ t }) => {
       <div
         style={{
           position: "absolute",
-          left: -460, // keep comp->screen transform in absolute coords
+          left: -LEFT_COLUMN_MAX_X, // keep comp->screen transform in absolute coords
           top: 0,
           width: comp.width,
           height: comp.height,

@@ -1,5 +1,6 @@
 import React from "react";
 import { Sequence, Video, staticFile } from "remotion";
+import { STAGE_MIN_X } from "../layout/zones.ts";
 
 // Scene D [281,371) per SPEC §5 D + docs/pv-art-direction.md v13:
 // PROOF mode — ONE large curated viewport showing a single decisive
@@ -85,7 +86,7 @@ const WIN = {
   // r35: viewport now spans the full right stage width (x480-1080) and
   // uses the tight ROI — stroke scale goes 0.93 -> ~1.45x source, so the
   // decomposed pieces are actually identifiable as letter fragments.
-  x: 480,
+  x: STAGE_MIN_X,
   y: 90,
   w: 600,
   h: 560, // 600/560 = 1.071 ~ roi aspect 560/520 = 1.077
