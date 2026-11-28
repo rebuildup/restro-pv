@@ -1,4 +1,5 @@
 import React from "react";
+import type { CSSProperties } from "react";
 import { compByName } from "../ae/project.ts";
 import type { CompSpec, LayerSpec } from "../ae/project.ts";
 import type { PropNode, ShapeSpec } from "../../../pv/model/types.ts";
@@ -171,6 +172,9 @@ export interface StrokeFieldProps {
   strokeTransform?: (item: StrokeItem, i: number) => string | undefined;
   // per-stroke opacity multiplier (1 = unchanged)
   strokeOpacity?: (item: StrokeItem, i: number) => number;
+  // per-stroke CSS mask, applied in comp space on the stroke's outer box.
+  // Used to reveal a stroke along the direction the brush travelled.
+  strokeMask?: (item: StrokeItem, i: number) => CSSProperties | undefined;
   // uniform opacity multiplier for the whole field
   opacity?: number;
   // render only a subset (e.g. focus stroke on top)
@@ -188,6 +192,7 @@ export const StrokeField: React.FC<StrokeFieldProps> = ({
   strokeOpacity,
   opacity = 1,
   zIndex,
+  strokeMask,
 }) => {
   const cache = new Map<number, ReturnType<typeof worldMatrix>>();
   const ordered = strokes
@@ -210,6 +215,7 @@ export const StrokeField: React.FC<StrokeFieldProps> = ({
         const m = w.matrix;
         const css = `matrix(${m[0].toFixed(6)},${m[1].toFixed(6)},${m[4].toFixed(6)},${m[5].toFixed(6)},${m[12].toFixed(6)},${m[13].toFixed(6)})`;
         const extra = strokeTransform?.(item, i);
+        const mask = strokeMask?.(item, i);
         return (
           <div
             key={item.layer.index}
@@ -222,6 +228,7 @@ export const StrokeField: React.FC<StrokeFieldProps> = ({
               transform: extra || undefined,
               transformOrigin: "0 0",
               overflow: "visible",
+              ...mask,
             }}
           >
             <div

@@ -92,8 +92,53 @@
 | **Scene C ビューポート枠** | [c-viewport-frame.svg](./assets/individual/scene-c-d-e/c-viewport-frame.svg) / [PNG](./assets/individual/scene-c-d-e/c-viewport-frame.png) (`612×972`) | 右ステージ `600×960` 外枠単体（作例3セルの背景色・文字組から完全分離） |
 | **Scene D 窓枠マット構造** | [d-ops-window-chrome.svg](./assets/individual/scene-c-d-e/d-ops-window-chrome.svg) / [PNG](./assets/individual/scene-c-d-e/d-ops-window-chrome.png) (`600×960`) | 旧 `52-PV ops.ts` 4窓構造の可視化基準（新設計では主窓＋副窓の2系統へ統合、枠色対比強化） |
 | **Scene E 復元筆画＆CTA単体** | [e-glyph-ee.png](./assets/individual/scene-c-d-e/e-glyph-ee.png) (`733×742`, [SVG](./assets/individual/scene-c-d-e/e-glyph-ee.svg)) ／ [e-cta-typography.png](./assets/individual/scene-c-d-e/e-cta-typography.png) (`500×380`, [SVG](./assets/individual/scene-c-d-e/e-cta-typography.svg)) ／ [衝突検証図](./assets/e-end-card-clean.png) ／ recap タイル [`e-band-b/c/d.png`](./../../public/assets/rec/) | E の右筆画と CTA を分離して書き出し済。**2026-11 実装注記**: 本番 `SceneE.tsx` のヒーロー筆画源は `11-PV glyph EE` ではなく `PV glyph`（06）FUDE S01..S13 `poseT=2`（IoU 0.9998 正本、`Baseline` は焼き付き散開オフセットで棄却）。エンドカードは重複ロゴ禁止の役割分担により `Logo` comp を描かず descriptor+CTA のみ。recap タイル3枚は v13 時点の旧シーン切り出しから現行 PV-Master 代表フレーム（B=f185 / C=f220 / D=f330、右ステージ 600×460）へ再生成済 |
-| **C: 作例用の新規文字／作例** | `SceneC.tsx` `WORK_SOURCES`（2026-12 再設計） | **解消（2026-12 更新）**: 3作例を内容・構成・空間・運動が独立した作品へ作り替えた。W1「墨帖」=`06-PV glyph` FUDE S01..S13（書き順ドローオン＋朱印・非対称エディトリアル）、W2「深解」=`02-bunkai` **runs4 群 indices 21-36**（16層・runs5 とは別の分解境界の「解」、暗部3層深度パララックス）、W3「紋章」=`46-Logo` 公式ロックアップ45層（暖紙ポスター・構築スイープ。ダンプ fill は全黒だが `logo-red-accents.svg` との IoU 照合で検証した7画を `LOGO_RED_INDICES` で #e30b0b 復元）。検証: W1 IoU 0.9998、W2 union IoU 1.0、W3 vs `logo-full-clean.png` IoU 0.9797。**残る不足**: 「筆」「解」以外の第3の漢字分解は依然として存在せず、実機 AE での新規ダンプが必要（§素材取得方針）。`41-BG decomposed strokes` は W1 と画素同一（IoU 1.0）のため作例ソースからは除外済み |
+| **C: 作例用の新規文字／作例** | `SceneC.tsx` `WORK_SOURCES`（2026-12 再設計） | **解消（2026-11-28 更新）**: 3作例を内容・構成・空間・運動が独立した作品へ作り直した。W1「墨帖」=`06-PV glyph` FUDE S01..S13（**実ジオメトリから導出した真の書き順**でドローオン＋朱印・写経帖 sheet）、W2「深解」=`02-bunkai` runs4 群 indices 21-36 の16片（**解自身の構造 角/刀/牛** に分割し、書き順の順序を奥行きにする）、W3「飛白」=**実機 AE で新規分解した第三の漢字**（`verification/rec-newmat/`）。**旧 W3「紋章」= `46-Logo` 公式ロックアップ45層の解体流用 ＋ `45 PARTS` 表記は撤回**（ブランド意匠と実復元筆画の混同）。検証: W1 IoU 0.9998、書き順は `tests/scene-c-stroke-semantics.test.ts` で固定。**補足（実測）**: `bunkai` の runs4 群と runs5 群は**頂点データが16/16完全一致**＝同一分解の別ステージングであり、別分解境界ではない。`41-BG decomposed strokes` と `53-PV probe char` も W1 と画素同一 |
 | **D: 実 AE 操作の単一コンポ録画** | （[06-recordings-audit.md](./06-recordings-audit.md) 参照） | 既存録画6本はいずれもクリップ・コンポ切り替え分断・高視認性不足のため、新規収録（テキスト/シェイプ→`Decompose` 押下→生成→編集の連続収録）が必要 |
 | **素材取得方針（[AGENTS.md](../../AGENTS.md) 境界）** | — | このリポジトリから `Ae_Restro` 本体のコードを編集しない。新規文字の実 Restro 出力や UI 録画は実機 After Effects 上で正規の Restro プラグインを実行して新規ダンプ／収録する |
 
 > 全54点の個別SVG・PNGのメタデータとパス一覧は [assets/individual/manifest.json](./assets/individual/manifest.json) にも機械可読 JSON として収録済み。
+
+---
+
+## 5. 「作品として成立しうる実復元筆画」の棚卸し（2026-11-28 実測）
+
+> 目的: どの素材が**別の作品**として成立するかを、実測で確定する。作例の差別化が「別文字・別配色・別モーション」で足りないと判断されたため、**存在する作品数**そのものを数え直す。
+
+### 5.1 コンパ全73件の分類（実測）
+
+| シルエット | 該当コンパ | 実体 |
+|---|---|---|
+| **筆** | 20 | `Baseline` / `PV glyph`(+A/A2/B/C/EE/WA/WB/WC) / `STEP1..4 draft` / `STEP1..3 checkpoint` / `BG decomposed strokes` / `PV probe char` / `TMP_widecopy` |
+| **解** | 5 + master系15 | `bunkai`(+2 checkpoint) / `kai-zoom`(+1 checkpoint) / master系15コンパ |
+| **ブランド意匠** | 1 | `46-Logo`（45シェイプ = 「Restro」＋「筆画復元」の公式ロックアップ） |
+| 筆画分解なし | 29 | テキスト/合成/録画 |
+
+73コンパのうち44が筆画レイヤを持つが、**シルエットは3種類だけ**。
+
+### 5.2 20個の「筆」コンパは1作品である
+
+同一13ピースが4状態で配置されるだけ（実測: AE式 `m={S01:[-26,10],…}` のfactor）。
+
+| explode factor | コンパ | 状態 |
+|---|---|---|
+| 0.0000 | `PV glyph` / `PV glyph EE` / `STEP3 draft` / `TMP_widecopy` / `STEP1..3 checkpoint` / `BG decomposed strokes` / `PV probe char` | 休息（組み立て済み） |
+| 0.7278 | `Baseline` / `STEP1 outline` / `STEP2 draft` / `STEP4 draft` | 分解方向へ 72.78% 開いた状態 |
+| 1.0000 | `PV glyph A2` / `WA` / `WB` / `WC` | 完全に分解開いた状態 |
+| — | `PV glyph A` / `B` / `C` | 休息状態を x 方向 −246px 平行移動（union IoU 1.0） |
+
+### 5.3 `bunkai` の runs4 群と runs5 群は**同一分解**である
+
+実測: 16組すべてで**生パス頂点座標が完全一致**（回転/反転/開始頂点ずれを考慮しても一致）。面積・頂点数・サブパス数も全対で完全一致、総和も runs5 = runs4 = 295,333。休息姿勢で union IoU **1.0000**。差があるのは (a) Anchor/Position 値、(b) キー（runs4群は Position(Y) か Rotation に3キー、runs5群はキーなし）、(c) Opacity 96 vs 100 のみ。
+
+> **訂正**: 旧記述「runs5 とは別の分解境界」は誤り。レイヤー名末尾の `runsN` は所属グループではなく出所 comp の残骸で、グループ判定はフォルダ（`▾ stroke runs4` / `▾ stroke runs5`）で行う必要がある。**union IoU 1.0 は「同じ字形」の証拠であって「境界が違う」ことの証拠ではない。**
+
+### 5.4 `kai-zoom` は新素材ではない
+
+20レイヤのうち、`STROKE_000/001/002` × 各5本は**すべて同一パスデータ**（解の角部分の先頭3画を `Null 4` の Scale 130% で拡大した別名 copy）。`Ae_Restro merged shape` は解の全体から左上隅3画を除いたもの。**単独作品として成立しない**（W2と重複）。
+
+### 5.5 結論と不足
+
+- **実在する独立した実復元筆画作品は2点**（筆・解）。ブランド意匠（`46-Logo`）を含めると3点だが、意匠は作品として出示できない。
+- 第三の作品には**実機 After Effects での新規分解**が必要（`verification/rec-newmat/`、§素材取得方針）。
+- `41-BG decomposed strokes` と `53-PV probe char` は**完全重複**（レイヤー名・スタック順・world bbox まで一致）。
+- 復元ピースは互いに重なり合う（筆: Σindividual 294,435 / union 201,002 → 重ね率 **0.467**、解: **0.312**）。これは「隠れた境界を推定して復元」する挙動と符合する。

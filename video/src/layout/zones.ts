@@ -25,7 +25,7 @@
 // marginX perturbation moves all left-column descendants by the same
 // delta). The recovered production values are reproduced exactly:
 // gapLeft ≈ 460.33 -> LEFT_COLUMN_MAX_X = 460, stageMinX = 480.
-// Scene-internal stage insets (SceneB VIEW.x=468, SceneC WIN_X=490,
+// Scene-internal stage insets (SceneB VIEW.x=468, SceneC WIN_X=480,
 // SceneD/E stage x=480) are content placement inside the stage, not the
 // column boundary, and stay scene-owned.
 

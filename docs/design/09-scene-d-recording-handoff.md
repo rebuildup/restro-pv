@@ -13,7 +13,7 @@
 | 素材 | `assets/rec/ae-decompose-auto.mp4`（Remotion `staticFile` 経由。`public/assets` はリポジトリ `assets/` への junction） |
 | 仕様 | 1280×720 / 24fps / 6.00s / 144f |
 | 使用区間 | `srcStart=1.30s`・90f（PV f281–370、t=11.71–15.46s） |
-| ROI | `{x:370, y:0, w:560, h:470}` → 表示 viewport `x=480, y=90, w=600, h=560` |
+| ROI | `{x:370, y:0, w:560, h:470}` → 表示 viewport `x=480, y=60, w=600, h=540`（`W_main`）。旧 `y=90 / h=560` の値は2窓モデルへ再構成され**現在コードと不一致** |
 | 内容 | 実 `Restro: Decompose` を走らせた**レンダー済みコンポ**（comp `RestroProofD`、筆テキスト→13 `STROKE_*` 形状レイヤー生成→キーフレームで組み上がり）。AE UI・パネル・タイムラインは映らない |
 | 検証 | 全デコード監査 `verification/wu-d-r34/`、レビュー `verification/reviews/wu-d-r35c/`（PASS 10/10） |
 
@@ -129,7 +129,7 @@
 | プロジェクト | `verification/rec-d/` | `REC-D.aep` | 再現・再収録用に保存 |
 | ログ | `verification/rec-d/` | `decompose-log.txt` | §3.5-13 のサイドカー |
 
-**既知の不整合（コード側の後続対応が必要）**: 現行 `video/src/scenes/SceneD.tsx` は `WIN.file = "ae-decompose-auto.mp4"` 固定で `CLIPS`/`ROI` も旧素材前提。本 runbook の成果物を使うには、後続チケットで `SceneD.tsx` の `file`/`ROI`/`CLIPS` 差し替えと、05 §3 の2窓モデルへの再構成（または単一窓継続の判断）が必要。**本 runbook では `SceneD.tsx` を編集しない**。
+**実装状況（2026-11-28 時点）**: `video/src/scenes/SceneD.tsx` は**すでに2窓モデル**（`W_main` 上段 `y=60..600` / `W_inset` 下段 `y=624..1020`、各窓に濃色フレームと座標ラベル）に再構成済み。残る作業は**本 runbook の成果物 `ae-decompose-ui.mp4` を `WIN_MAIN`/`WIN_INSET` の `file`/`roi`/`clips` に差し込むこと**のみ（フレーム・レイアウト・タイミングは不変）。未収録の窓は現状プレースホルダ表示であり、これは**実操作の証拠にならない**ため、最終版に development 表示を残さない。
 
 ## 4. 設計フェーズで完結する残作業（本書のスコープ内・実施済み/継続）
 

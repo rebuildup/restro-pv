@@ -86,11 +86,27 @@ function gridCell(g: GridSpec): { w: number; h: number } {
   return { w: Math.abs(g.corner[0] - g.anchor[0]), h: Math.abs(g.corner[1] - g.anchor[1]) };
 }
 
+/**
+ * Effective line weight of the background grid.
+ *
+ * The AEP's Grid effect records `Border Width = 2` (layer pixels), but the
+ * confirmed thumbnail (`assets/images/samune-v1-master.png`) carries
+ * roughly half that ink on every grid line — measured at 0.47-0.50 of the
+ * rendered ink across three scanlines, on all lines, over the whole frame
+ * (the confirmed grid geometry is otherwise identical: same cell pitch,
+ * same #303030 core, same flat paper, same z-order). The confirmed
+ * thumbnail is the design reference for the common background, so the
+ * grid is drawn at the measured effective weight. The upstream AEP value
+ * stays in the dump and is not rewritten.
+ */
+const GRID_BORDER_EFFECTIVE_SCALE = 0.5;
+
 function GridOverlay({ spec, width, height, id }: { spec: GridSpec; width: number; height: number; id: string }) {
   const { w: cw, h: ch } = gridCell(spec);
-  if (cw <= 0 || ch <= 0 || spec.border <= 0) return null;
+  const border = spec.border * GRID_BORDER_EFFECTIVE_SCALE;
+  if (cw <= 0 || ch <= 0 || border <= 0) return null;
   const [ax, ay] = spec.anchor;
-  const half = spec.border / 2;
+  const half = border / 2;
   const color = cssRgb(spec.color);
   const op = spec.opacity * spec.color[3];
   const lines: React.ReactNode[] = [];
@@ -99,15 +115,15 @@ function GridOverlay({ spec, width, height, id }: { spec: GridSpec; width: numbe
   const kMaxX = Math.ceil((width - ax) / cw) + 1;
   for (let k = kMinX; k <= kMaxX; k++) {
     const x = ax + k * cw;
-    if (x < -spec.border || x > width + spec.border) continue;
-    lines.push(<rect key={key++} x={x - half} y={-spec.border} width={spec.border} height={height + spec.border * 2} fill={color} opacity={op} />);
+    if (x < -border || x > width + border) continue;
+    lines.push(<rect key={key++} x={x - half} y={-border} width={border} height={height + border * 2} fill={color} opacity={op} />);
   }
   const kMinY = Math.floor((0 - ay) / ch) - 1;
   const kMaxY = Math.ceil((height - ay) / ch) + 1;
   for (let k = kMinY; k <= kMaxY; k++) {
     const y = ay + k * ch;
-    if (y < -spec.border || y > height + spec.border) continue;
-    lines.push(<rect key={key++} x={-spec.border} y={y - half} width={width + spec.border * 2} height={spec.border} fill={color} opacity={op} />);
+    if (y < -border || y > height + border) continue;
+    lines.push(<rect key={key++} x={-border} y={y - half} width={width + border * 2} height={border} fill={color} opacity={op} />);
   }
   // Invert Grid swaps opaque/transparent areas: cell interiors become opaque,
   // grid lines transparent. Rendered as a full-field rect masked by the

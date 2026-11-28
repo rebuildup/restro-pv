@@ -4,6 +4,7 @@
 // Emits docs/design/verification/3d-projection-check.png + stdout error metrics.
 // Run: bun tools/design/verify-3d-space.ts
 import { readFileSync, writeFileSync } from "node:fs";
+import { AE_DEFAULT_CAMERA_FOV_DEG } from "../../video/src/design/rig.ts";
 import { PNG } from "pngjs";
 import { comp_05 } from "../../pv/generated/05-master.ts";
 import {
@@ -16,7 +17,7 @@ import {
 import { layerByIndex, layerShapeItems, worldMatrix } from "./lib/spec.ts";
 
 const W = 1080, H = 1080;
-const cx = W / 2, cy = H / 2, DIST = 1500, FOV = 40;
+const cx = W / 2, cy = H / 2, DIST = 1500, FOV = AE_DEFAULT_CAMERA_FOV_DEG;
 const view = mLookAt([cx, cy, -DIST], [cx, cy, 0], [0, -1, 0]);
 const proj = mPerspective(FOV, 1, 1, 100000);
 const screen = mScreenFromClip(W, H);

@@ -14,6 +14,7 @@ import {
   transformPoint,
 } from "../../video/src/ae/mat4.ts";
 import { worldMatrix } from "../../video/src/ae/transform.ts";
+import { AE_DEFAULT_CAMERA_FOV_DEG } from "../../video/src/design/rig.ts";
 
 const comp = comp_05;
 const layer = comp.layers.find((l) => l.index === 257);
@@ -23,7 +24,7 @@ if (!layer) throw new Error("grid-solid layer 257 not found");
 const cx = comp.width / 2;
 const cy = comp.height / 2;
 const DIST = 1500;
-const FOV = 40;
+const FOV = AE_DEFAULT_CAMERA_FOV_DEG;
 const view = mLookAt([cx, cy, -DIST], [cx, cy, 0], [0, -1, 0]);
 const proj = mPerspective(FOV, comp.width / comp.height, 1, 100000);
 const screen = mScreenFromClip(comp.width, comp.height);

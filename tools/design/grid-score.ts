@@ -10,11 +10,12 @@ import {
   transformPoint,
   type Mat4,
 } from "../../video/src/ae/mat4.ts";
+import { AE_DEFAULT_CAMERA_FOV_DEG } from "../../video/src/design/rig.ts";
 import { PNG } from "pngjs";
 import { readFileSync } from "node:fs";
 
 const W = 1080, H = 1080;
-const cam = { fov: 40, distance: 1500 };
+const cam = { fov: AE_DEFAULT_CAMERA_FOV_DEG, distance: 1500 };
 const eye: [number, number, number] = [W / 2, H / 2, -cam.distance];
 const view = mLookAt(eye, [W / 2, H / 2, 0], [0, -1, 0]);
 const proj = mPerspective(cam.fov, W / H, 1, 100000);

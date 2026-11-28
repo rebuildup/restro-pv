@@ -49,12 +49,12 @@
 
 ![3D Perspective Grid Plane](./assets/background-grid-plane.png)
 
-> **`[回収事実 / 実測値]`（2026-11 訂正・サムネ実照合済）** `background-grid-plane.svg/.png` は旧版の手描き遠近図（左右反転）を廃止し、`05-master.ts [257]` の実パラメータ（`Position=[540,540,+245]`, `Y Rotation=+20°`, Grid `Anchor=[540,540]`, `Width=54`, `Border=2`, `#303030`）を `worldMatrix`＋ピンホールカメラ行列（`video/src/ae/layer.tsx` と同一：eye `[540,540,-1500]`, `fov=40`, `up=[0,-1,0]`）で全格子線を解析投影した実幾何書き出しへ置き換えた。検証：画面上の縦格子線間隔は左→右へ `26.0px→83.9px` と単調増加し、**右側が手前**（確定サムネイル・元AEPと整合）。[`tools/design/verify-3d-space.ts`](../../tools/design/verify-3d-space.ts) で確定サムネイル（`assets/images/samune-v1-master.png`）へ同一カメラ行列を重畳照合した結果は [`verification/3d-projection-check.png`](./verification/3d-projection-check.png) に保存済み（`runs4EdgeHitRateOnInk = 0.618`, `gridIntersectionHitRate = 0.3582`）。再生成：`bun tools/design/render-grid.ts`。
+> **`[回収事実 / 実測値]`（2026-11 訂正・サムネ実照合済）** `background-grid-plane.svg/.png` は旧版の手描き遠近図（左右反転）を廃止し、`05-master.ts [257]` の実パラメータ（`Position=[540,540,+245]`, `Y Rotation=+20°`, Grid `Anchor=[540,540]`, `Width=54`, `Border=2`, `#303030`）を `worldMatrix`＋ピンホールカメラ行列（`video/src/ae/layer.tsx` と同一：eye `[540,540,-1500]`, `fov=39.59725°`（＝AE 既定の50mm/36mm・焦点距離1500px）, `up=[0,-1,0]`）で全格子線を解析投影した実幾何書き出しへ置き換えた。検証：画面上の縦格子線間隔は左→右へ `32.9px→54.2px` と単調増加し、**右側が手前**（確定サムネイル・元AEPと整合）。[`tools/design/verify-3d-space.ts`](../../tools/design/verify-3d-space.ts) で確定サムネイル（`assets/images/samune-v1-master.png`）へ同一カメラ行列を重畳照合した結果は [`verification/3d-projection-check.png`](./verification/3d-projection-check.png) に保存済み（`runs4EdgeHitRateOnInk = 0.618`, `gridIntersectionHitRate = 0.3582`）。再生成：`bun tools/design/render-grid.ts`。
 
 `[回収事実 / 実測値]`＋`[導出・推定]` 右側コンテンツ設計で絶対に混同してはならない空間規則：
 
 - **空間 A：傾いた 3D 製図空間（背景 `grid-solid` と A1〜A3 巨大「解」）**
-  - AE デフォルトカメラ（`fov≈39.6° / 焦点距離 1500px`, 位置 `[540, 540, -1500]`）に対し、`[257] grid-solid` は `Position = [540, 540, +245]`, `Y Rotation = +20°`。
+  - AE デフォルトカメラ（`fov = 39.59725°`（50mm/36mm）, 焦点距離 1500px, 位置 `[540, 540, -1500]`）に対し、`[257] grid-solid` は `Position = [540, 540, +245]`, `Y Rotation = +20°`。
   - `[238] Null 3 (runs4)` および `[214] Null 3 (runs5)`・`[196] Null 3 (runs6)` は同じく `Y Rotation = +20°` でありながら **`Position = [764, 540, -96]`**（背景グリッドより **`341px` 手前**）に浮遊している。
   - `[232] bunkai` は `Position = [780.7, 495.1, 0]` に加え `X=-20°, Y=+22°, Z=+2°` の3軸回転を持ち、A2 終盤から A3 へ空間をねじる。
 - **空間 B：平面直交 2D レイヤー（Left Chrome・B カード・C 窓・D 操作窓・E 着地）**
