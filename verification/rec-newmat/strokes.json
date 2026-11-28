@@ -1,0 +1,1585 @@
+{
+  "generated": "2026-11-29T02:27:51.217183+09:00",
+  "aeVersion": "27.0x78",
+  "source": {
+    "project": "verification/rec-newmat/NEWMAT.aep",
+    "font": "MSMincho",
+    "compSize": [
+      1280,
+      720
+    ],
+    "pixelAspect": 1,
+    "frameRate": 24,
+    "duration": 8
+  },
+  "comps": [
+    {
+      "name": "NEWMAT 無 mincho",
+      "role": "the material Scene C work 03 (飛白) uses — MSMincho face, acquired by the real Restro: Decompose command",
+      "layerCount": 13,
+      "strokeCount": 12,
+      "strokes": [
+        {
+          "index": 1,
+          "name": "STROKE_011_runs4",
+          "enabled": true,
+          "bboxCompSpace": [
+            570.287,
+            506.725,
+            610.59,
+            595.208
+          ],
+          "bboxLayerSpace": [
+            570.287,
+            506.725,
+            610.59,
+            595.208
+          ],
+          "vertexCount": 5,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 2614.062,
+          "position": [
+            590.439,
+            550.966
+          ],
+          "anchor": [
+            590.439,
+            550.966
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            590.367,
+            551.081
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  570.287,
+                  509.505
+                ],
+                [
+                  598.546,
+                  506.725
+                ],
+                [
+                  607.09,
+                  552.945
+                ],
+                [
+                  610.59,
+                  590.575
+                ],
+                [
+                  580.015,
+                  595.208
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "name": "STROKE_010_runs4",
+          "enabled": true,
+          "bboxCompSpace": [
+            763.002,
+            496.071,
+            856.116,
+            600.303
+          ],
+          "bboxLayerSpace": [
+            763.002,
+            496.071,
+            856.116,
+            600.303
+          ],
+          "vertexCount": 6,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 3457.031,
+          "position": [
+            809.559,
+            548.187
+          ],
+          "anchor": [
+            809.559,
+            548.187
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            810.943,
+            547.929
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  763.002,
+                  506.262
+                ],
+                [
+                  791.724,
+                  496.071
+                ],
+                [
+                  831.112,
+                  547.541
+                ],
+                [
+                  856.116,
+                  588.722
+                ],
+                [
+                  825.541,
+                  600.303
+                ],
+                [
+                  800.185,
+                  556.769
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "name": "STROKE_009_runs4",
+          "enabled": true,
+          "bboxCompSpace": [
+            666.181,
+            503.946,
+            725.941,
+            595.671
+          ],
+          "bboxLayerSpace": [
+            666.181,
+            503.946,
+            725.941,
+            595.671
+          ],
+          "vertexCount": 6,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 2737.133,
+          "position": [
+            696.061,
+            549.808
+          ],
+          "anchor": [
+            696.061,
+            549.808
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            696.974,
+            549.643
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  666.181,
+                  509.505
+                ],
+                [
+                  695.366,
+                  503.946
+                ],
+                [
+                  714.456,
+                  550.131
+                ],
+                [
+                  725.941,
+                  588.722
+                ],
+                [
+                  695.366,
+                  595.671
+                ],
+                [
+                  684.547,
+                  556.413
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "name": "STROKE_008_runs4",
+          "enabled": true,
+          "bboxCompSpace": [
+            429.457,
+            497.924,
+            517.939,
+            599.84
+          ],
+          "bboxLayerSpace": [
+            429.457,
+            497.924,
+            517.939,
+            599.84
+          ],
+          "vertexCount": 5,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 2880.87,
+          "position": [
+            473.698,
+            548.882
+          ],
+          "anchor": [
+            473.698,
+            548.882
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            475.113,
+            548.642
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  429.457,
+                  587.332
+                ],
+                [
+                  461.388,
+                  552.056
+                ],
+                [
+                  488.754,
+                  497.924
+                ],
+                [
+                  517.939,
+                  505.799
+                ],
+                [
+                  458.179,
+                  599.84
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "name": "STROKE_007_runs8",
+          "enabled": true,
+          "bboxCompSpace": [
+            439.648,
+            447.892,
+            844.535,
+            476.151
+          ],
+          "bboxLayerSpace": [
+            439.648,
+            447.892,
+            844.535,
+            476.151
+          ],
+          "vertexCount": 4,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 11441.552,
+          "position": [
+            642.092,
+            462.021
+          ],
+          "anchor": [
+            642.092,
+            462.021
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            642.092,
+            462.021
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  439.648,
+                  476.151
+                ],
+                [
+                  439.648,
+                  447.892
+                ],
+                [
+                  844.535,
+                  447.892
+                ],
+                [
+                  844.535,
+                  476.151
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "name": "STROKE_006_runs4",
+          "enabled": true,
+          "bboxCompSpace": [
+            754.663,
+            224.459,
+            783.848,
+            475.367
+          ],
+          "bboxLayerSpace": [
+            754.663,
+            224.459,
+            783.848,
+            475.367
+          ],
+          "vertexCount": 4,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 7322.773,
+          "position": [
+            769.256,
+            349.913
+          ],
+          "anchor": [
+            769.256,
+            349.913
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            769.256,
+            349.913
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  754.663,
+                  224.459
+                ],
+                [
+                  783.848,
+                  224.459
+                ],
+                [
+                  783.848,
+                  475.367
+                ],
+                [
+                  754.663,
+                  475.367
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "name": "STROKE_005_runs4",
+          "enabled": true,
+          "bboxCompSpace": [
+            668.034,
+            224.459,
+            695.366,
+            475.367
+          ],
+          "bboxLayerSpace": [
+            668.034,
+            224.459,
+            695.366,
+            475.367
+          ],
+          "vertexCount": 4,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 6857.835,
+          "position": [
+            681.7,
+            349.913
+          ],
+          "anchor": [
+            681.7,
+            349.913
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            681.7,
+            349.913
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  668.034,
+                  224.459
+                ],
+                [
+                  695.366,
+                  224.459
+                ],
+                [
+                  695.366,
+                  475.367
+                ],
+                [
+                  668.034,
+                  475.367
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "name": "STROKE_004_runs4",
+          "enabled": true,
+          "bboxCompSpace": [
+            582.795,
+            224.459,
+            610.127,
+            475.367
+          ],
+          "bboxLayerSpace": [
+            582.795,
+            224.459,
+            610.127,
+            475.367
+          ],
+          "vertexCount": 4,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 6857.835,
+          "position": [
+            596.461,
+            349.913
+          ],
+          "anchor": [
+            596.461,
+            349.913
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            596.461,
+            349.913
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  582.795,
+                  224.459
+                ],
+                [
+                  610.127,
+                  224.459
+                ],
+                [
+                  610.127,
+                  475.367
+                ],
+                [
+                  582.795,
+                  475.367
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "name": "STROKE_003_runs4",
+          "enabled": true,
+          "bboxCompSpace": [
+            498.482,
+            221.359,
+            527.204,
+            475.367
+          ],
+          "bboxLayerSpace": [
+            498.482,
+            221.359,
+            527.204,
+            475.367
+          ],
+          "vertexCount": 4,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 7295.591,
+          "position": [
+            512.843,
+            348.363
+          ],
+          "anchor": [
+            512.843,
+            348.363
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            512.843,
+            348.363
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  498.482,
+                  221.359
+                ],
+                [
+                  527.204,
+                  221.359
+                ],
+                [
+                  527.204,
+                  475.367
+                ],
+                [
+                  498.482,
+                  475.367
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "index": 10,
+          "name": "STROKE_002_runs12",
+          "enabled": true,
+          "bboxCompSpace": [
+            432.7,
+            335.32,
+            851.484,
+            363.579
+          ],
+          "bboxLayerSpace": [
+            432.7,
+            335.32,
+            851.484,
+            363.579
+          ],
+          "vertexCount": 4,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 11834.283,
+          "position": [
+            642.092,
+            349.45
+          ],
+          "anchor": [
+            642.092,
+            349.45
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            642.092,
+            349.45
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  432.7,
+                  363.579
+                ],
+                [
+                  432.7,
+                  335.32
+                ],
+                [
+                  851.484,
+                  335.32
+                ],
+                [
+                  851.484,
+                  363.579
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "index": 11,
+          "name": "STROKE_001_runs6",
+          "enabled": true,
+          "bboxCompSpace": [
+            496.651,
+            223.676,
+            833.417,
+            251.934
+          ],
+          "bboxLayerSpace": [
+            496.651,
+            223.676,
+            833.417,
+            251.934
+          ],
+          "vertexCount": 4,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 9516.561,
+          "position": [
+            665.034,
+            237.805
+          ],
+          "anchor": [
+            665.034,
+            237.805
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            665.034,
+            237.805
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  496.651,
+                  251.934
+                ],
+                [
+                  496.651,
+                  223.676
+                ],
+                [
+                  833.417,
+                  223.676
+                ],
+                [
+                  833.417,
+                  251.934
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "index": 12,
+          "name": "STROKE_000_runs6",
+          "enabled": true,
+          "bboxCompSpace": [
+            428.53,
+            168.548,
+            565.191,
+            314.011
+          ],
+          "bboxLayerSpace": [
+            428.53,
+            168.548,
+            565.191,
+            314.011
+          ],
+          "vertexCount": 10,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 5238.383,
+          "position": [
+            496.861,
+            241.279
+          ],
+          "anchor": [
+            496.861,
+            241.279
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            496.685,
+            241.276
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  428.53,
+                  294.554
+                ],
+                [
+                  481.94,
+                  241.903
+                ],
+                [
+                  528.594,
+                  168.548
+                ],
+                [
+                  565.191,
+                  181.519
+                ],
+                [
+                  554.999,
+                  185.225
+                ],
+                [
+                  539.953,
+                  211.828
+                ],
+                [
+                  532.3,
+                  223.676
+                ],
+                [
+                  498.482,
+                  268.148
+                ],
+                [
+                  484.234,
+                  283.768
+                ],
+                [
+                  451.693,
+                  314.011
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "NEWMAT 無",
+      "role": "the fallback variant of the same character (NotoSansJP-Medium face). All 12 STROKE_* layers are enabled=false in the saved project, so this comp renders as an empty #f7f7f7 frame (see ACQUISITION.md)",
+      "layerCount": 13,
+      "strokeCount": 12,
+      "strokes": [
+        {
+          "index": 1,
+          "name": "STROKE_011_runs4",
+          "enabled": false,
+          "bboxCompSpace": [
+            751.78,
+            492.38,
+            853.9,
+            599.1
+          ],
+          "bboxLayerSpace": [
+            751.78,
+            492.38,
+            853.9,
+            599.1
+          ],
+          "vertexCount": 6,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 4800.791,
+          "position": [
+            802.84,
+            545.74
+          ],
+          "anchor": [
+            802.84,
+            545.74
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            803.764,
+            545.397
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  751.78,
+                  505.26
+                ],
+                [
+                  793.18,
+                  492.38
+                ],
+                [
+                  828.636,
+                  541.152
+                ],
+                [
+                  853.9,
+                  583.92
+                ],
+                [
+                  809.74,
+                  599.1
+                ],
+                [
+                  785.826,
+                  555.581
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "name": "STROKE_010_runs4",
+          "enabled": false,
+          "bboxCompSpace": [
+            658.86,
+            501.12,
+            728.32,
+            594.96
+          ],
+          "bboxLayerSpace": [
+            658.86,
+            501.12,
+            728.32,
+            594.96
+          ],
+          "vertexCount": 6,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 3823.165,
+          "position": [
+            693.59,
+            548.04
+          ],
+          "anchor": [
+            693.59,
+            548.04
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            694.222,
+            547.914
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  658.86,
+                  508.48
+                ],
+                [
+                  699.8,
+                  501.12
+                ],
+                [
+                  717.143,
+                  546.081
+                ],
+                [
+                  728.32,
+                  586.22
+                ],
+                [
+                  685.08,
+                  594.96
+                ],
+                [
+                  675.565,
+                  555.579
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "name": "STROKE_009_runs4",
+          "enabled": false,
+          "bboxCompSpace": [
+            565.94,
+            503.42,
+            617.92,
+            594.5
+          ],
+          "bboxLayerSpace": [
+            565.94,
+            503.42,
+            617.92,
+            594.5
+          ],
+          "vertexCount": 6,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 3618.32,
+          "position": [
+            591.93,
+            548.96
+          ],
+          "anchor": [
+            591.93,
+            548.96
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            592.224,
+            548.737
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  565.94,
+                  507.56
+                ],
+                [
+                  606.42,
+                  503.42
+                ],
+                [
+                  614.631,
+                  550.999
+                ],
+                [
+                  617.92,
+                  588.06
+                ],
+                [
+                  575.14,
+                  594.5
+                ],
+                [
+                  572.665,
+                  553.332
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "name": "STROKE_008_runs4",
+          "enabled": false,
+          "bboxCompSpace": [
+            429.78,
+            494.22,
+            526.84,
+            599.1
+          ],
+          "bboxLayerSpace": [
+            429.78,
+            494.22,
+            526.84,
+            599.1
+          ],
+          "vertexCount": 6,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 4551.372,
+          "position": [
+            478.31,
+            546.66
+          ],
+          "anchor": [
+            478.31,
+            546.66
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            481.242,
+            546.408
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  429.78,
+                  582.08
+                ],
+                [
+                  462.59,
+                  542.443
+                ],
+                [
+                  484.52,
+                  494.22
+                ],
+                [
+                  526.84,
+                  504.34
+                ],
+                [
+                  506.566,
+                  550.949
+                ],
+                [
+                  471.18,
+                  599.1
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "name": "STROKE_007_runs4",
+          "enabled": false,
+          "bboxCompSpace": [
+            440.82,
+            439.48,
+            840.56,
+            479.04
+          ],
+          "bboxLayerSpace": [
+            440.82,
+            439.48,
+            840.56,
+            479.04
+          ],
+          "vertexCount": 4,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 15813.725,
+          "position": [
+            640.69,
+            459.26
+          ],
+          "anchor": [
+            640.69,
+            459.26
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            640.69,
+            459.26
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  440.82,
+                  479.04
+                ],
+                [
+                  440.82,
+                  439.48
+                ],
+                [
+                  840.56,
+                  439.48
+                ],
+                [
+                  840.56,
+                  479.04
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "name": "STROKE_006_runs4",
+          "enabled": false,
+          "bboxCompSpace": [
+            743.96,
+            236.16,
+            783.98,
+            460.64
+          ],
+          "bboxLayerSpace": [
+            743.96,
+            236.16,
+            783.98,
+            460.64
+          ],
+          "vertexCount": 4,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 8983.681,
+          "position": [
+            763.97,
+            348.4
+          ],
+          "anchor": [
+            763.97,
+            348.4
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            763.97,
+            348.4
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  743.96,
+                  236.16
+                ],
+                [
+                  783.98,
+                  236.16
+                ],
+                [
+                  783.98,
+                  460.64
+                ],
+                [
+                  743.96,
+                  460.64
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "name": "STROKE_005_runs4",
+          "enabled": false,
+          "bboxCompSpace": [
+            661.16,
+            236.16,
+            697.96,
+            460.64
+          ],
+          "bboxLayerSpace": [
+            661.16,
+            236.16,
+            697.96,
+            460.64
+          ],
+          "vertexCount": 4,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 8260.875,
+          "position": [
+            679.56,
+            348.4
+          ],
+          "anchor": [
+            679.56,
+            348.4
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            679.56,
+            348.4
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  661.16,
+                  236.16
+                ],
+                [
+                  697.96,
+                  236.16
+                ],
+                [
+                  697.96,
+                  460.64
+                ],
+                [
+                  661.16,
+                  460.64
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "name": "STROKE_004_runs4",
+          "enabled": false,
+          "bboxCompSpace": [
+            579.28,
+            236.16,
+            616.08,
+            459.26
+          ],
+          "bboxLayerSpace": [
+            579.28,
+            236.16,
+            616.08,
+            459.26
+          ],
+          "vertexCount": 4,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 8210.079,
+          "position": [
+            597.68,
+            347.71
+          ],
+          "anchor": [
+            597.68,
+            347.71
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            597.68,
+            347.71
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  579.28,
+                  236.16
+                ],
+                [
+                  616.08,
+                  236.16
+                ],
+                [
+                  616.08,
+                  459.26
+                ],
+                [
+                  579.28,
+                  459.26
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "name": "STROKE_003_runs4",
+          "enabled": false,
+          "bboxCompSpace": [
+            497.4,
+            236.16,
+            536.04,
+            460.64
+          ],
+          "bboxLayerSpace": [
+            497.4,
+            236.16,
+            536.04,
+            460.64
+          ],
+          "vertexCount": 4,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 8673.918,
+          "position": [
+            516.72,
+            348.4
+          ],
+          "anchor": [
+            516.72,
+            348.4
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            516.72,
+            348.4
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  497.4,
+                  236.16
+                ],
+                [
+                  536.04,
+                  236.16
+                ],
+                [
+                  536.04,
+                  460.64
+                ],
+                [
+                  497.4,
+                  460.64
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "index": 10,
+          "name": "STROKE_002_runs4",
+          "enabled": false,
+          "bboxCompSpace": [
+            433.92,
+            330.92,
+            847,
+            370.02
+          ],
+          "bboxLayerSpace": [
+            433.92,
+            330.92,
+            847,
+            370.02
+          ],
+          "vertexCount": 4,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 16151.43,
+          "position": [
+            640.46,
+            350.47
+          ],
+          "anchor": [
+            640.46,
+            350.47
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            640.46,
+            350.47
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  433.92,
+                  370.02
+                ],
+                [
+                  433.92,
+                  330.92
+                ],
+                [
+                  847,
+                  330.92
+                ],
+                [
+                  847,
+                  370.02
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "index": 11,
+          "name": "STROKE_001_runs4",
+          "enabled": false,
+          "bboxCompSpace": [
+            500.62,
+            222.82,
+            829.98,
+            261.46
+          ],
+          "bboxLayerSpace": [
+            500.62,
+            222.82,
+            829.98,
+            261.46
+          ],
+          "vertexCount": 4,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 12486.523,
+          "position": [
+            665.3,
+            242.14
+          ],
+          "anchor": [
+            665.3,
+            242.14
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            668.385,
+            242.264
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  500.62,
+                  261.46
+                ],
+                [
+                  513.04,
+                  222.82
+                ],
+                [
+                  829.98,
+                  222.82
+                ],
+                [
+                  829.98,
+                  261.46
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "index": 12,
+          "name": "STROKE_000_runs4",
+          "enabled": false,
+          "bboxCompSpace": [
+            426.1,
+            171.76,
+            565.94,
+            316.66
+          ],
+          "bboxLayerSpace": [
+            426.1,
+            171.76,
+            565.94,
+            316.66
+          ],
+          "vertexCount": 6,
+          "pathCount": 1,
+          "closed": true,
+          "filled": true,
+          "areaLayerSpacePx2": 6207.747,
+          "position": [
+            496.02,
+            244.21
+          ],
+          "anchor": [
+            496.02,
+            244.21
+          ],
+          "scale": [
+            100,
+            100
+          ],
+          "rotation": 0,
+          "centroidComp": [
+            495.94,
+            242.281
+          ],
+          "paths": [
+            {
+              "vertices": [
+                [
+                  426.1,
+                  287.68
+                ],
+                [
+                  478.47,
+                  239.973
+                ],
+                [
+                  523.62,
+                  171.76
+                ],
+                [
+                  565.94,
+                  184.18
+                ],
+                [
+                  461.98,
+                  316.66
+                ],
+                [
+                  445.235,
+                  301.764
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

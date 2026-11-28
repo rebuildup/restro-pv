@@ -1,0 +1,43 @@
+{
+  "schema": "restro.reply.v1",
+  "note": "The values below are the raw RESTRO_REPLY strings the native plug-in wrote, captured verbatim. They are NOT re-serialised.",
+  "generated": "2026-11-29T02:27:51.217183+09:00",
+  "replies": [
+    {
+      "id": "settings_before_decompose",
+      "when": "the SOURCE 無 text layer is selected, before Decompose is issued",
+      "how": "$.setenv('RESTRO_CALL', '{\"op\":\"get_settings\"}') + app.executeCommand(app.findMenuCommandId('Restro'))",
+      "raw": "{\"code\":\"\",\"command\":\"settings\",\"created_layer_ids\":[],\"message\":\"\",\"ok\":true,\"schema\":\"restro.reply.v1\",\"settings\":{\"anchor_mode\":\"center\",\"anchor_x\":0.0,\"anchor_y\":0.0,\"debug_logging\":false,\"decompose_source_action\":\"delete\",\"fit_curves\":true,\"fit_tolerance\":0.25,\"label_align\":\"aligned\",\"labels\":\"auto\",\"layout\":\"auto\",\"merge_source_action\":\"delete\",\"output_mode\":\"layers\",\"simplify\":\"auto\",\"simplify_tolerance\":0.0}}"
+    },
+    {
+      "id": "decompose",
+      "when": "immediately after app.executeCommand(app.findMenuCommandId('Restro: Decompose'))",
+      "how": "app.executeCommand(app.findMenuCommandId('Restro: Decompose'))",
+      "raw": "{\"code\":\"\",\"command\":\"decompose\",\"created_layer_ids\":[109,110,111,112,113,114,115,116,117,118,119,120],\"message\":\"items=12 created=12 hidden=0 removed=1\",\"ok\":true,\"schema\":\"restro.reply.v1\",\"settings\":null}"
+    },
+    {
+      "id": "merge",
+      "when": "Merge round trip on a duplicate of the acquired comp (12 STROKE_* selected)",
+      "how": "app.executeCommand(app.findMenuCommandId('Restro: Merge'))",
+      "raw": "{\"code\":\"\",\"command\":\"merge\",\"created_layer_ids\":[197],\"message\":\"items=1 created=1 hidden=0 removed=12\",\"ok\":true,\"schema\":\"restro.reply.v1\",\"settings\":null}"
+    },
+    {
+      "id": "refine",
+      "when": "Refine round trip on the merged layer of the same duplicate",
+      "how": "app.executeCommand(app.findMenuCommandId('Restro: Refine'))",
+      "raw": "{\"code\":\"SOURCE_IN_OTHER_COMP\",\"command\":\"refine\",\"created_layer_ids\":[],\"message\":\"SOURCE_IN_OTHER_COMP: \\\"Ae_Restro merged shape\\\" was decomposed in another composition\",\"ok\":false,\"schema\":\"restro.reply.v1\",\"settings\":null}"
+    }
+  ],
+  "failedAttempts": [
+    {
+      "id": "merge_first_attempt",
+      "why": "the duplicate comp was not the one open in the viewer, so the plug-in saw an empty selection",
+      "raw": "{\"code\":\"CAPTURE_FAILED\",\"command\":\"merge\",\"created_layer_ids\":[],\"message\":\"Select one or more layers first.\",\"ok\":false,\"schema\":\"restro.reply.v1\",\"settings\":null}"
+    },
+    {
+      "id": "refine_first_attempt",
+      "why": "same reason as merge_first_attempt",
+      "raw": "{\"code\":\"CAPTURE_FAILED\",\"command\":\"refine\",\"created_layer_ids\":[],\"message\":\"Select one or more layers first.\",\"ok\":false,\"schema\":\"restro.reply.v1\",\"settings\":null}"
+    }
+  ]
+}

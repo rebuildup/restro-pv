@@ -1,0 +1,59 @@
+{
+  "generated": "2026-11-29T02:27:51.217183+09:00",
+  "aeVersion": "27.0x78",
+  "comp": "NEWMAT 無 mincho",
+  "font": "MSMincho",
+  "raster": {
+    "width": 1280,
+    "height": 720,
+    "compAreaPx": 921600,
+    "sourcePng": "verification/rec-newmat/png/00-source.png",
+    "decomposedPng": "verification/rec-newmat/png/01-decomposed.png"
+  },
+  "strokeCount": 12,
+  "mergedShapeLayerExists": true,
+  "mergedShapeLayerName": "Ae_Restro merged shape",
+  "mergedShapeLayerVertexCount": 181,
+  "overlapRatio": 0.14752,
+  "overlapPixels": 10349,
+  "unionPixels": 70153,
+  "sumOfPiecePixels": 81191,
+  "largestPiecePixels": 12180,
+  "largestPieceName": "STROKE_007_runs8",
+  "largestPieceOverUnion": 0.173621,
+  "sourceInkPixels": 67826,
+  "decomposedInkPixels": 67833,
+  "unionOverSourceInk": 1.034308,
+  "decomposedOverSourceInk": 1.000103,
+  "unionIntersectSourceOverSource": 0.991714,
+  "unionIntersectSourceOverUnion": 0.958819,
+  "inkCoverageOfFrame": 0.076121,
+  "perPiecePixels": {
+    "STROKE_011_runs4": 2700,
+    "STROKE_010_runs4": 3539,
+    "STROKE_009_runs4": 2816,
+    "STROKE_008_runs4": 2952,
+    "STROKE_007_runs8": 12180,
+    "STROKE_006_runs4": 7560,
+    "STROKE_005_runs4": 7056,
+    "STROKE_004_runs4": 7308,
+    "STROKE_003_runs4": 7650,
+    "STROKE_002_runs12": 12180,
+    "STROKE_001_runs6": 9802,
+    "STROKE_000_runs6": 5448
+  },
+  "method": {
+    "union": "OR of the 12 per-piece polygon masks rasterised from the plugin's own path geometry (AE comp space, 1 px = 1 comp px)",
+    "overlapRatio": "pixels covered by >=2 pieces / pixels covered by >=1 piece",
+    "largestPieceOverUnion": "largest single-piece pixel count / union pixel count",
+    "inkCoverage": "|union| / |source glyph ink| from the AE render of the same MSMincho text layer (background #f7f7f7, ink #111111, threshold < 128 on the 8-bit render)"
+  },
+  "files": {
+    "vectorGeometry": "verification/rec-newmat/strokes.json",
+    "pluginReplies": "verification/rec-newmat/plugin-replies.json",
+    "sourceRender": "verification/rec-newmat/png/00-source.png",
+    "decomposedRender": "verification/rec-newmat/png/01-decomposed.png",
+    "project": "verification/rec-newmat/NEWMAT.aep",
+    "rawAcquisition": ".tmp/rec-newmat/acq.json + .tmp/rec-newmat/roundtrip.json"
+  }
+}
