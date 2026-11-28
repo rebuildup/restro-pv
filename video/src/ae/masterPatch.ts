@@ -2,6 +2,7 @@ import type { CompSpec, LayerSpec, PropNode } from "../../../pv/model/types.ts";
 import { GENERATED_COMPS } from "../../../pv/generated/index.ts";
 import { masterComp } from "./project.ts";
 import { child, children } from "./eval.ts";
+import { SCENE_B_DESIGN } from "../design/choreography.ts";
 
 // Production patches applied to the dumped master CompSpec at module load.
 // The dumps stay untouched; these transforms express direction decisions
@@ -432,11 +433,14 @@ function fadeOpacity(layer: LayerSpec, inP: number, outP: number): void {
 // Everything else in the B window that the dump cannot render — step
 // labels (static "した" text), STEP drafts, Baseline, STEP cards, the
 // Lens magnifier comp — is hidden by B_HIDDEN and re-authored by SceneB.
+// Step times are single-sourced from SCENE_B_DESIGN.stepTimes (the same
+// spec SceneB.tsx consumes); the dumped tab clones reveal at those times.
+const [STEP1_T, STEP2_T, STEP3_T, STEP4_T] = SCENE_B_DESIGN.stepTimes;
 export const STEP_REVEAL: Record<number, number> = {
-  301: 4.25,
-  302: 5.15,
-  303: 6.05,
-  304: 6.95,
+  301: STEP1_T,
+  302: STEP2_T,
+  303: STEP3_T,
+  304: STEP4_T,
 };
 
 // Master layers hidden only inside the scene-B window [3.9, 7.96):

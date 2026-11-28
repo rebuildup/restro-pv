@@ -21,6 +21,7 @@ import {
   transformPoint,
   type Mat4,
 } from "../ae/mat4.ts";
+import { SCENE_B_DESIGN } from "../design/choreography.ts";
 
 // Scene B [3.9, 7.96) per SPEC §5 B. Every step now shows REAL Restro
 // intermediate geometry recovered from the pre-wipe checkpoint comps — the
@@ -58,7 +59,11 @@ import {
 
 const T0 = 3.9;
 const T1 = 7.96;
-const STEP_T = [4.25, 5.15, 6.05, 6.95];
+// Step boundaries single-sourced from the Scene B design spec
+// (choreography.ts SCENE_B_DESIGN.stepTimes — comp times matching
+// 05-master.ts STEP_REVEAL & P19..22 keys). masterPatch.STEP_REVEAL
+// derives from the same spec.
+const STEP_T: readonly number[] = SCENE_B_DESIGN.stepTimes;
 const STEP_LABELS = [
   "輪郭を解析",
   "輪郭線を延長",

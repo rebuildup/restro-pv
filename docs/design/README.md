@@ -33,6 +33,7 @@
 | [06-recordings-audit.md](./06-recordings-audit.md) | **F. 個別の録画素材監査** | 既存録画 6本（`ae-decompose-ops` 他・`wu-d-live`）の解像度・UI 実態・可否判定と、D 再収録・見切れ解消の具体仕様 | [05-recordings-audit-sheet.png](./diagrams/05-recordings-audit-sheet.png) |
 | [07-motion-design.md](./07-motion-design.md) | **G. モーション・筆画相互作用設計** | `runs4` 一次分析＋場面別曲線文法（A2交差抜き・B静→動解放・C3態・E呼吸収束）、状態基準オニオンスキン3種・A2局所実現性数値検証 | [06-motion-curves-and-vectors.png](./diagrams/06-motion-curves-and-vectors.png), [08-per-stroke-choreography.png](./diagrams/08-per-stroke-choreography.png), [motion-kai-designed-a2-onion.png](./diagrams/motion-kai-designed-a2-onion.png) |
 | [08-quality-assurance.md](./08-quality-assurance.md) | **品質保証・受入基準** | 対象ごとの計算/構造検証 vs 視覚/時間人間レビューの分離、同一空間組み上がり IoU・3D投影・4層リグ不変量検査・完了ゲート | [assembly-metrics.json](./verification/assembly-metrics.json), [local-motion-check.json](./verification/local-motion-check.json) |
+| [09-scene-d-recording-handoff.md](./09-scene-d-recording-handoff.md) | **Scene D 録画ハンドオフ** | 全録画素材の個別インベントリ（仕様・操作内容・採否）と、実機 AE へ引き渡す新規収録仕様 R1–R4（収録手順・フレーミング・同一 comp 対応・収録方法） | — |
 | [data/README.md](./data/README.md) | **機械可読コンポジションデータ** | 個別素材↔元コンポ空間の対応を JSON 化（式・`effects`・ネストベクター・基準空間変換 `toReferenceSpace` 保持）。「解」16層＋`06-PV glyph` rest 正本収録 | `data/*.composition.json`（10件）, `verification/assembly-metrics.json` |
 
 ---
