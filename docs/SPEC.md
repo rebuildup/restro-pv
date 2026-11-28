@@ -446,4 +446,5 @@ Issue #32 に基づく制作を継続する指示（PR #27 / branch `23`、Draft
 | **E** | 回顧タイル撤去 / 虹色フィールド撤去（墨＋朱1画）/ ヒーローを元AEPの実測フレーミング（x524..1047, 左右とも切らない）へ / CTA を確認済みの標本どおり白パネル＋標本サイズで、確定ステージ列 x=546・行境界 y=468 へ | `video/src/scenes/SceneE.tsx` |
 | **B** | 元AEPの実画像（`verification/beats/`）と現状レンダの乖離を実測し、グリフを1:1でカードに切り抜き、ステップ色＋黒輪郭、カードを輪郭化（グリッドが透ける）、タブを個別カード化、レンズを3倍の文字像・破線黒リング化 | `video/src/scenes/SceneB.tsx`、`video/src/design/rig.ts` |
 | **共通背景** | カメラ FOV を AE 既定（39.59725deg）へ是正（40deg では確定サムネイルと最大 6.03px ずれる／39.59725deg では 0.30px 以内）、グリッド線幅を確定サムネイルの実測値へ是正 | `video/src/design/rig.ts`、`video/src/ae/effects.tsx` |
+| **D 実機収録** | **未完了**。`tools/capture/rec-d-setup.jsx` / `rec-d-prep.jsx` は用意したが、`assets/rec/ae-decompose-ui.mp4` は作られていない（実作業中に AE が落ちた）。現状の D は UI を含まない中間素材であり**実操作の証拠にはならない**。未完成の D を回顧素材に使わない（回顧タイルは撤去済み）。受入条件は変えない | `docs/design/09-scene-d-recording-handoff.md` §3.8 |
 | **設計資料** | SPEC §5 C / §5 E、`docs/design/02,03,05,07,09` を現状へ更新し、矛盾（Logo 由来作例03、bunkai runs4/runs5 の「別分解境界」誤り、古い D 窓記述、fov 値）を是正。**実在する独立作品数（2点）の棚卸し**を追加 | `docs/design/03-assets-catalog.md` §5 |

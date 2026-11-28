@@ -131,6 +131,14 @@
 
 **実装状況（2026-11-28 時点）**: `video/src/scenes/SceneD.tsx` は**すでに2窓モデル**（`W_main` 上段 `y=60..600` / `W_inset` 下段 `y=624..1020`、各窓に濃色フレームと座標ラベル）に再構成済み。残る作業は**本 runbook の成果物 `ae-decompose-ui.mp4` を `WIN_MAIN`/`WIN_INSET` の `file`/`roi`/`clips` に差し込むこと**のみ（フレーム・レイアウト・タイミングは不変）。未収録の窓は現状プレースホルダ表示であり、これは**実操作の証拠にならない**ため、最終版に development 表示を残さない。
 
+## 3.8 実施状況（2026-11-28）
+
+実機 After Effects での収録は**未完了**である。`tools/capture/rec-d-setup.jsx` / `tools/capture/rec-d-prep.jsx` は用意したが、`assets/rec/ae-decompose-ui.mp4` は**作られていない**。実作業の実行中に AE プロセスが落ち、収録まで到達できなかった。
+
+- **現状の映画**: `SceneD.tsx` は中間素材 `ae-decompose-auto.mp4` を主窓・副窓に流している。これは UI を含まないレンダー済みコンポであり、**実操作の証拠にはならない**（§1 の判定どおり）。プレースホルダの文字列は撤去し、メッセージを持つ開発用表示が映画に含まれないようにした（副窓は主窓と同じテイクの切り出し）。**未収録であることは明記してよいが、証拠として提示してはならない。**
+- **再収録に判明している最短手順**: §3.5 の 1〜14 をそのまま実行する。既に `rec-newmat.jsx` で (a) `openInViewer()` → ソースレイヤ選択 → `executeCommand(findMenuCommandId("Restro: Decompose"))` の手順が有効であること、(b) プラグインは**開いたコンポが無いと `no composition is available` で失敗する**こと、(c) フォントは実在のものを probe で確定してから使う必要がある（`tools/capture/probe-fonts.jsx` の出力）が分かっている（ログ: `verification/rec-newmat/`）。
+- **受入条件は変えない**（§3.6）。
+
 ## 4. 設計フェーズで完結する残作業（本書のスコープ内・実施済み/継続）
 
 - 素材ごとの個別インベントリ（§2）— 済。
