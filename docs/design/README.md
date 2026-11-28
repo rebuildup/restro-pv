@@ -69,7 +69,7 @@
 | [08-per-stroke-choreography.svg](./diagrams/08-per-stroke-choreography.svg) / [PNG](./diagrams/08-per-stroke-choreography.png) | [07-motion-design.md §3](./07-motion-design.md) | 場面別（A1/A2/B/C01..03/E）の運動曲線・筆画役割分化・衝突回避ルール |
 | [motion-kai-runs4-onion.svg](./diagrams/motion-kai-runs4-onion.svg) / [PNG](./diagrams/motion-kai-runs4-onion.png) | [07-motion-design.md §1.2](./07-motion-design.md) | 「解」`runs4` 状態基準オニオンスキン（`f0/f3/f9ピーク/f21/f45定着`）＋アンカー軌道 |
 | [motion-fude-onion.svg](./diagrams/motion-fude-onion.svg) / [PNG](./diagrams/motion-fude-onion.png) | [07-motion-design.md §3.2](./07-motion-design.md) | 「筆」`06-PV glyph` × 式 `easeOut(7.142..7.611s)` 状態基準オニオンスキン |
-| [motion-kai-designed-a2-onion.svg](./diagrams/motion-kai-designed-a2-onion.svg) / [PNG](./diagrams/motion-kai-designed-a2-onion.png) | [07-motion-design.md §3.1](./07-motion-design.md) | 新設計 Scene A2 交差開門ホールド→赤016露出→A3流出オニオンスキン（`x=480` 安全線付） |
+| [motion-kai-designed-a2-onion.svg](./diagrams/motion-kai-designed-a2-onion.svg) / [PNG](./diagrams/motion-kai-designed-a2-onion.png) | [07-motion-design.md §3.1](./07-motion-design.md) | Scene A2 本番振付（`createA2Choreo`）の画面空間オニオンスキン：位相別実形状・重心軌跡・ホールド union・交差点・`x=460` クリップ境界 |
 | [3d-projection-check.png](./verification/3d-projection-check.png) | [02-layout-and-grid.md §3](./02-layout-and-grid.md) | 確定サムネ `samune-v1-master.png` への 3D 格子＋`runs4` 投影照合（`hitRate=0.618`） |
 | [fude-rest-diff.png](./verification/fude-rest-diff.png) / [kai diff](./verification/kai-runs4-vs-zoom-diff.png) | [data/README.md](./data/README.md) | 同一非クリップ空間での rest 一致差分（筆 `0.9998` / 解excl.ク `0.9999`） |
 
