@@ -1,0 +1,75 @@
+{
+  "verifiedAt": "2026-11-28T09:02:40.486Z",
+  "viewport": {
+    "x": 490,
+    "y": 60,
+    "w": 570,
+    "h": 870
+  },
+  "note": "ink = any channel <235; colorful = channel spread >40 (proof palette/gradient). Frames: W1 orbit beat, W2 wave beat, W3 fold beat — all works docked in the strip.",
+  "stills": [
+    {
+      "work": 1,
+      "title": "筆墨",
+      "frame": 212,
+      "file": ".tmp/sc-c-w1.png",
+      "inkPixelCount": 126702,
+      "inkFraction": 0.2555,
+      "meanInkRGB": [
+        30.3,
+        30.3,
+        32.3
+      ],
+      "colorfulPixelCount": 0,
+      "colorfulFraction": 0,
+      "inkBBox": {
+        "x0": 506,
+        "y0": 215,
+        "x1": 1036,
+        "y1": 800
+      }
+    },
+    {
+      "work": 2,
+      "title": "解彩",
+      "frame": 242,
+      "file": ".tmp/sc-c-w2.png",
+      "inkPixelCount": 116499,
+      "inkFraction": 0.2349,
+      "meanInkRGB": [
+        125.6,
+        80.3,
+        124.2
+      ],
+      "colorfulPixelCount": 114227,
+      "colorfulFraction": 0.2303,
+      "inkBBox": {
+        "x0": 500,
+        "y0": 235,
+        "x1": 1035,
+        "y1": 774
+      }
+    },
+    {
+      "work": 3,
+      "title": "筆構",
+      "frame": 270,
+      "file": ".tmp/sc-c-w3.png",
+      "inkPixelCount": 197719,
+      "inkFraction": 0.3987,
+      "meanInkRGB": [
+        63.7,
+        58.9,
+        60.2
+      ],
+      "colorfulPixelCount": 1,
+      "colorfulFraction": 0,
+      "inkBBox": {
+        "x0": 524,
+        "y0": 217,
+        "x1": 1025,
+        "y1": 806
+      }
+    }
+  ]
+}

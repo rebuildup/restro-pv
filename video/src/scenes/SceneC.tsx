@@ -25,13 +25,14 @@ import type { CompSpec } from "../../../pv/model/types.ts";
 //   Work 01 「筆墨」— 筆 ink piece (PV glyph FUDE S01..S13). Opens on the
 //     finished ink piece, then decomposes into color-coded strokes that
 //     orbit independently before recomposing.
-//   Work 02 「解彩」— 解 gradient piece (bunkai runs5, 12 strokes). Runs a
-//     left-to-right per-stroke wave in the cobalt->vermilion finish,
-//     then resolves back to the gradient.
-//   Work 03 「筆構」— symmetric two-wing emblem built from the SECOND
-//     real 筆 decomposition (BG decomposed strokes). Proof strokes
-//     separate/rock inside each wing, then recompose to the near-black
-//     emblem.
+//   Work 02 「解彩」— 解 gradient piece (bunkai runs5 group, 16 layers).
+//     Runs a left-to-right per-stroke wave in the cobalt->vermilion
+//     finish, then resolves back to the gradient.
+//   Work 03 「筆構」— symmetric two-wing emblem built from the 筆
+//     decomposition in "BG decomposed strokes" (same verified geometry
+//     as W1 — the emblem mirror presentation is what makes it a
+//     distinct artwork). Proof strokes fold/unfold around the wing
+//     seam, then recompose to the near-black emblem.
 //
 // Timing: the strip window is kept (SPEC scroll), but page-turn legs are
 // ~0.12s — visually hard cuts per the v13 "基本はハードカット" rule.
@@ -65,18 +66,31 @@ const STRIP_H = PITCH * 3;
 // All three are real Restro decompositions recovered from the AEP dumps:
 //   W1 筆墨 — "PV glyph" (06) FUDE S01..S13, the verified rest pose
 //     (IoU 0.9998, docs/design/data/pv-glyph-fude.composition.json).
-//   W2 解彩 — "bunkai" (02) STROKE_*_runs5, the coarser 12-stroke 解
-//     decomposition (assembled pose ~t1.8, union covers the full char).
-//   W3 筆構 — "BG decomposed strokes" (41) FUDE S01..S13, a SECOND real
-//     筆 decomposition (part1/3/4/5 + runs2/5/6/8 parents) — different
-//     stroke boundaries from W1's partition of the same char.
+//   W2 解彩 — "bunkai" (02) runs5 group, the coarser 16-layer 解
+//     decomposition (11 STROKE_*_runs5 + STROKE_001_runs6 +
+//     STROKE_002/006_runs7 + 2 merged shapes; assembled pose ~t1.8,
+//     union verified IoU 1.0 vs the runs4 group — see
+//     docs/design/verification/scene-c-works-assembly.json). Selected by
+//     layer index range, not name: the runs4 group reuses runs5/6
+//     suffixes, so no name pattern isolates the runs5 group.
+//   W3 筆構 — "BG decomposed strokes" (41) FUDE S01..S13. Verified
+//     pixel-identical to W1's stroke union (IoU 1.0, same coordinate
+//     space) — the distinct artwork is the mirrored two-wing emblem
+//     presentation, not different stroke boundaries.
 // poseT sits inside each comp's assembled window (shape keys are static
 // in these comps; the value only selects the evaluated transform pose).
-const WORK_SOURCES = [
+interface WorkSource {
+  comp: string;
+  pattern?: RegExp;
+  indices?: [number, number];
+  poseT: number;
+  title: string;
+}
+export const WORK_SOURCES: WorkSource[] = [
   { comp: "PV glyph", pattern: /^FUDE S\d+/, poseT: 2, title: "筆墨" },
-  { comp: "bunkai", pattern: /^STROKE_\d+_runs5$/, poseT: 1.8, title: "解彩" },
+  { comp: "bunkai", indices: [3, 18], poseT: 1.8, title: "解彩" },
   { comp: "BG decomposed strokes", pattern: /^FUDE S\d+/, poseT: 0.5, title: "筆構" },
-] as const;
+];
 
 const WORK_TITLES = WORK_SOURCES.map((s) => s.title);
 const CELL_BG = "#ffffff";
@@ -146,6 +160,8 @@ interface WorkGeom {
   xdelay: number[];
   // stroke bbox centers in comp space, parallel to strokes[]
   centers: [number, number][];
+  // char-center x in comp space — the fold seam for emblem wings
+  seamX: number;
 }
 
 interface WorkPack {
@@ -188,6 +204,7 @@ function strokeOrderIndex(name: string): number {
 function buildWork(src: (typeof WORK_SOURCES)[number], w: number): WorkPack {
   const { comp, strokes } = compStrokes(src.comp, {
     pattern: src.pattern,
+    indices: src.indices,
     poseT: src.poseT,
   });
   if (!strokes.length)
@@ -240,6 +257,7 @@ function buildWork(src: (typeof WORK_SOURCES)[number], w: number): WorkPack {
     rank,
     xdelay,
     centers: strokes.map((s) => s.center),
+    seamX: cx,
   };
 
   const ink = tintedStrokes(strokes, () => INK);
@@ -277,6 +295,7 @@ function buildWork(src: (typeof WORK_SOURCES)[number], w: number): WorkPack {
       rank: src(geom.rank),
       xdelay: src(geom.xdelay),
       centers: src(geom.centers),
+      seamX: geom.seamX,
     };
   };
   const emblemInkL = tintedStrokes(pick(strokes), () => W3_INK);
@@ -424,6 +443,14 @@ function transformAbout(
 // from the char center; `motion` adds the work-specific independent
 // movement on top. At the end of recomposition both are zero, so the proof
 // layer lands exactly on the finished geometry before it fades out.
+// Modes are deliberately different transform laws, not palette swaps:
+//   orbit — each stroke circles its own center on a private phase
+//   wave  — a left->right traveling front pushes strokes along their
+//           radial direction with an x-ordered delay
+//   fold  — emblem wings pivot about the seam (char centerline) at each
+//           stroke's own height; outer strokes swing wider, so the wing
+//           opens/closes as one symmetric mark. The mirrored right wing
+//           flips rotation sign on screen, keeping both wings in phase.
 function proofTransform(
   s: StrokeItem,
   geom: WorkGeom,
@@ -431,22 +458,25 @@ function proofTransform(
   separate: number,
   motion: number,
   phase: number,
-  mode: "orbit" | "wave" | "rock",
+  mode: "orbit" | "wave" | "fold",
 ): string {
   if (separate <= 0.001 && motion <= 0.001) return "";
   const r = geom.radial[i];
   // Separation is biased vertical: the portrait cell has generous y travel
   // but tight x margins, so horizontal fan-out is damped to avoid clipping.
-  // Rock mode (emblem wings) keeps a tighter fan so the mirrored halves
+  // Fold mode (emblem wings) keeps a tighter fan so the mirrored halves
   // stay readable as one mark instead of spraying stray strokes.
   const sepLen =
-    (58 + ((i * 31) % 28)) * (mode === "rock" ? 0.58 : mode === "wave" ? 0.9 : 1);
+    (58 + ((i * 31) % 28)) * (mode === "fold" ? 0.58 : mode === "wave" ? 0.9 : 1);
   const sx = r.x * 0.55;
   const sy = r.y * 1.12;
   let dx = sx * sepLen * separate;
   let dy = sy * sepLen * separate;
   let rot = ((i % 2 === 0 ? 1 : -1) * (5 + (i % 3) * 3)) * separate;
   let scale = 1 - 0.04 * separate;
+  // Fold mode rotates about the seam point instead of the stroke center;
+  // null means "rotate about s.center" as usual.
+  let pivot: [number, number] | null = null;
 
   if (motion > 0.001) {
     if (mode === "orbit") {
@@ -462,14 +492,23 @@ function proofTransform(
       rot += Math.sin(phase * 0.8 - geom.xdelay[i] * 3.0) * 7 * motion;
       scale += Math.max(0, w) * 0.09 * motion;
     } else {
-      const a = phase + i * 1.15;
-      dx += Math.sin(a) * 22 * motion;
-      dy += Math.cos(a * 0.9) * 24 * motion;
-      rot += Math.sin(a * 0.7) * 12 * motion;
-      scale += 0.04 * Math.sin(a * 1.2) * motion;
+      // fold: one global open/close clock; each stroke's swing weight
+      // grows with its distance from the seam so the wing fans like a
+      // closing book rather than boiling in place. A small per-stroke
+      // detune keeps the edge strokes from locking into a rigid fan.
+      const fold = Math.sin(phase * 0.9);
+      const dist = Math.abs(s.center[0] - geom.seamX);
+      pivot = [geom.seamX, s.center[1]];
+      rot +=
+        (fold * (4 + dist * 0.05) + Math.sin(phase * 0.9 + i * 0.5) * 2) *
+        motion;
+      // breathing translate along the seam normal keeps the fold from
+      // reading as pure in-place rotation
+      dx += (s.center[0] - geom.seamX) * -0.05 * fold * motion;
+      scale += 0.03 * fold * motion;
     }
   }
-  return transformAbout(s.center, dx, dy, rot, scale);
+  return transformAbout(pivot ?? s.center, dx, dy, rot, scale);
 }
 
 export const SceneC: React.FC<{ t: number }> = ({ t }) => {
@@ -547,7 +586,7 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
             p3.motionSep,
             p3.motion,
             p3.phase,
-            "rock",
+            "fold",
           )
         }
       />
@@ -577,7 +616,7 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
               p3.motionSep,
               p3.motion,
               p3.phase,
-              "rock",
+              "fold",
             )
           }
         />
@@ -597,7 +636,7 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                 p3.separate,
                 0,
                 p3.phase,
-                "rock",
+                "fold",
               )
             }
           />
@@ -625,7 +664,7 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                   p3.separate,
                   0,
                   p3.phase,
-                  "rock",
+                  "fold",
                 )
               }
             />

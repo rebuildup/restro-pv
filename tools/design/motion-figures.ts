@@ -281,15 +281,28 @@ function tintSvg(raw: string, fillHex: string, opacity: number): string {
 // ============================================================================
 {
   // keep in sync with video/src/scenes/SceneC.tsx WORK_SOURCES
-  const SOURCES = [
+  const SOURCES: {
+    comp: string;
+    pattern?: RegExp;
+    indices?: [number, number];
+    poseT: number;
+    title: string;
+    sub: string;
+    mode: string;
+    col: string;
+  }[] = [
     { comp: "PV glyph", pattern: /^FUDE S\d+/, poseT: 2, title: "作例01 筆墨", sub: "06-PV glyph / FUDE S01..S13", mode: "orbit・墨", col: "#18181b" },
-    { comp: "bunkai", pattern: /^STROKE_\d+_runs5$/, poseT: 1.8, title: "作例02 解彩", sub: "02-bunkai / STROKE_*_runs5 (12画)", mode: "wave・縦グラデーション", col: "#1d4ed8" },
-    { comp: "BG decomposed strokes", pattern: /^FUDE S\d+/, poseT: 0.5, title: "作例03 筆構", sub: "41-BG decomposed / FUDE S01..S13 (筆の第2分解)", mode: "左右対称エンブレム・rock", col: "#334155" },
+    { comp: "bunkai", indices: [3, 18] as [number, number], poseT: 1.8, title: "作例02 解彩", sub: "02-bunkai / runs5 group idx3-18 (16層)", mode: "wave・縦グラデーション", col: "#1d4ed8" },
+    { comp: "BG decomposed strokes", pattern: /^FUDE S\d+/, poseT: 0.5, title: "作例03 筆構", sub: "41-BG decomposed / FUDE S01..S13", mode: "左右対称エンブレム・fold", col: "#334155" },
   ];
   const PANEL_W = 330;
   const bodies: string[] = [];
   SOURCES.forEach((src, w) => {
-    const { strokes } = compStrokes(src.comp, { pattern: src.pattern, poseT: src.poseT });
+    const { strokes } = compStrokes(src.comp, {
+      pattern: src.pattern,
+      indices: src.indices,
+      poseT: src.poseT,
+    });
     const px = 40 + w * (PANEL_W + 20);
     let minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9;
     for (const s of strokes)
