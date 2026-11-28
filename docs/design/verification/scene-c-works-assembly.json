@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-11-28T11:50:10.469Z",
+  "verifiedAt": "2026-11-28T16:10:31.876Z",
   "works": [
     {
       "work": 1,
@@ -227,7 +227,62 @@
       "work": 3,
       "title": "飛白",
       "comp": "NEWMAT 無 mincho",
-      "material": "not in the dump yet"
+      "poseT": 0.5,
+      "pattern": "/^STROKE_/",
+      "compSize": [
+        1280,
+        720
+      ],
+      "strokeCount": 12,
+      "charBBox": {
+        "minX": 428.5,
+        "minY": 168.5,
+        "maxX": 856.1,
+        "maxY": 600.3,
+        "w": 427.6,
+        "h": 431.8
+      },
+      "strokeNames": [
+        "STROKE_011_runs4",
+        "STROKE_010_runs4",
+        "STROKE_009_runs4",
+        "STROKE_008_runs4",
+        "STROKE_007_runs8",
+        "STROKE_006_runs4",
+        "STROKE_005_runs4",
+        "STROKE_004_runs4",
+        "STROKE_003_runs4",
+        "STROKE_002_runs12",
+        "STROKE_001_runs6",
+        "STROKE_000_runs6"
+      ],
+      "strokeUnion": {
+        "pixelCount": 69904,
+        "bbox": {
+          "x0": 429,
+          "y0": 168,
+          "x1": 855,
+          "y1": 599
+        }
+      },
+      "reference": {
+        "decomposition": "Restro Decompose (real After Effects) — verification/rec-newmat",
+        "strokeCount": 12,
+        "sumOfPieceAreas": 80802,
+        "unionArea": 69904,
+        "overlapRatio": 0.15589951934081026,
+        "largestPiece": 12179,
+        "largestPieceOverUnion": 0.1742246509498741,
+        "inkCoverage": 0.37860094429262753,
+        "unionBBox": {
+          "minX": 428.5,
+          "minY": 168.5,
+          "maxX": 856.1,
+          "maxY": 600.3,
+          "w": 427.6,
+          "h": 431.8
+        }
+      }
     }
   ]
 }

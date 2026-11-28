@@ -146,9 +146,20 @@ export interface CameraSpec {
   height: number;
 }
 
+/**
+ * After Effects' default camera: a 50mm lens on a 36mm sensor, so the
+ * horizontal field of view is 2*atan(18/50) = 39.59725deg. The AEP's
+ * master camera keeps those defaults (position [540,540,-1500], no
+ * offset), and the confirmed thumbnail's background grid reproduces the
+ * projected cell positions to <=0.30px at this focal length (at 40deg the
+ * same lines drift up to 6.03px, because the perspective is compressed
+ * toward the frame centre).
+ */
+export const AE_DEFAULT_CAMERA_FOV_DEG = 39.59725;
+
 export const AE_DEFAULT_CAMERA: CameraSpec = {
   eye: [540, 540, -1500],
-  fovDeg: 40,
+  fovDeg: AE_DEFAULT_CAMERA_FOV_DEG,
   width: 1080,
   height: 1080,
 };
@@ -428,6 +439,54 @@ export function buildSceneBAccordionRig(grid: GridRef, params: SceneBAccordionPa
     anchor: [fx, fy, 0],
     position: [dispD / 2, dispD / 2, 0],
     scale: [zoom, zoom, 1],
+  });
+
+  // ---- AEP-measured card layer (additive; the nodes above are unchanged) ----
+  // The original AEP draws its accordion cards 4.5px below the rig band top
+  // (bandTop 191.5 -> first card top 196) and its active slot is exactly
+  // 660px tall (tab top -> card bottom), i.e. 0.667px shorter than the rig's
+  // 660.667 stack distance. Each tab card is a 504x29 outlined card: 2px
+  // black top edge, 1px black bottom/left/right edges and an opaque white
+  // label strip inset 2px from the top. The active card is the same outline
+  // expanded to 621px tall (tab bottom -> card bottom). Measured from
+  // verification/beats/beat-011/013/015/017.png.
+  const aepTabTop = 4.5; // world 196
+  const aepSlotH = 660; // AEP active slot height (tab top -> card bottom)
+  const cardW = Math.round(col.w * 100) / 100 + 2; // 504.08 (stroke included)
+  const cardH = 29; // 2px top edge + 26px label strip + 1px bottom edge
+  for (let k = 0; k < nSteps; k++) {
+    // Same stack blend as the rig tabs, but measured on the AEP card rows.
+    const topWeight = k === 0 ? 1 : Math.max(0, Math.min(1, s - (k - 1)));
+    const aepTop = aepTabTop + k * tabH; // world 196 + k*tabH
+    const aepBottom =
+      aepTabTop + aepSlotH + (k - 1) * tabH; // world 856 + (k-1)*tabH
+    defs.push({
+      id: `bTabCard_${k}`,
+      parentId: "bStage",
+      position: [-1, aepTop * topWeight + aepBottom * (1 - topWeight), 0],
+      bounds: [cardW, cardH],
+    });
+    defs.push({
+      id: `bStepCard_${k}`,
+      parentId: "bStage",
+      position: [-1, aepTabTop + 28 + k * tabH, 0], // world 224 + k*tabH
+      bounds: [cardW, 621], // -> bottom = 845 + k*tabH
+    });
+  }
+
+  // AEP LENS frame: the dashed 140px source ring and the magnification focal
+  // recovered from the master "LENS frame" / "Lens magnifier" layers
+  // (source ring at 772,403 r=70; content focal at 771.67,399.37).
+  defs.push({
+    id: "lensSourceRing",
+    position: [772, 403, 0],
+    anchor: [srcD / 2, srcD / 2, 0],
+    bounds: [srcD, srcD],
+  });
+  defs.push({
+    id: "lensFocalPoint",
+    position: [771.67, 399.37, 0],
+    bounds: [0, 0],
   });
 
   const nodes = evaluateRigTree(defs);

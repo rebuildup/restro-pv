@@ -16,13 +16,14 @@ import { STAGE_MIN_X } from "../layout/zones.ts";
 //
 // Structure (2026-11-28 rework):
 //
-//   Beat 1 — ARTWORK RETURN (f371..f407). The 筆 comes back at 1:1 on the
-//     right stage, bleeding off the RIGHT edge only — the way the original
-//     AEP's `PV end` comp shows it. Its strokes arrive slightly separated
-//     and settle into solid ink, with one vermilion accent stroke (the
-//     central vertical, i.e. the last stroke of the true writing order —
-//     the character's spine). A small structure-aware separation follows
-//     and returns: the strokes are independent, and they move.
+//   Beat 1 — ARTWORK RETURN (f371..f422). The 筆 comes back framed inside
+//     the right stage — the way the original AEP's `PV end` comp shows it
+//     (ink x524..1047, y169..786 in beat-037/038) — with one vermilion
+//     accent stroke (the central vertical, i.e. the last stroke of the
+//     true writing order — the character's spine). While it is held, each
+//     stroke breathes a few px on its own phase, the way the AEP's end
+//     card does; the strokes are never pulled apart, so none can leave
+//     the frame.
 //   Beat 2 — PURCHASE PATH (f403..f479). The artwork withdraws and the CTA
 //     takes the stage: where to buy, and the URL. Nothing else.
 //
@@ -47,37 +48,35 @@ const T0 = 371 / 24; // 15.4583 — first E frame
 
 // --- hero ---
 const HERO_IN: [number, number] = [15.46, 15.78];
-// the small "these are independent objects" separation
-const HERO_SEP: [number, number] = [16.08, 16.44];
-const HERO_OUT: [number, number] = [16.42, 16.72];
+const HERO_OUT: [number, number] = [17.28, 17.58];
 
 // --- end card ---
-const CARD_IN = 16.86;
+const CARD_IN = 17.7;
 // The confirmed stage column starts at x=546 (grid column 6) — the CTA
-// is aligned to it rather than to an arbitrary offset.
+// is aligned to it rather than to an arbitrary offset, and the card's
+// top edge sits on the confirmed row boundary (row 10 = 468).
 const CARD_LEFT = 546;
-const CARD_TOP = 496;
+const CARD_TOP = 468;
 
 const INK: [number, number, number] = [0.07, 0.07, 0.08];
 // vermilion — the same accent as the seal of scene C's work 01
 const ACCENT: [number, number, number] = [0.78, 0.16, 0.12];
 
-// Peak separated displacement in comp units. The AEP's own end card keeps
-// the character assembled and only breathes it by ±5..20px; the separated
-// beat here is a deliberate, small statement of independence, not a fan.
-const SLIDE_MAX = 78;
-// Strokes smaller than this fraction of the char width in BOTH bbox dims
-// are dot/stub accents: they stay near their rest anchor.
-const DOT_FRAC = 0.18;
-const ROT_MAX = 6;
-// On-screen char width: 1:1 with the dumped character (688px), so the
-// restored strokes keep their real proportions.
-const HERO_TARGET_W = 688;
-// The character's LEFT edge sits at screen x=500 (the hero is laid out in
-// stage-local space, whose origin is screen x=480), so nothing is cut on
-// the left; the bleed happens on the right, as in the AEP.
-const HERO_LEFT = 20;
-const HERO_CY = 520;
+// On-screen width of the character's INK. The AEP's own end card shows
+// the 筆 fully inside the frame (measured in verification/beats/beat-037
+// and beat-038: ink x524..1047, y169..786, with the grid visible to the
+// right of the character) — the `x=1080 はみ出し` behaviour belongs to the
+// 1400-wide scene-C glyph, not to this hero. So the hero is framed, not
+// cropped.
+const HERO_TARGET_W = 523;
+// stage-local x of the character's left edge (the hero div starts at the
+// stage's left edge, screen x = 480, so screen x 524 is local 44)
+const HERO_LEFT = 44;
+const HERO_CY = 477; // screen y of the character's centre
+// The AEP's end card breathes the assembled character by ±5..20px; the
+// strokes are never pulled apart here, so nothing can leave the frame.
+const BREATH_MIN = 4;
+const BREATH_MAX = 10;
 
 let cached: {
   comp: ReturnType<typeof compStrokes>["comp"];
@@ -86,37 +85,7 @@ let cached: {
   accentIndex: number;
   heroFit: string;
   rank: number[];
-  scatter: { dx: number; dy: number; rot: number }[];
 } | null = null;
-
-// Principal axis of a stroke's comp-space vertices (unit vector along the
-// major PCA direction). The separation law constrains each stroke's
-// displacement to the direction PERPENDICULAR to this axis — horizontal
-// bars part vertically, verticals horizontally, diagonals along their own
-// normal — so the separated field keeps the glyph's stroke-direction
-// structure instead of an index-ordered radial fan.
-function principalAxis(points: [number, number][]): [number, number] {
-  let mx = 0,
-    my = 0;
-  for (const [x, y] of points) {
-    mx += x;
-    my += y;
-  }
-  mx /= points.length;
-  my /= points.length;
-  let sxx = 0,
-    sxy = 0,
-    syy = 0;
-  for (const [x, y] of points) {
-    const dx = x - mx,
-      dy = y - my;
-    sxx += dx * dx;
-    sxy += dx * dy;
-    syy += dy * dy;
-  }
-  const ang = 0.5 * Math.atan2(2 * sxy, sxx - syy);
-  return [Math.cos(ang), Math.sin(ang)];
-}
 
 function buildData() {
   if (cached) return cached;
@@ -151,41 +120,6 @@ function buildData() {
     if (r.order > roles[accentIndex].order) accentIndex = i;
   });
 
-  const geom = strokes.map((s) => {
-    const [ax, ay] = principalAxis(s.points);
-    // perpendicular candidates; pick the one pointing away from center
-    let sx = -ay,
-      sy = ax;
-    const rx = s.center[0] - cx,
-      ry = s.center[1] - cy;
-    if (sx * rx + sy * ry < 0) {
-      sx = -sx;
-      sy = -sy;
-    }
-    return { slide: [sx, sy] as [number, number], rx, ry };
-  });
-  const projections = geom.map((g) => Math.abs(g.rx * g.slide[0] + g.ry * g.slide[1]));
-  const maxProj = Math.max(...projections, 1);
-  const dotMax = DOT_FRAC * charW;
-
-  const scatter = strokes.map((s, i) => {
-    const g = geom[i];
-    const bw = s.bbox[2] - s.bbox[0];
-    const bh = s.bbox[3] - s.bbox[1];
-    const isDot = bw < dotMax && bh < dotMax;
-    const reach = projections[i] / maxProj;
-    const dist = SLIDE_MAX * reach * (isDot ? 0.4 : 1);
-    // rotation sign follows which way the slide axis sits relative to the
-    // radial direction — strokes unfurl outward, not by array parity
-    const cross = g.slide[0] * g.ry - g.slide[1] * g.rx;
-    const side = cross === 0 ? (s.center[0] < cx ? -1 : 1) : Math.sign(cross);
-    return {
-      dx: g.slide[0] * dist,
-      dy: g.slide[1] * dist,
-      rot: isDot ? 0 : reach * ROT_MAX * side,
-    };
-  });
-
   const heroS = HERO_TARGET_W / charW;
   const heroFit = `translate(${HERO_LEFT - minX * heroS}px,${
     HERO_CY - cy * heroS
@@ -200,38 +134,30 @@ function buildData() {
     accentIndex,
     heroFit,
     rank,
-    scatter,
   };
   return cached;
 }
 
 export const SceneE: React.FC<{ t: number }> = ({ t }) => {
-  const { comp, inkStrokes, heroFit, rank, scatter } = buildData();
+  const { comp, inkStrokes, heroFit, rank } = buildData();
 
   // --- hero ---
   const heroIn = easeOutCubic(seg(t, HERO_IN[0], HERO_IN[1]));
   const heroOut = 1 - easeInOutCubic(seg(t, HERO_OUT[0], HERO_OUT[1]));
   const heroP = clamp01(Math.min(heroIn, heroOut));
-  // the separation beat: the strokes part along their own axes and return
-  const sepP =
-    easeInOutCubic(seg(t, HERO_SEP[0], HERO_SEP[0] + 0.16)) *
-    (1 - easeInOutCubic(seg(t, HERO_SEP[1] - 0.16, HERO_SEP[1])));
   // per-stroke entry, staggered along the writing order
   const entryP = (i: number) =>
     clamp01((t - (HERO_IN[0] + 0.04 + rank[i] * 0.01)) / 0.24);
 
   const strokeTransform = (s: StrokeItem, i: number) => {
-    const d = scatter[i];
-    if (!d) return undefined;
-    const k = sepP;
     // the AEP's own end-card breath: a slow, small drift so the held
     // character is never frozen, phased by writing order
-    const breath =
-      Math.sin(t * 1.1 + rank[i] * 1.7) * (4 + (i % 3) * 3);
+    const amp = BREATH_MIN + (i % 3) * ((BREATH_MAX - BREATH_MIN) / 2);
+    const breath = Math.sin(t * 1.1 + rank[i] * 1.7) * amp;
     const [cx, cy] = s.center;
     return (
-      `translate(${d.dx * k + breath}px,${d.dy * k - breath * 0.6}px)` +
-      ` translate(${cx}px,${cy}px) rotate(${d.rot * k}deg)` +
+      `translate(${breath}px,${-breath * 0.6}px)` +
+      ` translate(${cx}px,${cy}px)` +
       ` translate(${-cx}px,${-cy}px)`
     );
   };
@@ -240,16 +166,18 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
   // --- end card ---
   // The CTA is the only new information in the closing frame, so it is
   // short and weighted: the purchase statement leads, the URL is the
-  // reference under it. No descriptor (the left column already says
-  // "AFTER EFFECTS PLUGIN"), no logo, no card chrome.
+  // reference under it, and the confirmed English line lands last so the
+  // tail of the film is a conclusion rather than a timeout.
   const itemP = (delay: number, dur = 0.4) =>
     t >= CARD_IN + delay
       ? easeOutCubic(seg(t, CARD_IN + delay, CARD_IN + delay + dur))
       : 0;
   const ctaP = itemP(0.0, 0.42);
-  const urlP = itemP(0.16, 0.34);
+  const urlP = itemP(0.34, 0.34);
+  const enP = itemP(0.56, 0.3);
+  const cardP = Math.max(ctaP, urlP, enP);
 
-  const cardOn = ctaP > 0 || urlP > 0;
+  const cardOn = cardP > 0;
   if (heroP <= 0 && !cardOn) return null;
 
   return (
@@ -290,43 +218,71 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
         </div>
       )}
 
-      {/* ---- purchase path ---- */}
+      {/* ---- purchase path ----
+          The confirmed end-card specimen (docs/design/assets/individual/
+          scene-c-d-e/e-cta-typography.svg, extracted from the AEP's
+          `49-PV end`): a white panel with a hairline border, the purchase
+          statement in bold, the URL and the English line beneath it.
+          The brand block of the specimen (Restro / 筆画復元) is NOT
+          repeated here — the left column already carries it, and the
+          duplicate logo was the earlier rejection. */}
       {cardOn && (
         <div
           style={{
             position: "absolute",
             left: CARD_LEFT,
             top: CARD_TOP,
-            width: 520,
+            width: 468,
+            padding: "26px 28px 24px",
+            boxSizing: "border-box",
+            background: "#ffffff",
+            border: "1px solid #d4d4d8",
             fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
+            opacity: cardP,
           }}
         >
           <div
             style={{
-              fontSize: 54,
-              fontWeight: 800,
-              color: "#111",
-              letterSpacing: 1.5,
-              lineHeight: 1.15,
-              opacity: ctaP,
-              transform: `translateY(${(1 - ctaP) * 16}px)`,
+              fontSize: 32,
+              fontWeight: 700,
+              color: "#1a1a1f",
+              letterSpacing: 2,
+              lineHeight: 1.2,
+              opacity: ctaP / Math.max(cardP, 0.001),
+              transform: `translateY(${(1 - ctaP) * 12}px)`,
             }}
           >
             BOOTH で販売中
           </div>
           <div
             style={{
-              marginTop: 20,
-              fontSize: 26,
-              fontWeight: 700,
-              color: "#3a3a3f",
-              letterSpacing: 0.4,
+              marginTop: 14,
+              fontSize: 20,
+              fontWeight: 600,
+              // darkened from the confirmed #666670 (2.25:1) so the URL
+              // itself — the actionable line — stays legible on white
+              color: "#2f2f36",
+              letterSpacing: 1.1,
               lineHeight: 1.3,
-              opacity: urlP,
-              transform: `translateY(${(1 - urlP) * 12}px)`,
+              opacity: urlP / Math.max(cardP, 0.001),
+              transform: `translateY(${(1 - urlP) * 10}px)`,
             }}
           >
             361do.booth.pm/items/9029239
+          </div>
+          <div
+            style={{
+              marginTop: 10,
+              fontSize: 20,
+              fontWeight: 400,
+              color: "#666670",
+              letterSpacing: 0.6,
+              lineHeight: 1.3,
+              opacity: enP / Math.max(cardP, 0.001),
+              transform: `translateY(${(1 - enP) * 10}px)`,
+            }}
+          >
+            Stroke Reconstruction for After Effects
           </div>
         </div>
       )}

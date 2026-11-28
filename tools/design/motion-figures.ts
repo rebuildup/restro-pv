@@ -323,9 +323,9 @@ function tintSvg(raw: string, fillHex: string, opacity: number): string {
     bodies.push(`
       <g transform="translate(${tx.toFixed(1)},${ty.toFixed(1)}) scale(${s.toFixed(4)})">${panelStrokes}</g>
       ${dots}
-      <text x="${px + PANEL_W / 2}" y="70" text-anchor="middle" font-size="20" font-weight="700" fill="#111111" font-family="${F_JP}">${src.title}</text>
-      <text x="${px + PANEL_W / 2}" y="94" text-anchor="middle" font-size="11" fill="#52525b" font-family="${F_MONO}">${src.sub}</text>
-      <text x="${px + PANEL_W / 2}" y="114" text-anchor="middle" font-size="12" fill="#b45309" font-family="${F_JP}">${src.mode}</text>
+      <text x="${px + PANEL_W / 2}" y="98" text-anchor="middle" font-size="20" font-weight="700" fill="#111111" font-family="${F_JP}">${src.title}</text>
+      <text x="${px + PANEL_W / 2}" y="120" text-anchor="middle" font-size="11" fill="#52525b" font-family="${F_MONO}">${src.sub}</text>
+      <text x="${px + PANEL_W / 2}" y="140" text-anchor="middle" font-size="12" fill="#b45309" font-family="${F_JP}">${src.mode}</text>
       <text x="${px + PANEL_W / 2}" y="560" text-anchor="middle" font-size="12" fill="#52525b" font-family="${F_MONO}">${strokes.length} strokes | poseT=${src.poseT} | char ${Math.round(maxX - minX)}×${Math.round(maxY - minY)}px</text>
     `);
   });

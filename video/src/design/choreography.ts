@@ -345,7 +345,7 @@ export const SCENE_B_DESIGN = {
   windowStart: 101 / 24, // 4.2083s
   windowEnd: 191 / 24, // 7.9583s
   /** Comp-time step boundaries matching 05-master.ts STEP_REVEAL & P19..22 keys */
-  stepTimes: [4.25, 5.15, 6.05, 6.95] as const,
+  stepTimes: [4.25, 5.05, 5.9, 6.8] as const,
   tabTransitionDur: 0.22,
   /** Direct AE expression window from 06-PV glyph / Baseline: easeOut(time, 7.142, 7.611, 0, 1) */
   fudeReleaseStart: 7.142,

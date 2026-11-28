@@ -251,6 +251,36 @@ for (const [wi, src] of WORK_SOURCES.entries()) {
         vsRuns4GroupUnion: iou(fixedMask, ref4),
       },
     };
+  } else if (src.comp.startsWith("NEWMAT")) {
+    // The third work: a character decomposed by the real Restro plugin in
+    // After Effects (verification/rec-newmat). The plugin's reply for
+    // 無 was items=12 created=12 with no merged shape, so every stroke is
+    // independently restored. The metrics below are the acceptance
+    // numbers for that material.
+    let sumArea = 0;
+    let largest = 0;
+    for (const s of strokes) {
+      const m = rasterizeLayers(comp, [s.layer], src.poseT);
+      sumArea += m.count;
+      if (m.count > largest) largest = m.count;
+    }
+    const bb = strokeUnionBBox(strokes);
+    const bboxArea = bb.w * bb.h;
+    entry.reference = {
+      decomposition: "Restro Decompose (real After Effects) — verification/rec-newmat",
+      strokeCount: strokes.length,
+      sumOfPieceAreas: sumArea,
+      unionArea: strokeMask.count,
+      // the restored pieces overlap each other where the plugin inferred
+      // the hidden boundaries (筆 measures 0.467, 解 0.312)
+      overlapRatio:
+        sumArea > 0 ? (sumArea - strokeMask.count) / strokeMask.count : 0,
+      largestPiece: largest,
+      largestPieceOverUnion:
+        strokeMask.count > 0 ? largest / strokeMask.count : 0,
+      inkCoverage: bboxArea > 0 ? strokeMask.count / bboxArea : 0,
+      unionBBox: bb,
+    };
   } else if (src.comp === "Logo") {
     // Reference: the recovered official lockup artwork
     // docs/design/assets/individual/logo/logo-full-clean.png (416x260,

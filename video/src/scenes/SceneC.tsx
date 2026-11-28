@@ -72,14 +72,26 @@ const W1_END = 1.62;
 const W2_START = 1.74;
 const W2_END = 2.76;
 const W3_START = 2.88;
-const SCROLL = [
-  [0.0, CELL_TOPS[0]],
-  [W1_END, CELL_TOPS[0]],
-  [W2_START, CELL_TOPS[1]],
-  [W2_END, CELL_TOPS[1]],
-  [W3_START, CELL_TOPS[2]],
-  [3.75, CELL_TOPS[2]],
-] as const;
+// The strip scrolls one page per work. With three works the third page
+// opens at W3_START; with two (the third material has not landed) the
+// second page simply holds for the rest of the scene.
+function scrollWaypoints(works: number): [number, number][] {
+  if (works >= 3)
+    return [
+      [0.0, CELL_TOPS[0]],
+      [W1_END, CELL_TOPS[0]],
+      [W2_START, CELL_TOPS[1]],
+      [W2_END, CELL_TOPS[1]],
+      [W3_START, CELL_TOPS[2]],
+      [3.75, CELL_TOPS[2]],
+    ];
+  return [
+    [0.0, CELL_TOPS[0]],
+    [W1_END, CELL_TOPS[0]],
+    [W2_START, CELL_TOPS[1]],
+    [3.75, CELL_TOPS[1]],
+  ];
+}
 
 // Per-work material, ground, optical fit and label colours.
 interface WorkSource {
@@ -172,18 +184,27 @@ const W3_FALLBACK: WorkSource = {
   ruleInk: "#ddd8c8",
 };
 
-function resolveSource(src: WorkSource): WorkSource {
+function resolveSource(src: WorkSource): WorkSource | null {
   if (compByName(src.comp)) return src;
   if (src.comp.startsWith("NEWMAT")) {
     for (const cand of W3_CANDIDATES) {
       if (compByName(cand.comp)) return cand;
     }
-    if (compByName(W3_FALLBACK.comp)) return W3_FALLBACK;
+    // The third work has no real material yet. The gallery does not fall
+    // back to the brand Logo comp, and the 解 runs5 group is the same
+    // artwork as work 02 (identical path data), so the strip simply
+    // shows two works until the real decomposition is in the dump.
+    return null;
   }
   throw new Error(`Scene C: material comp not found: ${src.comp}`);
 }
 
-const WORK_TITLES = WORK_SOURCES.map((s) => s.title);
+/** The works the strip can show with the material currently in the dump. */
+export function sceneCWorkSources(): WorkSource[] {
+  return WORK_SOURCES.map(resolveSource).filter((s): s is WorkSource => !!s);
+}
+
+const WORK_TITLES = sceneCWorkSources().map((s) => s.title);
 
 // ---- W1 writing materials --------------------------------------------------
 const INK: [number, number, number] = [0.09, 0.088, 0.082];
@@ -315,22 +336,22 @@ function buildWork(src: WorkSource): WorkPack {
 
 function buildData(): WorkPack[] {
   if (cached) return cached;
-  cached = WORK_SOURCES.map((s) => buildWork(resolveSource(s)));
+  cached = sceneCWorkSources().map((s) => buildWork(s));
   return cached;
 }
 
 // piecewise smooth scroll position
-function scrollY(rel: number): number {
-  if (rel <= SCROLL[0][0]) return SCROLL[0][1];
-  for (let i = 0; i < SCROLL.length - 1; i++) {
-    const [t0, v0] = SCROLL[i];
-    const [t1, v1] = SCROLL[i + 1];
+function scrollY(rel: number, waypoints: [number, number][]): number {
+  if (rel <= waypoints[0][0]) return waypoints[0][1];
+  for (let i = 0; i < waypoints.length - 1; i++) {
+    const [t0, v0] = waypoints[i];
+    const [t1, v1] = waypoints[i + 1];
     if (rel <= t1) {
       const u = easeInOutCubic(clamp01((rel - t0) / (t1 - t0)));
       return v0 + (v1 - v0) * u;
     }
   }
-  return SCROLL[SCROLL.length - 1][1];
+  return waypoints[waypoints.length - 1][1];
 }
 
 // transform string helpers (comp space, origin 0,0; rotate about stroke
@@ -386,9 +407,10 @@ function buildWriteSchedule(
 export const SceneC: React.FC<{ t: number }> = ({ t }) => {
   if (t < T0 || t >= T1) return null;
   const works = buildData();
-  const [w1, w2, w3] = works;
+  const [w1, w2] = works;
+  const w3 = works[2] ?? null;
   const rel = t - T0;
-  const sy = scrollY(rel);
+  const sy = scrollY(rel, scrollWaypoints(works.length));
   // the strip clears the D cut
   const sceneOpacity = 1 - seg(rel, 3.7, 3.746);
 
@@ -448,24 +470,28 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
   // The strokes arrive in the character's own parts, not in an even
   // stagger: the upper structure, then the verticals, then the lower
   // marks — which is the order the character is written in.
-  const n3 = w3.strokes.length;
+  const n3 = w3 ? w3.strokes.length : 0;
   const groupOf = (i: number) => {
-    const y = w3.strokes[i].center[1];
-    const t = (y - w3.bbox[1]) / Math.max(1, w3.bbox[3] - w3.bbox[1]);
+    const y = w3!.strokes[i].center[1];
+    const t = (y - w3!.bbox[1]) / Math.max(1, w3!.bbox[3] - w3!.bbox[1]);
     return t < 0.34 ? 0 : t < 0.68 ? 1 : 2;
   };
   const arrival = (i: number): number => {
     const g = groupOf(i);
-    const start = 0.06 + g * 0.11 + (i % 5) * 0.008;
-    const dur = 0.24;
+    const start = 0.05 + g * 0.1 + (i % 5) * 0.006;
+    const dur = 0.22;
     return easeOutCubic(clamp01(seg(s3, start, start + dur)));
   };
   // one stroke leaves the character and circles it — the "each stroke can
-  // be moved freely" proof, shown on the finished piece.
+  // be moved freely" proof, shown on the finished piece. The arc is a
+  // full revolution so the stroke comes home: the work must end on the
+  // completed character, not on a broken one.
   const flourishIdx = Math.floor(n3 / 2);
-  const flourishP = easeInOutCubic(seg(s3, 0.6, 0.82));
-  const flourishAngle = flourishP * Math.PI * 1.15;
-  const flourishR = 150 * flourishP;
+  const flourishP = easeInOutCubic(seg(s3, 0.54, 0.8));
+  // amplitude envelope: 0 at both ends, 150px mid-arc; the stroke sweeps
+  // one full revolution while it is away, then lands on its rest slot
+  const flourishAmp = 150 * Math.sin(Math.PI * flourishP);
+  const flourishAngle = flourishP * Math.PI * 2;
 
   const stroke3Transform = (s: StrokeItem, i: number): string => {
     const p = arrival(i);
@@ -475,8 +501,8 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
         const a = flourishAngle;
         return transformAbout(
           s.center,
-          Math.cos(a) * flourishR,
-          Math.sin(a) * flourishR * 0.55 - flourishR * 0.15,
+          Math.cos(a) * flourishAmp,
+          Math.sin(a) * flourishAmp * 0.55 - flourishAmp * 0.15,
           Math.sin(a) * 6,
           1,
         );
@@ -484,7 +510,7 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
       return "";
     }
     // strokes arrive along their own radial direction, with a small lift
-    const r = w3.geom.radial[i];
+    const r = w3!.geom.radial[i];
     const dx = r.x * inv * 240;
     const dy = r.y * inv * 200 - inv * 40;
     const rot = (i % 2 === 0 ? 1 : -1) * inv * 7;

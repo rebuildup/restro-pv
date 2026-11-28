@@ -3,7 +3,6 @@ import {
   compStrokes,
   tintedStrokes,
   StrokeField,
-  ContourField,
   strokeContours,
   strokeRings,
   clamp01,
@@ -31,46 +30,42 @@ import {
   buildSceneBAccordionRig,
 } from "../design/rig.ts";
 
-// Scene B [3.9, 7.96) per SPEC §5 B. Every step now shows REAL Restro
-// intermediate geometry recovered from the pre-wipe checkpoint comps — the
-// actual layers the plugin/AE pipeline produced for each processing stage,
-// not geometry back-computed from the finished strokes:
+// Scene B [3.9, 7.96) per SPEC §5 B.
 //
-//   comp "STEP3 infer [checkpoint before wipe removal]" (20s, master-time
-//   aligned, same 1080 space as the glyph) carries the real pipeline state:
-//     FUDE outline inset / FUDE outline base — the extracted character
-//       contours (13 bezier paths each, real outline-analysis output)
-//     FUDE extend A / FUDE extend B — the real extended contour strokes
-//       (6 + 12 stroked paths) drawn for 輪郭線を延長
-//     FUDE inferred — Restro's own inferred-region render (green inferred
-//       fills at 70%, black strokes, inferred-vertex ellipses)
-//     FUDE points — 29 ellipse markers = the inferred vertex positions the
-//       solver emitted (size-0 debug ellipses; we plot their real centers)
-//     FUDE S01..S13 — the decomposed stroke set (final reconstruction)
-//   comp "STEP1 outline [checkpoint before wipe removal]" adds:
-//     FUDE scanline — the real horizontal scan line (layer Position keyed
-//       y223->y980 over 4.30-4.95s) swept across the glyph during 輪郭を解析
+// The scene reproduces the ORIGINAL AEP's accordion "how it works" stage.
+// Every number below was measured from the original production's own frames
+// (verification/beats/beat-011/013/015/017.png, comp `master` 1080x1080@24):
 //
-//   step 0 輪郭を解析     — scanline sweep + the real extracted outline
-//                        (base silhouette + inset/base contours, red role).
-//   step 1 輪郭線を延長   — the real FUDE extend A/B contour strokes draw in
-//                        staggered (green role).
-//   step 2 隠れた頂点を推定 — FUDE inferred regions + the 29 real inferred
-//                        vertex markers (blue role); the lens magnifies the
-//                        strongest real-point cluster.
-//   step 3 一画ずつに分割 — the 13 real strokes fill in staggered, displaced
-//                        and individually tinted; analysis layers cut out.
-//
-// The lens belongs to the vertex-estimation step; it is parked over the
-// glyph's bottom margin so it covers neither the step band, the left body
-// text, nor the focal cluster.
+//   * The stage column is 504px wide (border pixels at x=545 and x=1048) and
+//     the accordion cards live INSIDE it: the four tab cards are 504x29
+//     outlined cards (2px black top edge, 1px black bottom/left/right edge,
+//     opaque white 502x26 label strip inset 2px) stacked 38.667px apart.
+//   * The card stack is 5px inside the rig band (rig band 191..967, AEP
+//     cards 196..962), so `bTabCard_k` = rig tab + 5px.
+//   * The ACTIVE card is the same outline expanded to 621px tall: its top is
+//     the active tab's bottom edge (224 + 38.667k) and its bottom is
+//     845 + 38.667k.
+//   * The character is the AEP STEP draft: the real extracted contour of the
+//     giant 筆, drawn 1:1 in master coordinates (the STEP draft comp space IS
+//     master space) as a SOLID step colour with a BLACK 4px contour, and
+//     clipped by the active card. Step colours: #FF3B30 / #34C759 /
+//     #007AFF / #FFCC00 (the AEP's own "FUDE outline inset" fills).
+//   * The card is an OUTLINE, not a fill: the perspective grid reads through
+//     it. Only the tab label rows carry an opaque white strip.
+//   * The lens is the AEP "Lens magnifier": a 420px display circle at
+//     (660,810) with a 3px black rim, showing the STEP draft magnified 300%
+//     about the focal (771.67,399.37), plus the dashed 140px source ring at
+//     (772,403). The AEP's "Lens magnifier" comp cross-fades the four STEP
+//     drafts on its own clock (comp time = master time - 4.25).
+//   * There is NO connector line and NO "3x" badge in the original.
 
 const T0 = 3.9;
 const T1 = 7.96;
 // Step boundaries single-sourced from the Scene B design spec
-// (choreography.ts SCENE_B_DESIGN.stepTimes — comp times matching
-// 05-master.ts STEP_REVEAL & P19..22 keys). masterPatch.STEP_REVEAL
-// derives from the same spec.
+// (choreography.ts SCENE_B_DESIGN.stepTimes). The values are the bracket
+// midpoints measured from the original AEP frames (red->green in
+// (4.688, 5.156], green->blue in (5.625, 6.094], blue->yellow in
+// (6.562, 7.031]).
 const STEP_T: readonly number[] = SCENE_B_DESIGN.stepTimes;
 const STEP_LABELS = [
   "輪郭を解析",
@@ -78,9 +73,26 @@ const STEP_LABELS = [
   "隠れた頂点を推定",
   "一画ずつに分割",
 ];
-const ANALYSIS_RED = "#D64520";
-const DRAFT_GREEN = "#2FA36B";
+// AEP step colours (05-master STEP1 outline / STEP2..4 draft "FUDE outline
+// inset" fills).
+const STEP_COLORS = ["#FF3B30", "#34C759", "#007AFF", "#FFCC00"];
+const STEP_RGB: Array<[number, number, number]> = [
+  [1, 59 / 255, 48 / 255],
+  [52 / 255, 199 / 255, 89 / 255],
+  [0, 122 / 255, 1],
+  [1, 204 / 255, 0],
+];
+// Tab typography: one bold run, number + label + inline state suffix.
+// The AEP renders the running state as "…中・" and the finished state as
+// "…した"; pending rows are the 55% grey #8D8D8D.
+const STATE_RUN = "中・";
+const STATE_DONE = "した";
+const TAB_TEXT_ACTIVE = "#111111";
+const TAB_TEXT_PENDING = "#8D8D8D";
+// The solver's vertex markers keep the AEP's vertex-blue role.
 const VERTEX_BLUE = "#2F6FED";
+const TAB_FONT_SIZE = 32;
+const TAB_TEXT_X = 560;
 
 // Accordion stage geometry is OWNED by the recovered AEP rig
 // (design/rig.ts buildSceneBAccordionRig): stage band x546..1048 y191..967,
@@ -95,28 +107,33 @@ const PROC_COMP = "STEP3 infer [checkpoint before wipe removal]";
 const SCAN_COMP = "STEP1 outline [checkpoint before wipe removal]";
 const POSE = 6.0; // static rest pose for measurement/render of unkeyed layers
 
-// Fit the measured stroke bbox into the accordion active-content rect:
-// the giant 筆 stays inside the moving slot, clear of the tab header.
-function glyphFit(
-  strokes: StrokeItem[],
-  rect: { x: number; y: number; w: number; h: number },
-): { tx: number; ty: number; s: number } {
-  let minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9;
-  for (const s of strokes) {
-    for (const [x, y] of s.points) {
-      if (x < minX) minX = x;
-      if (x > maxX) maxX = x;
-      if (y < minY) minY = y;
-      if (y > maxY) maxY = y;
-    }
+// AEP "Lens magnifier" comp: it holds the four STEP drafts and switches
+// between them on its OWN clock (comp time = master time - 4.25):
+//   0.000..0.750  STEP1 outline (red)
+//   0.750..1.375  STEP2 draft   (green)
+//   1.375..2.375  STEP3 draft   (blue)
+//   2.375..3.667  STEP4 draft   (yellow)
+const LENS_COMP_IN = 4.25;
+const LENS_DRAFT_WINDOWS: ReadonlyArray<readonly [number, number]> = [
+  [4.25, 5.0],
+  [5.0, 5.625],
+  [5.625, 6.625],
+  [6.625, 7.9167],
+];
+// The lens fades in just after the first step starts (measured on the
+// original frames: absent at 4.6875, fully in by 5.156) and leaves with the
+// stage at 7.917.
+const LENS_FADE_IN = [4.967, 5.07];
+const LENS_OUT = 7.917;
+
+function lensStepIndex(t: number): number {
+  // The AEP switches the magnified draft on its own local clock; the switch
+  // is observed one frame AFTER the comp window opens in the original
+  // frames (beat-013 at t=5.625 still shows the green STEP2 draft).
+  for (let k = LENS_DRAFT_WINDOWS.length - 1; k >= 1; k--) {
+    if (t > LENS_DRAFT_WINDOWS[k][0]) return k;
   }
-  const bw = maxX - minX || 1;
-  const bh = maxY - minY || 1;
-  const margin = 14;
-  const s = Math.min((rect.w - 2 * margin) / bw, (rect.h - 2 * margin) / bh);
-  const tx = rect.x + (rect.w - bw * s) / 2 - minX * s;
-  const ty = rect.y + (rect.h - bh * s) / 2 - minY * s;
-  return { tx, ty, s };
+  return 0;
 }
 
 // ---- real inferred-vertex extraction ---------------------------------------
@@ -357,17 +374,20 @@ function glyphData(): BData {
     )})`;
   });
 
-  // red-tinted outline-base clone for the silhouette fill (real extracted
-  // outline, recolored to the step-0 analysis role)
+  // The AEP STEP drafts paint the character as two stacked vector layers:
+  //   "FUDE outline base"  — the black shape (the contour rim)
+  //   "FUDE outline inset" — the step-coloured shape drawn on top
+  // In the recovered dump both carry the same path, so the rim is produced
+  // by stroking the real contour path and filling the same path on top.
   const outlineBaseTint = tintedStrokes([outlineBase], () => {
-    const n = parseInt(ANALYSIS_RED.slice(1), 16);
+    const n = parseInt(STEP_COLORS[0].slice(1), 16);
     return [(n >> 16) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
   })[0];
 
   // red-tinted scanline clone (real scan path, recolored to analysis red and
   // widened so the sweep reads at 1080p)
   const scanRed = tintedStrokes([scanline], () => {
-    const n = parseInt(ANALYSIS_RED.slice(1), 16);
+    const n = parseInt(STEP_COLORS[0].slice(1), 16);
     return [(n >> 16) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
   })[0];
   widenStroke(scanRed.layer.shapes, 6);
@@ -497,30 +517,129 @@ function stepVal(t: number, vals: number[]): number {
 const ramp = (t: number, a: number, b: number) =>
   easeOutCubic(clamp01((t - a) / (b - a)));
 
+// The character shape: the real contour paths of the AEP's "FUDE outline
+// base" layer, painted as plain SVG paths so the step-coloured inset can be
+// eroded (the AEP paints a black base shape with the colour shape 4px
+// inside it — that difference IS the black contour).
+//
+// Rendered as an SVG <g> so the same component can be used both in the
+// full-frame stage SVG and inside the lens' magnified <g>.
+const CharPaths: React.FC<{
+  contours: ContourPath[];
+  fill: string;
+  /** erode the fill by 4px (the AEP's outline inset) */
+  inset?: boolean;
+  filterId?: string;
+  opacity?: number;
+}> = ({ contours, fill, inset, filterId, opacity = 1 }) => (
+  <>
+    {inset && filterId && (
+      <defs>
+        <filter
+          id={filterId}
+          x="-10%"
+          y="-10%"
+          width="120%"
+          height="120%"
+          colorInterpolationFilters="sRGB"
+        >
+          <feMorphology operator="erode" radius="4" />
+        </filter>
+      </defs>
+    )}
+    <g
+      filter={inset && filterId ? `url(#${filterId})` : undefined}
+      opacity={opacity}
+    >
+      {contours.map((cp, i) => (
+        <path
+          key={i}
+          d={cp.d}
+          transform={cp.matrix}
+          fill={fill}
+          fillRule="nonzero"
+        />
+      ))}
+    </g>
+  </>
+);
+
+// Full-frame stage SVG wrapper for the character.
+const CharShape: React.FC<{
+  contours: ContourPath[];
+  fill: string;
+  inset?: boolean;
+  filterId?: string;
+  opacity?: number;
+}> = (props) => (
+  <svg
+    width={1080}
+    height={1080}
+    viewBox="0 0 1080 1080"
+    style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}
+  >
+    <CharPaths {...props} />
+  </svg>
+);
+
 export const SceneB: React.FC<{ t: number }> = ({ t }) => {
   if (t < T0 || t >= T1) return null;
   const d = glyphData();
   if (!d.strokes.length) return null;
 
   const appear = ramp(t, T0 + 0.05, T0 + 0.5);
-  const step = stepIndex(t);
+  const cur = stepIndex(t);
   // Accordion rig: fractional activeStep drives tab stacking AND the slot
   // position continuously (0.22s transitions), matching AEP P19..22.
+  const activeStep = evalSceneBActiveStep(t);
+  // AEP lens display centre is (660,810) r=210, i.e. the disc's left edge
+  // lands at x=449. The Remotion layer order repaints the confirmed
+  // left column (x<460) ABOVE the stage, so the AEP position cannot be
+  // reproduced literally: its leftmost 11px of rim would be erased and the
+  // lens would read as an open circle. The disc is therefore shifted 12px
+  // right. Everything else is untouched — the disc stays 420px across, the
+  // source circle stays 140px, the zoom stays 300%, and the magnified
+  // content is still centred on the AEP focal (771.67,399.37), so the
+  // dashed source ring still marks exactly what the lens magnifies.
+  const LENS_DISPLAY_CENTER: [number, number] = [672, 810];
   const rig = buildSceneBAccordionRig(SCENE_B_GRID, {
-    activeStep: evalSceneBActiveStep(t),
+    activeStep,
+    lensDisplayCenter: LENS_DISPLAY_CENTER,
   });
   const rect = (id: string) => rig.nodes.get(id)!.worldRect!;
-  const slotR = rect("bActiveSlot");
-  const contentR = rect("bActiveContent");
-  const lensDisp = rect("lensDisplay");
-  const LENS_CX = lensDisp.x + lensDisp.w / 2;
-  const LENS_CY = lensDisp.y + lensDisp.h / 2;
-  const LENS_R = lensDisp.w / 2; // 210 (420px display diameter)
-  const LENS_IR = LENS_R - 5; // inner radius inside the keyline
-  const LENS_ZOOM = SCENE_B_DESIGN.lensZoom; // 3.0 — display/source = 3
-  const LENS_SRC_R = SCENE_B_DESIGN.lensSourceDiameter / 2; // 70
-  const fit = glyphFit(d.strokes, contentR);
-  const tf = `translate(${fit.tx}px, ${fit.ty}px) scale(${fit.s})`;
+
+  // ---- AEP card geometry (all read from rig nodes) ------------------------
+  // bTabCard_k  : the 504x29 outlined tab card (top stack / bottom stack /
+  //               sliding during a transition).
+  // bStepCard_k : the 621px tall active card of step k (top 224+38.667k,
+  //               bottom 845+38.667k).
+  const tabCards = STEP_LABELS.map((_, k) => {
+    const r = rect(`bTabCard_${k}`);
+    const top = Math.floor(r.y);
+    return {
+      x: Math.round(r.x),
+      y: top,
+      w: Math.round(r.w),
+      // the card's bottom edge = the top of the expanded card below it
+      bottom: top + 28,
+    };
+  });
+  const stepCards = STEP_LABELS.map((_, k) => {
+    const r = rect(`bStepCard_${k}`);
+    return { x: Math.round(r.x), w: Math.round(r.w), bottom: Math.floor(r.y + r.h) };
+  });
+
+  // The expanded card of the CURRENT step: its top edge is the active tab's
+  // bottom edge, its bottom edge is the fixed 845+38.667k line.
+  const activeTop = tabCards[cur].bottom;
+  const activeBottom = stepCards[cur].bottom;
+  // While the accordion is still sliding to the current step, the PREVIOUS
+  // step's character stays visible ABOVE the sliding tab (the original AEP
+  // shows the red 筆 above the moving "02" tab and the green one below it).
+  const prevVisible = cur > 0 && activeStep < cur - 1e-6;
+  const prevTop = stepCards[cur - 1]
+    ? Math.floor(rect(`bStepCard_${cur - 1}`).y)
+    : activeTop;
 
   // ---- analysis layer visibility -------------------------------------------
   // Analysis layers fade out over the last few frames BEFORE reconstruction
@@ -533,21 +652,6 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
   // strokes start at 6.95.
   const analysisGate = 1 - ramp(t, STEP_T[3] - 0.15, STEP_T[3] + 0.01);
 
-  // step0: real extracted outline (red analysis role). The silhouette fill
-  // rides the scene fade-in so the SAME giant 筆 is already present at the
-  // B boundary (f101); the contour detail DRAWS ON along the real bezier
-  // paths while the scanline sweeps — input (sweep) -> output (contour)
-  // as one continuous operation, not a pop.
-  const outlineFillOp =
-    stepVal(t, [0.5, 0.18, 0.14, 0]) *
-    ramp(t, T0 + 0.12, T0 + 0.62) *
-    appear *
-    analysisGate;
-  const outlineContourOp =
-    stepVal(t, [1, 0.55, 0.3, 0]) * appear * analysisGate;
-  const insetContourOp =
-    stepVal(t, [0.9, 0.6, 0.35, 0]) * appear * analysisGate;
-
   // real scanline sweep: visible only through the 輪郭を解析 window
   const scanOp =
     ramp(t, 4.28, 4.42) * (1 - ramp(t, 4.95, 5.4)) * appear;
@@ -557,14 +661,8 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
   // most of its window, so the ~0.9s step reads as work in progress.
   // Progress is independent of the hold/ghost opacity gates below.
   const extendPaths = [...d.extendA, ...d.extendB];
-  const baseItems = d.outlineBaseContours.map((c) => [c]);
-  const insetItems = d.outlineInsetContours.map((c) => [c]);
   const extendItems = extendPaths.map((c) => [c]);
   const inferItems = d.inferredContours.map((c) => [c]);
-  const drawBase = (i: number) =>
-    clamp01((t - (4.45 + i * 0.028)) / 0.34);
-  const drawInset = (i: number) =>
-    clamp01((t - (4.6 + i * 0.022)) / 0.32);
   const drawExtend = (i: number) =>
     clamp01((t - (STEP_T[1] + 0.08 + i * 0.036)) / 0.34);
   // wu-b-v19: inferred boundary draw-on is delayed until AFTER the solver
@@ -574,18 +672,6 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
   // analysisGate fade (6.88+) and before the step3 boundary (6.95).
   const drawInfer = (i: number) =>
     clamp01((t - (STEP_T[2] + 0.53 + i * 0.028)) / 0.2);
-
-  // ghost desaturation per completed step (smooth 0.4s ramps). The red
-  // outline stays strong enough through early step1 so the green
-  // extensions visibly ATTACH to it, then grays out as the next step's
-  // color takes over — wu-b-v20-r1 FAIL: full-strength red under the
-  // green read as two overlapping filters instead of a step hand-off.
-  const outlineGhost =
-    0.45 * ramp(t, STEP_T[1] + 0.05, STEP_T[1] + 0.45) +
-    0.3 * ramp(t, STEP_T[2], STEP_T[2] + 0.4);
-  const extendGhost = 0.7 * ramp(t, STEP_T[2], STEP_T[2] + 0.4);
-  const outlineGhostColor = mixGray(ANALYSIS_RED, outlineGhost);
-  const extendGhostColor = mixGray(DRAFT_GREEN, extendGhost);
 
   // step1: real extended contours — draw on staggered in dump order, hold
   // as context into step2, recede before reconstruction
@@ -624,28 +710,11 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
     return clamp01(p) * stepVal(t, [0, 0, 1, 0]) * appear * analysisGate;
   };
 
-  // step3: separated strokes on the same character. Each stroke first
-  // flashes its own source contour in vertex-blue at the displaced reveal
-  // position, then the yellow fill + edge draw over it — the eye can trace
-  // every separated stroke back to the analyzed geometry (v14 M3: "yellow
-  // components lose traceability to source outline").
-  const strokeP = (i: number) =>
-    ramp(t, STEP_T[3] + d.rankOf[i] * 0.045, STEP_T[3] + d.rankOf[i] * 0.045 + 0.24);
-  const strokeStart = (i: number) => STEP_T[3] + d.rankOf[i] * 0.045;
-  const finalOp = (i: number) => strokeP(i) * appear;
-  const blueLeadOp = (i: number) => {
-    const s0 = strokeStart(i);
-    // wu-b-v20: the lead persists THROUGH the whole fill draw and
-    // vanishes exactly at completion — v19-r4 FAIL: the v19 window
-    // (out by s0+0.13) disappeared mid-draw while strokeP kept going to
-    // s0+0.24, leaving a partial yellow fill with no blue source
-    // contour (f170-178). The out ramp now ends at s0+0.27, just past
-    // the s0+0.24 draw completion, so blue is present for the entire
-    // "boundary -> fill" beat and gone the moment the stroke is done.
-    const p =
-      ramp(t, s0 - 0.14, s0 - 0.02) * (1 - ramp(t, s0 + 0.16, s0 + 0.27));
-    return clamp01(p) * appear;
-  };
+  // step3 (一画ずつに分割): in the AEP the fourth STEP draft is the SAME
+  // extracted contour in the step colour (#FFCC00) — the "split" the label
+  // promises is the per-stroke black contour the character already carries
+  // (each of the 13 stroke outlines is drawn separately), so no separate
+  // split overlay is drawn on top of it.
   // real vertex dots: outline anchor points ride the outline's own ghost
   // schedule; extend joints ride the extend hold. In step2 the blue solver
   // markers pop ON TOP of these existing vertices, so "hidden vertex
@@ -664,130 +733,60 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
   // own the "new vertices" read
   const vertExtendOp =
     extendOp * 0.9 * (1 - 0.55 * ramp(t, STEP_T[2], STEP_T[2] + 0.4));
-  // r21: the inspected-stroke mark retires before the B->C handoff so the
-  // finished glyph carries no leftover annotation chrome.
-  const selOp =
-    strokeP(d.selIndex) * appear * (1 - ramp(t, 7.28, 7.6));
-
   // all four step items list from the start of B; state tracks progress
   const labelStates = STEP_T.map((st, i) => {
     const active = t >= st && (i === 3 || t < STEP_T[i + 1]);
-    const done = t >= st + 0.95 || i < step;
+    const done = t >= st + 0.95 || i < cur;
     return { active, done };
   });
 
-  // lens focal (wu-b-v20 redesign): the magnifier must enlarge REAL
-  // inferred geometry, not an abstract marker field. Restro's own
-  // inferred-region render is the step-2 hero; its bbox center is where
-  // the solver's corner markers, the inferred boundary contours and the
-  // underlying stroke junctions coincide (probe wu-b-v20: markers 0-2
-  // sit on/inside the inferred patch at comp ~(690-849, 357-416),
-  // marker0 only 0.5 comp units off a stroke vertex). The previous
-  // density-argmax could drift onto bare-marker clusters and — worse —
-  // the lens drew ALL 29 markers at full size, which reviewers twice
-  // read as an abstract "bicycle" icon.
-  const lensWinR = LENS_IR / (fit.s * LENS_ZOOM); // comp-space half window
-  let focalComp: [number, number] | null = null;
-  {
-    const ib = d.inferred.bbox;
-    if (ib && isFinite(ib[0])) {
-      focalComp = [(ib[0] + ib[2]) / 2, (ib[1] + ib[3]) / 2];
-    } else if (d.points.length) {
-      // fallback: densest solver-marker window (legacy behavior)
-      let bestScore = -1;
-      let bestWin: [number, number][] = [];
-      for (const c of d.points) {
-        const nearPts = d.points.filter(
-          (p) => Math.hypot(p[0] - c[0], p[1] - c[1]) < lensWinR,
-        );
-        const nearStrokes = d.analysisPts.filter(
-          (p) => Math.hypot(p[0] - c[0], p[1] - c[1]) < lensWinR,
-        );
-        const score = nearPts.length + nearStrokes.length;
-        if (score > bestScore) {
-          bestScore = score;
-          bestWin = [...nearPts, ...nearStrokes];
-        }
-      }
-      if (bestWin.length) {
-        let sx = 0;
-        let sy = 0;
-        for (const p of bestWin) {
-          sx += p[0];
-          sy += p[1];
-        }
-        focalComp = [sx / bestWin.length, sy / bestWin.length];
-      }
-    }
-  }
-  // leader target: the solver marker nearest the focal point — a real
-  // inferred vertex sitting on the magnified boundary/junction, so the
-  // leader lands on geometry instead of an abstract window corner.
-  let vertexComp: [number, number] | null = null;
-  if (focalComp && d.points.length) {
-    let bd = Infinity;
-    for (const p of d.points) {
-      const dd = Math.hypot(p[0] - focalComp[0], p[1] - focalComp[1]);
-      if (dd < bd) {
-        bd = dd;
-        vertexComp = p;
-      }
-    }
-  }
-  const focalSX = focalComp ? focalComp[0] * fit.s + fit.tx : LENS_CX - LENS_R - 60;
-  const focalSY = focalComp ? focalComp[1] * fit.s + fit.ty : LENS_CY;
-  const vertexSX = vertexComp ? vertexComp[0] * fit.s + fit.tx : focalSX;
-  const vertexSY = vertexComp ? vertexComp[1] * fit.s + fit.ty : focalSY;
-  // comp-space focal for the lens inner transform (fallback: un-project the
-  // screen fallback through the same fit)
-  const focalCompPt: [number, number] = focalComp ?? [
-    (focalSX - fit.tx) / fit.s,
-    (focalSY - fit.ty) / fit.s,
-  ];
-
-  const lensPop = easeOutBack(clamp01((t - (STEP_T[2] + 0.1)) / 0.2));
-  const showLens = t >= STEP_T[2] + 0.1 && t < STEP_T[3] + 0.2;
-  // AEP connector (LENS frame [9]): a 140px source circle centered on the
-  // focal point's screen position, joined to the 420px display circle rim
-  // by a short line — no long leader crossing the glyph (review fix kept).
-  const connDX = LENS_CX - focalSX;
-  const connDY = LENS_CY - focalSY;
-  const connLen = Math.hypot(connDX, connDY) || 1;
-  const connUX = connDX / connLen;
-  const connUY = connDY / connLen;
-  const srcEdgeX = focalSX + connUX * LENS_SRC_R;
-  const srcEdgeY = focalSY + connUY * LENS_SRC_R;
-  const rimX = LENS_CX - connUX * LENS_R;
-  const rimY = LENS_CY - connUY * LENS_R;
-
-  // shared comp-space layer stack (main view and lens magnifier).
-  // lensBoost>1 raises the faint analysis layers inside the magnifier so the
-  // lens actually shows the real inferred geometry it points to.
-  const glyphLayers = (lensBoost: number) => (
+  // ---- the character: solid step colour + black contour, 1:1 in master ----
+  // The STEP draft comp space IS master space (the dumped FUDE geometry
+  // measures (602,297.1)-(1290.5,994.1) in master px), so the character is
+  // drawn with NO fit transform and clipped by the expanded card.
+  //
+  // The AEP paints the character as two stacked vector layers: the black
+  // "FUDE outline base" shape and the step-coloured "FUDE outline inset"
+  // shape, the latter 4px inside the former — so the 4px BLACK contour is
+  // simply the base shape showing around the inset. The recovered dump
+  // carries both shapes on the same path, so the inset is reproduced with
+  // a 4px erosion of the real contour path.
+  const charPaths = (k: number, boost = 1, filterId = "scene-b-ink-inset") => (
     <>
-      {/* step0: real extracted outline — red silhouette + bold contour */}
-      <StrokeField
-        comp={d.comp}
-        strokes={[d.outlineBaseTint]}
-        poseT={POSE}
-        opacity={Math.min(1, outlineFillOp * lensBoost)}
+      {/* the black base shape (the AEP's "FUDE outline base") */}
+      <CharPaths
+        contours={d.outlineBaseContours}
+        fill="#000000"
+        opacity={Math.min(1, appear * boost)}
       />
-      <DrawnContours
-        comp={d.comp}
-        contours={baseItems}
-        color={outlineGhostColor}
-        width={8}
-        itemOpacity={() => Math.min(1, outlineContourOp * lensBoost)}
-        itemProgress={drawBase}
+      {/* the step-coloured inset shape (the AEP's "FUDE outline inset") */}
+      <CharPaths
+        contours={d.outlineBaseContours}
+        fill={STEP_COLORS[k]}
+        inset
+        filterId={filterId}
+        opacity={Math.min(1, appear * boost)}
       />
-      <DrawnContours
-        comp={d.comp}
-        contours={insetItems}
-        color={outlineGhostColor}
-        width={4.5}
-        itemOpacity={() => Math.min(1, insetContourOp * lensBoost)}
-        itemProgress={drawInset}
-      />
+    </>
+  );
+
+  const charLayers = (k: number, boost = 1, filterId = "scene-b-ink-inset") => (
+    <svg
+      width={1080}
+      height={1080}
+      viewBox="0 0 1080 1080"
+      style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}
+    >
+      {charPaths(k, boost, filterId)}
+    </svg>
+  );
+
+  // ---- analysis overlays (ride on top of the solid fill) ------------------
+  // The character is now a SOLID step colour, so the analysis annotations
+  // need a black halo to stay readable on top of it (the AEP's own contour
+  // vocabulary is black-on-colour).
+  const analysisLayers = (
+    <>
       {/* step0/1: the REAL anchor vertices of the extracted outline, plotted
           as dots so later inferred markers have a visible baseline */}
       <svg
@@ -804,10 +803,10 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
               cy={p[1]}
               r={4}
               fill="none"
-              stroke={outlineGhostColor}
+              stroke="#111111"
               strokeWidth={2.2}
               strokeDasharray="3 2.5"
-              opacity={Math.min(1, vertBaseOp * lensBoost)}
+              opacity={Math.min(1, vertBaseOp * 0.8)}
             />
           ))}
       </svg>
@@ -827,17 +826,18 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
           comp={d.scanComp}
           strokes={[d.scanline]}
           poseT={t}
-          strokeOpacity={() => scanOp * lensBoost}
+          strokeOpacity={() => scanOp}
         />
       </div>
       {/* step1: real extended contours (FUDE extend A + B), drawn on along
-          their real paths in dump order */}
+          their real paths in dump order — black halo + green core so the
+          extension reads on top of the green character */}
       <DrawnContours
         comp={d.comp}
         contours={extendItems}
-        color={extendGhostColor}
-        width={7}
-        itemOpacity={() => Math.min(1, extendOp * lensBoost)}
+        color="#0E6B34"
+        width={3}
+        itemOpacity={() => Math.min(1, extendOp * 0.6)}
         itemProgress={drawExtend}
       />
       {/* step1: real vertices of the extend A/B paths as joint nodes */}
@@ -855,9 +855,9 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
               cy={p[1]}
               r={3.6}
               fill="none"
-              stroke={extendGhostColor}
+              stroke="#111111"
               strokeWidth={2}
-              opacity={Math.min(1, vertExtendOp * lensBoost)}
+              opacity={Math.min(1, vertExtendOp * 0.8)}
             />
           ))}
       </svg>
@@ -866,14 +866,22 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
         comp={d.comp}
         strokes={[d.inferred]}
         poseT={POSE}
-        strokeOpacity={() => inferOp * lensBoost}
+        strokeOpacity={() => inferOp}
+      />
+      <DrawnContours
+        comp={d.comp}
+        contours={inferItems}
+        color="#FFFFFF"
+        width={6}
+        itemOpacity={() => Math.min(1, stepVal(t, [0, 0, 1, 0]) * appear * analysisGate * 0.35)}
+        itemProgress={drawInfer}
       />
       <DrawnContours
         comp={d.comp}
         contours={inferItems}
         color={VERTEX_BLUE}
-        width={4.5}
-        itemOpacity={() => Math.min(1, stepVal(t, [0, 0, 1, 0]) * appear * analysisGate * lensBoost)}
+        width={2.5}
+        itemOpacity={() => Math.min(1, stepVal(t, [0, 0, 1, 0]) * appear * analysisGate * 0.45)}
         itemProgress={drawInfer}
       />
       {/* step2: the 29 real inferred vertex positions as markers */}
@@ -888,7 +896,17 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
           if (op <= 0) return null;
           const r = 8 + 3 * op;
           return (
-            <g key={j} opacity={op}>
+            <g key={j} opacity={op * 0.35}>
+              {/* black halo ring: keeps the blue marker readable on the
+                  solid blue step colour */}
+              <circle
+                cx={p[0]}
+                cy={p[1]}
+                r={r + 2.5}
+                fill="none"
+                stroke="#FFFFFF"
+                strokeWidth={3}
+              />
               {/* double ring + solid core: reads as "inferred vertex",
                   distinct from the hollow measured-point dots */}
               <circle
@@ -912,213 +930,27 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
           );
         })}
       </svg>
-      {/* step3 parent-contour ghost: the real extracted outline stays as a
-          faint gray reference under the separating strokes so the split
-          visibly happens ON the same giant 筆, not on a new diagram.
-          Lives only inside the step3 window and retires before B->C. */}
-      <DrawnContours
-        comp={d.comp}
-        contours={baseItems}
-        color="#8f8f8f"
-        width={5}
-        itemOpacity={() =>
-          Math.min(
-            1,
-            0.3 *
-              ramp(t, STEP_T[3] + 0.02, STEP_T[3] + 0.2) *
-              (1 - ramp(t, 7.4, 7.68)),
-          )
-        }
-        itemProgress={() => 1}
-      />
-      {/* wu-b-v20: the permanent per-stroke gray source-ghost was
-          REMOVED — with the blue lead now persisting through each fill
-          draw, the same edgeContours rendered twice (static gray +
-          transient blue) was redundant chrome; v19-r4 FAIL counted the
-          stacked contour sets toward the tech-demo read. The parent
-          silhouette ghost above still anchors the split to one glyph. */}
-      {/* step3 traceability lead: each stroke's own contour flashes in
-          vertex-blue at its displaced reveal position just before the
-          yellow fill arrives, so the separated strokes visibly descend
-          from the analyzed geometry */}
-      <ContourField
-        comp={d.comp}
-        contours={d.edgeContours}
-        color={VERTEX_BLUE}
-        width={2.2}
-        itemOpacity={(i) => blueLeadOp(i) * 0.6}
-        itemTransform={(i) => {
-          const p = strokeP(i);
-          if (p >= 1) return undefined;
-          const [dx, dy] = d.displace[i];
-          return `translate(${dx * p}px, ${dy * p}px)`;
-        }}
-      />
-      {/* step3: separated strokes on the same character */}
-      <StrokeField
-        comp={d.comp}
-        strokes={d.finalItems}
-        poseT={POSE}
-        strokeTransform={(item, i) => {
-          const p = strokeP(i);
-          if (p >= 1) return undefined;
-          const [dx, dy] = d.displace[i];
-          return `translate(${dx * p}px, ${dy * p}px)`;
-        }}
-        strokeOpacity={(_item, i) => finalOp(i)}
-      />
-      {/* matching darker edge per stroke so the fills read as strokes, not
-          flat rectangles; the edge DRAWS ON along the stroke's real contour
-          in sync with the fill reveal + displacement */}
-      <DrawnContours
-        comp={d.comp}
-        contours={d.edgeContours}
-        color="#4a3a12"
-        width={3.5}
-        itemColor={(i) => d.edgeColors[i]}
-        itemOpacity={(i) => strokeP(i) * appear * 0.95}
-        itemTransform={(i) => {
-          const p = strokeP(i);
-          if (p >= 1) return undefined;
-          const [dx, dy] = d.displace[i];
-          return `translate(${dx * p}px, ${dy * p}px)`;
-        }}
-        // edge contour leads the fill by ~0.05s: each stroke reads as
-        // "boundary drawn -> interior filled" rather than a color pop
-        itemProgress={(i) =>
-          clamp01((t - (strokeStart(i) - 0.05)) / 0.24)
-        }
-      />
-      {/* selected stroke: dark contour + center dot mark it as the
-          inspected one */}
-      <ContourField
-        comp={d.comp}
-        contours={[d.selContours]}
-        color="#111"
-        width={5}
-        opacity={selOp}
-        itemTransform={() => {
-          const p = strokeP(d.selIndex);
-          if (p >= 1) return undefined;
-          const [dx, dy] = d.displace[d.selIndex];
-          return `translate(${dx * p}px, ${dy * p}px)`;
-        }}
-      />
     </>
   );
 
-  // Lens content (wu-b-v20 redesign): a true processing magnifier —
-  // the SAME step-2 analysis stack the main view shows, cropped to the
-  // inferred-region window and synced to the same draw-on/propagation
-  // clocks, plus the junction geometry the inferred vertices sit on.
-  // v19-r4 FAIL: the old lens drew all 29 solver markers as giant static
-  // rings over a bare fill and read as an abstract "bicycle" icon. Now:
-  //   - only markers INSIDE the magnified window are drawn, at markerOp
-  //     progress (they pop in sync with the main view, not pre-lit)
-  //   - the inferred render + boundary use inferOp/drawInfer so the lens
-  //     shows the geometry at the same stage of completion as the scene
-  //   - extend contours + measured anchor dots give the junction context
-  //     that makes "inferred vertex ON real geometry" readable
-  const lensMarkerOp = (j: number) => Math.min(1, markerOp(j));
-  const vertLensOp =
-    stepVal(t, [0, 0, 1, 0]) * appear * analysisGate * 0.55;
-  const lensLayers = (
-    <>
-      {/* junction context: prior-step extension contours + measured
-          anchor dots, dimmed so the inferred content stays primary */}
-      <DrawnContours
-        comp={d.comp}
-        contours={extendItems}
-        color={extendGhostColor}
-        width={5}
-        itemOpacity={() => Math.min(1, extendOp * 0.85)}
-        itemProgress={drawExtend}
-      />
-      <svg
-        width={d.comp.width}
-        height={d.comp.height}
-        viewBox={`0 0 ${d.comp.width} ${d.comp.height}`}
-        style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}
-      >
-        {vertLensOp > 0 &&
-          d.existingVerts.map((p, j) => (
-            <circle
-              key={j}
-              cx={p[0]}
-              cy={p[1]}
-              r={3.4}
-              fill="none"
-              stroke="#8a8a8a"
-              strokeWidth={1.8}
-              opacity={vertLensOp}
-            />
-          ))}
-      </svg>
-      {/* Restro's own inferred-region render, synced to the main view */}
-      <StrokeField
-        comp={d.comp}
-        strokes={[d.inferred]}
-        poseT={POSE}
-        opacity={Math.min(1, inferOp)}
-      />
-      {/* inferred boundary contours drawing on along their real paths */}
-      <DrawnContours
-        comp={d.comp}
-        contours={inferItems}
-        color={VERTEX_BLUE}
-        width={4}
-        itemOpacity={() =>
-          Math.min(
-            1,
-            stepVal(t, [0, 0, 1, 0]) * appear * analysisGate,
-          )
-        }
-        itemProgress={drawInfer}
-      />
-      {/* solver vertex markers — ONLY those inside the magnified window,
-          at their real propagation progress, sized to read as vertices
-          on the geometry rather than decorative rings */}
-      <svg
-        width={d.comp.width}
-        height={d.comp.height}
-        viewBox={`0 0 ${d.comp.width} ${d.comp.height}`}
-        style={{ position: "absolute", left: 0, top: 0, overflow: "visible" }}
-      >
-        {d.points.map((p, j) => {
-          if (
-            focalComp &&
-            Math.hypot(p[0] - focalComp[0], p[1] - focalComp[1]) >
-              lensWinR * 1.6
-          )
-            return null;
-          const op = lensMarkerOp(j);
-          if (op <= 0) return null;
-          const r = 8 + 2.5 * op;
-          return (
-            <g key={j} opacity={op}>
-              <circle
-                cx={p[0]}
-                cy={p[1]}
-                r={r}
-                fill="none"
-                stroke={VERTEX_BLUE}
-                strokeWidth={3}
-              />
-              <circle
-                cx={p[0]}
-                cy={p[1]}
-                r={r * 0.55}
-                fill="none"
-                stroke={VERTEX_BLUE}
-                strokeWidth={2}
-              />
-              <circle cx={p[0]} cy={p[1]} r={3} fill={VERTEX_BLUE} />
-            </g>
-          );
-        })}
-      </svg>
-    </>
-  );
+  // ---- lens ---------------------------------------------------------------
+  const lensDisp = rect("lensDisplay");
+  const LENS_CX = lensDisp.x + lensDisp.w / 2;
+  const LENS_CY = lensDisp.y + lensDisp.h / 2;
+  const LENS_R = lensDisp.w / 2; // 210 (420px display diameter)
+  const LENS_ZOOM = SCENE_B_DESIGN.lensZoom; // 3.0 — display/source = 3
+  const focalRect = rect("lensFocalPoint");
+  const LENS_FX = focalRect.x;
+  const LENS_FY = focalRect.y;
+  const srcRing = rect("lensSourceRing");
+  const SRC_CX = srcRing.x + srcRing.w / 2;
+  const SRC_CY = srcRing.y + srcRing.h / 2;
+  const SRC_R = srcRing.w / 2; // 70
+
+  const lensAlpha =
+    ramp(t, LENS_FADE_IN[0], LENS_FADE_IN[1]) *
+    (1 - ramp(t, LENS_OUT - 0.06, LENS_OUT));
+  const lensStep = lensStepIndex(t);
 
   // viewport face fades in as the A3 bridge exits (~f100); it is rendered
   // UNDER the clipped glyph so the glyph's own `appear` ramp is unaffected
@@ -1132,266 +964,266 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
   // before the C cut at 7.96, so no chrome pops off mid-hold.
   const bandOut = 1 - ramp(t, 7.5, 7.9);
 
+  // clip rect of the expanded card's interior (the character never paints
+  // over the 1px card edge)
+  const clipX = stepCards[cur].x + 1;
+  const clipW = stepCards[cur].w - 2;
+  const clipTop = activeTop + 1;
+  const clipH = Math.max(0, activeBottom - 1 - clipTop);
+
+  const clipBox = (top: number, bottom: number) => ({
+    x: clipX,
+    y: top + 1,
+    w: clipW,
+    h: Math.max(0, bottom - 1 - (top + 1)),
+  });
+
+  const curClip = clipBox(activeTop, activeBottom);
+  const prevClip = prevVisible ? clipBox(prevTop, activeTop) : null;
+
   return (
     <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
       {/* NO full-stage white veil/backing: the AEP keeps the perspective
           grid visible everywhere except inside the local white mattes
-          (tab cards + slot face). Earlier wu-b-v20 added a gradient veil
-          over the whole right side; removed — the accordion cards already
-          mask the grid exactly where the AEP mattes do. */}
-      {/* active slot face: the expanded accordion card — white panel that
-          masks the background grid inside the stage. Rides the rig slot
-          position so it travels with the accumulating tab stack. */}
+          (the tab label strips). The expanded card is an OUTLINE, so the
+          grid reads through it exactly as in the original. */}
+      {/* the character — solid step colour, black contour, 1:1 in master
+          coordinates, clipped by the expanded card */}
+      {prevClip && (
+        <div
+          style={{
+            position: "absolute",
+            left: prevClip.x,
+            top: prevClip.y,
+            width: prevClip.w,
+            height: prevClip.h,
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              left: -prevClip.x,
+              top: -prevClip.y,
+              width: 1080,
+              height: 1080,
+            }}
+          >
+            {charLayers(cur - 1, 1, "scene-b-ink-inset-prev")}
+          </div>
+        </div>
+      )}
       <div
         style={{
           position: "absolute",
-          left: slotR.x,
-          top: slotR.y,
-          width: slotR.w,
-          height: slotR.h,
-          background: "#fff",
-          opacity: viewOp,
-        }}
-      />
-      {/* glyph + analysis layers, clipped to the active-content rect */}
-      <div
-        style={{
-          position: "absolute",
-          left: contentR.x,
-          top: contentR.y,
-          width: contentR.w,
-          height: contentR.h,
+          left: curClip.x,
+          top: curClip.y,
+          width: curClip.w,
+          height: curClip.h,
           overflow: "hidden",
         }}
       >
         <div
           style={{
             position: "absolute",
-            left: -contentR.x,
-            top: -contentR.y,
+            left: -curClip.x,
+            top: -curClip.y,
             width: 1080,
             height: 1080,
           }}
         >
+          {charLayers(cur, 1, "scene-b-ink-inset-cur")}
+          {analysisLayers}
+        </div>
+      </div>
+
+      {/* the expanded card: OUTLINE only — the perspective grid reads
+          through it (measured: gray 95..225 inside the card region). */}
+      <svg
+        width={1080}
+        height={1080}
+        style={{ position: "absolute", left: 0, top: 0, pointerEvents: "none" }}
+      >
+        <g fill="#000000" opacity={viewOp}>
+          <rect
+            x={stepCards[cur].x}
+            y={activeTop}
+            width={stepCards[cur].w}
+            height={1}
+          />
+          <rect
+            x={stepCards[cur].x}
+            y={activeBottom - 1}
+            width={stepCards[cur].w}
+            height={2}
+          />
+          <rect
+            x={stepCards[cur].x}
+            y={activeTop}
+            width={1}
+            height={activeBottom - activeTop}
+          />
+          <rect
+            x={stepCards[cur].x + stepCards[cur].w - 1}
+            y={activeTop}
+            width={1}
+            height={activeBottom - activeTop}
+          />
+        </g>
+      </svg>
+
+      {/* lens: the AEP "Lens magnifier" — a 420px display circle at
+          (660,810) with a 3px black rim showing the STEP draft magnified
+          300% about the AEP focal (771.67,399.37), plus the dashed 140px
+          source ring at (772,403). No connector line, no "3x" badge: the
+          original has neither. */}
+      {lensAlpha > 0 && (
+        <>
+          {/* The magnified AEP lens: the display circle shows the STEP draft
+              at 300% about the AEP focal (771.67,399.37) over the
+              magnified master backdrop, exactly as the AEP's "Lens
+              magnifier" comp does (the draft is transparent, so the
+              perspective grid reads through it). */}
           <div
             style={{
               position: "absolute",
-              inset: 0,
-              transform: tf,
-              transformOrigin: "0 0",
+              left: LENS_CX - LENS_R,
+              top: LENS_CY - LENS_R,
+              width: LENS_R * 2,
+              height: LENS_R * 2,
+              borderRadius: "50%",
+              overflow: "hidden",
+              opacity: lensAlpha,
             }}
           >
-            {glyphLayers(1)}
+            <div
+              style={{
+                position: "absolute",
+                left: 0,
+                top: 0,
+                width: 1080,
+                height: 1080,
+                // The magnified content is placed so the AEP focal
+                // (771.67,399.37) lands on the disc centre: the disc's own
+                // origin is its top-left corner, so the translate is
+                // LENS_R - focal*zoom on both axes.
+                transform: `translate(${LENS_R - LENS_FX * LENS_ZOOM}px, ${
+                  LENS_R - LENS_FY * LENS_ZOOM
+                }px) scale(${LENS_ZOOM})`,
+                transformOrigin: "0 0",
+              }}
+            >
+              {/* Only the STEP draft is magnified: the AEP's "Lens
+                  magnifier" comp holds the draft alone, so the master
+                  backdrop grid reads through the lens UNCHANGED (verified
+                  on beat-015: the grid lines run continuously across the
+                  lens rim). */}
+              {charLayers(lensStep, 1, "scene-b-ink-inset-lens")}
+            </div>
           </div>
-        </div>
-      </div>
-      {/* slot keyline */}
-      <div
-        style={{
-          position: "absolute",
-          left: slotR.x,
-          top: slotR.y,
-          width: slotR.w,
-          height: slotR.h,
-          border: "1px solid rgba(17,17,17,0.55)",
-          opacity: viewOp * 0.85,
-          boxSizing: "border-box",
-        }}
-      />
+          <svg
+            width={1080}
+            height={1080}
+            style={{ position: "absolute", left: 0, top: 0, pointerEvents: "none" }}
+          >
+            {/* the lens rim is an explicit circle (a CSS border on a
+                border-radius:50% box leaves a gap in Chromium) */}
+            <circle
+              cx={LENS_CX}
+              cy={LENS_CY}
+              r={LENS_R}
+              fill="none"
+              stroke="#000000"
+              strokeWidth={3}
+              opacity={lensAlpha}
+            />
+            {/* the AEP's dashed 140px source ring */}
+            <circle
+              cx={SRC_CX}
+              cy={SRC_CY}
+              r={SRC_R}
+              fill="none"
+              stroke="#000000"
+              strokeWidth={2}
+              strokeDasharray="10 8"
+              opacity={lensAlpha}
+            />
+            {/* the AEP LENS frame's small rim tick */}
+            <line
+              x1={916.9}
+              y1={588.2}
+              x2={901.2}
+              y2={620.8}
+              stroke="#000000"
+              strokeWidth={2}
+              opacity={lensAlpha}
+            />
+          </svg>
+        </>
+      )}
 
-      {/* accordion tabs: the recovered AEP structure — 4 white cards whose
+      {/* accordion tabs: the recovered AEP structure — 4 cards whose
           positions come from buildSceneBAccordionRig (top stack for done
-          steps, bottom waiting stack for pending). The ACTIVE card sits at
-          the slot head; divider hairlines ride each card at +27px. */}
+          steps, bottom waiting stack for pending). Each card is an
+          OUTLINED 504x29 rectangle with an opaque white label strip; the
+          background grid shows through the gaps. */}
       {STEP_LABELS.map((label, i) => {
         const s = labelStates[i];
         const active = s.active && !s.done;
-        const tabR = rect(`stepTab_${i}`);
-        const divR = rect(`stepDivider_${i}`);
-        const state = active ? "中" : "";
+        const c = tabCards[i];
+        // AEP state suffix: "中・" while the step runs, "した" once it is
+        // finished, nothing at all while the step is still pending.
+        const suffix = s.done ? STATE_DONE : active ? STATE_RUN : "";
+        const text = `${String(i + 1).padStart(2, "0")}  ${label}${suffix}`;
+        const color = active || s.done ? TAB_TEXT_ACTIVE : TAB_TEXT_PENDING;
         return (
           <div key={i}>
+            <svg
+              width={1080}
+              height={1080}
+              style={{ position: "absolute", left: 0, top: 0, pointerEvents: "none" }}
+            >
+              <g opacity={appear * bandOut}>
+                <rect
+                  x={c.x + 1}
+                  y={c.y + 2}
+                  width={c.w - 2}
+                  height={26}
+                  fill="#ffffff"
+                />
+                <g fill="#000000">
+                  <rect x={c.x} y={c.y} width={c.w} height={2} />
+                  <rect x={c.x} y={c.y + 28} width={c.w} height={1} />
+                  <rect x={c.x} y={c.y} width={1} height={29} />
+                  <rect x={c.x + c.w - 1} y={c.y} width={1} height={29} />
+                </g>
+              </g>
+            </svg>
             <div
               style={{
                 position: "absolute",
-                left: tabR.x,
-                top: tabR.y,
-                width: tabR.w,
-                height: tabR.h,
-                display: "flex",
-                alignItems: "center",
-                background: "#fff",
+                left: TAB_TEXT_X,
+                top: c.y - 6,
+                fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
+                fontSize: TAB_FONT_SIZE,
+                fontWeight: 700,
+                lineHeight: 1,
+                letterSpacing: "0.01em",
+                // the AEP's proportional Japanese face puts the label 55px
+                // after the number; Noto Sans JP needs +4.5px per space to
+                // land the label on the same column (measured 616 in the
+                // original frames)
+                wordSpacing: "4.5px",
+                color,
+                whiteSpace: "nowrap",
                 opacity: appear * bandOut,
               }}
             >
-              <span
-                style={{
-                  fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
-                  fontSize: 18,
-                  fontWeight: 700,
-                  lineHeight: 1,
-                  color: active ? ANALYSIS_RED : s.done ? "#111" : "#bdbdbd",
-                  width: 40,
-                  marginLeft: 10,
-                  letterSpacing: "0.06em",
-                }}
-              >
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <span
-                style={{
-                  fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
-                  fontSize: 21,
-                  fontWeight: 700,
-                  lineHeight: 1,
-                  color: active ? "#111" : s.done ? "#3f3f3f" : "#a8a8a8",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {label}
-              </span>
-              <span
-                style={{
-                  marginLeft: "auto",
-                  marginRight: 12,
-                  fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
-                  fontSize: 20,
-                  fontWeight: 700,
-                  lineHeight: 1,
-                  color: active ? ANALYSIS_RED : "#5a5a5a",
-                }}
-              >
-                {state}
-              </span>
+              {text}
             </div>
-            {/* divider hairline: derived child node at tab top +27px */}
-            <div
-              style={{
-                position: "absolute",
-                left: divR.x,
-                top: divR.y,
-                width: divR.w,
-                height: divR.h,
-                background: "rgba(17,17,17,0.35)",
-                opacity: appear * bandOut,
-              }}
-            />
           </div>
         );
       })}
-
-      {/* lens: AEP-faithful 300% magnifier — 420px display circle at the
-          rig lensDisplay position, showing the comp region around the
-          inferred-vertex focal at 3x. Drawn OVER the slot like the AEP
-          Lens magnifier layer; the 140px source circle + connector mark
-          exactly which region is magnified. */}
-      {showLens && (
-        <div
-          style={{
-            position: "absolute",
-            left: LENS_CX - LENS_R,
-            top: LENS_CY - LENS_R,
-            width: LENS_R * 2,
-            height: LENS_R * 2,
-            borderRadius: "50%",
-            overflow: "hidden",
-            boxSizing: "border-box",
-            border: "3px solid #111",
-            background: "#fff",
-            opacity: Math.min(1, lensPop) * analysisGate,
-            transform: `scale(${0.85 + 0.15 * Math.min(1, lensPop)})`,
-            transformOrigin: "center",
-          }}
-        >
-          <div
-            style={{
-              position: "absolute",
-              left: 0,
-              top: 0,
-              width: d.comp.width,
-              height: d.comp.height,
-              // comp-space -> lens-local: the focal comp point lands on the
-              // circle center, magnified by zoom. Algebra: screen =
-              // comp*s + t, so translate = r - focalComp*s*zoom (the fit
-              // offsets cancel out).
-              transform: `translate(${LENS_IR - focalCompPt[0] * fit.s * LENS_ZOOM}px, ${LENS_IR - focalCompPt[1] * fit.s * LENS_ZOOM}px) scale(${fit.s * LENS_ZOOM})`,
-              transformOrigin: "0 0",
-            }}
-          >
-            {lensLayers}
-          </div>
-          {/* magnifier affordance: the zoom factor printed on the lens
-              rim so the circle reads as an instrument, not a badge
-              (wu-b-v20-r1 FAIL: lens looked decorative) */}
-          <div
-            style={{
-              position: "absolute",
-              left: "50%",
-              bottom: 8,
-              transform: "translateX(-50%)",
-              fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
-              fontSize: 20,
-              fontWeight: 700,
-              lineHeight: 1,
-              color: "#555",
-              letterSpacing: "0.04em",
-            }}
-          >
-            {LENS_ZOOM}×
-          </div>
-        </div>
-      )}
-
-      {/* lens frame overlay (AEP LENS frame [9]): 140px source circle on
-          the focal point + connector to the display rim + vertex mark.
-          Drawn after the lens so all marks stay visible. */}
-      {showLens && (
-        <svg
-          width={1080}
-          height={1080}
-          style={{ position: "absolute", left: 0, top: 0, pointerEvents: "none" }}
-        >
-          {/* source circle: the exact 140px region the lens magnifies
-              3x into the 420px display (diameter ratio is the zoom) */}
-          <circle
-            cx={focalSX}
-            cy={focalSY}
-            r={LENS_SRC_R}
-            fill="none"
-            stroke={VERTEX_BLUE}
-            strokeWidth={2}
-            opacity={0.85 * Math.min(1, lensPop) * analysisGate}
-          />
-          {/* connector: source circle edge -> display circle rim */}
-          <line
-            x1={srcEdgeX}
-            y1={srcEdgeY}
-            x2={rimX}
-            y2={rimY}
-            stroke={VERTEX_BLUE}
-            strokeWidth={2}
-            opacity={0.7 * Math.min(1, lensPop) * analysisGate}
-          />
-          {/* vertex mark: ring on the solver marker nearest the focal so
-              the magnified target is identified (kept from wu-b-v20) */}
-          <circle
-            cx={vertexSX}
-            cy={vertexSY}
-            r={7}
-            fill="none"
-            stroke={VERTEX_BLUE}
-            strokeWidth={2.6}
-            opacity={Math.min(1, lensPop) * analysisGate}
-          />
-          <circle
-            cx={vertexSX}
-            cy={vertexSY}
-            r={2.4}
-            fill={VERTEX_BLUE}
-            opacity={Math.min(1, lensPop) * analysisGate}
-          />
-        </svg>
-      )}
     </div>
   );
 };
