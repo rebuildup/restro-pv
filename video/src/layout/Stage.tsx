@@ -30,7 +30,10 @@ export const STAGE_SCENES: readonly StageScene[] = [
   // C works strip (SPEC §5 C): [7.958, 11.708)
   { id: "C", window: [191 / 24, 281 / 24], Component: SceneC },
   // D real-AE-operation proof (SPEC §5 D): [11.708, 15.458)
-  { id: "D", window: [281 / 24, 371 / 24], Component: SceneD },
+  // Scene D starts four frames before its nominal boundary so its windows
+  // can cross-dissolve with the outgoing gallery strip instead of the
+  // stage going empty for a frame at the cut.
+  { id: "D", window: [277 / 24, 371 / 24], Component: SceneD },
   // E closing + product card (SPEC §5 E): [15.458, 20)
   { id: "E", window: [371 / 24, 20], Component: SceneE },
 ];

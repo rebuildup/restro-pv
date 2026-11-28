@@ -225,7 +225,10 @@ export const SceneD: React.FC<{ t: number }> = ({ t }) => {
   // the tail — a fading viewport lost the proof legibility exactly at the
   // scene's strongest result frame. The windows hold full opacity to the
   // D->E cut (f370 -> f371), matching the scene's hard-cut grammar.
-  const pin = smooth(ramp(t, T0, T0 + 0.22));
+  // The windows cross-dissolve with the outgoing gallery strip over the
+  // last four frames before the nominal boundary, so the stage is never
+  // empty at the cut.
+  const pin = smooth(ramp(t, T0 - 4 / 24, T0));
   const opacity = pin;
 
   // Left-column copy is chrome-owned (video/src/layout/LeftCopy.tsx,
