@@ -55,8 +55,6 @@ const ROI_AUTO: Roi = { x: 370, y: 0, w: 560, h: 470 };
 // recording background) plus a modest coordinate label per window.
 const FRAME_COLOR = "#3f3f46";
 const FRAME_W = 2;
-const LABEL_COLOR = "#8a8a8a";
-const LABEL_FONT = "ui-monospace, 'Cascadia Mono', Consolas, monospace";
 
 interface WindowSpec {
   id: string; // coordinate label prefix, e.g. "W_MAIN"
@@ -187,22 +185,10 @@ const DWindow: React.FC<{ win: WindowSpec }> = ({ win }) => {
   const hasFootage = Boolean(win.file && win.roi && win.clips?.length);
   return (
     <div>
-      {/* coordinate label, above the frame (05 §3: 控えめな座標ラベル) */}
-      <div
-        style={{
-          position: "absolute",
-          left: win.x,
-          top: win.y - 18,
-          fontFamily: LABEL_FONT,
-          fontSize: 12,
-          letterSpacing: 1.6,
-          color: LABEL_COLOR,
-          whiteSpace: "nowrap",
-        }}
-      >
-        {`${win.id} · ${win.x},${win.y} · ${win.w}×${win.h}`}
-      </div>
-      {/* dark frame + clipped content */}
+      {/* dark frame + clipped content. The former coordinate label
+          ("W_MAIN · 480,60 · 600×540") was a development annotation: in
+          the finished frame it reads as a debug overlay rather than as
+          part of the film, so it is gone. */}
       <div
         style={{
           position: "absolute",

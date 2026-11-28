@@ -57,6 +57,10 @@ const CARD_IN = 17.7;
 // top edge sits on the confirmed row boundary (row 10 = 468).
 const CARD_LEFT = 546;
 const CARD_TOP = 468;
+// the plate spans the confirmed stage column and is centred on the left
+// column lockup optical centre (y ~565)
+const CARD_W = 502;
+const CARD_H = 194;
 
 const INK: [number, number, number] = [0.07, 0.07, 0.08];
 // vermilion — the same accent as the seal of scene C's work 01
@@ -174,8 +178,7 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
       : 0;
   const ctaP = itemP(0.0, 0.42);
   const urlP = itemP(0.34, 0.34);
-  const enP = itemP(0.56, 0.3);
-  const cardP = Math.max(ctaP, urlP, enP);
+  const cardP = Math.max(ctaP, urlP);
 
   const cardOn = cardP > 0;
   if (heroP <= 0 && !cardOn) return null;
@@ -219,31 +222,42 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
       )}
 
       {/* ---- purchase path ----
-          The confirmed end-card specimen (docs/design/assets/individual/
-          scene-c-d-e/e-cta-typography.svg, extracted from the AEP's
-          `49-PV end`): a white panel with a hairline border, the purchase
-          statement in bold, the URL and the English line beneath it.
-          The brand block of the specimen (Restro / 筆画復元) is NOT
-          repeated here — the left column already carries it, and the
-          duplicate logo was the earlier rejection. */}
+          The composition follows the AEP's own final frame
+          (verification/beats/beat-043.png): a bordered plate standing in
+          the right column, its type centred, with a rule separating the
+          purchase group. The plate is placed on the confirmed stage column
+          (x 546..1048) and centred on the left column's lockup optical
+          centre (y ≈ 565), so the two columns of the closing frame carry
+          their mass at the same height.
+
+          The AEP's plate also carried the brand block (Restro / 筆画復元 /
+          After Effects プラグイン). That is NOT repeated here — the left
+          column carries it for the whole film, and the duplicated logo was
+          the earlier rejection — so the plate holds only the purchase
+          path, which is the one thing the frame does not say yet. */}
       {cardOn && (
         <div
           style={{
             position: "absolute",
             left: CARD_LEFT,
             top: CARD_TOP,
-            width: 468,
-            padding: "26px 28px 24px",
+            width: CARD_W,
+            height: CARD_H,
             boxSizing: "border-box",
             background: "#ffffff",
-            border: "1px solid #d4d4d8",
+            border: "1px solid #1a1a1f",
             fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
             opacity: cardP,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 18,
           }}
         >
           <div
             style={{
-              fontSize: 32,
+              fontSize: 34,
               fontWeight: 700,
               color: "#1a1a1f",
               letterSpacing: 2,
@@ -256,33 +270,18 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
           </div>
           <div
             style={{
-              marginTop: 14,
-              fontSize: 20,
-              fontWeight: 600,
-              // darkened from the confirmed #666670 (2.25:1) so the URL
-              // itself — the actionable line — stays legible on white
+              fontSize: 22,
+              fontWeight: 400,
+              // darkened from the confirmed #666670 (2.25:1 on white) so
+              // the actionable line stays legible
               color: "#2f2f36",
-              letterSpacing: 1.1,
+              letterSpacing: 1.2,
               lineHeight: 1.3,
               opacity: urlP / Math.max(cardP, 0.001),
               transform: `translateY(${(1 - urlP) * 10}px)`,
             }}
           >
             361do.booth.pm/items/9029239
-          </div>
-          <div
-            style={{
-              marginTop: 10,
-              fontSize: 20,
-              fontWeight: 400,
-              color: "#666670",
-              letterSpacing: 0.6,
-              lineHeight: 1.3,
-              opacity: enP / Math.max(cardP, 0.001),
-              transform: `translateY(${(1 - enP) * 10}px)`,
-            }}
-          >
-            Stroke Reconstruction for After Effects
           </div>
         </div>
       )}
