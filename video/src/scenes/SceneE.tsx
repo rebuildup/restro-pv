@@ -10,14 +10,6 @@ import {
   tintedStrokes,
   type StrokeItem,
 } from "./glyph.tsx";
-import { CompView, type RenderCtx } from "../ae/layer.tsx";
-import {
-  GENERATED_COMPS,
-  GENERATED_FOOTAGE,
-  compByName,
-  mattePairs,
-} from "../ae/project.ts";
-import { AE_RENDER_CAMERA } from "../design/rig.ts";
 import { STAGE_MIN_X } from "../layout/zones.ts";
 
 // Scene E [15.458, 20) closing, v13 art-direction two-beat structure
@@ -29,11 +21,13 @@ import { STAGE_MIN_X } from "../layout/zones.ts";
 //     converges back into the solid black kanji hero (question -> answer
 //     ring closing the film).
 //   Beat 2 — END CARD (~f417-f479, held to end): QUIET resolution — the
-//     OFFICIAL Restro logo artwork (dumped AE "Logo" comp, rendered through
-//     the same CompView interpreter, NOT a generic-font re-typeset), the
-//     product descriptor, and BOOTH + URL as one clear CTA hierarchy. No
-//     card chrome, no rounded corners, no shadows, product name appears
-//     once (inside the logo artwork itself).
+//     product descriptor and BOOTH + URL as one clear CTA hierarchy. No
+//     card chrome, no rounded corners, no shadows. The Restro brand
+//     lockup is NOT re-drawn here: the confirmed chrome layer already
+//     carries it in the left column for the whole film, and duplicating
+//     the same Logo artwork on the right was rejected as 二重ロゴ
+//     (docs/design/assets/e-end-card-clean.svg: 左＝ブランド標章 /
+//     右＝復元された造形と購買導線).
 //
 // Left column: the dumped description comp's E-section product copy is
 // zeroed centrally in masterPatch (layers in >=15.44s), and the persistent
@@ -77,19 +71,11 @@ const HERO_OUT: [number, number] = [17.32, 17.5];
 
 // --- end card ---
 const CARD_IN = 17.45;
-
-// --- official logo artwork (dumped AE "Logo" comp = Restro wordmark with
-// red-accent R + 筆画復元， vector art — not typeset text) ---
-const LOGO_COMP = compByName("Logo");
-const LOGO_CTX: RenderCtx = {
-  comps: GENERATED_COMPS,
-  footage: GENERATED_FOOTAGE,
-  camera: AE_RENDER_CAMERA,
-  matteMap: mattePairs(),
-};
-const LOGO_SCALE = 1.3; // 416x260 -> ~541x338
 const CARD_LEFT = 505;
-const CARD_TOP = 268;
+// Without the logo block the CTA group is ~210px tall; CARD_TOP centers it
+// on the stage's optical middle (~y530) instead of hugging the old logo
+// baseline.
+const CARD_TOP = 425;
 
 // scene-C work02 palette (Restro step hues) — the "multicolor separated
 // strokes" the payoff returns with
@@ -101,14 +87,21 @@ const PALETTE: [number, number, number][] = [
 ];
 const INK: [number, number, number] = [0.07, 0.07, 0.08];
 
-// --- shared stroke data (Baseline FUDE = the same 筆 used across B/C) ---
+// --- shared stroke data ---
+// Source: "PV glyph" (06) FUDE S01..S13 at poseT 2 — the verified zero-
+// displacement rest pose (assembled IoU 0.9998 vs FUDE outline base,
+// docs/design/data/pv-glyph-fude.composition.json). The previous "Baseline"
+// (01) source was rejected: its dumped Position.value carries a baked
+// ~0.73 easeOut scatter offset, so even the "assembled" black kanji never
+// reached the true rest pose (same root cause documented for SceneC,
+// docs/design/03-assets-catalog.md §3.2).
 let cached: {
   comp: ReturnType<typeof compStrokes>["comp"];
   strokes: StrokeItem[];
   colorStrokes: StrokeItem[];
   blackStrokes: StrokeItem[];
-  cx: number;
-  cy: number;
+  // hero fit transform string (measured bbox -> stage target)
+  heroFit: string;
   rank: number[];
   scatter: { dx: number; dy: number; rot: number }[];
 } | null = null;
@@ -120,13 +113,61 @@ function strokeOrderIndex(name: string): number {
   return m ? parseInt(m[1], 10) : 99;
 }
 
+// Principal axis of a stroke's comp-space vertices (unit vector along the
+// major PCA direction). The separation law below constrains each stroke's
+// displacement to the direction PERPENDICULAR to this axis — horizontal
+// bars part vertically, verticals horizontally, diagonals along their own
+// normal — so the exploded field keeps the glyph's stroke-direction
+// structure instead of an index-ordered radial fan.
+function principalAxis(points: [number, number][]): [number, number] {
+  let mx = 0,
+    my = 0;
+  for (const [x, y] of points) {
+    mx += x;
+    my += y;
+  }
+  mx /= points.length;
+  my /= points.length;
+  let sxx = 0,
+    sxy = 0,
+    syy = 0;
+  for (const [x, y] of points) {
+    const dx = x - mx,
+      dy = y - my;
+    sxx += dx * dx;
+    sxy += dx * dy;
+    syy += dy * dy;
+  }
+  const ang = 0.5 * Math.atan2(2 * sxy, sxx - syy);
+  return [Math.cos(ang), Math.sin(ang)];
+}
+
+// Peak separated displacement in comp units (~205px on screen after the
+// hero fit scale). Replaces the old 80-220px index/mod fan.
+const SLIDE_MAX = 170;
+// Strokes smaller than this fraction of the char width in BOTH bbox dims
+// are dot/stub accents: they stay near their rest anchor (static-anchor
+// class from docs/design/07-motion-design.md §4) with reduced travel and
+// no rotation.
+const DOT_FRAC = 0.18;
+// Peak rotation for traveling strokes, degrees — pivot is each stroke's
+// own measured center (StrokeField rotates about s.center).
+const ROT_MAX = 10;
+// On-screen char width target: preserves the Baseline-tuned hero size
+// (726px bbox * 1.15 scale = ~835px) on the new measured source.
+const HERO_TARGET_W = 835;
+// hero placement inside the right-stage clip window (x480-1080): large
+// enough to bleed the right frame edge like the scene-A kanji hero, while
+// the clip keeps separated strokes out of the left brand column
+const HERO_C: [number, number] = [375, 545];
+
 function buildData() {
   if (cached) return cached;
-  const { comp, strokes } = compStrokes("Baseline", {
+  const { comp, strokes } = compStrokes("PV glyph", {
     pattern: /^FUDE S\d+/,
-    poseT: 0.5,
+    poseT: 2,
   });
-  if (!strokes.length) throw new Error("Baseline FUDE strokes not found");
+  if (!strokes.length) throw new Error("PV glyph FUDE strokes not found");
   let minX = 1e9,
     minY = 1e9,
     maxX = -1e9,
@@ -140,6 +181,7 @@ function buildData() {
     }
   const cx = (minX + maxX) / 2;
   const cy = (minY + maxY) / 2;
+  const charW = maxX - minX;
 
   const rank = new Array(strokes.length).fill(0);
   strokes
@@ -149,54 +191,76 @@ function buildData() {
       rank[o.i] = r;
     });
 
-  // separated-stroke field: each stroke displaced outward from the char
-  // center with tangential jitter and a lean — reads as "exploded" pen
-  // strokes, not a broken glyph
+  // Structure-aware separated-stroke field (replaces the index/mod fan):
+  //   slide dir = perpendicular to the stroke's own principal axis,
+  //   signed outward from the char center;
+  //   travel    = SLIDE_MAX * |projection of (center - charCenter) onto
+  //               slide| / maxProjection — strokes farther from the spine
+  //               along their parting axis travel farther, strokes on the
+  //               axis stay anchored, and the field stays mirror-symmetric
+  //               about the char's own structure rather than the array
+  //               order;
+  //   rotation  = small tilt proportional to travel, pivoting on the
+  //               stroke's real centroid — no index parity, no mod jitter.
+  const geom = strokes.map((s) => {
+    const [ax, ay] = principalAxis(s.points);
+    // perpendicular candidates; pick the one pointing away from center
+    let sx = -ay,
+      sy = ax;
+    const rx = s.center[0] - cx,
+      ry = s.center[1] - cy;
+    if (sx * rx + sy * ry < 0) {
+      sx = -sx;
+      sy = -sy;
+    }
+    return { slide: [sx, sy] as [number, number], rx, ry };
+  });
+  const projections = geom.map((g) => Math.abs(g.rx * g.slide[0] + g.ry * g.slide[1]));
+  const maxProj = Math.max(...projections, 1);
+  const dotMax = DOT_FRAC * charW;
+
   const scatter = strokes.map((s, i) => {
-    const dx = s.center[0] - cx;
-    const dy = s.center[1] - cy;
-    const len = Math.hypot(dx, dy) || 1;
-    // moderate separation: the exploded char must stay recognizable as the
-    // 筆 hero (r1 review: 120-290px offsets read as abstract fragments)
-    const dist = 80 + ((i * 89) % 140); // 80-220 comp px outward
-    const swing = ((i * 47) % 60) - 30;
-    const tx = -dy / len;
-    const ty = dx / len;
+    const g = geom[i];
+    const bw = s.bbox[2] - s.bbox[0];
+    const bh = s.bbox[3] - s.bbox[1];
+    const isDot = bw < dotMax && bh < dotMax;
+    const reach = projections[i] / maxProj;
+    const dist = SLIDE_MAX * reach * (isDot ? 0.4 : 1);
+    // rotation sign follows which way the slide axis sits relative to the
+    // radial direction — strokes unfurl outward, not by array parity
+    const cross = g.slide[0] * g.ry - g.slide[1] * g.rx;
+    const side = cross === 0 ? (s.center[0] < cx ? -1 : 1) : Math.sign(cross);
     return {
-      dx: (dx / len) * dist + tx * swing,
-      dy: (dy / len) * dist + ty * swing,
-      rot: (i % 2 === 0 ? 1 : -1) * (10 + (i % 4) * 6), // 10-28 deg
+      dx: g.slide[0] * dist,
+      dy: g.slide[1] * dist,
+      rot: isDot ? 0 : reach * ROT_MAX * side,
     };
   });
+
+  const heroS = HERO_TARGET_W / charW;
+  const heroFit = `translate(${HERO_C[0] - cx * heroS}px,${
+    HERO_C[1] - cy * heroS
+  }px) scale(${heroS})`;
 
   cached = {
     comp,
     strokes,
+    // proof color follows writing order (rank), not dump array order —
+    // same convention as SceneC's proof palette
     colorStrokes: tintedStrokes(strokes, (_s, i) =>
-      PALETTE[(i * 2 + 1) % PALETTE.length],
+      PALETTE[rank[i] % PALETTE.length],
     ),
     blackStrokes: tintedStrokes(strokes, () => INK),
-    cx,
-    cy,
+    heroFit,
     rank,
     scatter,
   };
   return cached;
 }
 
-// char bbox in comp space (same measured range as SceneC)
-const BB = { minX: 583, minY: 283, maxX: 1309, maxY: 997 };
-// hero placement inside the right-stage clip window (x480-1080): large
-// enough to bleed the right frame edge like the scene-A kanji hero, while
-// the clip keeps separated strokes out of the left brand column
-const HERO_C: [number, number] = [375, 545];
-const HERO_S = 1.15;
-const HERO_FIT = `translate(${HERO_C[0] - ((BB.minX + BB.maxX) / 2) * HERO_S}px,${
-  HERO_C[1] - ((BB.minY + BB.maxY) / 2) * HERO_S
-}px) scale(${HERO_S})`;
-
 export const SceneE: React.FC<{ t: number }> = ({ t }) => {
-  const { comp, colorStrokes, blackStrokes, rank, scatter } = buildData();
+  const { comp, colorStrokes, blackStrokes, heroFit, rank, scatter } =
+    buildData();
 
   // --- recap window: visible ~f371-379, gone before the payoff arrives ---
   const recapIn = easeOutCubic(seg(t, T0, T0 + 0.12));
@@ -224,10 +288,11 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
     if (!d) return undefined;
     const g = gatherP(i);
     const k = 1 - g;
-    // gentle drift while separated so the "peak" hold never freezes
+    // gentle drift while separated so the "peak" hold never freezes;
+    // phase follows writing order, not array index
     const drift =
       k *
-      Math.sin(t * 1.25 + i * 1.7) *
+      Math.sin(t * 1.25 + rank[i] * 1.7) *
       7;
     const [cx, cy] = s.center;
     return (
@@ -243,21 +308,21 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
   // Tightened (was logo .05/.5, desc .22/.4, booth .38/.4, url .52/.4):
   // the old pacing left the CTA ramp running until ~18.37s (f441), giving
   // only ~1.6s of settled hold before the comp ends — short of the §3.4
-  // "2s+ quiet settle / CTA readable ~f427-480" intent. Same entrance
-  // order and easing, just compressed so the group is readable earlier.
+  // "2s+ quiet settle / CTA readable ~f427-480" intent. The duplicated
+  // logo block is gone, so the descriptor now leads the group; same
+  // top-down order and easing, still fully settled by ~f434.
   const itemP = (delay: number, dur = 0.4) =>
     t >= CARD_IN + delay ? easeOutCubic(seg(t, CARD_IN + delay, CARD_IN + delay + dur)) : 0;
-  const logoP = itemP(0.0, 0.45);
-  const descP = itemP(0.15, 0.35);
-  const boothP = itemP(0.28, 0.35);
-  const urlP = itemP(0.4, 0.35);
+  const descP = itemP(0.0, 0.4);
+  const boothP = itemP(0.15, 0.35);
+  const urlP = itemP(0.28, 0.35);
 
   // Left-column closing copy moved to video/src/layout/LeftCopy.tsx
   // (Issue #30): the left information column is confirmed layout owned by
   // the chrome layer, not scene content. It hard-cuts at the E boundary.
   const coverOn = t >= T0;
 
-  const cardOn = logoP > 0 || descP > 0 || boothP > 0 || urlP > 0;
+  const cardOn = descP > 0 || boothP > 0 || urlP > 0;
   if (!coverOn && recapP <= 0 && heroP <= 0 && !cardOn) return null;
 
   return (
@@ -352,7 +417,7 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
               top: 0,
               width: comp.width,
               height: comp.height,
-              transform: HERO_FIT,
+              transform: heroFit,
               transformOrigin: "0 0",
             }}
           >
@@ -361,7 +426,7 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
             <StrokeField
               comp={comp}
               strokes={colorStrokes}
-              poseT={0.5}
+              poseT={2}
               strokeOpacity={strokeOpacity}
               strokeTransform={strokeTransform}
               opacity={1 - colorCross}
@@ -369,7 +434,7 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
             <StrokeField
               comp={comp}
               strokes={blackStrokes}
-              poseT={0.5}
+              poseT={2}
               strokeOpacity={strokeOpacity}
               strokeTransform={strokeTransform}
               opacity={colorCross}
@@ -378,11 +443,13 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
         </div>
       )}
 
-      {/* ---- end card: official logo artwork + one CTA hierarchy ----
-          Logo comp = the real Restro lockup artwork (wordmark + 筆画復元）;
-          the product name lives inside the artwork, so no typeset
-          "Restro"/"筆画復元" is repeated here. */}
-      {cardOn && LOGO_COMP && (
+      {/* ---- end card: product descriptor + one CTA hierarchy ----
+          No brand artwork here: the confirmed chrome layer already carries
+          the Restro Logo lockup in the left column for the whole film, so
+          re-drawing it on the right stage duplicated the same mark
+          (e-end-card-clean.svg role split). The right stage owns the
+          restored glyph and the purchase path only. */}
+      {cardOn && (
         <div
           style={{
             position: "absolute",
@@ -392,31 +459,6 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
             fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
           }}
         >
-          {/* official logo artwork — outer box reserves the SCALED height
-              (CSS transforms do not affect layout) so following lines
-              cannot overlap the artwork */}
-          <div
-            style={{
-              width: 416 * LOGO_SCALE,
-              height: 260 * LOGO_SCALE,
-              marginBottom: 30,
-              opacity: logoP,
-              transform: `translateY(${(1 - logoP) * 18}px)`,
-              overflow: "visible",
-            }}
-          >
-            <div
-              style={{
-                width: 416,
-                height: 260,
-                transform: `scale(${LOGO_SCALE})`,
-                transformOrigin: "0 0",
-              }}
-            >
-              <CompView comp={LOGO_COMP} ctx={LOGO_CTX} t={0.5} isRoot={false} />
-            </div>
-          </div>
-
           {/* what it is — product descriptor, secondary weight */}
           <div
             style={{
