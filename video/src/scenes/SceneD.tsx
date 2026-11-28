@@ -4,16 +4,19 @@ import { STAGE_MIN_X } from "../layout/zones.ts";
 
 // Scene D [281,371) per SPEC §5 D + docs/design/05-cards-and-sheets.md §3:
 // TWO-WINDOW model — the old async 4-window mosaic (W1..W4) is retired.
-// One continuous real-AE-operation take is shown as:
+// One continuous real-AE-operation take is shown as two windows whose
+// crops follow the causal chain inside the same take:
 //
-//   W_main  (top,    ~600x540): full REC-D workspace — comp viewer +
-//            timeline — so the causal chain SOURCE layer -> Decompose
-//            press -> STROKE_* layers appear -> select/drag reads in a
-//            single frame.
-//   W_inset (bottom, ~600x396): zoomed crop of the Restro panel
-//            (Decompose/Merge/Refine) and the generated STROKE_* layers
-//            — the sync proof that the button press and the comp result
-//            belong to the same take.
+//   W_main  (top,    ~600x540): the proof window. It holds the timeline
+//            layer list while Decompose is pressed and the thirteen
+//            STROKE_* rows cascade in, then cuts to the comp viewer for
+//            the payoff: one stroke dragged clear of the character while
+//            the rest stay put.
+//   W_inset (bottom, ~600x396): the context rail. It opens on the Restro
+//            panel for the actual button press, cuts to the comp viewer
+//            (the character the layers compose — it does not change),
+//            and returns to the timeline for the drag, where the moved
+//            stroke's own layer row stays selected.
 //
 // Recording spec (authoritative): docs/design/09-scene-d-recording-handoff.md
 // §3 — scratch comp REC-D 1280x720@24 on #f7f7f7, single 15-20s take,
@@ -21,21 +24,27 @@ import { STAGE_MIN_X } from "../layout/zones.ts";
 // every existing clip: docs/design/06-recordings-audit.md.
 //
 // Real take wired: assets/rec/ae-decompose-ui.mp4 is the 16.8s real-AE
-// recording (2560x1440@24, verification/rec-d/take2 frames, log:
-// verification/rec-d/decompose-log.txt). Causal moment is early in the
-// take: SOURCE 筆 + [BG] hold, the Decompose click lands ~1s in, and the
-// 13 STROKE_* layers fill the timeline over the next ~2s; selection and
-// drag proof follow through ~12s.
+// recording (2560x1440@24, verification/rec-d/take2 frames, audited in
+// verification/rec-d/decompose-log.txt). Event times measured on the
+// shipped file: cursor reaches Decompose ~4.5s, click ~5.9s (busy
+// spinner), all thirteen STROKE_* rows appear at once ~8.67s, four
+// strokes are shift-selected ~8.75-12.1s, the selection drags ~12.2-
+// 13.0s, and the separated result holds to the end.
 
 const T0 = 281 / 24;
 const T1 = 371 / 24;
 const FPS = 24;
-const F_IN = Math.round(T0 * FPS); // 281 — first frame of the D window
+// Clips start on the first frame the scene paints (the four-frame
+// cross-dissolve begins at f277), so the windows never open on empty
+// chrome.
+const F_IN = 277;
 
 type Roi = { x: number; y: number; w: number; h: number };
 type Clip = {
   srcStart: number; // seconds into the source at clip start
   dur: number; // window frames this clip occupies
+  playbackRate?: number; // source seconds per screen second (default 1)
+  roi?: Roi; // per-phase focus override; falls back to the window's roi
 };
 
 const SRC_W = 2560;
@@ -44,27 +53,44 @@ const SRC_H = 1440;
 // Measured on the real take (assets/rec/ae-decompose-ui.mp4, 2560x1440,
 // 24fps, 16.8s — verification/rec-d/take2 frames, native capture res).
 //
-//   W_main  — the timeline's layer list, cropped so the row names are
-//             legible: the one layer ("SOURCE 筆") becomes thirteen
-//             "STROKE_*_runs4" rows. The character itself is unchanged by
-//             the plugin, so it is the layer list that carries the proof
-//             (the character is on screen throughout the rest of the film).
-//             Cover-fit shows source x ~= 129..441 of the ROI (window
-//             596x536 at scale ~1.914 crops ~124px off each side), which
-//             keeps the "Layer Name" header (~x136) and every STROKE_*
-//             name (~x155..310) inside the frame.
-//   W_inset — the right-hand panel column: comp right edge, the effect
+//   ROI_TIMELINE — the timeline's layer list: "SOURCE 筆" + "[BG]" become
+//             thirteen "STROKE_*_runs4" rows. Cover-fit shows source
+//             x ~= 129..441 of the ROI, keeping the "Layer Name" header
+//             (~x136) and every STROKE_* name (~x155..310) inside frame.
+//   ROI_VIEWER — the comp viewer cropped to the character plus the drag
+//             corridor (ink x961..1439/y299..784, dragged stroke sweeps
+//             x872..1357/y220..452). In W_main the cover window shows
+//             source x ~797..1563 / y 195..885; in W_inset x 795..1565 /
+//             y 287..793 — the whole glyph stays inside both.
+//   ROI_PANEL — the right-hand panel column: comp right edge, the effect
 //             panels and the Restro button stack (Decompose ~y525,
 //             Merge ~y710, Refine ~y896), cover-fit so all three buttons
-//             sit inside the crop.
-const ROI_MAIN: Roi = { x: 25, y: 950, w: 520, h: 280 };
+//             sit inside the crop and the cursor lands on Decompose.
 const ROI_PANEL: Roi = { x: 1900, y: 350, w: 660, h: 740 };
-// Two-beat clip: beat 1 = hold -> Decompose click -> STROKE_* appear;
-// beat 2 = selection/drag proof later in the same take.
-const TAKE_BEATS: Clip[] = [
-  { srcStart: 4.2, dur: 50 },
-  { srcStart: 10.6, dur: 40 },
-];
+const ROI_TIMELINE: Roi = { x: 25, y: 950, w: 520, h: 280 };
+const ROI_VIEWER: Roi = { x: 795, y: 195, w: 770, h: 690 };
+
+// Three phases cut from the same take (screen frames are contiguous from
+// F_IN; src seconds are the audited event windows in
+// verification/rec-d/decompose-log.txt):
+//
+//   p1  src 5.3-6.5 @1.2x — cursor arrives on Decompose, the click lands
+//       ~5.9s and the busy spinner shows while the plugin works. W_main
+//       is on the timeline (the "before": SOURCE 筆 + [BG]); W_inset is
+//       on the panel so the pressed button itself is seen.
+//   p2  src 8.3-9.8 @1.64x — the thirteen STROKE_* rows appear in one
+//       step at ~8.67s and hold. W_main stays on the timeline (the
+//       proof); W_inset cuts to the comp viewer — the character the
+//       layers compose, which does not change.
+//   p3  src 11.0-14.2 @1.6x — four stroke rows are already selected;
+//       the drag runs ~12.2-13.0s and the separated result holds. W_main
+//       cuts to the comp viewer for the payoff; W_inset returns to the
+//       timeline, where the moved strokes' rows stay selected.
+const PHASES = [
+  { srcStart: 5.3, dur: 24, rate: 1.2, main: ROI_TIMELINE, inset: ROI_PANEL },
+  { srcStart: 8.3, dur: 22, rate: 1.64, main: ROI_TIMELINE, inset: ROI_VIEWER },
+  { srcStart: 11.0, dur: 48, rate: 1.6, main: ROI_VIEWER, inset: ROI_TIMELINE },
+] as const;
 
 // Frame + label spec (05 §3 / runbook §3.4): 1.5-2px dark frame
 // (#18181b / #3f3f46 — the old #ebebf0 matte disappears on the #f7f7f7
@@ -92,18 +118,25 @@ interface WindowSpec {
 // Right-stage coordinates per runbook §3.4 (stage x = 480..1080):
 //   W_main  y=60..600   -> 600x540
 //   W_inset y=624..1020 -> 600x396
+const toClips = (which: "main" | "inset"): Clip[] =>
+  PHASES.map((p) => ({
+    srcStart: p.srcStart,
+    dur: p.dur,
+    playbackRate: p.rate,
+    roi: p[which],
+  }));
+
 const WIN_MAIN: WindowSpec = {
   id: "W_MAIN",
   x: STAGE_MIN_X,
   y: 60,
   w: 600,
   h: 540,
-  // The real take: the workspace with the character in the viewer and the
-  // timeline below it — Decompose press, STROKE_* layers appearing, then
-  // the selection/drag proof from later in the same take.
+  // The real take: timeline layer list for the press/generation phases,
+  // comp viewer for the drag payoff.
   file: "ae-decompose-ui.mp4",
-  roi: ROI_MAIN,
-  clips: TAKE_BEATS,
+  roi: ROI_TIMELINE,
+  clips: toClips("main"),
 };
 
 const WIN_INSET: WindowSpec = {
@@ -112,12 +145,11 @@ const WIN_INSET: WindowSpec = {
   y: 624,
   w: 600,
   h: 396,
-  // The same take cropped to the panel column: all three Restro buttons
-  // plus the cursor on Decompose. Cover-fit fills the landscape window
-  // while keeping every button inside the vertical crop.
+  // The same take cropped per phase: Restro panel for the press, comp
+  // viewer while the layers generate, timeline selection during the drag.
   file: "ae-decompose-ui.mp4",
   roi: ROI_PANEL,
-  clips: TAKE_BEATS,
+  clips: toClips("inset"),
 };
 
 const WINDOWS: WindowSpec[] = [WIN_MAIN, WIN_INSET];
@@ -148,11 +180,12 @@ const WindowFootage: React.FC<{ win: WindowSpec }> = ({ win }) => {
   const innerH = win.h - FRAME_W * 2;
   const clips = win.clips;
   if (!win.file || !win.roi || !clips?.length) return null;
-  const vb = coverBox(win.roi, innerW, innerH, win.fit);
   return (
     <>
       {clips.map((clip, i) => {
         const from = F_IN + clips.slice(0, i).reduce((a, c) => a + c.dur, 0);
+        const roi = clip.roi ?? win.roi!;
+        const vb = coverBox(roi, innerW, innerH, win.fit);
         return (
           <Sequence key={i} from={from} durationInFrames={clip.dur} layout="none">
             <div
@@ -168,6 +201,7 @@ const WindowFootage: React.FC<{ win: WindowSpec }> = ({ win }) => {
               <Video
                 src={staticFile(`assets/rec/${win.file}`)}
                 trimBefore={Math.round(clip.srcStart * FPS)}
+                playbackRate={clip.playbackRate ?? 1}
                 muted
                 style={{ width: "100%", height: "100%", display: "block" }}
               />
@@ -233,7 +267,9 @@ const DWindow: React.FC<{ win: WindowSpec }> = ({ win }) => {
 };
 
 export const SceneD: React.FC<{ t: number }> = ({ t }) => {
-  if (t < T0 || t >= T1) return null;
+  // Render from the first dissolve frame (f277) so the windows fade in
+  // over the outgoing scene with footage already on screen.
+  if (t < T0 - 4 / 24 || t >= T1) return null;
 
   // No fade-out: art direction prefers hard cuts, and r34 review failed
   // the tail — a fading viewport lost the proof legibility exactly at the
