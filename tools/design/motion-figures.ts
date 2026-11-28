@@ -8,13 +8,12 @@ import { comp_02 } from "../../pv/generated/02-bunkai.ts";
 import { comp_06 } from "../../pv/generated/06-PV glyph.ts";
 import { relativeMatrix, worldMatrix, matToArray, layerByIndex, layerShapeItems, shapeItemsToSvg } from "./lib/spec.ts";
 import {
-  SCENE_A2_DESIGN,
+  SCENE_A2,
   SCENE_B_DESIGN,
+  createA2Choreo,
   evalFudeStep4ReleaseU,
-  evalSceneA2StrokePose,
 } from "../../video/src/design/choreography.ts";
-import { AE_DEFAULT_CAMERA, GridRef, cameraViewProjScreen } from "../../video/src/design/rig.ts";
-import { transformPoint } from "../../video/src/ae/mat4.ts";
+import { compStrokes } from "../../video/src/scenes/glyph.tsx";
 
 const OUT = "docs/design/diagrams";
 const F_JP = `'Yu Gothic UI','Meiryo',sans-serif`;
@@ -173,76 +172,101 @@ function tintSvg(raw: string, fillHex: string, opacity: number): string {
 }
 
 // ============================================================================
-// 3. NEW DESIGNED SCENE A2: DRIVEN DIRECTLY BY SCENE_A2_DESIGN + GridRef
+// 3. SCENE A2 PRODUCTION CHOREOGRAPHY — same createA2Choreo path as
+//    SceneA2.tsx / verify-local-motion / render-scene-a2-prototype.
+//    Screen-space onion skin of the REAL hero motion: bleed framing ->
+//    peel cascade -> hold-fit reframe -> fade. comp space == screen space.
 // ============================================================================
 {
-  const null3 = layerByIndex(comp_02, 19)!;
-  const KAI_IDX = Array.from({ length: 16 }, (_, i) => 21 + i);
-  const grid = new GridRef();
-  const safeXInLocal = grid.safetyZone.stageMinX - 764; // master Null3 x=764 -> screen x=480 boundary
+  const { strokes } = compStrokes(SCENE_A2.compName, {
+    indices: SCENE_A2.layerIndexRange,
+    poseT: SCENE_A2.poseT,
+  });
+  const geoms = strokes.map((s) => ({
+    name: s.name,
+    bbox: s.bbox as [number, number, number, number],
+    center: s.center as [number, number],
+    points: s.points as Array<[number, number]>,
+  }));
+  const choreo = createA2Choreo(geoms);
 
-  const m = SCENE_A2_DESIGN.milestones;
-  const PHASES: Array<{ frame: number; label: string; col: string; op: number }> = [
-    { frame: m.entryFrame, label: `f${m.entryFrame} (1.875s) A1からの無空白接続`, col: "#94a3b8", op: 0.22 },
-    { frame: m.openEndFrame, label: `f${m.openEndFrame} (2.333s) 交差開門完了・安全帯停止`, col: "#2563eb", op: 0.30 },
-    { frame: m.holdMidFrame, label: `f${m.holdMidFrame} (2.750s) ホールド＋主軸016(#e51515)無傷露出`, col: "#18181b", op: 0.85 },
-    { frame: m.exitSampleFrame, label: `f${m.exitSampleFrame} (3.500s) A3橋渡し上方離脱フロー`, col: "#16a34a", op: 0.35 },
+  const frameOf = (rel: number) => Math.round((SCENE_A2.t0 + rel) * 24);
+  const PHASES: Array<{ rel: number; label: string; col: string; op: number }> = [
+    { rel: 0.0, label: `f${frameOf(0)} A1からの接続・ブリード構図`, col: "#94a3b8", op: 0.20 },
+    { rel: 0.9, label: `f${frameOf(0.9)} 交差三連＋左→右ペール途中`, col: "#3b82f6", op: 0.30 },
+    { rel: 1.85, label: `f${frameOf(1.85)} ホールドフィット・全画群が画内`, col: "#18181b", op: 0.85 },
+    { rel: 2.2, label: `f${frameOf(2.2)} シーンフェードアウト`, col: "#16a34a", op: 0.25 },
   ];
 
   const bodies: string[] = [];
-  const vp = cameraViewProjScreen(AE_DEFAULT_CAMERA);
-  void vp;
   for (const ph of PHASES) {
-    for (const idx of KAI_IDX) {
-      const l = layerByIndex(comp_02, idx)!;
-      const rel = relativeMatrix(l, null3, comp_02.layers, 1.875);
-      const p = evalSceneA2StrokePose(l.name, ph.frame);
-      const isHold = ph.frame === m.holdMidFrame;
-      const col = isHold && (p.accent ?? 0) > 0.5 ? "#e51515" : isHold && /015|017/.test(l.name) ? "#2563eb" : ph.col;
-      const op = isHold && (p.accent ?? 0) > 0.5 ? 0.96 : ph.op;
-      const ap = (l.transform?.properties?.find((pr) => pr.matchName === "ADBE Anchor Point")?.value as number[] | undefined) ?? [0, 0];
-      const raw = shapeItemsToSvg(layerShapeItems(l, 1.875));
+    const field = choreo.fieldAt(ph.rel);
+    for (const g of geoms) {
+      const [dx, dy] = choreo.strokeDelta(g.name, ph.rel);
+      const sp = g.points.map((p) => choreo.toScreen([p[0] + dx, p[1] + dy], field));
+      const isVert = g.name === SCENE_A2.vertName;
+      const col = isVert && ph.rel >= 1.5 ? "#e51515" : ph.col;
+      const op = isVert && ph.rel >= 1.5 ? Math.min(0.95, ph.op + 0.1) : ph.op * field.opacity + 0.05;
       bodies.push(
-        `<g transform="translate(${p.dx.toFixed(1)} ${p.dy.toFixed(1)}) translate(${ap[0]} ${ap[1]}) rotate(${p.rotDeg.toFixed(2)}) translate(${-ap[0]} ${-ap[1]}) ${m2s(matToArray(rel))}">${tintSvg(raw, col, op)}</g>`,
+        `<polygon points="${sp.map((p) => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" ")}" fill="${col}" fill-opacity="${op.toFixed(2)}"/>`,
       );
     }
   }
 
-  // Also plot trajectory arrows for key strokes across [f45, f50, f56, f66, f76, f84]
-  const SAMPLE_F = [45, 50, 56, 66, 76, 84];
+  // Trajectory of stroke centroids across the peel cascade (screen space)
+  const SAMPLE_RELS = [0, 0.45, 0.9, 1.3, 1.85];
   const trajSvg: string[] = [];
   for (const keyName of ["STROKE_015_runs4", "STROKE_017_runs4", "STROKE_016_runs4", "STROKE_004_runs4"]) {
-    const l = comp_02.layers.find((x) => x.name === keyName)!;
-    const rel = relativeMatrix(l, null3, comp_02.layers, 1.875);
-    const ap = (l.transform?.properties?.find((pr) => pr.matchName === "ADBE Anchor Point")?.value as number[] | undefined) ?? [0, 0];
-    const ax0 = rel[0] * ap[0] + rel[4] * ap[1] + rel[12];
-    const ay0 = rel[1] * ap[0] + rel[5] * ap[1] + rel[13];
-    const pts = SAMPLE_F.map((f) => {
-      const p = evalSceneA2StrokePose(keyName, f);
-      return `${(ax0 + p.dx).toFixed(1)},${(ay0 + p.dy).toFixed(1)}`;
+    const g = geoms.find((x) => x.name === keyName);
+    if (!g) continue;
+    const pts = SAMPLE_RELS.map((rel) => {
+      const field = choreo.fieldAt(rel);
+      const [dx, dy] = choreo.strokeDelta(g.name, rel);
+      return choreo.toScreen([g.center[0] + dx, g.center[1] + dy], field);
     });
-    trajSvg.push(`<polyline points="${pts.join(" ")}" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="4 3"/>`);
+    trajSvg.push(
+      `<polyline points="${pts.map((p) => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" ")}" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="4 3"/>`,
+    );
   }
 
+  // Crossing points + hold union bbox annotation (screen space at hold)
+  const holdField = choreo.fieldAt(1.85);
+  const crossScreen = SCENE_A2.crossings.map((c) => choreo.toScreen(c, holdField));
+  const holdBoxes = geoms.map((g) => {
+    const [dx, dy] = choreo.strokeDelta(g.name, 1.85);
+    const sp = g.points.map((p) => choreo.toScreen([p[0] + dx, p[1] + dy], holdField));
+    const xs = sp.map((p) => p[0]), ys = sp.map((p) => p[1]);
+    return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)] as const;
+  });
+  const union = holdBoxes.reduce(
+    (u, b) => [Math.min(u[0], b[0]), Math.min(u[1], b[1]), Math.max(u[2], b[2]), Math.max(u[3], b[3])] as const,
+    [1e9, 1e9, -1e9, -1e9] as const,
+  );
+
   const legend = PHASES.map((s, i) => `
-    <rect x="-480" y="${-410 + i * 24}" width="16" height="14" rx="2" fill="${s.col}" fill-opacity="${Math.min(1, s.op + 0.2)}"/>
-    <text x="-456" y="${-398 + i * 24}" font-size="13" fill="#18181b" font-family="${F_JP}">${s.label}</text>
+    <rect x="20" y="${20 + i * 24}" width="16" height="14" rx="2" fill="${s.col}" fill-opacity="${Math.min(1, s.op + 0.2)}"/>
+    <text x="44" y="${33 + i * 24}" font-size="13" fill="#18181b" font-family="${F_JP}">${s.label}</text>
   `).join("");
 
   const svg = `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="960" viewBox="-520 -520 1100 960">
-  <rect x="-520" y="-520" width="1100" height="960" fill="#f8fafc"/>
-  <rect x="-500" y="-500" width="1060" height="920" rx="10" fill="#ffffff" stroke="#d4d4d8"/>
-  <text x="-476" y="-464" font-size="19" font-weight="700" fill="#111111" font-family="${F_JP}">【設計データ同期版】Scene A2「解」交差開門ホールド→A3上流離脱 (f45..f84)</text>
-  <text x="-476" y="-440" font-size="12" fill="#52525b" font-family="${F_MONO}">choreography.ts &amp; rig.ts から直接生成 | hold=f56..76 | x=${grid.safetyZone.stageMinX} 安全帯以左不侵</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1140" height="1140" viewBox="0 0 1140 1140">
+  <rect width="1140" height="1140" fill="#f8fafc"/>
+  <rect x="20" y="20" width="1100" height="1100" rx="10" fill="#ffffff" stroke="#d4d4d8"/>
+  <text x="40" y="64" font-size="19" font-weight="700" fill="#111111" font-family="${F_JP}">Scene A2 実制作振付オニオンスキン（createA2Choreo 直結・画面空間）</text>
+  <text x="40" y="86" font-size="12" fill="#52525b" font-family="${F_MONO}">compStrokes(master) + fieldTransform + peelDelta — SceneA2.tsx / verify / prototype と同一経路</text>
   ${legend}
-  <g transform="translate(80, 40) scale(0.84)">
-    <line x1="${safeXInLocal}" y1="-420" x2="${safeXInLocal}" y2="420" stroke="#d97706" stroke-width="2" stroke-dasharray="8 5"/>
-    <text x="${safeXInLocal + 8}" y="-395" font-size="12" font-weight="700" fill="#b45309" font-family="${F_MONO}">x=${grid.safetyZone.stageMinX} Safe Stage Edge</text>
+  <!-- screen frame + left clip boundary -->
+  <rect x="40" y="130" width="1080" height="1080" fill="none" stroke="#a1a1aa" stroke-dasharray="6 4"/>
+  <line x1="500" y1="130" x2="500" y2="1210" stroke="#d97706" stroke-width="2" stroke-dasharray="8 5"/>
+  <text x="508" y="150" font-size="12" font-weight="700" fill="#b45309" font-family="${F_MONO}">x=460 clip (left column guard)</text>
+  <g transform="translate(40,130)">
     ${bodies.join("\n")}
     ${trajSvg.join("\n")}
+    <!-- hold union bbox + crossing points -->
+    <rect x="${union[0].toFixed(1)}" y="${union[1].toFixed(1)}" width="${(union[2] - union[0]).toFixed(1)}" height="${(union[3] - union[1]).toFixed(1)}" fill="none" stroke="#0891b2" stroke-width="2" stroke-dasharray="6 4"/>
+    ${crossScreen.map(([cx, cy]) => `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="9" fill="none" stroke="#dc2626" stroke-width="3"/>`).join("\n")}
   </g>
 </svg>`;
-  saveSvgAndPng("motion-kai-designed-a2-onion.svg", svg, 1100);
+  saveSvgAndPng("motion-kai-designed-a2-onion.svg", svg, 1140);
 }
 void readFileSync;

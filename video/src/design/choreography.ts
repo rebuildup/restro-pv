@@ -14,185 +14,244 @@ export interface StrokeKeyframePose {
   accent?: number;
 }
 
-export interface SceneA2StrokePlan {
-  elementIndex: number; // in 02-bunkai.ts [21..36]
-  role: "spine" | "upperGate" | "lowerGate" | "rightWing" | "leftWing" | "pivotSwing" | "residualMerged";
-  /** Peak open gate separation offset at hold state [f56..f76]. */
-  holdDelta: StrokeKeyframePose;
-  /** Upward A3 outflow velocity vector [f76..f101]. */
-  a3Outflow: { dx: number; dy: number; rotDeg: number };
-}
-
-export interface SceneA2DesignSpec {
-  fps: number;
-  /** Local frames relative to Scene A2 entry (f45 = 1.875s comp time). */
-  milestones: {
-    entryFrame: number; // 45
-    openEndFrame: number; // 56 (11f opening snap)
-    holdMidFrame: number; // 66 (peak hold + red spine reveal)
-    holdEndFrame: number; // 76 (20f hold for viewer comprehension)
-    exitSampleFrame: number; // 84 (A3 bridge outflow visual check)
-    endFrame: number; // 101
-  };
-  /** Minimum screen-X left edge allowed (Stage boundary x=480, column guard x=460). */
-  safeStageMinX: number;
-  /** Required vertical clear window height between upper/lower gate at hold (px). */
-  minClearOpeningHeightPx: number;
-  /** Per-stroke roles & authored displacements (non-uniform, pivot-constrained). */
-  strokes: Record<string, SceneA2StrokePlan>;
-}
-
 const easeOutCubic = (u: number) => 1 - Math.pow(1 - Math.max(0, Math.min(1, u)), 3);
 const easeInOutCubic = (u: number) =>
   u <= 0 ? 0 : u >= 1 ? 1 : u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
 const easeInCubic = (u: number) => Math.pow(Math.max(0, Math.min(1, u)), 3);
+const clamp01 = (u: number) => Math.max(0, Math.min(1, u));
+const seg = (t: number, a: number, b: number) => clamp01((t - a) / (b - a));
 
-export const SCENE_A2_DESIGN: SceneA2DesignSpec = {
-  fps: 24,
-  milestones: {
-    entryFrame: 45,
-    openEndFrame: 56,
-    holdMidFrame: 66,
-    holdEndFrame: 76,
-    exitSampleFrame: 84,
-    endFrame: 101,
-  },
-  safeStageMinX: 480,
-  minClearOpeningHeightPx: 120,
-  strokes: {
-    STROKE_016_runs4: {
-      elementIndex: 21,
-      role: "spine",
-      holdDelta: { dx: 0, dy: 0, rotDeg: 0, accent: 1.0 },
-      a3Outflow: { dx: 20, dy: -460, rotDeg: 2 },
-    },
-    STROKE_017_runs4: {
-      elementIndex: 22,
-      role: "lowerGate",
-      holdDelta: { dx: -4, dy: 280, rotDeg: 0 },
-      a3Outflow: { dx: 30, dy: -520, rotDeg: 3 },
-    },
-    STROKE_015_runs4: {
-      elementIndex: 23,
-      role: "upperGate",
-      holdDelta: { dx: 4, dy: -290, rotDeg: 7 },
-      a3Outflow: { dx: 40, dy: -540, rotDeg: 9 },
-    },
-    STROKE_014_runs4: {
-      elementIndex: 24,
-      role: "rightWing",
-      holdDelta: { dx: 92, dy: 34, rotDeg: -10 },
-      a3Outflow: { dx: 60, dy: -480, rotDeg: -6 },
-    },
-    STROKE_011_runs4: {
-      elementIndex: 25,
-      role: "pivotSwing",
-      holdDelta: { dx: 42, dy: -16, rotDeg: 18 },
-      a3Outflow: { dx: 35, dy: -500, rotDeg: 12 },
-    },
-    "merged shape 3": {
-      elementIndex: 26,
-      role: "residualMerged",
-      holdDelta: { dx: 10, dy: -24, rotDeg: 0 },
-      a3Outflow: { dx: 25, dy: -490, rotDeg: 4 },
-    },
-    STROKE_010_runs4: {
-      elementIndex: 27,
-      role: "leftWing",
-      holdDelta: { dx: -24, dy: 0, rotDeg: 0 }, // clamped from runs4 -69 to keep >= x480
-      a3Outflow: { dx: 18, dy: -470, rotDeg: 2 },
-    },
-    STROKE_007_runs4: {
-      elementIndex: 28,
-      role: "rightWing",
-      holdDelta: { dx: 62, dy: 0, rotDeg: 0 },
-      a3Outflow: { dx: 30, dy: -470, rotDeg: 3 },
-    },
-    STROKE_004_runs4: {
-      elementIndex: 29,
-      role: "leftWing",
-      holdDelta: { dx: -28, dy: 0, rotDeg: 0 }, // clamped from runs4 -72 to keep x>=480 (exact 490.4px)
-      a3Outflow: { dx: 15, dy: -460, rotDeg: 2 },
-    },
-    STROKE_005_runs4: {
-      elementIndex: 30,
-      role: "pivotSwing",
-      holdDelta: { dx: 0, dy: 74, rotDeg: -18 },
-      a3Outflow: { dx: 25, dy: -450, rotDeg: -8 },
-    },
-    "merged shape 2": {
-      elementIndex: 31,
-      role: "residualMerged",
-      holdDelta: { dx: 12, dy: -14, rotDeg: 0 },
-      a3Outflow: { dx: 22, dy: -475, rotDeg: 3 },
-    },
-    STROKE_003_runs4: {
-      elementIndex: 32,
-      role: "rightWing",
-      holdDelta: { dx: 72, dy: 0, rotDeg: 0 },
-      a3Outflow: { dx: 32, dy: -480, rotDeg: 4 },
-    },
-    STROKE_006_runs6: {
-      elementIndex: 33,
-      role: "pivotSwing",
-      holdDelta: { dx: 16, dy: -32, rotDeg: 3 }, // slight rightward guard bias
-      a3Outflow: { dx: 26, dy: -485, rotDeg: 5 },
-    },
-    STROKE_002_runs6: {
-      elementIndex: 34,
-      role: "pivotSwing",
-      holdDelta: { dx: 0, dy: 52, rotDeg: -26 },
-      a3Outflow: { dx: 24, dy: -460, rotDeg: -10 },
-    },
-    STROKE_000_runs4: {
-      elementIndex: 35,
-      role: "upperGate",
-      holdDelta: { dx: 0, dy: -34, rotDeg: 0 },
-      a3Outflow: { dx: 22, dy: -510, rotDeg: 2 },
-    },
-    STROKE_001_runs5: {
-      elementIndex: 36,
-      role: "pivotSwing",
-      holdDelta: { dx: 28, dy: -58, rotDeg: 10 },
-      a3Outflow: { dx: 30, dy: -505, rotDeg: 6 },
-    },
-  },
-};
+// ---------------------------------------------------------------------------
+// Scene A2 — PRODUCTION choreography, single source of truth.
+//
+// This spec was promoted from video/src/scenes/SceneA2.tsx (the r12/v15
+// reviewed implementation) so that the Remotion scene, the numeric
+// verifier, the onion-skin figures, and the raster prototype all consume
+// the SAME motion definition. It replaces the earlier SCENE_A2_DESIGN
+// draft, whose per-stroke hold deltas maximized a clearance metric but
+// broke composition (lower gate clipped off-frame, spine pinned to the
+// right edge, no group reframing).
+//
+// Motion model (all in master-comp units; comp space == 1080px screen):
+//   field   = comp->screen similarity: screen = (p - ZC) * zoom + SC
+//   stroke  = rest comp-space polygon + per-stroke peel translate (comp px)
+// The field carries the bleed framing -> hold-fit reframe -> A3 drift;
+// strokes peel one at a time along principal-axis-blended vectors with a
+// hard left-column floor. Presentation layers (ghost contours, guide
+// echoes, crossing markers, accent contour) are SceneA2.tsx rendering
+// concerns and stay there.
+// ---------------------------------------------------------------------------
+export const SCENE_A2 = {
+  /** Comp-local seconds: Scene A2 owns [45/24, 101/24). */
+  t0: 45 / 24,
+  t1: 101 / 24,
+  /** Master stroke layers' rest pose at A1's last frame. */
+  poseT: 1.46,
+  compName: "master",
+  /** "▾ (A) stroke runs4" group layer-index range in the master dump. */
+  layerIndexRange: [239, 254] as [number, number],
+  /** Crossing cluster (SPEC §5 A2): vertical + two horizontals. */
+  vertName: "STROKE_016_runs4",
+  crossNames: ["STROKE_015_runs4", "STROKE_016_runs4", "STROKE_017_runs4"] as const,
+  crossOrder: ["STROKE_016_runs4", "STROKE_015_runs4", "STROKE_017_runs4"] as const,
+  /** Measured crossing points in comp space (bbox-overlap centroids). */
+  crossings: [
+    [1066, 579],
+    [1066, 728],
+  ] as Array<[number, number]>,
+  // ---- field transform constants (ported verbatim, r12/v15) ----
+  ZC: [860, 540] as [number, number],
+  SC0: [865, 680] as [number, number],
+  Z0: 1.0,
+  Z1: 1.08,
+  /** Hold-fit framing: maps the fully-separated union inside the frame. */
+  ZF: 0.61,
+  SCF: [781, 599] as [number, number],
+  DRIFT_IN: [40, 40] as [number, number],
+  DRIFT_UP: 170,
+  // ---- peel cascade ----
+  CROSS_SEP: {
+    STROKE_016_runs4: [-42, -48],
+    STROKE_015_runs4: [-34, -142],
+    STROKE_017_runs4: [28, 142],
+  } as Record<string, [number, number]>,
+  CASCADE_T0: 0.42,
+  STAGGER_MAIN: 0.072,
+  LEAD: 0.045,
+  PEEL: 0.22,
+  PEEL_BASE: 115,
+  PEEL_SPAN: 50,
+  /** Hard guarantee: no hero stroke renders left of this screen px. */
+  SAFE_LEFT: 470,
+  // ---- envelopes (rel seconds) ----
+  FIT_IN: [1.58, 1.9] as [number, number],
+  ZOOM_PUSH: [0.0, 0.45] as [number, number],
+  DRIFT_IN_T: [0.15, 0.5] as [number, number],
+  DRIFT_UP_T: [1.95, 2.29] as [number, number],
+  SCENE_FADE: [1.85, 1.97] as [number, number],
+} as const;
+
+export interface A2StrokeGeom {
+  name: string;
+  /** Comp-space bbox [minX,minY,maxX,maxY] at poseT. */
+  bbox: [number, number, number, number];
+  /** Comp-space centroid. */
+  center: [number, number];
+  /** Comp-space polygon vertices (rest pose). */
+  points: Array<[number, number]>;
+}
+
+export interface A2Field {
+  zoom: number;
+  scx: number;
+  scy: number;
+  /** Whole-scene opacity (comparison-hold fade into the A3 bridge). */
+  opacity: number;
+}
+
+export interface A2Choreo {
+  /** rel = comp seconds - SCENE_A2.t0 */
+  fieldAt: (rel: number) => A2Field;
+  /** Ordered stroke names for the peel cascade (cross trio, then L->R). */
+  order: string[];
+  /** Selection onset (rel s) per stroke name. */
+  selOf: (name: string) => number;
+  /** Peel progress p in [0,1] for a stroke at rel. */
+  peelP: (name: string, rel: number) => number;
+  /** Full-separation translate (peel=1) in comp px. */
+  peelDelta: (name: string) => [number, number];
+  /** Actual per-frame comp-space translate incl. left-column floor. */
+  strokeDelta: (name: string, rel: number) => [number, number];
+  /** comp-space point -> screen px under the current field. */
+  toScreen: (p: [number, number], field: A2Field) => [number, number];
+}
+
+function principalAxis(pts: Array<[number, number]>): [number, number] {
+  const p = pts.filter((_, i) => i % 5 === 0);
+  if (p.length < 3) return [1, 0];
+  let mx = 0, my = 0;
+  for (const [x, y] of p) { mx += x; my += y; }
+  mx /= p.length; my /= p.length;
+  let sxx = 0, sxy = 0, syy = 0;
+  for (const [x, y] of p) {
+    const dx = x - mx, dy = y - my;
+    sxx += dx * dx; sxy += dx * dy; syy += dy * dy;
+  }
+  const ang = 0.5 * Math.atan2(2 * sxy, sxx - syy);
+  return [Math.cos(ang), Math.sin(ang)];
+}
 
 /**
- * Evaluate exact Scene A2 pose for a given comp frame (45..101).
- * Shared identically by onion-skin diagrams, verify-local-motion, and Remotion Proto-A2.
+ * Build the A2 choreography context from measured rest-pose stroke
+ * geometry (compStrokes("master", { indices: SCENE_A2.layerIndexRange,
+ * poseT: SCENE_A2.poseT })). Pure function of geometry + spec — identical
+ * results in Remotion, verification, figures, and the raster prototype.
  */
-export function evalSceneA2StrokePose(name: string, frame: number): StrokeKeyframePose {
-  const plan = SCENE_A2_DESIGN.strokes[name];
-  if (!plan) return { dx: 0, dy: 0, rotDeg: 0, accent: 0 };
-  const m = SCENE_A2_DESIGN.milestones;
+export function createA2Choreo(strokes: A2StrokeGeom[]): A2Choreo {
+  const S = SCENE_A2;
+  const byName = new Map(strokes.map((s) => [s.name, s]));
+  const crossSet = new Set<string>(S.crossNames);
 
-  // Phase 1: f45 -> f56 gate opening snap
-  if (frame <= m.entryFrame) return { dx: 0, dy: 0, rotDeg: 0, accent: 0 };
-  if (frame < m.openEndFrame) {
-    const u = easeOutCubic((frame - m.entryFrame) / (m.openEndFrame - m.entryFrame));
-    // Red spine accent ramps in cleanly once gates clear halfway (u > 0.35)
-    const accentBase = plan.holdDelta.accent ?? 0;
-    const acc = accentBase * easeInOutCubic(Math.max(0, (u - 0.35) / 0.65));
-    return {
-      dx: plan.holdDelta.dx * u,
-      dy: plan.holdDelta.dy * u,
-      rotDeg: plan.holdDelta.rotDeg * u,
-      accent: acc,
-    };
-  }
-  // Phase 2: f56 -> f76 clear hold (let crossing proof read!)
-  if (frame <= m.holdEndFrame) {
-    return { ...plan.holdDelta, accent: plan.holdDelta.accent ?? 0 };
-  }
-  // Phase 3: f76 -> f101 A3 upward bridge outflow from held open posture
-  const w = easeInCubic(Math.min(1, (frame - m.holdEndFrame) / (m.endFrame - m.holdEndFrame)));
+  // Peel order: crossing trio first (proof beat), then L->R by centroid x.
+  const others = strokes
+    .filter((s) => !crossSet.has(s.name))
+    .sort((a, b) => a.center[0] - b.center[0]);
+  const orderItems = [
+    ...S.crossOrder.map((n) => byName.get(n)).filter((s): s is A2StrokeGeom => !!s),
+    ...others,
+  ];
+  const order = orderItems.map((s) => s.name);
+  const rankOf = new Map(order.map((n, i) => [n, i / Math.max(order.length - 1, 1)]));
+  const selOfMap = new Map<string, number>();
+  orderItems.forEach((item, k) => {
+    selOfMap.set(item.name, k < 3 ? S.CASCADE_T0 + k * 0.065 : 0.72 + (k - 3) * S.STAGGER_MAIN);
+  });
+
+  const CEN: [number, number] = [
+    strokes.reduce((a, s) => a + s.center[0], 0) / strokes.length,
+    strokes.reduce((a, s) => a + s.center[1], 0) / strokes.length,
+  ];
+
+  const geomOf = (name: string): A2StrokeGeom => {
+    const g = byName.get(name);
+    if (!g) throw new Error(`A2 stroke not in geometry set: ${name}`);
+    return g;
+  };
+
+  const peelDelta = (name: string): [number, number] => {
+    const fixed = S.CROSS_SEP[name];
+    if (fixed) return fixed;
+    const item = geomOf(name);
+    const [cx, cy] = item.center;
+    // radial clamped to non-negative x: the hero exits RIGHT, left-side
+    // strokes never peel into the protected copy column.
+    let rx = Math.max(cx - CEN[0], 0);
+    let ry = cy - CEN[1];
+    const rl = Math.hypot(rx, ry) || 1;
+    rx /= rl; ry /= rl;
+    let [ax, ay] = principalAxis(item.points);
+    if (ax * rx + ay * ry < 0) { ax = -ax; ay = -ay; }
+    let dx = 0.55 * ax + 0.30 * rx;
+    let dy = 0.55 * ay + 0.30 * ry;
+    const minPre = Math.max(0.45 * Math.abs(dy), 0.4);
+    if (dx < minPre) dx = minPre;
+    const dl = Math.hypot(dx, dy) || 1;
+    dx /= dl; dy /= dl;
+    const r = rankOf.get(name) ?? 0.5;
+    const mag = S.PEEL_BASE + S.PEEL_SPAN * r;
+    return [dx * mag, dy * mag];
+  };
+
+  const fieldAt = (rel: number): A2Field => {
+    const driftIn = seg(rel, S.DRIFT_IN_T[0], S.DRIFT_IN_T[1]);
+    const driftUp = easeInOutCubic(seg(rel, S.DRIFT_UP_T[0], S.DRIFT_UP_T[1]));
+    const fitK = easeInOutCubic(seg(rel, S.FIT_IN[0], S.FIT_IN[1]));
+    const zoom =
+      (S.Z0 + (S.Z1 - S.Z0) * easeInOutCubic(seg(rel, S.ZOOM_PUSH[0], S.ZOOM_PUSH[1]))) *
+        (1 - fitK) +
+      S.ZF * fitK;
+    const baseScx = S.SC0[0] + S.DRIFT_IN[0] * driftIn;
+    const baseScy = S.SC0[1] + S.DRIFT_IN[1] * driftIn - S.DRIFT_UP * driftUp;
+    const scx = baseScx * (1 - fitK) + S.SCF[0] * fitK;
+    const scy = baseScy * (1 - fitK) + S.SCF[1] * fitK;
+    const opacity = 1 - easeInOutCubic(seg(rel, S.SCENE_FADE[0], S.SCENE_FADE[1]));
+    return { zoom, scx, scy, opacity };
+  };
+
+  const leftFloor = (name: string, field: A2Field): number => {
+    const item = geomOf(name);
+    return (S.SAFE_LEFT - field.scx) / field.zoom + S.ZC[0] - item.bbox[0];
+  };
+
+  const strokeDelta = (name: string, rel: number): [number, number] => {
+    const sel = selOfMap.get(name) ?? 0.5;
+    const p = easeInOutCubic(seg(rel, sel + S.LEAD, sel + S.LEAD + S.PEEL));
+    const [fx, fy] = peelDelta(name);
+    let sx = fx * p;
+    let sy = fy * p;
+    const floor = leftFloor(name, fieldAt(rel));
+    if (sx < floor) sx = floor;
+    return [sx, sy];
+  };
+
+  const peelP = (name: string, rel: number): number => {
+    const sel = selOfMap.get(name) ?? 0.5;
+    return easeInOutCubic(seg(rel, sel + S.LEAD, sel + S.LEAD + S.PEEL));
+  };
+
+  const toScreen = (p: [number, number], field: A2Field): [number, number] => [
+    (p[0] - S.ZC[0]) * field.zoom + field.scx,
+    (p[1] - S.ZC[1]) * field.zoom + field.scy,
+  ];
+
   return {
-    dx: plan.holdDelta.dx + plan.a3Outflow.dx * w,
-    dy: plan.holdDelta.dy + plan.a3Outflow.dy * w,
-    rotDeg: plan.holdDelta.rotDeg + plan.a3Outflow.rotDeg * w,
-    accent: (plan.holdDelta.accent ?? 0) * Math.max(0, 1 - w * 0.7),
+    fieldAt,
+    order,
+    selOf: (name) => selOfMap.get(name) ?? 0.5,
+    peelP,
+    peelDelta,
+    strokeDelta,
+    toScreen,
   };
 }
 

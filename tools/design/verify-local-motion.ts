@@ -7,19 +7,15 @@
 //   4. Scene A2 3D camera projection feasibility (clearOpeningHeightPx, left x>=480 clearance)
 // Run: bun tools/design/verify-local-motion.ts
 import { writeFileSync } from "node:fs";
-import { comp_05 } from "../../pv/generated/05-master.ts";
-import { mMultiply, transformPoint } from "../../video/src/ae/mat4.ts";
-import { layerByIndex, layerShapeItems, worldMatrix } from "./lib/spec.ts";
 import {
-  AE_DEFAULT_CAMERA,
   GridRef,
   MASTER_GRID,
   buildLeftChromeRig,
   buildSceneBAccordionRig,
   buildSceneCShowreelRig,
-  cameraViewProjScreen,
 } from "../../video/src/design/rig.ts";
-import { SCENE_A2_DESIGN, evalSceneA2StrokePose } from "../../video/src/design/choreography.ts";
+import { SCENE_A2, createA2Choreo } from "../../video/src/design/choreography.ts";
+import { compStrokes } from "../../video/src/scenes/glyph.tsx";
 
 const grid = new GridRef(MASTER_GRID);
 
@@ -96,68 +92,146 @@ const accordionChecks = [0, 0.5, 1, 2, 2.5, 3].map((step) => {
 // 4. Scene C 3-Layer Showreel Rig Check
 const cCheck = buildSceneCShowreelRig(grid, { stripIndex: 1.0, stripVelocity: 0 });
 
-// 5. Scene A2 crossing feasibility under AE 3D camera directly driven by SCENE_A2_DESIGN
-const VP = cameraViewProjScreen(AE_DEFAULT_CAMERA);
-const s16 = layerByIndex(comp_05, 239)!; // STROKE_016 vertical lead
-const s17 = layerByIndex(comp_05, 240)!; // STROKE_017 lower cross bar
-const s15 = layerByIndex(comp_05, 241)!; // STROKE_015 upper cross bar
-const s04 = layerByIndex(comp_05, 247)!; // STROKE_004 left escape
-const s10 = layerByIndex(comp_05, 245)!; // STROKE_010 left escape
+// 5. Scene A2 production choreography — the SAME evaluation path used by
+//    SceneA2.tsx, the onion figures, and the raster prototype:
+//    compStrokes rest geometry (master comp space) -> createA2Choreo
+//    field transform + per-stroke peel -> comp->screen similarity.
+//    No parallel camera-projection math: what is verified here is what
+//    production renders.
+const { strokes: a2raw } = compStrokes(SCENE_A2.compName, {
+  indices: SCENE_A2.layerIndexRange,
+  poseT: SCENE_A2.poseT,
+});
+const a2geoms = a2raw.map((s) => ({
+  name: s.name,
+  bbox: s.bbox as [number, number, number, number],
+  center: s.center as [number, number],
+  points: s.points as Array<[number, number]>,
+}));
+const a2 = createA2Choreo(a2geoms);
+const geomByName = new Map(a2geoms.map((g) => [g.name, g]));
 
-function screenBBoxAtPose(layer: any, dxLocal: number, dyLocal: number): { minX: number; maxX: number; minY: number; maxY: number } {
-  const wm = worldMatrix(layer, comp_05.layers, 1.45, new Map()).matrix;
-  wm[12] += dxLocal;
-  wm[13] += dyLocal;
-  const M = mMultiply(VP, wm);
-  const sh = layerShapeItems(layer, 0)[0]!.path!;
-  let minX = 1e9, maxX = -1e9, minY = 1e9, maxY = -1e9;
-  for (const [x, y] of sh.vertices) {
-    const pt = transformPoint(M, x, y, 0);
-    if (pt[0] < minX) minX = pt[0];
-    if (pt[0] > maxX) maxX = pt[0];
-    if (pt[1] < minY) minY = pt[1];
-    if (pt[1] > maxY) maxY = pt[1];
-  }
-  return { minX: +minX.toFixed(1), maxX: +maxX.toFixed(1), minY: +minY.toFixed(1), maxY: +maxY.toFixed(1) };
+function a2ScreenBBox(name: string, rel: number) {
+  const field = a2.fieldAt(rel);
+  const [dx, dy] = a2.strokeDelta(name, rel);
+  const g = geomByName.get(name)!;
+  const corners: Array<[number, number]> = [
+    [g.bbox[0] + dx, g.bbox[1] + dy],
+    [g.bbox[2] + dx, g.bbox[1] + dy],
+    [g.bbox[2] + dx, g.bbox[3] + dy],
+    [g.bbox[0] + dx, g.bbox[3] + dy],
+  ];
+  const sp = corners.map((p) => a2.toScreen(p, field));
+  return {
+    minX: +Math.min(...sp.map((p) => p[0])).toFixed(1),
+    maxX: +Math.max(...sp.map((p) => p[0])).toFixed(1),
+    minY: +Math.min(...sp.map((p) => p[1])).toFixed(1),
+    maxY: +Math.max(...sp.map((p) => p[1])).toFixed(1),
+  };
 }
 
-const holdFrame = SCENE_A2_DESIGN.milestones.holdMidFrame;
-const p16 = evalSceneA2StrokePose("STROKE_016_runs4", holdFrame);
-const p15 = evalSceneA2StrokePose("STROKE_015_runs4", holdFrame);
-const p17 = evalSceneA2StrokePose("STROKE_017_runs4", holdFrame);
-const p04 = evalSceneA2StrokePose("STROKE_004_runs4", holdFrame);
-const p10 = evalSceneA2StrokePose("STROKE_010_runs4", holdFrame);
+const a2SampleRels = [0, 0.3, 0.9, 1.5, 1.75, 1.9, 2.1];
+const a2Sweep = a2SampleRels.map((rel) => {
+  const field = a2.fieldAt(rel);
+  let union = { minX: 1e9, maxX: -1e9, minY: 1e9, maxY: -1e9 };
+  let minStrokeX = 1e9;
+  const boxes: Record<string, ReturnType<typeof a2ScreenBBox>> = {};
+  for (const g of a2geoms) {
+    const b = a2ScreenBBox(g.name, rel);
+    boxes[g.name] = b;
+    union.minX = Math.min(union.minX, b.minX);
+    union.maxX = Math.max(union.maxX, b.maxX);
+    union.minY = Math.min(union.minY, b.minY);
+    union.maxY = Math.max(union.maxY, b.maxY);
+    minStrokeX = Math.min(minStrokeX, b.minX);
+  }
+  return {
+    rel: +rel.toFixed(2),
+    compFrame: Math.round((SCENE_A2.t0 + rel) * 24),
+    zoom: +field.zoom.toFixed(3),
+    scx: +field.scx.toFixed(1),
+    scy: +field.scy.toFixed(1),
+    opacity: +field.opacity.toFixed(3),
+    unionScreenBBox: {
+      minX: +union.minX.toFixed(1), maxX: +union.maxX.toFixed(1),
+      minY: +union.minY.toFixed(1), maxY: +union.maxY.toFixed(1),
+    },
+    minStrokeScreenX: +minStrokeX.toFixed(1),
+    // crossing trio boxes at this instant (only meaningful near hold)
+    crossBoxes: Object.fromEntries(
+      [...SCENE_A2.crossNames].map((n) => [n, boxes[n]]),
+    ),
+  };
+});
 
-const b16 = screenBBoxAtPose(s16, p16.dx, p16.dy);
-const b15 = screenBBoxAtPose(s15, p15.dx, p15.dy);
-const b17 = screenBBoxAtPose(s17, p17.dx, p17.dy);
-const crossingWindowGapPx = +(b17.minY - b15.maxY).toFixed(1);
+const holdRel = 1.85; // post hold-fit reframe, pre scene-fade — the comparison hold
+const crossAtHold = [...SCENE_A2.crossNames].map((n) => a2ScreenBBox(n, holdRel));
+const crossingFullyVisible = crossAtHold.every(
+  (b) => b.minX >= 460 && b.maxX <= 1080 && b.minY >= 0 && b.maxY <= 1080,
+);
+const unionAtHold = (() => {
+  let u = { minX: 1e9, maxX: -1e9, minY: 1e9, maxY: -1e9 };
+  for (const g of a2geoms) {
+    const b = a2ScreenBBox(g.name, holdRel);
+    u.minX = Math.min(u.minX, b.minX); u.maxX = Math.max(u.maxX, b.maxX);
+    u.minY = Math.min(u.minY, b.minY); u.maxY = Math.max(u.maxY, b.maxY);
+  }
+  return { minX: +u.minX.toFixed(1), maxX: +u.maxX.toFixed(1), minY: +u.minY.toFixed(1), maxY: +u.maxY.toFixed(1) };
+})();
+const holdUnionInsideFrame =
+  unionAtHold.minX >= 460 && unionAtHold.maxX <= 1080 &&
+  unionAtHold.minY >= 0 && unionAtHold.maxY <= 1080;
 
-const s04OrigLeftX = screenBBoxAtPose(s04, -72, 0).minX;
-const s04DesignedX = screenBBoxAtPose(s04, p04.dx, p04.dy).minX;
-const s10DesignedX = screenBBoxAtPose(s10, p10.dx, p10.dy).minX;
+// peel monotonicity per stroke + left-column invariant across the sweep
+const peelSamples = [0.4, 0.8, 1.2, 1.6].map((r) => r);
+const peelMonotonic = a2geoms.every((g) => {
+  const ps = peelSamples.map((r) => a2.peelP(g.name, r));
+  return ps.every((p, i) => i === 0 || p >= ps[i - 1] - 1e-9);
+});
+const leftColumnClear = a2Sweep.every((s) => s.minStrokeScreenX >= 460);
+const fadeComplete = a2.fieldAt(1.97).opacity === 0 && a2.fieldAt(2.2).opacity === 0;
+// Post-fit the field pins to ZF/SCF (fitK=1), so the comparison hold stays
+// framed; the upward bridge motion is delegated to the Scene B handoff
+// (masterPatch), matching production behavior exactly.
+const postFitHoldStable =
+  Math.abs(a2.fieldAt(2.29).scy - a2.fieldAt(1.9).scy) < 1e-6 &&
+  Math.abs(a2.fieldAt(2.29).zoom - SCENE_A2.ZF) < 1e-6;
 
 const result = {
   checkedAt: new Date().toISOString(),
-  sourceModules: ["video/src/design/rig.ts", "video/src/design/choreography.ts"],
+  sourceModules: [
+    "video/src/design/rig.ts",
+    "video/src/design/choreography.ts",
+    "video/src/scenes/glyph.tsx (compStrokes — production geometry path)",
+    "video/src/scenes/SceneA2.tsx (consumes the same createA2Choreo)",
+  ],
   rigApertureSweep: rigChecks,
   allRigStatesValid: rigChecks.every((r) => r.noOverlapValid),
   gridPropagationProof,
   sceneBAccordionSweep: accordionChecks,
   allSceneBStatesValid: accordionChecks.every((a) => a.valid),
   sceneCShowreelRig: cCheck.invariants,
-  sceneA2CrossingFeasibility: {
-    holdFrame,
-    spineS16ScreenY: [b16.minY, b16.maxY],
-    upperGateS15ScreenY_atHold: [b15.minY, b15.maxY],
-    lowerGateS17ScreenY_atHold: [b17.minY, b17.maxY],
-    clearOpeningWindowHeightPx: crossingWindowGapPx,
-    openingExceeds120pxForClearExposure: crossingWindowGapPx > SCENE_A2_DESIGN.minClearOpeningHeightPx,
-    leftStrokeS04_minScreenX_origDeltaNeg72: s04OrigLeftX,
-    leftStrokeS04_minScreenX_designedDelta: s04DesignedX,
-    leftStrokeS10_minScreenX_designedDelta: s10DesignedX,
-    clearsLeftColumnMaxX460: s04DesignedX >= 460 && s10DesignedX >= 460,
-    clearsStageMinX480: s04DesignedX >= 480 && s10DesignedX >= 480,
+  sceneA2ProductionCheck: {
+    note: "Verified through the identical path production renders: compStrokes rest geometry + createA2Choreo field/peel + comp->screen similarity. No separate camera-projection math.",
+    strokeCount: a2geoms.length,
+    peelOrder: a2.order,
+    relSweep: a2Sweep,
+    holdRel,
+    unionAtHold,
+    holdUnionInsideFrame,
+    crossBoxesAtHold: crossAtHold,
+    crossingFullyVisible,
+    checks: {
+      crossingFullyVisible,
+      holdUnionInsideFrame,
+      leftColumnClear,
+      peelMonotonic,
+      fadeComplete,
+      postFitHoldStable,
+    },
+    allChecksPass:
+      crossingFullyVisible && holdUnionInsideFrame && leftColumnClear &&
+      peelMonotonic && fadeComplete && postFitHoldStable,
   },
 };
 

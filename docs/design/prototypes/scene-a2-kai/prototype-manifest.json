@@ -1,132 +1,102 @@
 {
   "prototype": "scene-a2-kai",
-  "generatedAt": "2026-11-28T05:22:26.971Z",
+  "generatedAt": "2026-11-28T05:37:05.986Z",
+  "revision": "production-path (createA2Choreo shared with SceneA2.tsx)",
   "designSources": [
-    "video/src/design/choreography.ts (SCENE_A2_DESIGN, evalSceneA2StrokePose)",
-    "video/src/design/rig.ts (AE_DEFAULT_CAMERA, cameraViewProjScreen)",
-    "tools/design/lib/spec.ts (worldMatrix, layerShapeItems, layerTransform)",
-    "pv/generated/05-master.ts comp_05 (real dumped geometry)"
+    "video/src/design/choreography.ts (SCENE_A2 + createA2Choreo — single source)",
+    "video/src/scenes/glyph.tsx compStrokes (production rest geometry, comp space)",
+    "video/src/scenes/SceneA2.tsx (same choreo consumed for Remotion render)",
+    "tools/design/verify-local-motion.ts (same path, numeric checks)"
   ],
-  "comp": "05-master",
+  "comp": "master",
   "frameRange": {
     "firstCompFrame": 45,
     "lastCompFrame": 100,
     "count": 56,
     "fps": 24
   },
-  "restTimeSec": 1.45,
+  "poseTime": 1.46,
   "strokes": [
     {
-      "designKey": "STROKE_016_runs4",
-      "layer": "STROKE_016_runs4",
-      "arrayPos": 238,
-      "shapeItems": 1
+      "name": "STROKE_016_runs4"
     },
     {
-      "designKey": "STROKE_017_runs4",
-      "layer": "STROKE_017_runs4",
-      "arrayPos": 239,
-      "shapeItems": 1
+      "name": "STROKE_017_runs4"
     },
     {
-      "designKey": "STROKE_015_runs4",
-      "layer": "STROKE_015_runs4",
-      "arrayPos": 240,
-      "shapeItems": 1
+      "name": "STROKE_015_runs4"
     },
     {
-      "designKey": "STROKE_014_runs4",
-      "layer": "STROKE_014_runs4",
-      "arrayPos": 241,
-      "shapeItems": 1
+      "name": "STROKE_014_runs4"
     },
     {
-      "designKey": "STROKE_011_runs4",
-      "layer": "STROKE_011_runs4",
-      "arrayPos": 242,
-      "shapeItems": 1
+      "name": "STROKE_011_runs4"
     },
     {
-      "designKey": "merged shape 3",
-      "layer": "Ae_Restro merged shape 3",
-      "arrayPos": 243,
-      "shapeItems": 1
+      "name": "Ae_Restro merged shape 3"
     },
     {
-      "designKey": "STROKE_010_runs4",
-      "layer": "STROKE_010_runs4",
-      "arrayPos": 244,
-      "shapeItems": 1
+      "name": "STROKE_010_runs4"
     },
     {
-      "designKey": "STROKE_007_runs4",
-      "layer": "STROKE_007_runs4",
-      "arrayPos": 245,
-      "shapeItems": 1
+      "name": "STROKE_007_runs4"
     },
     {
-      "designKey": "STROKE_004_runs4",
-      "layer": "STROKE_004_runs4",
-      "arrayPos": 246,
-      "shapeItems": 1
+      "name": "STROKE_004_runs4"
     },
     {
-      "designKey": "STROKE_005_runs4",
-      "layer": "STROKE_005_runs4",
-      "arrayPos": 247,
-      "shapeItems": 1
+      "name": "STROKE_005_runs4"
     },
     {
-      "designKey": "merged shape 2",
-      "layer": "Ae_Restro merged shape 2",
-      "arrayPos": 248,
-      "shapeItems": 1
+      "name": "Ae_Restro merged shape 2"
     },
     {
-      "designKey": "STROKE_003_runs4",
-      "layer": "STROKE_003_runs4",
-      "arrayPos": 249,
-      "shapeItems": 1
+      "name": "STROKE_003_runs4"
     },
     {
-      "designKey": "STROKE_006_runs6",
-      "layer": "STROKE_006_runs6",
-      "arrayPos": 250,
-      "shapeItems": 1
+      "name": "STROKE_006_runs6"
     },
     {
-      "designKey": "STROKE_002_runs6",
-      "layer": "STROKE_002_runs6",
-      "arrayPos": 251,
-      "shapeItems": 1
+      "name": "STROKE_002_runs6"
     },
     {
-      "designKey": "STROKE_000_runs4",
-      "layer": "STROKE_000_runs4",
-      "arrayPos": 252,
-      "shapeItems": 1
+      "name": "STROKE_000_runs4"
     },
     {
-      "designKey": "STROKE_001_runs5",
-      "layer": "STROKE_001_runs5",
-      "arrayPos": 253,
-      "shapeItems": 1
+      "name": "STROKE_001_runs5"
     }
   ],
+  "peelOrder": [
+    "STROKE_016_runs4",
+    "STROKE_015_runs4",
+    "STROKE_017_runs4",
+    "STROKE_006_runs6",
+    "STROKE_001_runs5",
+    "STROKE_003_runs4",
+    "STROKE_007_runs4",
+    "STROKE_000_runs4",
+    "STROKE_005_runs4",
+    "STROKE_004_runs4",
+    "STROKE_002_runs6",
+    "Ae_Restro merged shape 2",
+    "STROKE_014_runs4",
+    "STROKE_011_runs4",
+    "STROKE_010_runs4",
+    "Ae_Restro merged shape 3"
+  ],
   "approximations": [
-    "rest pose frozen at t=1.45s; only designed deltas animate",
-    "dx/dy applied in world space pre-camera (same as verify-local-motion.ts)",
-    "rotDeg = rotation about layer anchor around layer-plane normal (AE Rotate-Z semantics)",
-    "even-odd fill per layer; fill paints only",
-    "paint order = comp_05 layer array order ascending",
-    "background = docs/design/assets/background-grid-plane.png"
+    "fills + restored-vertical accent contour only; ghost contours, guide echoes, crossing markers, hidden-part contour omitted (SceneA2.tsx presentation layer)",
+    "accent contour rasterized as polyline (production uses real bezier contours)",
+    "left-column clip replicated at x=460; right/bottom bleed clipped by frame",
+    "background = docs/design/assets/background-grid-plane.png over white",
+    "no per-stroke opacity envelopes (production controls visibility via strokeOpacity defaults = 1 here)"
   ],
   "outputs": {
     "video": "scene-a2-kai.mp4",
     "stills": [
       "still-entry.png (comp f45)",
-      "still-hold.png (comp f66, peak hold + red spine accent)",
-      "still-exit.png (comp f100, A3 upward outflow)"
+      "still-hold.png (comp f~89, comparison hold)",
+      "still-exit.png (comp f100)"
     ],
     "frames": "regenerate via `bun tools/design/render-scene-a2-prototype.ts` (56 PNG frames, not committed)"
   }

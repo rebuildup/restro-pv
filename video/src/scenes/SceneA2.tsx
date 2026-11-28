@@ -15,6 +15,7 @@ import type { CompSpec, PropNode } from "../../../pv/model/types.ts";
 import type { LayerSpec } from "../ae/project.ts";
 import { compByName } from "../ae/project.ts";
 import { worldMatrix } from "../ae/transform.ts";
+import { SCENE_A2, createA2Choreo } from "../design/choreography.ts";
 
 // Scene A2, frames [45,100) = seconds [1.875,4.17) per SPEC §3/§5 A2,
 // extended through the A3 bridge window per docs/pv-art-direction.md v13:
@@ -68,11 +69,7 @@ import { worldMatrix } from "../ae/transform.ts";
 //   f92-100 group drift up + fade — the separated strokes ARE the A3
 //           bridge and the scene's final question frame
 //
-const T0 = 45 / 24;
-// SPEC A3 is [90,101): the authored bridge owns frames 45-100, so the
-// separated group is still present (fading/rising) on the last A-side frame.
-const T1 = 101 / 24;
-const POSE_T = 1.46; // master stroke layers' rest pose at A1's last frame
+const { t0: T0, t1: T1, poseT: POSE_T } = SCENE_A2;
 
 const ACCENT: [number, number, number] = [0.84, 0.27, 0.13]; // #D64520系
 const ACCENT_CSS = `rgb(${ACCENT.map((v) => Math.round(v * 255)).join(",")})`;
@@ -111,61 +108,11 @@ const CROSSINGS: [number, number][] = [
   [1066, 579],
   [1066, 728],
 ];
-// Zoom/pan anchor: keeps the r10 screen framing (crossing cluster
-// right-of-center, hero bleeding right/bottom) after the +30 extra hero
-// shift. Chosen so the leftmost hero ink stays >= ~480px screen-x through
-// the full push-in zoom — the r10 framing let it swing to ~404 and collide
-// with the "Restro" wordmark (wu-a-r10 FAIL).
-const ZC: [number, number] = [860, 540];
-const SC0: [number, number] = [865, 680];
-const Z0 = 1.0;
-const Z1 = 1.08;
-// Hold-fit framing (r12 contract, v15 re-measure): at the comparison hold
-// the fully-separated stroke union (comp-space x482-1219 y63-1019,
-// measured by the v15 axis-peel probe) must sit INSIDE the frame. ZF/SCF
-// map that union into screen ~x550-1000, y308-891:
-//   screen = (p - ZC) * ZF + SCF, union center (851,541) -> (775,600)
-const ZF = 0.61;
-const SCF: [number, number] = [781, 599];
-// Hero drift: exits down-right through the scene (bleed grows), then the
-// whole separated group travels UP into scene B (A3 group-move bridge).
-// r12: DRIFT_UP 300->170 — the r11 rise threw the group off the top of
-// the frame before the fade could carry the question into the bridge.
-const DRIFT_IN: [number, number] = [40, 40];
-const DRIFT_UP = 170;
-
-// Per-stroke separation vectors (comp px at peel=1), computed per stroke:
-// the stroke slides along its own principal axis blended toward radial —
-// "the stroke draws itself out" — so identity survives the move. The
-// crossing trio keeps the SPEC-proven directions instead (vertical out
-// from under the horizontals, horizontals part up/down).
-const CROSS_SEP: Record<string, [number, number]> = {
-  // v15 r3: the restored vertical stays REGISTERED at the crossings —
-  // only a small lift-off. The proof beat is the horizontals clearing
-  // away to EXPOSE the vertical's formerly-hidden middle as one
-  // continuous stroke; dragging it far away left the accent stroke
-  // unmoored from its origin contour (r2/r3 review FAIL).
-  STROKE_016_runs4: [-42, -48],
-  STROKE_015_runs4: [-34, -142],
-  STROKE_017_runs4: [28, 142],
-};
-
-// Principal axis (unit vector) of a stroke's comp-space points, used to
-// aim each stroke's peel along its own long direction.
-function principalAxis(pts: [number, number][]): [number, number] {
-  const p = pts.filter((_, i) => i % 5 === 0);
-  if (p.length < 3) return [1, 0];
-  let mx = 0, my = 0;
-  for (const [x, y] of p) { mx += x; my += y; }
-  mx /= p.length; my /= p.length;
-  let sxx = 0, sxy = 0, syy = 0;
-  for (const [x, y] of p) {
-    const dx = x - mx, dy = y - my;
-    sxx += dx * dx; sxy += dx * dy; syy += dy * dy;
-  }
-  const ang = 0.5 * Math.atan2(2 * sxy, sxx - syy);
-  return [Math.cos(ang), Math.sin(ang)];
-}
+// Zoom/pan anchor + hold-fit framing + peel cascade + timing envelopes
+// all live in video/src/design/choreography.ts (SCENE_A2 / createA2Choreo)
+// — the single source shared by this scene, the verifier, the onion
+// figures, and the raster prototype. See that module for the r12/v15
+// contract notes (union x482-1219 y63-1019 -> screen ~x550-1000 y308-891).
 
 // Ghost pose: the dumped "reconstruction" layer transform sampled once at
 // PV A2 comp-local t=0.8 (mid-scene), same as the r8 pipeline.
@@ -306,67 +253,17 @@ export const SceneA2: React.FC<{ t: number }> = ({ t }) => {
     glyphData();
   const vertOrig = byName.get(VERT_NAME);
   const rel = t - T0;
-
-  // f45-55 (rel 0-0.42): hero establishes at the A1 pose — the completed
-  // kanji holds CLEAN (no guides, no motion) while the camera pushes in.
-  // driftIn finishes before the cascade so the frame is stable while
-  // strokes come apart (traceability beats drift).
-  const driftIn = seg(rel, 0.15, 0.5);
-  // eased so the bridge rise accelerates gently out of the hold and
-  // settles as the B viewport takes over (wu-a-r11 A-3 continuity)
-  const driftUp = easeInOutCubic(seg(rel, 1.95, 2.29));
-  // Hold-fit reframing (r12 contract, retimed for v15): the camera stays
-  // in the bleed framing through the WHOLE decomposition cascade — a
-  // moving camera during the peel was part of why contour->shape
-  // correspondence read as untraceable. Once every stroke has settled
-  // (last peel ends ~rel 1.53 = f82) the camera eases to ZF/SCF, which
-  // frames the FULL separated union inside the screen for the comparison
-  // hold, then driftUp carries it into scene B.
-  const fitK = easeInOutCubic(seg(rel, 1.58, 1.9));
-  const zoom =
-    (Z0 + (Z1 - Z0) * easeInOutCubic(seg(rel, 0.0, 0.45))) * (1 - fitK) +
-    ZF * fitK;
-  const baseScx = SC0[0] + DRIFT_IN[0] * driftIn;
-  const baseScy = SC0[1] + DRIFT_IN[1] * driftIn - DRIFT_UP * driftUp;
-  const scx = baseScx * (1 - fitK) + SCF[0] * fitK;
-  const scy = baseScy * (1 - fitK) + SCF[1] * fitK;
+  const choreo = createA2Choreo(strokes);
+  const field = choreo.fieldAt(rel);
+  const { zoom, scx, scy } = field;
   // comp point ZC maps to screen SC: screen = (p - ZC) * z + SC
-  const fieldTransform = `translate(${scx - ZC[0] * zoom}px,${
-    scy - ZC[1] * zoom
+  const fieldTransform = `translate(${scx - SCENE_A2.ZC[0] * zoom}px,${
+    scy - SCENE_A2.ZC[1] * zoom
   }px) scale(${zoom})`;
+  const sceneOpacity = field.opacity;
 
-  // ---- v15 decomposition cascade -------------------------------------
-  // One stroke at a time, each traceable: guide contour highlights ->
-  // filled shape peels along its own axis -> origin contour echoes and
-  // fades. Order: the SPEC crossing trio first (the proof beat), then the
-  // remaining 11 strokes strictly left->right.
-  const CROSS_ORDER = [VERT_NAME, "STROKE_015_runs4", "STROKE_017_runs4"];
-  const others = strokes
-    .filter((s) => !CROSS_SET.has(s.name))
-    .sort((a, b) => a.center[0] - b.center[0]);
-  const ORDER: StrokeItem[] = [
-    ...CROSS_ORDER.map((n) => byName.get(n)).filter(
-      (s): s is StrokeItem => s !== undefined,
-    ),
-    ...others,
-  ];
-  // Selection onset per stroke (rel seconds). Crossing trio: tight slots
-  // f55-66. Remaining strokes: staggered L->R f~62-85.
-  const CASCADE_T0 = 0.42;
-  const STAGGER_MAIN = 0.072;
-  const selOf = new Map<string, number>();
-  ORDER.forEach((item, k) => {
-    selOf.set(
-      item.name,
-      k < 3 ? CASCADE_T0 + k * 0.065 : 0.72 + (k - 3) * STAGGER_MAIN,
-    );
-  });
-  const LEAD = 0.045; // guide highlight leads the peel
-  const PEEL = 0.22; // peel duration
-  const peelP = (item: StrokeItem): number => {
-    const sel = selOf.get(item.name) ?? 0.5;
-    return easeInOutCubic(seg(rel, sel + LEAD, sel + LEAD + PEEL));
-  };
+  // ---- v15 decomposition cascade (order/timing/deltas: choreography.ts)
+  const { LEAD, PEEL } = SCENE_A2;
   // Guide contour envelope: bright highlight while the stroke is still
   // in the glyph (selection), then a faint origin echo after the fill has
   // left (the "this contour became that shape" half), fading out.
@@ -375,7 +272,7 @@ export const SceneA2: React.FC<{ t: number }> = ({ t }) => {
   // stroke (r2 review: guides gone by f74 left the accent stroke
   // unmoored from its origin contour).
   const guideOp = (item: StrokeItem): number => {
-    const sel = selOf.get(item.name) ?? 0.5;
+    const sel = choreo.selOf(item.name);
     const isCross = CROSS_SET.has(item.name);
     const p0 = sel - 0.02;
     const p1 = sel + 0.05;
@@ -404,52 +301,8 @@ export const SceneA2: React.FC<{ t: number }> = ({ t }) => {
     return 0.22 * (1 - easeInOutCubic(seg(rel, holdEnd, outEnd)));
   };
 
-  // Full separation translate (peel=1) per stroke.
-  const CEN: [number, number] = [
-    strokes.reduce((a, s) => a + s.center[0], 0) / strokes.length,
-    strokes.reduce((a, s) => a + s.center[1], 0) / strokes.length,
-  ];
-  const peelDelta = (item: StrokeItem): [number, number] => {
-    const fixed = CROSS_SEP[item.name];
-    if (fixed) return fixed;
-    const [cx, cy] = item.center;
-    // The hero exits RIGHT (抜ける): radial is clamped to non-negative x
-    // so left-side strokes never peel into the protected copy column,
-    // and a minimum rightward component keeps every peel clear of the
-    // leftFloor clamp instead of pinning strokes into a rightward clump.
-    let rx = Math.max(cx - CEN[0], 0);
-    let ry = cy - CEN[1];
-    const rl = Math.hypot(rx, ry) || 1;
-    rx /= rl; ry /= rl;
-    let [ax, ay] = principalAxis(item.points);
-    if (ax * rx + ay * ry < 0) { ax = -ax; ay = -ay; }
-    let dx = 0.55 * ax + 0.30 * rx;
-    let dy = 0.55 * ay + 0.30 * ry;
-    // enforce a minimum rightward component AFTER normalization: the
-    // direction stays mostly along the stroke's axis but can never peel
-    // into the protected left column
-    const minPre = Math.max(0.45 * Math.abs(dy), 0.4);
-    if (dx < minPre) dx = minPre;
-    const dl = Math.hypot(dx, dy) || 1;
-    dx /= dl; dy /= dl;
-    const r = selOf.has(item.name)
-      ? ORDER.findIndex((o) => o.name === item.name) / Math.max(ORDER.length - 1, 1)
-      : 0.5;
-    const mag = 115 + 50 * r;
-    return [dx * mag, dy * mag];
-  };
-  // Actual per-frame translate including the left-column floor clamp.
-  const strokeDelta = (item: StrokeItem): [number, number] => {
-    const p = peelP(item);
-    const [fx, fy] = peelDelta(item);
-    let sx = fx * p, sy = fy * p;
-    const floor = leftFloor(item);
-    if (sx < floor) sx = floor;
-    return [sx, sy];
-  };
-
   const vertItem = byName.get(VERT_NAME);
-  const vertSep = vertItem ? peelP(vertItem) : 0;
+  const vertSep = vertItem ? choreo.peelP(VERT_NAME, rel) : 0;
   // comparison hold f83-~90 — the separated stroke group IS the film's
   // opening question, now WITHOUT the dumped bunkai bridge ghosting in
   // behind it (A2B_HIDDEN extended to 3.9s + opacity retimed in
@@ -462,28 +315,13 @@ export const SceneA2: React.FC<{ t: number }> = ({ t }) => {
   // the bunkai bridge layer fades in at 3.92s, so f93+ never
   // double-exposes A2 residue under Scene B (r4/r5 review FAIL on the
   // mixed old/new frame).
-  const sceneOpacity = 1 - easeInOutCubic(seg(rel, 1.85, 1.97));
-
-  // Ghost 元輪郭 + crossing markers are hold-fit annotations: the crossing
-  // cluster sits at comp x~1066, which the bleed framing crops off the
-  // right frame edge — fading them in during the cascade produced
-  // invisible-then-sudden UI-like marks (M3 "analysis panel" reading).
-  // They now arrive WITH the hold-fit reframe that actually reveals them.
   const ghostIn = easeInOutCubic(seg(rel, 1.5, 1.7));
   const markersIn = easeInOutCubic(seg(rel, 1.52, 1.74));
   // Hidden-part contour revealed exactly as the filled stroke pulls away
   const hiddenIn = vertSep;
 
-  // Hard guarantee for the left column: no hero stroke may render left of
-  // SAFE_LEFT screen px ("Restro"/筆画復元 end ~x455). strokeTransform is
-  // comp-space; screen = (p - ZC) * zoom + SC, so a comp-space dx appears
-  // on screen as dx * zoom. Floor per stroke from its own bbox.
-  const SAFE_LEFT = 470;
-  const leftFloor = (item: StrokeItem): number =>
-    (SAFE_LEFT - scx) / zoom + ZC[0] - item.bbox[0];
-
   const strokeTransform = (item: StrokeItem): string | undefined => {
-    const [sx, sy] = strokeDelta(item);
+    const [sx, sy] = choreo.strokeDelta(item.name, rel);
     if (sx === 0 && sy === 0) return undefined;
     return `translate(${sx.toFixed(2)}px,${sy.toFixed(2)}px)`;
   };

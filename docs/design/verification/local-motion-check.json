@@ -1,8 +1,10 @@
 {
-  "checkedAt": "2026-11-28T05:17:16.060Z",
+  "checkedAt": "2026-11-28T05:36:51.081Z",
   "sourceModules": [
     "video/src/design/rig.ts",
-    "video/src/design/choreography.ts"
+    "video/src/design/choreography.ts",
+    "video/src/scenes/glyph.tsx (compStrokes — production geometry path)",
+    "video/src/scenes/SceneA2.tsx (consumes the same createA2Choreo)"
   ],
   "rigApertureSweep": [
     {
@@ -161,26 +163,311 @@
     "viewportClearsSafety": true,
     "valid": true
   },
-  "sceneA2CrossingFeasibility": {
-    "holdFrame": 66,
-    "spineS16ScreenY": [
-      481.8,
-      958.7
+  "sceneA2ProductionCheck": {
+    "note": "Verified through the identical path production renders: compStrokes rest geometry + createA2Choreo field/peel + comp->screen similarity. No separate camera-projection math.",
+    "strokeCount": 16,
+    "peelOrder": [
+      "STROKE_016_runs4",
+      "STROKE_015_runs4",
+      "STROKE_017_runs4",
+      "STROKE_006_runs6",
+      "STROKE_001_runs5",
+      "STROKE_003_runs4",
+      "STROKE_007_runs4",
+      "STROKE_000_runs4",
+      "STROKE_005_runs4",
+      "STROKE_004_runs4",
+      "STROKE_002_runs6",
+      "Ae_Restro merged shape 2",
+      "STROKE_014_runs4",
+      "STROKE_011_runs4",
+      "STROKE_010_runs4",
+      "Ae_Restro merged shape 3"
     ],
-    "upperGateS15ScreenY_atHold": [
-      209.2,
-      310.5
+    "relSweep": [
+      {
+        "rel": 0,
+        "compFrame": 45,
+        "zoom": 1,
+        "scx": 865,
+        "scy": 680,
+        "opacity": 1,
+        "unionScreenBBox": {
+          "minX": 470,
+          "maxX": 1127.8,
+          "minY": 312.6,
+          "maxY": 1054.1
+        },
+        "minStrokeScreenX": 470,
+        "crossBoxes": {
+          "STROKE_015_runs4": {
+            "minX": 811.2,
+            "maxX": 1089.9,
+            "minY": 682.9,
+            "maxY": 755.2
+          },
+          "STROKE_016_runs4": {
+            "minX": 913.8,
+            "maxX": 979.7,
+            "minY": 627.5,
+            "maxY": 1054.1
+          },
+          "STROKE_017_runs4": {
+            "minX": 781.1,
+            "maxX": 1127.8,
+            "minY": 834.8,
+            "maxY": 899.6
+          }
+        }
+      },
+      {
+        "rel": 0.3,
+        "compFrame": 52,
+        "zoom": 1.068,
+        "scx": 882.1,
+        "scy": 697.1,
+        "opacity": 1,
+        "unionScreenBBox": {
+          "minX": 470,
+          "maxX": 1162.8,
+          "minY": 304.7,
+          "maxY": 1096.8
+        },
+        "minStrokeScreenX": 470,
+        "crossBoxes": {
+          "STROKE_015_runs4": {
+            "minX": 824.6,
+            "maxX": 1122.4,
+            "minY": 700.3,
+            "maxY": 777.4
+          },
+          "STROKE_016_runs4": {
+            "minX": 934.2,
+            "maxX": 1004.7,
+            "minY": 641,
+            "maxY": 1096.8
+          },
+          "STROKE_017_runs4": {
+            "minX": 792.5,
+            "maxX": 1162.8,
+            "minY": 862.5,
+            "maxY": 931.7
+          }
+        }
+      },
+      {
+        "rel": 0.9,
+        "compFrame": 67,
+        "zoom": 1.08,
+        "scx": 905,
+        "scy": 720,
+        "opacity": 1,
+        "unionScreenBBox": {
+          "minX": 470,
+          "maxX": 1219,
+          "minY": 316.9,
+          "maxY": 1207.3
+        },
+        "minStrokeScreenX": 470,
+        "crossBoxes": {
+          "STROKE_015_runs4": {
+            "minX": 810.1,
+            "maxX": 1111.2,
+            "minY": 569.8,
+            "maxY": 647.8
+          },
+          "STROKE_016_runs4": {
+            "minX": 912.3,
+            "maxX": 983.5,
+            "minY": 611.4,
+            "maxY": 1072.2
+          },
+          "STROKE_017_runs4": {
+            "minX": 844.6,
+            "maxX": 1219,
+            "minY": 1040.6,
+            "maxY": 1110.5
+          }
+        }
+      },
+      {
+        "rel": 1.5,
+        "compFrame": 81,
+        "zoom": 1.08,
+        "scx": 905,
+        "scy": 720,
+        "opacity": 1,
+        "unionScreenBBox": {
+          "minX": 496.3,
+          "maxX": 1219,
+          "minY": 254.7,
+          "maxY": 1235.4
+        },
+        "minStrokeScreenX": 496.3,
+        "crossBoxes": {
+          "STROKE_015_runs4": {
+            "minX": 810.1,
+            "maxX": 1111.2,
+            "minY": 569.8,
+            "maxY": 647.8
+          },
+          "STROKE_016_runs4": {
+            "minX": 912.3,
+            "maxX": 983.5,
+            "minY": 611.4,
+            "maxY": 1072.2
+          },
+          "STROKE_017_runs4": {
+            "minX": 844.6,
+            "maxX": 1219,
+            "minY": 1040.6,
+            "maxY": 1110.5
+          }
+        }
+      },
+      {
+        "rel": 1.75,
+        "compFrame": 87,
+        "zoom": 0.804,
+        "scx": 832.1,
+        "scy": 648.9,
+        "opacity": 1,
+        "unionScreenBBox": {
+          "minX": 528,
+          "maxX": 1116.8,
+          "minY": 291.3,
+          "maxY": 1033.2
+        },
+        "minStrokeScreenX": 528,
+        "crossBoxes": {
+          "STROKE_015_runs4": {
+            "minX": 761.5,
+            "maxX": 985.5,
+            "minY": 537.1,
+            "maxY": 595.1
+          },
+          "STROKE_016_runs4": {
+            "minX": 837.5,
+            "maxX": 890.5,
+            "minY": 568,
+            "maxY": 910.9
+          },
+          "STROKE_017_runs4": {
+            "minX": 787.2,
+            "maxX": 1065.8,
+            "minY": 887.4,
+            "maxY": 939.4
+          }
+        }
+      },
+      {
+        "rel": 1.9,
+        "compFrame": 91,
+        "zoom": 0.61,
+        "scx": 781,
+        "scy": 599,
+        "opacity": 0.711,
+        "unionScreenBBox": {
+          "minX": 550.2,
+          "maxX": 997.8,
+          "minY": 327.5,
+          "maxY": 890.8
+        },
+        "minStrokeScreenX": 550.2,
+        "crossBoxes": {
+          "STROKE_015_runs4": {
+            "minX": 727.4,
+            "maxX": 897.5,
+            "minY": 514.2,
+            "maxY": 558.2
+          },
+          "STROKE_016_runs4": {
+            "minX": 785.1,
+            "maxX": 825.4,
+            "minY": 537.7,
+            "maxY": 797.9
+          },
+          "STROKE_017_runs4": {
+            "minX": 746.9,
+            "maxX": 958.4,
+            "minY": 780.1,
+            "maxY": 819.6
+          }
+        }
+      },
+      {
+        "rel": 2.1,
+        "compFrame": 95,
+        "zoom": 0.61,
+        "scx": 781,
+        "scy": 599,
+        "opacity": 0,
+        "unionScreenBBox": {
+          "minX": 550.2,
+          "maxX": 997.8,
+          "minY": 327.5,
+          "maxY": 890.8
+        },
+        "minStrokeScreenX": 550.2,
+        "crossBoxes": {
+          "STROKE_015_runs4": {
+            "minX": 727.4,
+            "maxX": 897.5,
+            "minY": 514.2,
+            "maxY": 558.2
+          },
+          "STROKE_016_runs4": {
+            "minX": 785.1,
+            "maxX": 825.4,
+            "minY": 537.7,
+            "maxY": 797.9
+          },
+          "STROKE_017_runs4": {
+            "minX": 746.9,
+            "maxX": 958.4,
+            "minY": 780.1,
+            "maxY": 819.6
+          }
+        }
+      }
     ],
-    "lowerGateS17ScreenY_atHold": [
-      1001,
-      1122.1
+    "holdRel": 1.85,
+    "unionAtHold": {
+      "minX": 549.3,
+      "maxX": 1002.3,
+      "minY": 326.1,
+      "maxY": 896
+    },
+    "holdUnionInsideFrame": true,
+    "crossBoxesAtHold": [
+      {
+        "minX": 728.7,
+        "maxX": 900.7,
+        "minY": 515,
+        "maxY": 559.6
+      },
+      {
+        "minX": 787.1,
+        "maxX": 827.8,
+        "minY": 538.8,
+        "maxY": 802.1
+      },
+      {
+        "minX": 748.4,
+        "maxX": 962.4,
+        "minY": 784,
+        "maxY": 824
+      }
     ],
-    "clearOpeningWindowHeightPx": 690.5,
-    "openingExceeds120pxForClearExposure": true,
-    "leftStrokeS04_minScreenX_origDeltaNeg72": 446.7,
-    "leftStrokeS04_minScreenX_designedDelta": 490.4,
-    "leftStrokeS10_minScreenX_designedDelta": 770.7,
-    "clearsLeftColumnMaxX460": true,
-    "clearsStageMinX480": true
+    "crossingFullyVisible": true,
+    "checks": {
+      "crossingFullyVisible": true,
+      "holdUnionInsideFrame": true,
+      "leftColumnClear": true,
+      "peelMonotonic": true,
+      "fadeComplete": true,
+      "postFitHoldStable": true
+    },
+    "allChecksPass": true
   }
 }
