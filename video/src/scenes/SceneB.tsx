@@ -510,7 +510,6 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
     activeStep: evalSceneBActiveStep(t),
   });
   const rect = (id: string) => rig.nodes.get(id)!.worldRect!;
-  const stageR = rect("bStage");
   const slotR = rect("bActiveSlot");
   const contentR = rect("bActiveContent");
   const lensDisp = rect("lensDisplay");
@@ -1135,24 +1134,11 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
 
   return (
     <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-      {/* grid veil (wu-b-v20): the master perspective grid stays at 35%
-          through the whole B window and v19-r4 FAIL counted it toward
-          the tech-demo read. The left column (x<~460) keeps brand +
-          description untouched; a soft-edged white veil covers only the
-          diagram zone so the stage reads as one white field like the
-          viewport face, while the glyph/band/lens draw above it. */}
-      <div
-        style={{
-          position: "absolute",
-          left: 470,
-          top: 0,
-          width: 610,
-          height: 1080,
-          background:
-            "linear-gradient(90deg, rgba(255,255,255,0) 0px, rgba(255,255,255,0.78) 36px)",
-          opacity: viewOp,
-        }}
-      />
+      {/* NO full-stage white veil/backing: the AEP keeps the perspective
+          grid visible everywhere except inside the local white mattes
+          (tab cards + slot face). Earlier wu-b-v20 added a gradient veil
+          over the whole right side; removed — the accordion cards already
+          mask the grid exactly where the AEP mattes do. */}
       {/* active slot face: the expanded accordion card — white panel that
           masks the background grid inside the stage. Rides the rig slot
           position so it travels with the accumulating tab stack. */}
@@ -1163,19 +1149,6 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
           top: slotR.y,
           width: slotR.w,
           height: slotR.h,
-          background: "#fff",
-          opacity: viewOp,
-        }}
-      />
-      {/* stage band backing: keeps the tab stack area clean like the AEP
-          tab backgrounds (white strips over the grid) */}
-      <div
-        style={{
-          position: "absolute",
-          left: stageR.x,
-          top: stageR.y,
-          width: stageR.w,
-          height: stageR.h,
           background: "#fff",
           opacity: viewOp,
         }}
