@@ -21,7 +21,15 @@ import {
   transformPoint,
   type Mat4,
 } from "../ae/mat4.ts";
-import { SCENE_B_DESIGN } from "../design/choreography.ts";
+import {
+  SCENE_B_DESIGN,
+  evalSceneBActiveStep,
+} from "../design/choreography.ts";
+import {
+  GridRef,
+  MASTER_GRID,
+  buildSceneBAccordionRig,
+} from "../design/rig.ts";
 
 // Scene B [3.9, 7.96) per SPEC §5 B. Every step now shows REAL Restro
 // intermediate geometry recovered from the pre-wipe checkpoint comps — the
@@ -74,33 +82,12 @@ const ANALYSIS_RED = "#D64520";
 const DRAFT_GREEN = "#2FA36B";
 const VERTEX_BLUE = "#2F6FED";
 
-// Outlined viewport (art direction v13 §B): one white face + thin keyline
-// framing the glyph stage on the right. The face masks the background grid
-// inside the stage so analysis contours stop competing with grid lines;
-// the glyph is clipped to the same rect. The step band sits above it.
-const VIEW = { x: 468, y: 356, w: 596, h: 664 }; // -> x1064, y1020
-
-// Step band: four rows, number + short noun + right-aligned state only.
-// Rows live at x540-1048, y196-342 — clear of the viewport top (y356) and
-// the left column (x<460).
-const ROW = { x: 540, w: 508, h: 32, gap: 6, y0: 196 };
-
-// lens: r20 review FAIL twice — bottom-center covered the hero's
-// converging center-bottom strokes, and even docked inside the viewport
-// it read as covering the subject. wu-b-v20 hung it BELOW the viewport's
-// bottom edge in the page margin; wu-b-v20-r1 FAIL read that straddle as
-// a clipped circle. v21 docks it fully inside the panel's verified-empty
-// bottom-left margin instead: probe wu-b-v21 measured zero stroke-ink
-// samples inside every candidate; (540,972,r46) spans x494-586,y926-1018
-// — inside VIEW (468-1064 x 356-1020) with margin and 18px clear of the
-// nearest stroke centerline. r46 keeps the magnified window at ~±30 comp
-// units around the inferred corner so solver markers 0-2 still fit;
-// zoom stays 1.8 (lower zooms shrink the window below the marker
-// cluster, higher zooms crop it).
-const LENS = { x: 540, y: 972, r: 46, zoom: 1.8 };
-// inner (content) radius: the 5px keyline border is inside the box
-// (boxSizing border-box), so the magnified area is r-5.
-const LENS_IR = LENS.r - 5;
+// Accordion stage geometry is OWNED by the recovered AEP rig
+// (design/rig.ts buildSceneBAccordionRig): stage band x546..1048 y191..967,
+// 4 tabs of 38.67px accumulating top-stack/bottom-stack around a rigid
+// 660px active slot, plus the 140->420px (300%) lens chain. All rects below
+// are read from evaluated rig node worldRects — never hardcoded.
+const SCENE_B_GRID = new GridRef(MASTER_GRID);
 
 // Restro pipeline comps (checkpoint = state before the wipe-removal pass
 // stripped the analysis layers from the STEP drafts).
@@ -108,12 +95,12 @@ const PROC_COMP = "STEP3 infer [checkpoint before wipe removal]";
 const SCAN_COMP = "STEP1 outline [checkpoint before wipe removal]";
 const POSE = 6.0; // static rest pose for measurement/render of unkeyed layers
 
-// Fit the measured stroke bbox into the beats layout: the giant 筆 stays on
-// the right with its top BELOW the step-tab strip (bars end at y≈340, labels
-// ≈344) so labels never sit on the glyph; the right edge is intentionally
-// cropped by the frame. Left edge stays at x≈478, clear of the left-column
-// brand/description zone (CMN-1).
-function glyphFit(strokes: StrokeItem[]): { tx: number; ty: number; s: number } {
+// Fit the measured stroke bbox into the accordion active-content rect:
+// the giant 筆 stays inside the moving slot, clear of the tab header.
+function glyphFit(
+  strokes: StrokeItem[],
+  rect: { x: number; y: number; w: number; h: number },
+): { tx: number; ty: number; s: number } {
   let minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9;
   for (const s of strokes) {
     for (const [x, y] of s.points) {
@@ -123,10 +110,12 @@ function glyphFit(strokes: StrokeItem[]): { tx: number; ty: number; s: number } 
       if (y > maxY) maxY = y;
     }
   }
-  const h = maxY - minY || 1;
-  const s = 575 / h;
-  const tx = 478 - minX * s;
-  const ty = 404 - minY * s;
+  const bw = maxX - minX || 1;
+  const bh = maxY - minY || 1;
+  const margin = 14;
+  const s = Math.min((rect.w - 2 * margin) / bw, (rect.h - 2 * margin) / bh);
+  const tx = rect.x + (rect.w - bw * s) / 2 - minX * s;
+  const ty = rect.y + (rect.h - bh * s) / 2 - minY * s;
   return { tx, ty, s };
 }
 
@@ -515,7 +504,23 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
 
   const appear = ramp(t, T0 + 0.05, T0 + 0.5);
   const step = stepIndex(t);
-  const fit = glyphFit(d.strokes);
+  // Accordion rig: fractional activeStep drives tab stacking AND the slot
+  // position continuously (0.22s transitions), matching AEP P19..22.
+  const rig = buildSceneBAccordionRig(SCENE_B_GRID, {
+    activeStep: evalSceneBActiveStep(t),
+  });
+  const rect = (id: string) => rig.nodes.get(id)!.worldRect!;
+  const stageR = rect("bStage");
+  const slotR = rect("bActiveSlot");
+  const contentR = rect("bActiveContent");
+  const lensDisp = rect("lensDisplay");
+  const LENS_CX = lensDisp.x + lensDisp.w / 2;
+  const LENS_CY = lensDisp.y + lensDisp.h / 2;
+  const LENS_R = lensDisp.w / 2; // 210 (420px display diameter)
+  const LENS_IR = LENS_R - 5; // inner radius inside the keyline
+  const LENS_ZOOM = SCENE_B_DESIGN.lensZoom; // 3.0 — display/source = 3
+  const LENS_SRC_R = SCENE_B_DESIGN.lensSourceDiameter / 2; // 70
+  const fit = glyphFit(d.strokes, contentR);
   const tf = `translate(${fit.tx}px, ${fit.ty}px) scale(${fit.s})`;
 
   // ---- analysis layer visibility -------------------------------------------
@@ -682,7 +687,7 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
   // density-argmax could drift onto bare-marker clusters and — worse —
   // the lens drew ALL 29 markers at full size, which reviewers twice
   // read as an abstract "bicycle" icon.
-  const lensWinR = LENS_IR / (fit.s * LENS.zoom); // comp-space half window
+  const lensWinR = LENS_IR / (fit.s * LENS_ZOOM); // comp-space half window
   let focalComp: [number, number] | null = null;
   {
     const ib = d.inferred.bbox;
@@ -730,8 +735,8 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
       }
     }
   }
-  const focalSX = focalComp ? focalComp[0] * fit.s + fit.tx : LENS.x + 200;
-  const focalSY = focalComp ? focalComp[1] * fit.s + fit.ty : LENS.y - 200;
+  const focalSX = focalComp ? focalComp[0] * fit.s + fit.tx : LENS_CX - LENS_R - 60;
+  const focalSY = focalComp ? focalComp[1] * fit.s + fit.ty : LENS_CY;
   const vertexSX = vertexComp ? vertexComp[0] * fit.s + fit.tx : focalSX;
   const vertexSY = vertexComp ? vertexComp[1] * fit.s + fit.ty : focalSY;
   // comp-space focal for the lens inner transform (fallback: un-project the
@@ -743,33 +748,18 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
 
   const lensPop = easeOutBack(clamp01((t - (STEP_T[2] + 0.1)) / 0.2));
   const showLens = t >= STEP_T[2] + 0.1 && t < STEP_T[3] + 0.2;
-  // leader line: from the lens rim to the focal point. wu-b-v19 r3: the
-  // line now TERMINATES at the edge of the dashed source-window rect
-  // instead of crossing the whole glyph to the focal center — reviewers
-  // twice read the full-span dashed line as an unrelated decorative
-  // "belt" over the strokes. The rect + rim connector still show which
-  // region is magnified.
-  const leadDX = focalSX - LENS.x;
-  const leadDY = focalSY - LENS.y;
-  const leadLen = Math.hypot(leadDX, leadDY) || 1;
-  const leadX0 = LENS.x + (leadDX / leadLen) * (LENS_IR + 6);
-  const leadY0 = LENS.y + (leadDY / leadLen) * (LENS_IR + 6);
-  const srcHalf = LENS_IR / LENS.zoom;
-  const tEnterX =
-    leadDX !== 0
-      ? (leadDX > 0
-          ? focalSX - srcHalf - LENS.x
-          : focalSX + srcHalf - LENS.x) / leadDX
-      : Infinity;
-  const tEnterY =
-    leadDY !== 0
-      ? (leadDY > 0
-          ? focalSY - srcHalf - LENS.y
-          : focalSY + srcHalf - LENS.y) / leadDY
-      : Infinity;
-  const tEnter = Math.min(1, Math.max(0, Math.max(tEnterX, tEnterY)));
-  const leadX1 = LENS.x + leadDX * tEnter;
-  const leadY1 = LENS.y + leadDY * tEnter;
+  // AEP connector (LENS frame [9]): a 140px source circle centered on the
+  // focal point's screen position, joined to the 420px display circle rim
+  // by a short line — no long leader crossing the glyph (review fix kept).
+  const connDX = LENS_CX - focalSX;
+  const connDY = LENS_CY - focalSY;
+  const connLen = Math.hypot(connDX, connDY) || 1;
+  const connUX = connDX / connLen;
+  const connUY = connDY / connLen;
+  const srcEdgeX = focalSX + connUX * LENS_SRC_R;
+  const srcEdgeY = focalSY + connUY * LENS_SRC_R;
+  const rimX = LENS_CX - connUX * LENS_R;
+  const rimY = LENS_CY - connUY * LENS_R;
 
   // shared comp-space layer stack (main view and lens magnifier).
   // lensBoost>1 raises the faint analysis layers inside the magnifier so the
@@ -1163,34 +1153,49 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
           opacity: viewOp,
         }}
       />
-      {/* viewport face: white panel masking the background grid */}
+      {/* active slot face: the expanded accordion card — white panel that
+          masks the background grid inside the stage. Rides the rig slot
+          position so it travels with the accumulating tab stack. */}
       <div
         style={{
           position: "absolute",
-          left: VIEW.x,
-          top: VIEW.y,
-          width: VIEW.w,
-          height: VIEW.h,
+          left: slotR.x,
+          top: slotR.y,
+          width: slotR.w,
+          height: slotR.h,
           background: "#fff",
           opacity: viewOp,
         }}
       />
-      {/* glyph + analysis layers, clipped to the viewport rect */}
+      {/* stage band backing: keeps the tab stack area clean like the AEP
+          tab backgrounds (white strips over the grid) */}
       <div
         style={{
           position: "absolute",
-          left: VIEW.x,
-          top: VIEW.y,
-          width: VIEW.w,
-          height: VIEW.h,
+          left: stageR.x,
+          top: stageR.y,
+          width: stageR.w,
+          height: stageR.h,
+          background: "#fff",
+          opacity: viewOp,
+        }}
+      />
+      {/* glyph + analysis layers, clipped to the active-content rect */}
+      <div
+        style={{
+          position: "absolute",
+          left: contentR.x,
+          top: contentR.y,
+          width: contentR.w,
+          height: contentR.h,
           overflow: "hidden",
         }}
       >
         <div
           style={{
             position: "absolute",
-            left: -VIEW.x,
-            top: -VIEW.y,
+            left: -contentR.x,
+            top: -contentR.y,
             width: 1080,
             height: 1080,
           }}
@@ -1207,108 +1212,118 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
           </div>
         </div>
       </div>
-      {/* viewport keyline */}
+      {/* slot keyline */}
       <div
         style={{
           position: "absolute",
-          left: VIEW.x,
-          top: VIEW.y,
-          width: VIEW.w,
-          height: VIEW.h,
+          left: slotR.x,
+          top: slotR.y,
+          width: slotR.w,
+          height: slotR.h,
           border: "1px solid rgba(17,17,17,0.55)",
           opacity: viewOp * 0.85,
           boxSizing: "border-box",
         }}
       />
 
-      {/* step band (r20 redesign): editorial index, NOT app-UI tabs. The
-          r19 boxed rows (white fill + keyline border + red side bar) read
-          as "Web UI table" chrome. Now a ruled list: hairline rules above
-          the first row and below every row, plain typography, red reserved
-          for the CURRENT step's number + state (v13 color semantics). */}
+      {/* accordion tabs: the recovered AEP structure — 4 white cards whose
+          positions come from buildSceneBAccordionRig (top stack for done
+          steps, bottom waiting stack for pending). The ACTIVE card sits at
+          the slot head; divider hairlines ride each card at +27px. */}
       {STEP_LABELS.map((label, i) => {
         const s = labelStates[i];
         const active = s.active && !s.done;
-        // wu-b-v20: only the ACTIVE step carries a status word. v19-r4
-        // FAIL: done rows kept "した" while later rows showed "中", so
-        // 2-3 status words were always on screen and read as overlapping
-        // labels (f126/134/142/154/162/166). Done/pending rows now carry
-        // state in the number+label color alone — one status word max.
+        const tabR = rect(`stepTab_${i}`);
+        const divR = rect(`stepDivider_${i}`);
         const state = active ? "中" : "";
-        const y = ROW.y0 + i * (ROW.h + ROW.gap);
         return (
-          <div
-            key={i}
-            style={{
-              position: "absolute",
-              left: ROW.x,
-              top: y,
-              width: ROW.w,
-              height: ROW.h,
-              display: "flex",
-              alignItems: "center",
-              borderTop:
-                i === 0 ? "1px solid rgba(17,17,17,0.35)" : undefined,
-              borderBottom: "1px solid rgba(17,17,17,0.35)",
-              opacity: appear * bandOut,
-            }}
-          >
-            <span
+          <div key={i}>
+            <div
               style={{
-                fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
-                fontSize: 20,
-                fontWeight: 700,
-                lineHeight: 1,
-                color: active ? ANALYSIS_RED : s.done ? "#111" : "#bdbdbd",
-                width: 38,
-                letterSpacing: "0.06em",
+                position: "absolute",
+                left: tabR.x,
+                top: tabR.y,
+                width: tabR.w,
+                height: tabR.h,
+                display: "flex",
+                alignItems: "center",
+                background: "#fff",
+                opacity: appear * bandOut,
               }}
             >
-              {String(i + 1).padStart(2, "0")}
-            </span>
-            <span
+              <span
+                style={{
+                  fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
+                  fontSize: 18,
+                  fontWeight: 700,
+                  lineHeight: 1,
+                  color: active ? ANALYSIS_RED : s.done ? "#111" : "#bdbdbd",
+                  width: 40,
+                  marginLeft: 10,
+                  letterSpacing: "0.06em",
+                }}
+              >
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span
+                style={{
+                  fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
+                  fontSize: 21,
+                  fontWeight: 700,
+                  lineHeight: 1,
+                  color: active ? "#111" : s.done ? "#3f3f3f" : "#a8a8a8",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {label}
+              </span>
+              <span
+                style={{
+                  marginLeft: "auto",
+                  marginRight: 12,
+                  fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
+                  fontSize: 20,
+                  fontWeight: 700,
+                  lineHeight: 1,
+                  color: active ? ANALYSIS_RED : "#5a5a5a",
+                }}
+              >
+                {state}
+              </span>
+            </div>
+            {/* divider hairline: derived child node at tab top +27px */}
+            <div
               style={{
-                fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
-                fontSize: 24,
-                fontWeight: 700,
-                lineHeight: 1,
-                color: active ? "#111" : s.done ? "#3f3f3f" : "#a8a8a8",
-                whiteSpace: "nowrap",
+                position: "absolute",
+                left: divR.x,
+                top: divR.y,
+                width: divR.w,
+                height: divR.h,
+                background: "rgba(17,17,17,0.35)",
+                opacity: appear * bandOut,
               }}
-            >
-              {label}
-            </span>
-            <span
-              style={{
-                marginLeft: "auto",
-                fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
-                fontSize: 22,
-                fontWeight: 700,
-                lineHeight: 1,
-                color: active ? ANALYSIS_RED : "#5a5a5a",
-              }}
-            >
-              {state}
-            </span>
+            />
           </div>
         );
       })}
 
-      {/* lens: magnifies the real inferred-vertex cluster; sits over the
-          glyph's empty bottom margin — covers neither the tabs, the body
-          text, nor the focal point itself */}
+      {/* lens: AEP-faithful 300% magnifier — 420px display circle at the
+          rig lensDisplay position, showing the comp region around the
+          inferred-vertex focal at 3x. Drawn OVER the slot like the AEP
+          Lens magnifier layer; the 140px source circle + connector mark
+          exactly which region is magnified. */}
       {showLens && (
         <div
           style={{
             position: "absolute",
-            left: LENS.x - LENS.r,
-            top: LENS.y - LENS.r,
-            width: LENS.r * 2,
-            height: LENS.r * 2,
+            left: LENS_CX - LENS_R,
+            top: LENS_CY - LENS_R,
+            width: LENS_R * 2,
+            height: LENS_R * 2,
             borderRadius: "50%",
             overflow: "hidden",
             boxSizing: "border-box",
-            border: "5px solid #111",
+            border: "3px solid #111",
             background: "#fff",
             opacity: Math.min(1, lensPop) * analysisGate,
             transform: `scale(${0.85 + 0.15 * Math.min(1, lensPop)})`,
@@ -1326,7 +1341,7 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
               // circle center, magnified by zoom. Algebra: screen =
               // comp*s + t, so translate = r - focalComp*s*zoom (the fit
               // offsets cancel out).
-              transform: `translate(${LENS_IR - focalCompPt[0] * fit.s * LENS.zoom}px, ${LENS_IR - focalCompPt[1] * fit.s * LENS.zoom}px) scale(${fit.s * LENS.zoom})`,
+              transform: `translate(${LENS_IR - focalCompPt[0] * fit.s * LENS_ZOOM}px, ${LENS_IR - focalCompPt[1] * fit.s * LENS_ZOOM}px) scale(${fit.s * LENS_ZOOM})`,
               transformOrigin: "0 0",
             }}
           >
@@ -1339,67 +1354,53 @@ export const SceneB: React.FC<{ t: number }> = ({ t }) => {
             style={{
               position: "absolute",
               left: "50%",
-              bottom: 3,
+              bottom: 8,
               transform: "translateX(-50%)",
               fontFamily: "'Noto Sans JP', 'Hiragino Sans', sans-serif",
-              fontSize: 12,
+              fontSize: 20,
               fontWeight: 700,
               lineHeight: 1,
               color: "#555",
               letterSpacing: "0.04em",
             }}
           >
-            {LENS.zoom}×
+            {LENS_ZOOM}×
           </div>
         </div>
       )}
 
-      {/* lens leader: drawn AFTER the lens so the rim end stays visible;
-          thin dashed line from the lens rim to the focal point */}
+      {/* lens frame overlay (AEP LENS frame [9]): 140px source circle on
+          the focal point + connector to the display rim + vertex mark.
+          Drawn after the lens so all marks stay visible. */}
       {showLens && (
         <svg
           width={1080}
           height={1080}
           style={{ position: "absolute", left: 0, top: 0, pointerEvents: "none" }}
         >
-          {/* source window: dashed rect marking exactly which comp region
-              the lens magnifies (screen radius = LENS.r / LENS.zoom) */}
-          <rect
-            x={focalSX - LENS_IR / LENS.zoom}
-            y={focalSY - LENS_IR / LENS.zoom}
-            width={(2 * LENS_IR) / LENS.zoom}
-            height={(2 * LENS_IR) / LENS.zoom}
+          {/* source circle: the exact 140px region the lens magnifies
+              3x into the 420px display (diameter ratio is the zoom) */}
+          <circle
+            cx={focalSX}
+            cy={focalSY}
+            r={LENS_SRC_R}
             fill="none"
             stroke={VERTEX_BLUE}
-            strokeWidth={1.5}
-            strokeDasharray="6 5"
-            opacity={0.6 * Math.min(1, lensPop) * analysisGate}
+            strokeWidth={2}
+            opacity={0.85 * Math.min(1, lensPop) * analysisGate}
           />
-          {/* wu-b-v20: the leader now continues PAST the source-window
-              edge to the relevant vertex itself — v19-r4 FAIL: it
-              stopped at the dashed rect border, so the magnified target
-              was never identified. Rim -> window edge stays dashed;
-              window edge -> vertex is a short solid segment ending in a
-              ring on the solver marker nearest the focal point. */}
+          {/* connector: source circle edge -> display circle rim */}
           <line
-            x1={leadX0}
-            y1={leadY0}
-            x2={leadX1}
-            y2={leadY1}
+            x1={srcEdgeX}
+            y1={srcEdgeY}
+            x2={rimX}
+            y2={rimY}
             stroke={VERTEX_BLUE}
-            strokeWidth={1.5}
-            strokeDasharray="11 8"
-            opacity={0.55 * Math.min(1, lensPop) * analysisGate}
+            strokeWidth={2}
+            opacity={0.7 * Math.min(1, lensPop) * analysisGate}
           />
-          <line
-            x1={leadX1}
-            y1={leadY1}
-            x2={vertexSX}
-            y2={vertexSY}
-            stroke={VERTEX_BLUE}
-            strokeWidth={1.8}
-            opacity={0.9 * Math.min(1, lensPop) * analysisGate}
-          />
+          {/* vertex mark: ring on the solver marker nearest the focal so
+              the magnified target is identified (kept from wu-b-v20) */}
           <circle
             cx={vertexSX}
             cy={vertexSY}
