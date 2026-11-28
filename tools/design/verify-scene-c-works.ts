@@ -149,6 +149,18 @@ const report: Record<string, unknown> = { verifiedAt: new Date().toISOString() }
 const works: Record<string, unknown>[] = [];
 
 for (const [wi, src] of WORK_SOURCES.entries()) {
+  // Work 03's material is a real After Effects decomposition that lands
+  // in the dump separately; until then the audit records that the
+  // material is missing instead of failing on a missing comp.
+  if (!compByName(src.comp)) {
+    works.push({
+      work: wi + 1,
+      title: src.title,
+      comp: src.comp,
+      material: "not in the dump yet",
+    });
+    continue;
+  }
   const { comp, strokes } = compStrokes(src.comp, {
     pattern: src.pattern,
     indices: src.indices,

@@ -291,9 +291,9 @@ function tintSvg(raw: string, fillHex: string, opacity: number): string {
     mode: string;
     col: string;
   }[] = [
-    { comp: "PV glyph", pattern: /^FUDE S\d+/, poseT: 2, title: "作例01 墨帖", sub: "06-PV glyph / FUDE S01..S13", mode: "書き順ドローオン・印", col: "#18181b" },
-    { comp: "bunkai", indices: [21, 36] as [number, number], poseT: 3, title: "作例02 深解", sub: "02-bunkai / runs4 group idx21-36 (16層・別分解)", mode: "3層深度パララックス・暗部", col: "#8b93a8" },
-    { comp: "Logo", pattern: /(STROKE|Ae_Restro)/, poseT: 1, title: "作例03 紋章", sub: "46-Logo / 公式ロックアップ45層", mode: "構築スイープ・左右から合体", col: "#1d1d20" },
+    { comp: "PV glyph", pattern: /^FUDE S\d+/, poseT: 2, title: "作例01 墨帖", sub: "06-PV glyph / FUDE S01..S13 (12画)", mode: "書き順ドローオン・印", col: "#18181b" },
+    { comp: "bunkai", indices: [21, 36] as [number, number], poseT: 3, title: "作例02 深解", sub: "02-bunkai / runs4 group idx21-36 (16片)", mode: "構造分離（角/刀/牛）・暗部", col: "#8b93a8" },
+    { comp: "NEWMAT 無", pattern: /^STROKE_/, poseT: 0.5, title: "作例03 飛白", sub: "実機AE分解 / 第三の漢字", mode: "自由運動・1画が游離", col: "#1d1d20" },
   ];
   const PANEL_W = 330;
   const bodies: string[] = [];

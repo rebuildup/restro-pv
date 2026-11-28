@@ -1,5 +1,7 @@
 # Restro PV 表現・構造設計パッケージ（Issue #32 正本）
 
+> **2026-11-28 更新（第2ラウンド）**: パッケージ内の C・E・背景の記述を実装へ同期し、資料間の矛盾を是正した。主な改訂点は [07-motion-design.md §3.3](./07-motion-design.md)（Scene C の作例03 撤回と書き順の正本化）・§3.4（Scene E の作り直し）、[03-assets-catalog.md §5](./03-assets-catalog.md)（実在する独立作品の棚卸し）、[02-layout-and-grid.md](./02-layout-and-grid.md)（カメラ FOV の是正）にある。**旧記述（公式Logo由来の作例03、bunkai runs4/runs5 を「別分解境界」とした誤り、fov=40）は本パッケージでは正本ではない。**
+
 > **位置づけ**: 本ディレクトリ（`docs/design/`）は、[GitHub Issue #32](https://github.com/rebuildup/restro-pv/issues/32) の要求に基づき、元 After Effects プロジェクト（`legacy/pv-2dc99e1.aep`・`pv/generated/*.ts`）、初期参照 AEP（`legacy/pv-8495026.aep` / `verification/beats/` / `verification/pv-review.mp4`）、確定サムネイル（`assets/images/samune-v1-master.png`）、各種実筆画データ・実操作録画を一次検証して再構築した、**後続の本制作・検証の根拠となる表現・構造設計のモジュール文書群**である。
 >
 > **上位境界**: [docs/issue30-recovery.md](../issue30-recovery.md)（サムネイル・共通背景・パースグリッド・左ブランドロックアップ・左カラム領域は確定事項として維持し、編集対象は右側ステージ表現とする）。なお、確定済み設計と現行 Remotion 実装（`video/src/`）の間に見られる乖離は各文書で事実として切り分け、修正計画の判断材料として記録している。

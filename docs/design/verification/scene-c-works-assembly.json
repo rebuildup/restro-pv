@@ -1,5 +1,5 @@
 {
-  "verifiedAt": "2026-11-28T09:28:18.468Z",
+  "verifiedAt": "2026-11-28T11:50:10.469Z",
   "works": [
     {
       "work": 1,
@@ -225,97 +225,9 @@
     },
     {
       "work": 3,
-      "title": "紋章",
-      "comp": "Logo",
-      "poseT": 1,
-      "pattern": "/(STROKE|Ae_Restro)/",
-      "compSize": [
-        416,
-        260
-      ],
-      "strokeCount": 45,
-      "charBBox": {
-        "minX": 0,
-        "minY": 0,
-        "maxX": 415.4,
-        "maxY": 260.3,
-        "w": 415.4,
-        "h": 260.3
-      },
-      "strokeNames": [
-        "Ae_Restro merged shape",
-        "STROKE_034_runs3",
-        "STROKE_033_runs6",
-        "STROKE_032_runs4",
-        "STROKE_031_runs5",
-        "STROKE_030_runs7",
-        "STROKE_029_runs2",
-        "STROKE_028_runs9",
-        "STROKE_027_runs7",
-        "STROKE_026_runs7",
-        "STROKE_025_runs6",
-        "STROKE_024_runs2",
-        "STROKE_023_runs4",
-        "STROKE_022_runs3",
-        "STROKE_021_runs6",
-        "STROKE_019_runs5",
-        "STROKE_020_runs3",
-        "STROKE_018_runs4",
-        "STROKE_016_runs5",
-        "STROKE_015_runs5",
-        "STROKE_017_runs2",
-        "STROKE_014_runs7",
-        "STROKE_013_runs2",
-        "STROKE_012_runs5",
-        "STROKE_011_runs6",
-        "STROKE_010_runs6",
-        "Ae_Restro part 3",
-        "Ae_Restro part 2",
-        "Ae_Restro part 1",
-        "STROKE_008_runs6",
-        "STROKE_007_runs7",
-        "STROKE_006_runs8",
-        "Ae_Restro part 2",
-        "Ae_Restro merged shape",
-        "STROKE_001_runs3",
-        "Ae_Restro part 2",
-        "STROKE_009_runs1",
-        "STROKE_008_runs7",
-        "STROKE_006_runs6",
-        "STROKE_007_runs7",
-        "STROKE_005_runs6",
-        "STROKE_004_runs6",
-        "STROKE_003_runs3",
-        "Ae_Restro merged shape",
-        "STROKE_001_runs4"
-      ],
-      "strokeUnion": {
-        "pixelCount": 62584,
-        "bbox": {
-          "x0": 0,
-          "y0": 0,
-          "x1": 415,
-          "y1": 259
-        }
-      },
-      "reference": {
-        "officialArtwork": "docs/design/assets/individual/logo/logo-full-clean.png",
-        "officialPixelCount": 61725,
-        "strokeUnionPixelCount": 62584,
-        "strokeUnionBBox": {
-          "x0": 0,
-          "y0": 0,
-          "x1": 415,
-          "y1": 259
-        },
-        "vsOfficialArtwork": {
-          "iou": 0.9797,
-          "interPx": 61518,
-          "onlyApx": 1066,
-          "onlyBpx": 207
-        },
-        "note": "dumped fills are all black; the 7 vermilion accent strokes are restored at render time via LOGO_RED_INDICES (IoU-verified vs logo-red-accents.svg)"
-      }
+      "title": "飛白",
+      "comp": "NEWMAT 無 mincho",
+      "material": "not in the dump yet"
     }
   ]
 }
