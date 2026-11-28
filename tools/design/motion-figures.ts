@@ -14,6 +14,9 @@ import {
   evalFudeStep4ReleaseU,
 } from "../../video/src/design/choreography.ts";
 import { compStrokes } from "../../video/src/scenes/glyph.tsx";
+import { GridRef, MASTER_GRID, buildSceneBAccordionRig } from "../../video/src/design/rig.ts";
+
+const B_GRID = new GridRef(MASTER_GRID);
 
 const OUT = "docs/design/diagrams";
 const F_JP = `'Yu Gothic UI','Meiryo',sans-serif`;
@@ -322,5 +325,71 @@ function tintSvg(raw: string, fillHex: string, opacity: number): string {
   ${bodies.join("\n")}
 </svg>`;
   saveSvgAndPng("motion-scene-c-works.svg", svg, 1140);
+}
+
+// ============================================================================
+// 5. SCENE B ACCORDION — the recovered AEP structure as an evaluated rig.
+//    Four panels (S1..S4) render buildSceneBAccordionRig node worldRects:
+//    stage band, per-step tabs (top stack vs bottom waiting stack), the
+//    660px active slot, and the 140->420px (300%) lens chain. Geometry comes
+//    from the same rig verify-local-motion.ts checks — not hand-drawn.
+// ============================================================================
+{
+  const PW = 252; // panel width
+  const PH = 400; // panel height
+  const GX = 31; // horizontal gap: 4*252 + 3*31 = 1101
+  const OX = 40; const OY = 140;
+  const COMP = { x0: 520, y0: 170, w: 560, h: 820 }; // covers x520-1080, y170-990
+  const panels: string[] = [];
+  const labels = ["S1 輪郭を解析", "S2 輪郭線を延長", "S3 隠れた頂点を推定", "S4 一画ずつに分割"];
+  for (let s = 0; s < 4; s++) {
+    const rig = buildSceneBAccordionRig(B_GRID, { activeStep: s });
+    const sc = Math.min(PW / COMP.w, PH / COMP.h);
+    const px = OX + s * (PW + GX);
+    const py = OY;
+    const map = (x: number, y: number) => [px + (x - COMP.x0) * sc, py + (y - COMP.y0) * sc] as const;
+    const rect = (r: { x: number; y: number; w: number; h: number }, fill: string, stroke = "#3f3f46", dash = "") => {
+      const [ax, ay] = map(r.x, r.y);
+      return `<rect x="${ax.toFixed(1)}" y="${ay.toFixed(1)}" width="${(r.w * sc).toFixed(1)}" height="${(r.h * sc).toFixed(1)}" fill="${fill}" stroke="${stroke}" stroke-width="1.2" ${dash ? `stroke-dasharray="${dash}"` : ""}/>`;
+    };
+    const parts: string[] = [];
+    const stage = rig.nodes.get("bStage")!.worldRect!;
+    parts.push(rect(stage, "#fafafa", "#a1a1aa"));
+    // tabs: top-stack (k<=s) vs bottom-stack
+    for (let k = 0; k < 4; k++) {
+      const r = rig.nodes.get(`stepTab_${k}`)!.worldRect!;
+      const inTop = k <= s;
+      parts.push(rect(r, inTop ? "#dbeafe" : "#fef3c7", inTop ? "#2563eb" : "#d97706"));
+      const [tx, ty] = map(r.x + 6, r.y + r.h / 2);
+      parts.push(`<text x="${tx.toFixed(1)}" y="${(ty + 3).toFixed(1)}" font-size="9" fill="#18181b" font-family="${F_MONO}">STEP${k + 1}</text>`);
+    }
+    const slot = rig.nodes.get("bActiveSlot")!.worldRect!;
+    parts.push(rect(slot, "rgba(37,99,235,0.10)", "#2563eb", "5 3"));
+    const content = rig.nodes.get("bActiveContent")!.worldRect!;
+    parts.push(rect(content, "rgba(37,99,235,0.05)", "none"));
+    // lens chain: display circle (420) + source circle (140) + focal cross
+    const lensD = rig.nodes.get("lensDisplay")!.worldRect!;
+    const [lx, ly] = map(lensD.x + lensD.w / 2, lensD.y + lensD.h / 2);
+    const lr = (lensD.w / 2) * sc;
+    parts.push(`<circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="${lr.toFixed(1)}" fill="rgba(214,69,32,0.06)" stroke="#D64520" stroke-width="1.4"/>`);
+    const focal = rig.nodes.get("lensDisplay")!.def.meta as { focalPoint?: [number, number] } | undefined;
+    const fp = focal?.focalPoint ?? [757, 422];
+    const [fx2, fy2] = map(fp[0], fp[1]);
+    parts.push(`<circle cx="${fx2.toFixed(1)}" cy="${fy2.toFixed(1)}" r="${(70 * sc).toFixed(1)}" fill="none" stroke="#D64520" stroke-width="1" stroke-dasharray="3 3"/>`);
+    const [sx2, sy2] = map(660 - 70, 810 - 70);
+    parts.push(`<rect x="${sx2.toFixed(1)}" y="${sy2.toFixed(1)}" width="${(140 * sc).toFixed(1)}" height="${(140 * sc).toFixed(1)}" fill="none" stroke="#D64520" stroke-width="1"/>`);
+    parts.push(`<text x="${(px + PW / 2).toFixed(1)}" y="${(py + PH + 14).toFixed(1)}" text-anchor="middle" font-size="12" font-weight="700" fill="#111111" font-family="${F_JP}">${labels[s]}</text>`);
+    parts.push(`<text x="${(px + PW / 2).toFixed(1)}" y="${(py + PH + 30).toFixed(1)}" text-anchor="middle" font-size="10" fill="#52525b" font-family="${F_MONO}">slotH=${rig.invariants.activeSlotHeight.toFixed(0)}px | lens ${rig.invariants.lensDisplayDiameter}/${rig.invariants.lensSourceDiameter}px = ${rig.invariants.lensDisplayDiameter / rig.invariants.lensSourceDiameter}x</text>`);
+    panels.push(`<g>${parts.join("\n")}</g>`);
+  }
+  const svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1140" height="720" viewBox="0 0 1140 720">
+  <rect width="1140" height="720" fill="#f8fafc"/>
+  <rect x="20" y="20" width="1100" height="680" rx="10" fill="#ffffff" stroke="#d4d4d8"/>
+  <text x="40" y="56" font-size="19" font-weight="700" fill="#111111" font-family="${F_JP}">Scene B アコーディオン — buildSceneBAccordionRig 実評価（4状態・comp座標を縮尺表示）</text>
+  <text x="40" y="76" font-size="12" fill="#52525b" font-family="${F_MONO}">青=上段スタック済タブ / 黄=下段待機タブ / 青破線=660px展開スロット / 赤=140→420px(300%)レンズ鎖（ソース円・焦点）</text>
+  ${panels.join("\n")}
+</svg>`;
+  saveSvgAndPng("motion-scene-b-accordion.svg", svg, 1140);
 }
 void readFileSync;

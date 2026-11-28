@@ -74,11 +74,14 @@
 - **筆画・要素間インタラクション**:
   - `STEP 1..3`（`4.25..7.00s`）では主文字「筆」そのものは **移動させず静止台座として保持** し、走査線 (`scanline`)・延長線 (`extend A/B`)・推定頂点 `29点` と `12緑面`・`300%` 拡大鏡の**解析レイヤーだけが累積加算**される。
   - `t = 7.142s`（`STEP 4` 開示直後）に、それまで静止して解析されていた「筆」13画が **初めて立体的に 13個のベクトルへ分離移動** し（[fude-strokes-exploded.png](./assets/fude-strokes-exploded.png)）、`S09..S12` 横画群が等差間隔 `dy={-5, +2, +8, +14}` で美しく開くことで、「推定結果＝独立編集できる 13 の筆画」を身体的に理解させる。
-  - **状態基準実測オニオンスキン（2026-11 刷新）**: [`diagrams/motion-fude-onion.png`](./diagrams/motion-fude-onion.png)（[SVG](./diagrams/motion-fude-onion.svg)）— 旧版が参照していた `01-Baseline`（CTI 焼き込みにより `t=0` でも `IoU = 0.7310` で静止凍結していたコンポ）から無変位正本 **`06-PV glyph`（[`data/pv-glyph-fude.composition.json`](./data/pv-glyph-fude.composition.json), rest `IoU = 0.9998`）**＋実式 `easeOut(7.142..7.611s)` へ切り替え、`7.142s (u=0.00 解放開始)`・`7.200s (easeOut≈0.52 立ち上がり)`・`7.350s (easeOut≈0.87 減速展開)`・`7.611s (u=1.00 ピーク完了)` の4状態をベクトル注釈付きで検証。[`verification/assembly-metrics.json`](./verification/assembly-metrics.json) 参照。
+  - **アコーディオン構造図（リグ実評価版・2026-11 追加）**: [`diagrams/motion-scene-b-accordion.png`](./diagrams/motion-scene-b-accordion.png)（[SVG](./diagrams/motion-scene-b-accordion.svg)）— `buildSceneBAccordionRig`（`video/src/design/rig.ts`）を `activeStep = 0..3` で実評価し、4状態のタブスタック配置・`660px` 展開スロット・`140→420px(300%)` レンズ鎖（ソース円・焦点点）を comp 座標から縮尺描画したもの。`verify-local-motion.ts` の `accordionChecks` と同一リグが生成するため、図版・数値検証・将来の本番接続が同一構造を共有する。**現行 `SceneB.tsx` はこのリグを未消費**（固定4行バンド＋`r46/zoom1.8` ドックレンズの wu-b-vN 系統）であり、収斂は [05-cards-and-sheets.md §1.2](./05-cards-and-sheets.md) が宣言する正構造（上段累積タブ＋下段展開スロット＋倍率一致拡大鏡）への移行として別途実施する。
+- **状態基準実測オニオンスキン（2026-11 刷新）**: [`diagrams/motion-fude-onion.png`](./diagrams/motion-fude-onion.png)（[SVG](./diagrams/motion-fude-onion.svg)）— 旧版が参照していた `01-Baseline`（CTI 焼き込みにより `t=0` でも `IoU = 0.7310` で静止凍結していたコンポ）から無変位正本 **`06-PV glyph`（[`data/pv-glyph-fude.composition.json`](./data/pv-glyph-fude.composition.json), rest `IoU = 0.9998`）**＋実式 `easeOut(7.142..7.611s)` へ切り替え、`7.142s (u=0.00 解放開始)`・`7.200s (easeOut≈0.52 立ち上がり)`・`7.350s (easeOut≈0.87 減速展開)`・`7.611s (u=1.00 ピーク完了)` の4状態をベクトル注釈付きで検証。[`verification/assembly-metrics.json`](./verification/assembly-metrics.json) 参照。
 
 ### 3.3 Scene C（`f191..f281`）：3作例の独立運動文法（差別化設計）
 
 > **2026-11 実装同期**: 3作例は内容（ストロークソース）も分離済み。`SceneC.tsx` の `WORK_SOURCES` が正本：W1「筆墨」=`06-PV glyph` FUDE 13画・orbit・墨、W2「解彩」=`02-bunkai` runs5 12画・wave・縦グラデーション、W3「筆構」=`41-BG decomposed strokes` FUDE 13画（筆の第2分解）・左右対称エンブレム・rock。以下は各作例の運動文法の設計意図。
+>
+> **ソース比較図（2026-11 追加）**: [`diagrams/motion-scene-c-works.png`](./diagrams/motion-scene-c-works.png)（[SVG](./diagrams/motion-scene-c-works.svg)）— `SceneC.tsx` と同一の `compStrokes` rest pose 幾何を3パネルに正規化描画し、各作例の実筆画集合・筆画数・文字 bbox・ソース provenance（comp/レイヤーパターン/poseT）を並置。3作例が仕上げではなく**内容（分解・文字）で異なる**ことを図で確認できる。
 
 - **作例 01「筆墨」（筆・墨）**: 完成形の墨字を先に見せ、色分けされた筆画が文字中心から**独立 orbit**（個別位相・半径・回転）で散開し、再合成して完成形へ戻る。書き順グループではなく各画の固有リズムで動かす。
 - **作例 02「解彩」（解・グラデーション）**: 別文字「解」の粗い分解12画を、コバルト→朱の縦グラデーションで一つの色面として見せ、左→右へ**位相差のある per-stroke wave** が走り、グラデーション完成形へ解決する。
