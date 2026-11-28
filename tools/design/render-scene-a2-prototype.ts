@@ -1,7 +1,8 @@
 // Scene A2 local-motion prototype renderer (Issue #32) — PRODUCTION path.
 // Renders the exact choreography consumed by video/src/scenes/SceneA2.tsx:
 //   compStrokes("master") rest geometry (comp space == screen space)
-//   -> createA2Choreo field transform + per-stroke peel deltas
+//   -> createA2Choreo field transform + per-stroke jolt&settle
+//      (strokePoint: rot about centroid + floored translate)
 //   -> comp->screen similarity -> even-odd rasterization.
 // No parallel camera math: the same createA2Choreo evaluation that
 // verify-local-motion.ts checks numerically and SceneA2.tsx renders in
@@ -156,9 +157,8 @@ for (let f = firstFrame; f <= lastFrame; f++) {
   ];
   // paint order = compStrokes order (same as production StrokeField)
   for (const g of geoms) {
-    const [dx, dy] = choreo.strokeDelta(g.name, rel);
     const screen = g.points.map((p) =>
-      choreo.toScreen([p[0] + dx, p[1] + dy], field),
+      choreo.toScreen(choreo.strokePoint(g.name, p, rel), field),
     );
     fillPolygon(img, screen, inkFill);
     if (g.name === SCENE_A2.vertName) {

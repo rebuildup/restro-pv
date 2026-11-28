@@ -32,14 +32,29 @@ const seg = (t: number, a: number, b: number) => clamp01((t - a) / (b - a));
 // broke composition (lower gate clipped off-frame, spine pinned to the
 // right edge, no group reframing).
 //
-// Motion model (all in master-comp units; comp space == 1080px screen):
+// Motion model v2 (all in master-comp units; comp space == 1080px screen):
 //   field   = comp->screen similarity: screen = (p - ZC) * zoom + SC
-//   stroke  = rest comp-space polygon + per-stroke peel translate (comp px)
-// The field carries the bleed framing -> hold-fit reframe -> A3 drift;
-// strokes peel one at a time along principal-axis-blended vectors with a
-// hard left-column floor. Presentation layers (ghost contours, guide
-// echoes, crossing markers, accent contour) are SceneA2.tsx rendering
-// concerns and stay there.
+//   stroke  = rest comp-space polygon + per-stroke jolt translate + rot
+//
+// v2 replaces the invented uniform right-peel cascade + shrink-fit +
+// fade with the ORIGINAL AEP's motion grammar, recovered from the dumps
+// (docs/design/07-motion-design.md §1, agent probe of 05-master idx
+// 239-254 keys): simultaneous fast attack -> long ease-out settle tail,
+// per-stroke ASYMMETRIC signed excursions (pos -79..+49px, rot -38..+27°),
+// then a bleed giant-hold (the kai-zoom static-hold reference) and a
+// group settle-cut into the B handoff — not shrink/vanish.
+//
+// JOLT translation vectors are comp-space center deltas measured via
+// compStrokes at peak pose (t=0.375, layer keys' influence-0.01% hit)
+// vs rest pose (t=1.46). JOLT_ROT values are the dumped peak RotZ keys
+// (local space; parent Null3 carries only Y-rotation so they read as
+// screen rotations about each stroke's centroid — documented
+// approximation, same convention as the raster prototype).
+// Crossing trio (SPEC §5 A2 proof) keeps a residual fraction of its
+// excursion through the hold so the "hidden stroke revealed" beat
+// survives, then releases into the exit.
+// Presentation layers (ghost contours, guide echoes, crossing markers,
+// accent contour) are SceneA2.tsx rendering concerns and stay there.
 // ---------------------------------------------------------------------------
 export const SCENE_A2 = {
   /** Comp-local seconds: Scene A2 owns [45/24, 101/24). */
@@ -47,6 +62,8 @@ export const SCENE_A2 = {
   t1: 101 / 24,
   /** Master stroke layers' rest pose at A1's last frame. */
   poseT: 1.46,
+  /** Dumped settle-peak pose (comp time of the influence-0.01% key). */
+  joltPoseT: 0.375,
   compName: "master",
   /** "▾ (A) stroke runs4" group layer-index range in the master dump. */
   layerIndexRange: [239, 254] as [number, number],
@@ -59,32 +76,64 @@ export const SCENE_A2 = {
     [1066, 579],
     [1066, 728],
   ] as Array<[number, number]>,
-  // ---- field transform constants (ported verbatim, r12/v15) ----
+  // ---- field transform constants ----
   ZC: [860, 540] as [number, number],
-  SC0: [865, 680] as [number, number],
-  Z0: 1.0,
-  Z1: 1.08,
-  /** Hold-fit framing: maps the fully-separated union inside the frame. */
-  ZF: 0.61,
-  SCF: [781, 599] as [number, number],
+  // SC0 is the pre-drift origin; during the hold scx = SC0+DRIFT_IN[0],
+  // scy = SC0+DRIFT_IN[1] (driftUp only engages after the scene fade).
+  // Hold framing (zoom 0.89): union x 419.8..1184 comp -> screen
+  // ~473..1153 — left column clear, crossings at x~1048 visible,
+  // right edge bleeds ~70px (cropped giant-stroke read, kai-zoom ref).
+  SC0: [824, 440] as [number, number],
+  Z0: 0.8,
+  Z1: 0.89,
+  /** Exit settle zoom (bunkai scale 128->100 reference, softened). */
+  ZS: 0.85,
   DRIFT_IN: [40, 40] as [number, number],
   DRIFT_UP: 170,
-  // ---- peel cascade ----
-  CROSS_SEP: {
-    STROKE_016_runs4: [-42, -48],
-    STROKE_015_runs4: [-34, -142],
-    STROKE_017_runs4: [28, 142],
+  // ---- jolt & settle (replaces peel cascade) ----
+  /** Simultaneous attack window (rel s) — the original's instant hit. */
+  JOLT_ATTACK: [0.2, 0.42] as [number, number],
+  /** Long settle tail end (rel s) — strokes are assembled by then. */
+  JOLT_TAIL_END: 1.45,
+  /** Crossing trio residual separation held through the proof beat. */
+  CROSS_RESID: 0.55,
+  CROSS_RESID_HOLD: [1.3, 1.85] as [number, number],
+  CROSS_RESID_OUT: [1.85, 2.1] as [number, number],
+  /** Per-stroke peak excursion, comp-space px (dumped keys, measured). */
+  JOLT_D: {
+    STROKE_016_runs4: [0.0, 51.4],
+    STROKE_017_runs4: [45.6, 0.0],
+    STROKE_015_runs4: [-35.4, 2.6],
+    STROKE_014_runs4: [-9.6, 20.8],
+    STROKE_011_runs4: [0.4, -19.5],
+    "Ae_Restro merged shape 3": [-13.2, -2.9],
+    STROKE_010_runs4: [46.9, 0.0],
+    STROKE_007_runs4: [-67.3, 0.0],
+    STROKE_004_runs4: [48.9, 0.0],
+    STROKE_005_runs4: [-21.9, -4.3],
+    "Ae_Restro merged shape 2": [8.2, -62.4],
+    STROKE_003_runs4: [-78.8, 0.0],
+    STROKE_006_runs6: [-0.4, 0.7],
+    STROKE_002_runs6: [28.6, -15.8],
+    STROKE_000_runs4: [0.0, 37.6],
+    STROKE_001_runs5: [-25.5, -7.1],
   } as Record<string, [number, number]>,
-  CASCADE_T0: 0.42,
-  STAGGER_MAIN: 0.072,
-  LEAD: 0.045,
-  PEEL: 0.22,
-  PEEL_BASE: 115,
-  PEEL_SPAN: 50,
+  /** Per-stroke peak rotation (deg, dumped RotZ keys ~ screen rotZ). */
+  JOLT_ROT: {
+    STROKE_015_runs4: -8,
+    STROKE_014_runs4: 11,
+    STROKE_011_runs4: -22,
+    "Ae_Restro merged shape 3": 27,
+    STROKE_005_runs4: 18,
+    "Ae_Restro merged shape 2": 3,
+    STROKE_006_runs6: -10,
+    STROKE_002_runs6: -38,
+    STROKE_001_runs5: -19,
+  } as Record<string, number>,
   /** Hard guarantee: no hero stroke renders left of this screen px. */
   SAFE_LEFT: 470,
   // ---- envelopes (rel seconds) ----
-  FIT_IN: [1.58, 1.9] as [number, number],
+  SETTLE_IN: [1.92, 2.24] as [number, number],
   ZOOM_PUSH: [0.0, 0.45] as [number, number],
   DRIFT_IN_T: [0.15, 0.5] as [number, number],
   DRIFT_UP_T: [1.95, 2.29] as [number, number],
@@ -112,33 +161,23 @@ export interface A2Field {
 export interface A2Choreo {
   /** rel = comp seconds - SCENE_A2.t0 */
   fieldAt: (rel: number) => A2Field;
-  /** Ordered stroke names for the peel cascade (cross trio, then L->R). */
+  /** Ordered stroke names (cross trio first, then L->R). */
   order: string[];
-  /** Selection onset (rel s) per stroke name. */
+  /** Jolt attack onset (rel s) per stroke name — near-simultaneous. */
   selOf: (name: string) => number;
-  /** Peel progress p in [0,1] for a stroke at rel. */
+  /** Jolt envelope p in [0,1] for a stroke at rel (attack->peak->settle). */
   peelP: (name: string, rel: number) => number;
-  /** Full-separation translate (peel=1) in comp px. */
+  /** Peak excursion translate (jolt=1) in comp px. */
   peelDelta: (name: string) => [number, number];
   /** Actual per-frame comp-space translate incl. left-column floor. */
   strokeDelta: (name: string, rel: number) => [number, number];
+  /** Per-frame rotation about the stroke centroid (deg, dumped RotZ). */
+  strokeRot: (name: string, rel: number) => number;
+  /** comp-space rest point -> jolt-transformed comp-space point
+   *  (rotate about centroid, then translate incl. left-column floor). */
+  strokePoint: (name: string, p: [number, number], rel: number) => [number, number];
   /** comp-space point -> screen px under the current field. */
   toScreen: (p: [number, number], field: A2Field) => [number, number];
-}
-
-function principalAxis(pts: Array<[number, number]>): [number, number] {
-  const p = pts.filter((_, i) => i % 5 === 0);
-  if (p.length < 3) return [1, 0];
-  let mx = 0, my = 0;
-  for (const [x, y] of p) { mx += x; my += y; }
-  mx /= p.length; my /= p.length;
-  let sxx = 0, sxy = 0, syy = 0;
-  for (const [x, y] of p) {
-    const dx = x - mx, dy = y - my;
-    sxx += dx * dx; sxy += dx * dy; syy += dy * dy;
-  }
-  const ang = 0.5 * Math.atan2(2 * sxy, sxx - syy);
-  return [Math.cos(ang), Math.sin(ang)];
 }
 
 /**
@@ -152,7 +191,7 @@ export function createA2Choreo(strokes: A2StrokeGeom[]): A2Choreo {
   const byName = new Map(strokes.map((s) => [s.name, s]));
   const crossSet = new Set<string>(S.crossNames);
 
-  // Peel order: crossing trio first (proof beat), then L->R by centroid x.
+  // Presentation order: crossing trio first (proof beat), then L->R.
   const others = strokes
     .filter((s) => !crossSet.has(s.name))
     .sort((a, b) => a.center[0] - b.center[0]);
@@ -161,16 +200,12 @@ export function createA2Choreo(strokes: A2StrokeGeom[]): A2Choreo {
     ...others,
   ];
   const order = orderItems.map((s) => s.name);
-  const rankOf = new Map(order.map((n, i) => [n, i / Math.max(order.length - 1, 1)]));
+  // Near-simultaneous attack with a barely-there rank offset (+-0.015s)
+  // so the hit reads as one event, not a mechanical cascade.
   const selOfMap = new Map<string, number>();
   orderItems.forEach((item, k) => {
-    selOfMap.set(item.name, k < 3 ? S.CASCADE_T0 + k * 0.065 : 0.72 + (k - 3) * S.STAGGER_MAIN);
+    selOfMap.set(item.name, S.JOLT_ATTACK[0] + (k / Math.max(order.length - 1, 1) - 0.5) * 0.03);
   });
-
-  const CEN: [number, number] = [
-    strokes.reduce((a, s) => a + s.center[0], 0) / strokes.length,
-    strokes.reduce((a, s) => a + s.center[1], 0) / strokes.length,
-  ];
 
   const geomOf = (name: string): A2StrokeGeom => {
     const g = byName.get(name);
@@ -178,66 +213,90 @@ export function createA2Choreo(strokes: A2StrokeGeom[]): A2Choreo {
     return g;
   };
 
-  const peelDelta = (name: string): [number, number] => {
-    const fixed = S.CROSS_SEP[name];
-    if (fixed) return fixed;
-    const item = geomOf(name);
-    const [cx, cy] = item.center;
-    // radial clamped to non-negative x: the hero exits RIGHT, left-side
-    // strokes never peel into the protected copy column.
-    let rx = Math.max(cx - CEN[0], 0);
-    let ry = cy - CEN[1];
-    const rl = Math.hypot(rx, ry) || 1;
-    rx /= rl; ry /= rl;
-    let [ax, ay] = principalAxis(item.points);
-    if (ax * rx + ay * ry < 0) { ax = -ax; ay = -ay; }
-    let dx = 0.55 * ax + 0.30 * rx;
-    let dy = 0.55 * ay + 0.30 * ry;
-    const minPre = Math.max(0.45 * Math.abs(dy), 0.4);
-    if (dx < minPre) dx = minPre;
-    const dl = Math.hypot(dx, dy) || 1;
-    dx /= dl; dy /= dl;
-    const r = rankOf.get(name) ?? 0.5;
-    const mag = S.PEEL_BASE + S.PEEL_SPAN * r;
-    return [dx * mag, dy * mag];
+  /** Jolt envelope: fast attack -> 1, long ease-out settle -> 0.
+   *  Crossing trio additionally holds CROSS_RESID through the proof beat. */
+  const joltEnv = (name: string, rel: number): number => {
+    const sel = selOfMap.get(name) ?? S.JOLT_ATTACK[0];
+    const attack = easeOutCubic(seg(rel, sel, sel + (S.JOLT_ATTACK[1] - S.JOLT_ATTACK[0])));
+    const settle = 1 - easeOutCubic(seg(rel, S.JOLT_ATTACK[1], S.JOLT_TAIL_END));
+    let env = attack * settle;
+    if (crossSet.has(name)) {
+      const residIn = seg(rel, S.CROSS_RESID_HOLD[0] - 0.15, S.CROSS_RESID_HOLD[0]);
+      const residOut = 1 - easeInOutCubic(seg(rel, S.CROSS_RESID_OUT[0], S.CROSS_RESID_OUT[1]));
+      env = Math.max(env, S.CROSS_RESID * residIn * residOut);
+    }
+    return env;
   };
 
   const fieldAt = (rel: number): A2Field => {
     const driftIn = seg(rel, S.DRIFT_IN_T[0], S.DRIFT_IN_T[1]);
     const driftUp = easeInOutCubic(seg(rel, S.DRIFT_UP_T[0], S.DRIFT_UP_T[1]));
-    const fitK = easeInOutCubic(seg(rel, S.FIT_IN[0], S.FIT_IN[1]));
-    const zoom =
-      (S.Z0 + (S.Z1 - S.Z0) * easeInOutCubic(seg(rel, S.ZOOM_PUSH[0], S.ZOOM_PUSH[1]))) *
-        (1 - fitK) +
-      S.ZF * fitK;
-    const baseScx = S.SC0[0] + S.DRIFT_IN[0] * driftIn;
-    const baseScy = S.SC0[1] + S.DRIFT_IN[1] * driftIn - S.DRIFT_UP * driftUp;
-    const scx = baseScx * (1 - fitK) + S.SCF[0] * fitK;
-    const scy = baseScy * (1 - fitK) + S.SCF[1] * fitK;
+    const settleK = easeInOutCubic(seg(rel, S.SETTLE_IN[0], S.SETTLE_IN[1]));
+    const push = easeInOutCubic(seg(rel, S.ZOOM_PUSH[0], S.ZOOM_PUSH[1]));
+    const zoom = (S.Z0 + (S.Z1 - S.Z0) * push) * (1 - settleK) + S.ZS * settleK;
+    const scx = S.SC0[0] + S.DRIFT_IN[0] * driftIn;
+    const scy = S.SC0[1] + S.DRIFT_IN[1] * driftIn - S.DRIFT_UP * driftUp;
     const opacity = 1 - easeInOutCubic(seg(rel, S.SCENE_FADE[0], S.SCENE_FADE[1]));
     return { zoom, scx, scy, opacity };
   };
 
-  const leftFloor = (name: string, field: A2Field): number => {
-    const item = geomOf(name);
-    return (S.SAFE_LEFT - field.scx) / field.zoom + S.ZC[0] - item.bbox[0];
+  const peelDelta = (name: string): [number, number] => {
+    const d = S.JOLT_D[name];
+    if (d) return d;
+    return [0, 0];
   };
 
   const strokeDelta = (name: string, rel: number): [number, number] => {
-    const sel = selOfMap.get(name) ?? 0.5;
-    const p = easeInOutCubic(seg(rel, sel + S.LEAD, sel + S.LEAD + S.PEEL));
+    const env = joltEnv(name, rel);
+    const field = fieldAt(rel);
     const [fx, fy] = peelDelta(name);
-    let sx = fx * p;
-    let sy = fy * p;
-    const floor = leftFloor(name, fieldAt(rel));
-    if (sx < floor) sx = floor;
+    let sx = fx * env;
+    const sy = fy * env;
+    const rot = (S.JOLT_ROT[name] ?? 0) * env;
+    // Left-column floor evaluated on the ROTATED bbox: the jolt rotation
+    // can push a stroke's screen extent left of its translated bbox, so
+    // clamping sx against bbox[0] alone is not sufficient. Screen x is
+    // linear in sx (shift = zoom * dsx), so one correction is exact.
+    const minScreenX = (dx: number): number => {
+      const item = geomOf(name);
+      const [cx, cy] = item.center;
+      const rad = (rot * Math.PI) / 180;
+      const cos = Math.cos(rad), sin = Math.sin(rad);
+      let m = Infinity;
+      for (const [x, y] of [
+        [item.bbox[0], item.bbox[1]],
+        [item.bbox[2], item.bbox[1]],
+        [item.bbox[2], item.bbox[3]],
+        [item.bbox[0], item.bbox[3]],
+      ] as Array<[number, number]>) {
+        const rx = x - cx, ry = y - cy;
+        const px = cx + rx * cos - ry * sin + dx;
+        m = Math.min(m, (px - S.ZC[0]) * field.zoom + field.scx);
+      }
+      return m;
+    };
+    if (minScreenX(sx) < S.SAFE_LEFT) {
+      sx += (S.SAFE_LEFT - minScreenX(sx)) / field.zoom;
+    }
     return [sx, sy];
   };
 
-  const peelP = (name: string, rel: number): number => {
-    const sel = selOfMap.get(name) ?? 0.5;
-    return easeInOutCubic(seg(rel, sel + S.LEAD, sel + S.LEAD + S.PEEL));
+  const strokeRot = (name: string, rel: number): number => {
+    const env = joltEnv(name, rel);
+    return (S.JOLT_ROT[name] ?? 0) * env;
   };
+
+  const strokePoint = (name: string, p: [number, number], rel: number): [number, number] => {
+    const [dx, dy] = strokeDelta(name, rel);
+    const rot = strokeRot(name, rel);
+    const { center } = geomOf(name);
+    const rad = (rot * Math.PI) / 180;
+    const cos = Math.cos(rad), sin = Math.sin(rad);
+    const rx = p[0] - center[0], ry = p[1] - center[1];
+    return [center[0] + rx * cos - ry * sin + dx, center[1] + rx * sin + ry * cos + dy];
+  };
+
+  const peelP = (name: string, rel: number): number => joltEnv(name, rel);
 
   const toScreen = (p: [number, number], field: A2Field): [number, number] => [
     (p[0] - S.ZC[0]) * field.zoom + field.scx,
@@ -247,10 +306,12 @@ export function createA2Choreo(strokes: A2StrokeGeom[]): A2Choreo {
   return {
     fieldAt,
     order,
-    selOf: (name) => selOfMap.get(name) ?? 0.5,
+    selOf: (name) => selOfMap.get(name) ?? S.JOLT_ATTACK[0],
     peelP,
     peelDelta,
     strokeDelta,
+    strokeRot,
+    strokePoint,
     toScreen,
   };
 }

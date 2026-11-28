@@ -174,8 +174,9 @@ function tintSvg(raw: string, fillHex: string, opacity: number): string {
 // ============================================================================
 // 3. SCENE A2 PRODUCTION CHOREOGRAPHY — same createA2Choreo path as
 //    SceneA2.tsx / verify-local-motion / render-scene-a2-prototype.
-//    Screen-space onion skin of the REAL hero motion: bleed framing ->
-//    peel cascade -> hold-fit reframe -> fade. comp space == screen space.
+//    Screen-space onion skin of the REAL hero motion v2: entry frame ->
+//    simultaneous jolt attack -> long settle -> bleed giant-hold (crossing
+//    trio residual kept) -> fade. comp space == screen space.
 // ============================================================================
 {
   const { strokes } = compStrokes(SCENE_A2.compName, {
@@ -192,9 +193,9 @@ function tintSvg(raw: string, fillHex: string, opacity: number): string {
 
   const frameOf = (rel: number) => Math.round((SCENE_A2.t0 + rel) * 24);
   const PHASES: Array<{ rel: number; label: string; col: string; op: number }> = [
-    { rel: 0.0, label: `f${frameOf(0)} A1からの接続・ブリード構図`, col: "#94a3b8", op: 0.20 },
-    { rel: 0.9, label: `f${frameOf(0.9)} 交差三連＋左→右ペール途中`, col: "#3b82f6", op: 0.30 },
-    { rel: 1.85, label: `f${frameOf(1.85)} ホールドフィット・全画群が画内`, col: "#18181b", op: 0.85 },
+    { rel: 0.0, label: `f${frameOf(0)} A1からの接続・エントリー構図`, col: "#94a3b8", op: 0.20 },
+    { rel: 0.45, label: `f${frameOf(0.45)} 一斉ジョルト・ピーク分裂`, col: "#3b82f6", op: 0.30 },
+    { rel: 1.6, label: `f${frameOf(1.6)} ブリード・ホールド（交差残差保持）`, col: "#18181b", op: 0.85 },
     { rel: 2.2, label: `f${frameOf(2.2)} シーンフェードアウト`, col: "#16a34a", op: 0.25 },
   ];
 
@@ -202,8 +203,7 @@ function tintSvg(raw: string, fillHex: string, opacity: number): string {
   for (const ph of PHASES) {
     const field = choreo.fieldAt(ph.rel);
     for (const g of geoms) {
-      const [dx, dy] = choreo.strokeDelta(g.name, ph.rel);
-      const sp = g.points.map((p) => choreo.toScreen([p[0] + dx, p[1] + dy], field));
+      const sp = g.points.map((p) => choreo.toScreen(choreo.strokePoint(g.name, p, ph.rel), field));
       const isVert = g.name === SCENE_A2.vertName;
       const col = isVert && ph.rel >= 1.5 ? "#e51515" : ph.col;
       const op = isVert && ph.rel >= 1.5 ? Math.min(0.95, ph.op + 0.1) : ph.op * field.opacity + 0.05;
@@ -213,16 +213,16 @@ function tintSvg(raw: string, fillHex: string, opacity: number): string {
     }
   }
 
-  // Trajectory of stroke centroids across the peel cascade (screen space)
-  const SAMPLE_RELS = [0, 0.45, 0.9, 1.3, 1.85];
+  // Trajectory of stroke centroids across the jolt (screen space)
+  const SAMPLE_RELS = [0, 0.45, 0.9, 1.3, 1.6];
   const trajSvg: string[] = [];
   for (const keyName of ["STROKE_015_runs4", "STROKE_017_runs4", "STROKE_016_runs4", "STROKE_004_runs4"]) {
     const g = geoms.find((x) => x.name === keyName);
     if (!g) continue;
     const pts = SAMPLE_RELS.map((rel) => {
       const field = choreo.fieldAt(rel);
-      const [dx, dy] = choreo.strokeDelta(g.name, rel);
-      return choreo.toScreen([g.center[0] + dx, g.center[1] + dy], field);
+      const cp = choreo.strokePoint(g.name, g.center, rel);
+      return choreo.toScreen(cp, field);
     });
     trajSvg.push(
       `<polyline points="${pts.map((p) => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" ")}" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="4 3"/>`,
@@ -230,11 +230,10 @@ function tintSvg(raw: string, fillHex: string, opacity: number): string {
   }
 
   // Crossing points + hold union bbox annotation (screen space at hold)
-  const holdField = choreo.fieldAt(1.85);
+  const holdField = choreo.fieldAt(1.6);
   const crossScreen = SCENE_A2.crossings.map((c) => choreo.toScreen(c, holdField));
   const holdBoxes = geoms.map((g) => {
-    const [dx, dy] = choreo.strokeDelta(g.name, 1.85);
-    const sp = g.points.map((p) => choreo.toScreen([p[0] + dx, p[1] + dy], holdField));
+    const sp = g.points.map((p) => choreo.toScreen(choreo.strokePoint(g.name, p, 1.6), holdField));
     const xs = sp.map((p) => p[0]), ys = sp.map((p) => p[1]);
     return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)] as const;
   });
@@ -253,7 +252,7 @@ function tintSvg(raw: string, fillHex: string, opacity: number): string {
   <rect width="1140" height="1140" fill="#f8fafc"/>
   <rect x="20" y="20" width="1100" height="1100" rx="10" fill="#ffffff" stroke="#d4d4d8"/>
   <text x="40" y="64" font-size="19" font-weight="700" fill="#111111" font-family="${F_JP}">Scene A2 実制作振付オニオンスキン（createA2Choreo 直結・画面空間）</text>
-  <text x="40" y="86" font-size="12" fill="#52525b" font-family="${F_MONO}">compStrokes(master) + fieldTransform + peelDelta — SceneA2.tsx / verify / prototype と同一経路</text>
+  <text x="40" y="86" font-size="12" fill="#52525b" font-family="${F_MONO}">compStrokes(master) + fieldTransform + strokePoint(jolt&amp;settle) — SceneA2.tsx / verify / prototype と同一経路</text>
   ${legend}
   <!-- screen frame + left clip boundary -->
   <rect x="40" y="130" width="1080" height="1080" fill="none" stroke="#a1a1aa" stroke-dasharray="6 4"/>

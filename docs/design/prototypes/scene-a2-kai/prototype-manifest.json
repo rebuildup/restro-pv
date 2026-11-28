@@ -1,6 +1,6 @@
 {
   "prototype": "scene-a2-kai",
-  "generatedAt": "2026-11-28T05:37:05.986Z",
+  "generatedAt": "2026-11-28T06:04:34.596Z",
   "revision": "production-path (createA2Choreo shared with SceneA2.tsx)",
   "designSources": [
     "video/src/design/choreography.ts (SCENE_A2 + createA2Choreo — single source)",

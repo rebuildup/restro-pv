@@ -113,14 +113,17 @@ const geomByName = new Map(a2geoms.map((g) => [g.name, g]));
 
 function a2ScreenBBox(name: string, rel: number) {
   const field = a2.fieldAt(rel);
-  const [dx, dy] = a2.strokeDelta(name, rel);
   const g = geomByName.get(name)!;
-  const corners: Array<[number, number]> = [
-    [g.bbox[0] + dx, g.bbox[1] + dy],
-    [g.bbox[2] + dx, g.bbox[1] + dy],
-    [g.bbox[2] + dx, g.bbox[3] + dy],
-    [g.bbox[0] + dx, g.bbox[3] + dy],
-  ];
+  // jolt transform (rot about centroid + floored translate) via the same
+  // strokePoint path production/prototype/figures consume
+  const corners: Array<[number, number]> = (
+    [
+      [g.bbox[0], g.bbox[1]],
+      [g.bbox[2], g.bbox[1]],
+      [g.bbox[2], g.bbox[3]],
+      [g.bbox[0], g.bbox[3]],
+    ] as Array<[number, number]>
+  ).map((p) => a2.strokePoint(name, p, rel));
   const sp = corners.map((p) => a2.toScreen(p, field));
   return {
     minX: +Math.min(...sp.map((p) => p[0])).toFixed(1),
@@ -164,11 +167,24 @@ const a2Sweep = a2SampleRels.map((rel) => {
   };
 });
 
-const holdRel = 1.85; // post hold-fit reframe, pre scene-fade — the comparison hold
+const holdRel = 1.6; // bleed giant-hold: strokes settled, crossing resid held
+const holdField = a2.fieldAt(holdRel);
 const crossAtHold = [...SCENE_A2.crossNames].map((n) => a2ScreenBBox(n, holdRel));
-const crossingFullyVisible = crossAtHold.every(
-  (b) => b.minX >= 460 && b.maxX <= 1080 && b.minY >= 0 && b.maxY <= 1080,
+// Crossing proof: both measured crossing POINTS stay inside the frame and
+// the three crossing strokes' screen boxes still pairwise overlap (the
+// strokes genuinely cross, not merely sit near each other).
+const crossingPointsScreen = SCENE_A2.crossings.map((c) => a2.toScreen(c, holdField));
+const crossingPointsVisible = crossingPointsScreen.every(
+  ([x, y]) => x >= 460 && x <= 1080 && y >= 0 && y <= 1080,
 );
+const crossOverlap = (() => {
+  const [a, b, c] = crossAtHold;
+  const overlap = (p: typeof a, q: typeof a) =>
+    p.minX <= q.maxX && q.minX <= p.maxX && p.minY <= q.maxY && q.minY <= p.maxY;
+  // 015 x 016 and 017 x 016 are the two crossing pairs
+  return overlap(a, b) && overlap(c, b);
+})();
+const crossingFullyVisible = crossingPointsVisible && crossOverlap;
 const unionAtHold = (() => {
   let u = { minX: 1e9, maxX: -1e9, minY: 1e9, maxY: -1e9 };
   for (const g of a2geoms) {
@@ -178,24 +194,41 @@ const unionAtHold = (() => {
   }
   return { minX: +u.minX.toFixed(1), maxX: +u.maxX.toFixed(1), minY: +u.minY.toFixed(1), maxY: +u.maxY.toFixed(1) };
 })();
-const holdUnionInsideFrame =
-  unionAtHold.minX >= 460 && unionAtHold.maxX <= 1080 &&
-  unionAtHold.minY >= 0 && unionAtHold.maxY <= 1080;
+// v2 intent: the hold is a BLEED giant glyph (kai-zoom reference), not a
+// fit-inside-frame composition — right/bottom bleed is deliberate. The
+// invariant is: left edge respects the column, the glyph is genuinely
+// larger than the frame on at least one side, and the vertical center
+// stays inside the frame so the hold reads as a held image, not a crop.
+const bleedHoldExpected =
+  unionAtHold.minX >= 460 &&
+  (unionAtHold.maxX > 1080 || unionAtHold.maxY > 1080) &&
+  unionAtHold.minY < 1080 && unionAtHold.maxY > 0;
 
-// peel monotonicity per stroke + left-column invariant across the sweep
-const peelSamples = [0.4, 0.8, 1.2, 1.6].map((r) => r);
-const peelMonotonic = a2geoms.every((g) => {
-  const ps = peelSamples.map((r) => a2.peelP(g.name, r));
-  return ps.every((p, i) => i === 0 || p >= ps[i - 1] - 1e-9);
-});
+// jolt timing: every stroke attacks together (env >= 0.9 inside the hit
+// window) and non-crossing strokes fully settle by JOLT_TAIL_END.
+const joltAttackSimultaneous = a2geoms.every((g) =>
+  Math.max(...[0.3, 0.4, 0.5].map((r) => a2.peelP(g.name, r))) >= 0.9,
+);
+const nonCrossSettled = a2geoms
+  .filter((g) => !(SCENE_A2.crossNames as readonly string[]).includes(g.name))
+  .every((g) => a2.peelP(g.name, SCENE_A2.JOLT_TAIL_END + 0.01) < 0.02);
+const crossResidHeld = [...SCENE_A2.crossNames].every(
+  (n) => a2.peelP(n, 1.6) > SCENE_A2.CROSS_RESID * 0.8,
+);
 const leftColumnClear = a2Sweep.every((s) => s.minStrokeScreenX >= 460);
 const fadeComplete = a2.fieldAt(1.97).opacity === 0 && a2.fieldAt(2.2).opacity === 0;
-// Post-fit the field pins to ZF/SCF (fitK=1), so the comparison hold stays
-// framed; the upward bridge motion is delegated to the Scene B handoff
-// (masterPatch), matching production behavior exactly.
-const postFitHoldStable =
-  Math.abs(a2.fieldAt(2.29).scy - a2.fieldAt(1.9).scy) < 1e-6 &&
-  Math.abs(a2.fieldAt(2.29).zoom - SCENE_A2.ZF) < 1e-6;
+// The bleed hold is a true hold: field transform is constant across the
+// proof window (no drift/settle/fade until the exit envelopes engage).
+const bleedHoldStable = [1.5, 1.6, 1.7, 1.8].every((r) => {
+  const f = a2.fieldAt(r);
+  const f0 = a2.fieldAt(1.5);
+  return (
+    Math.abs(f.zoom - f0.zoom) < 1e-6 &&
+    Math.abs(f.scx - f0.scx) < 1e-6 &&
+    Math.abs(f.scy - f0.scy) < 1e-6 &&
+    f.opacity === 1
+  );
+});
 
 const result = {
   checkedAt: new Date().toISOString(),
@@ -212,26 +245,30 @@ const result = {
   allSceneBStatesValid: accordionChecks.every((a) => a.valid),
   sceneCShowreelRig: cCheck.invariants,
   sceneA2ProductionCheck: {
-    note: "Verified through the identical path production renders: compStrokes rest geometry + createA2Choreo field/peel + comp->screen similarity. No separate camera-projection math.",
+    note: "Verified through the identical path production renders: compStrokes rest geometry + createA2Choreo jolt&settle field/stroke transforms + comp->screen similarity. v2: simultaneous attack + long settle tail + bleed giant-hold (original AEP grammar), crossing trio keeps residual separation through the proof beat.",
     strokeCount: a2geoms.length,
     peelOrder: a2.order,
     relSweep: a2Sweep,
     holdRel,
     unionAtHold,
-    holdUnionInsideFrame,
+    bleedHoldExpected,
     crossBoxesAtHold: crossAtHold,
+    crossingPointsScreen,
     crossingFullyVisible,
     checks: {
       crossingFullyVisible,
-      holdUnionInsideFrame,
+      bleedHoldExpected,
       leftColumnClear,
-      peelMonotonic,
+      joltAttackSimultaneous,
+      nonCrossSettled,
+      crossResidHeld,
+      bleedHoldStable,
       fadeComplete,
-      postFitHoldStable,
     },
     allChecksPass:
-      crossingFullyVisible && holdUnionInsideFrame && leftColumnClear &&
-      peelMonotonic && fadeComplete && postFitHoldStable,
+      crossingFullyVisible && bleedHoldExpected && leftColumnClear &&
+      joltAttackSimultaneous && nonCrossSettled && crossResidHeld &&
+      bleedHoldStable && fadeComplete,
   },
 };
 

@@ -56,16 +56,16 @@
 
 ### 3.1 Scene A2（`f45..f101`）：巨大「解」交差一点突破と A3 上昇接続
 
-- **運動文法**: **「ホールド開門＋主軸露光＋ねじれ抜け」**（A1 の `1:4` 瞬発衝撃ではなく、交差裏の連続性を**読み取らせるための短い滞留 `hold`** を中央に置く）。
+- **運動文法（v2・元AEP実測準拠）**: **「一斉速攻→長い減衰収束→ブリード巨大ホールド→決めポーズ退出」**。元AEPの runs4 群キー実測（comp_05 idx 239-254、プローブ結果は本節末尾の検証JSONとダンプを参照）に基づき、旧来の「順次ペールカスケード＋縮小フィット＋フェード消失」は**発明された動き**として廃止した。実測では全16画が `t=0 / 0.2917 / 1.7917` の3キーで**同時に速く攻めて長い ease-out で収束**し、変位は符号非対称（pos -79..+49px、rot -38..+27°）であった。
 - **個別筆画の役割と衝突防止**:
-  1. **不動の主軸 (`STROKE_016_runs4 [239]`)**: `f45..f80` において位置ズレを最小〜ゼロに保ち、Z軸手前へ僅かに浮かせつつ、横遮蔽が開いた瞬間（`f56..72`）に **完全一本の連続縦画** として `#e51515` 強調を受ける。
-  2. **交差遮蔽ゲート (`STROKE_015 [241]` 上行・`STROKE_017 [240]` 下行)**: `016` を挟んで上下直交方向へ素早く開き、`f60..76` にかけて開門ポーズを一瞬保つことで「普段は横画の裏に隠れていたが、切れていなかった」因果を視覚実証する。
-  3. **周辺副筆画・回転画 (`000..014`)**: `003/007` は右へ、`004/010` は左安全帯 **`x ≥ 480` の手前で止める限界幅** まで逃がす。`002/005` は下端または交差支点ピボットで外向きスイングし、`016` 中心域へ絶対に被らない。
-  4. **未分解残存層 (`[244], [249]` merged shape)**: 独立分離したかのような過大な回転・分裂演出を掛けず、一体輪郭ブロックとして自然追従・退避させ、素材の真実性を偽らない。
-- **A3 連続接続（`f80..101`）**: 再び元の漢字へ戻って終わりにせず、開いた緊張状態のまま `bunkai` 空間傾き（`X=-20°, Y=+22°`）に乗って画群全体が上方向へ加速流出し、同時に左カラム開閉（`f93..108`）と Scene B「筆」下部せり出しを同じ上向きベクトルの流れで接続する。
-- **制作経路の単一ソース化（2026-11 改訂）**: A2 の振付は `video/src/design/choreography.ts` の `SCENE_A2` + `createA2Choreo(strokes)` が唯一の正本であり、`SceneA2.tsx`（Remotion 本番描画）・`tools/design/verify-local-motion.ts`（数値検証）・`tools/design/motion-figures.ts`（オニオンスキン図版）・`tools/design/render-scene-a2-prototype.ts`（ラスタ試作→mp4）の4系統が同一評価経路を共有する。幾何は `glyph.tsx compStrokes("master")` が `comp_05` 実レイヤーから生成し、フィールド変換（ブリード構図→ペールカスケード→ホールドフィット再フレーム→フェード）とストローク別 `strokeDelta` は `createA2Choreo` が comp 時刻 `rel` から評価する。旧来の別系統だった `SCENE_A2_DESIGN` / `evalSceneA2StrokePose`（検証・図版専用の概念モデル）は廃止した。
-- **状態基準図（本番経路版）**：[`diagrams/motion-kai-designed-a2-onion.png`](./diagrams/motion-kai-designed-a2-onion.png)（[SVG](./diagrams/motion-kai-designed-a2-onion.svg)）— `compStrokes` 実形状ポリゴンを画面空間で位相別に重ね、ストローク重心の軌跡（破線）・ホールド時の全画群 union bbox（シアン破線）・復元縦画の交差点（赤丸）・`x=460` 左カラムクリップ境界を同一データから描画。`f45 (A1接続・ブリード)` → `f~67 (交差三連＋ペール途中)` → `f~89 (ホールドフィット)` → `f~98 (フェード)`。
-- **数値検証（[`verification/local-motion-check.json`](./verification/local-motion-check.json) の `sceneA2ProductionCheck`）**: 本番と同じ `compStrokes → createA2Choreo → toScreen` 経路で評価し、`crossingFullyVisible`（交差点がホールド中に画内）・`holdUnionInsideFrame`（全画群 union がフレーム内）・`leftColumnClear`（左カラム非侵入）・`peelMonotonic`（ペール順の単調性）・`fadeComplete`・`postFitHoldStable`（ホールド後のピン留め安定性）の6項目が全て `true`。
+  1. **一斉アタック (`rel 0.2..0.42`)**: `JOLT_ATTACK` 窓で全画がほぼ同時（±0.015s のランク差のみ）に `JOLT_D` の実測ピーク変位＋`JOLT_ROT` の実測 RotZ へ跳ぶ。カスケードではなく「一発の衝撃」。
+  2. **長い収束テール (`rel 0.42..1.45`)**: `JOLT_TAIL_END` までの長い ease-out で各画が固有の軌跡で静止位置へ戻る。交差三連（`015/016/017`）のみ `CROSS_RESID=0.55` の残差分離をホールド `[1.3,1.85]` まで保持し、「横画の裏に隠れていた縦画が切れていなかった」証明ビートを残す（`CROSS_RESID_OUT` で退出へ解放）。
+  3. **ブリード・ホールド (`rel ~1.3..1.85`)**: フィールドは zoom 0.89 で固定（`bleedHoldStable` で検証）。union は画面 x≈472..1120・交差点 x≈1047 に収まり、右端へ約40-70px ブリードして「額縁で切れた巨大な字」の読みを作る。左カラム `x≥460` は回転込み実画面座標で `SAFE_LEFT=470` にクランプ（`strokeDelta` 内の rotated-bbox floor）。
+  4. **未分解残存層 (`merged shape 2/3`)**: `JOLT_D`/`JOLT_ROT` に実測値を持ち、他画と同じ一斉アタックに参加するが過大な分離演出は掛けない。
+- **A3 連続接続（`rel 1.85..2.33`）**: フェード（`SCENE_FADE 1.85..1.97`）で退場し、`DRIFT_UP`/`SETTLE_IN` のズームアウトが Scene B ハンドオフへ橋渡しする。元AEP同様「モーションカット」ではなくフェード退場を維持（ブリッジ層の重ね順は `masterPatch` が管理）。
+- **制作経路の単一ソース化（2026-11 改訂 v2）**: A2 の振付は `video/src/design/choreography.ts` の `SCENE_A2` + `createA2Choreo(strokes)` が唯一の正本であり、`SceneA2.tsx`（Remotion 本番描画）・`tools/design/verify-local-motion.ts`（数値検証）・`tools/design/motion-figures.ts`（オニオンスキン図版）・`tools/design/render-scene-a2-prototype.ts`（ラスタ試作→mp4）の4系統が同一評価経路を共有する。ストローク変換は `strokePoint(name, p, rel)`（重心回転→フロア付き平行移動）に一本化され、検証・図版・試作・本番のいずれも独自の変換式を持たない。幾何は `glyph.tsx compStrokes("master")` が `comp_05` 実レイヤーから生成する。旧 `SCENE_A2_DESIGN` / `evalSceneA2StrokePose` は廃止済み。
+- **状態基準図（本番経路版 v2）**：[`diagrams/motion-kai-designed-a2-onion.png`](./diagrams/motion-kai-designed-a2-onion.png)（[SVG](./diagrams/motion-kai-designed-a2-onion.svg)）— `compStrokes` 実形状ポリゴンを画面空間で位相別に重ね、ストローク重心の軌跡（破線）・ホールド時の全画群 union bbox（シアン破線）・復元縦画の交差点（赤丸）・`x=460` 左カラムクリップ境界を同一データから描画。`f45 (エントリー)` → `f~56 (一斉ジョルト・ピーク)` → `f~83 (ブリード・ホールド)` → `f~98 (フェード)`。
+- **数値検証（[`verification/local-motion-check.json`](./verification/local-motion-check.json) の `sceneA2ProductionCheck`）**: 本番と同じ `compStrokes → createA2Choreo → strokePoint/toScreen` 経路で評価し、`crossingFullyVisible`（交差点が画内＋交差三連の bbox が重なりを維持）・`bleedHoldExpected`（左列クリア＋右/下ブリード＋縦中心が画内）・`leftColumnClear`・`joltAttackSimultaneous`（全画が攻撃窓内に env≥0.9）・`nonCrossSettled`・`crossResidHeld`・`bleedHoldStable`（ホールド中フィールド不変）・`fadeComplete` の8項目が全て `true`。
 - **局所試作・実動画**: [`prototypes/scene-a2-kai/scene-a2-kai.mp4`](./prototypes/scene-a2-kai/scene-a2-kai.mp4)（comp `f45..f100`、56f、24fps）と静止画3枚（[`prototype-manifest.json`](./prototypes/scene-a2-kai/prototype-manifest.json)）を本番経路で再生成した。塗りつぶし＋復元縦画アクセント輪郭のみの近似で、ゴースト輪郭・ガイドエコー・交差マーカー等のプレゼンテーション層は `SceneA2.tsx` 側に残る（manifest に明記）。
 
 ### 3.2 Scene B（`f101..f191`）：工程蓄積（静）→ 13画解放（動）の落差

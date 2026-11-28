@@ -263,28 +263,23 @@ export const SceneA2: React.FC<{ t: number }> = ({ t }) => {
   }px) scale(${zoom})`;
   const sceneOpacity = field.opacity;
 
-  // ---- v15 decomposition cascade (order/timing/deltas: choreography.ts)
-  const { LEAD, PEEL } = SCENE_A2;
-  // Guide contour envelope: bright highlight while the stroke is still
-  // in the glyph (selection), then a faint origin echo after the fill has
-  // left (the "this contour became that shape" half), fading out.
-  // Crossing strokes keep their echo through the comparison hold — they
-  // are the registration anchors proving origin contour -> restored
-  // stroke (r2 review: guides gone by f74 left the accent stroke
-  // unmoored from its origin contour).
+  // ---- jolt & settle guide timing (envelope: choreography.ts) ----
+  // Attack peaks ~rel 0.42; settle tail ends ~rel 1.45. Guide contours
+  // highlight during the hit, then linger as faint origin echoes while
+  // the stroke settles back — the "contour became that stroke" reading.
   const guideOp = (item: StrokeItem): number => {
     const sel = choreo.selOf(item.name);
     const isCross = CROSS_SET.has(item.name);
     const p0 = sel - 0.02;
     const p1 = sel + 0.05;
-    const brightEnd = sel + LEAD + 0.1;
-    const holdEnd = sel + LEAD + PEEL + 0.02;
+    const brightEnd = sel + 0.28;
+    const holdEnd = 0.85;
     const isVert = item.name === VERT_NAME;
     // Hold declutter (r5 review): during the comparison hold ONLY the
     // restored vertical keeps its accent contour — the crossing
     // horizontals' origin guides fade out across the hold-fit reframe so
     // the hold reads as strokes + one marked stroke, not a diagram.
-    const outEnd = isVert ? 2.02 : isCross ? 1.9 : sel + LEAD + PEEL + 0.18;
+    const outEnd = isVert ? 2.02 : isCross ? 1.9 : sel + 1.0;
     if (rel < p0 || rel > outEnd) return 0;
     if (rel < p1) return easeInOutCubic(seg(rel, p0, p1));
     if (rel <= brightEnd) return 1;
@@ -323,8 +318,18 @@ export const SceneA2: React.FC<{ t: number }> = ({ t }) => {
 
   const strokeTransform = (item: StrokeItem): string | undefined => {
     const [sx, sy] = choreo.strokeDelta(item.name, rel);
-    if (sx === 0 && sy === 0) return undefined;
-    return `translate(${sx.toFixed(2)}px,${sy.toFixed(2)}px)`;
+    const rot = choreo.strokeRot(item.name, rel);
+    if (sx === 0 && sy === 0 && rot === 0) return undefined;
+    // rotate about the stroke's own comp-space centroid (dumped RotZ
+    // keys are anchor-ish; centroid is the available stable pivot),
+    // then apply the jolt translation.
+    const [cx, cy] = item.center;
+    return (
+      `translate(${sx.toFixed(2)}px,${sy.toFixed(2)}px)` +
+      ` translate(${cx.toFixed(2)}px,${cy.toFixed(2)}px)` +
+      ` rotate(${rot.toFixed(2)}deg)` +
+      ` translate(${-cx.toFixed(2)}px,${-cy.toFixed(2)}px)`
+    );
   };
 
   return (
