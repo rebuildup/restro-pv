@@ -97,30 +97,28 @@ const GRAD_BOT: [number, number, number] = [0.88, 0.28, 0.1];
 const INK: [number, number, number] = [0.1, 0.1, 0.11];
 const W3_INK: [number, number, number] = [0.12, 0.12, 0.13]; // emblem ink
 
-// char bbox in comp space (measured Baseline FUDE S01-S13 rest pose)
-const BB = { minX: 583, minY: 283, maxX: 1309, maxY: 997 };
-const BB_CX = (BB.minX + BB.maxX) / 2;
-const BB_CY = (BB.minY + BB.maxY) / 2;
+// Stroke source: "PV glyph" (06) at POSE_T — the verified rest-pose 正本
+// (IoU 0.9998 vs outline, docs/design/data/pv-glyph-fude.composition.json).
+// The previous source "Baseline" (01) has a baked ~0.73 scatter offset in
+// its dumped transforms (assembly-metrics rootCauseNote), so the gallery
+// pieces were built on displaced geometry. POSE_T=2 sits inside the
+// assembled window (release expression starts 7.142s; poseT>=8 shows the
+// separated state — verified by stroke-bbox sweep).
+const STROKE_COMP = "PV glyph";
+const POSE_T = 2;
 
-// Gallery fit: works 01/02 share one optical size and center so the three
-// pieces sit on the same baseline grid. s=0.68 -> ~494x486px char inside
-// the 570px cell (x 38-532), centered at (285,450) — generous even margins
-// above the caption rule.
-const SINGLE_S = 0.68;
+// char bbox is MEASURED at runtime in buildData() from the stroke points —
+// no hardcoded comp-space rect, so the fit survives a comp/asset swap.
+// Optical targets preserve the Baseline-tuned layout: single char renders
+// ~494px wide inside the 570px cell (centered 285,450), emblem wing
+// content ~218px wide (was bbCx-minX=363 * W3_S=0.6 on the old source).
 const SINGLE_C: [number, number] = [285, 450];
-const SINGLE_FIT = `translate(${SINGLE_C[0] - BB_CX * SINGLE_S}px,${
-  SINGLE_C[1] - BB_CY * SINGLE_S
-}px) scale(${SINGLE_S})`;
-
-// work03 emblem: two wings side by side (unchanged geometry, S=0.6),
-// then the whole emblem is scaled 1.18 about its own center and shifted
-// to optical center (285,452) via the wrapper transform below — reads
-// ~498px wide / ~505px tall on the white board.
-const W3_S = 0.6;
+const SINGLE_TARGET_W = 494;
 const W3_CY = 430;
-const W3_LX = 292; // screen x of comp x=BB_CX on the left wing
+const W3_LX = 292; // screen x of comp x=bbCx on the left wing (seam = mirror axis +7)
 const W3_MX = 285; // emblem mirror axis = cell horizontal center
 const W3_SCALE = 1.18;
+const W3_TARGET_W = 218;
 const W3_WRAPPER =
   `translate(${W3_MX}px,452px) scale(${W3_SCALE}) ` +
   `translate(${-W3_MX}px,${-430}px)`;
@@ -151,6 +149,11 @@ let cached: {
   geomL: WorkGeom;
   geomR: WorkGeom;
   geom: WorkGeom;
+  // measured char bbox center (comp space) for mirror transforms
+  bbCx: number;
+  // derived fit transforms (measured bbox -> optical targets)
+  singleFit: string;
+  wingLeftStatic: string;
 } | null = null;
 
 // writing order = the S-number in the dumped layer name (same convention
@@ -162,11 +165,11 @@ function strokeOrderIndex(name: string): number {
 
 function buildData() {
   if (cached) return cached;
-  const { comp, strokes } = compStrokes("Baseline", {
+  const { comp, strokes } = compStrokes(STROKE_COMP, {
     pattern: /^FUDE S\d+/,
-    poseT: 0.5,
+    poseT: POSE_T,
   });
-  if (!strokes.length) throw new Error("Baseline FUDE strokes not found");
+  if (!strokes.length) throw new Error(`${STROKE_COMP} FUDE strokes not found`);
 
   let minX = 1e9,
     minY = 1e9,
@@ -181,6 +184,8 @@ function buildData() {
     }
   const cx = (minX + maxX) / 2;
   const cy = (minY + maxY) / 2;
+  const bbCx = cx;
+  const bbCy = cy;
   const n = strokes.length;
 
   const radial = strokes.map((s) => {
@@ -243,7 +248,7 @@ function buildData() {
   // emblem so the mirrored pair reads as a single designed mark. Each
   // wing gets the strokes on its own half of the char; the other half is
   // supplied mirrored about the char centerline (see the wing markup).
-  const isLeft = strokes.map((s) => s.center[0] < BB_CX);
+  const isLeft = strokes.map((s) => s.center[0] < bbCx);
   const pick = <T,>(arr: T[]) => arr.filter((_, i) => isLeft[i]);
   const pickR = <T,>(arr: T[]) => arr.filter((_, i) => !isLeft[i]);
   const subsetGeom = (left: boolean): WorkGeom => {
@@ -262,6 +267,16 @@ function buildData() {
   const geomL = subsetGeom(true);
   const geomR = subsetGeom(false);
 
+  // Fit transforms derived from the MEASURED bbox -> fixed optical targets.
+  const charW = Math.max(1, maxX - minX);
+  const wingW = Math.max(1, bbCx - minX); // left-half content width
+  const singleS = SINGLE_TARGET_W / charW;
+  const singleFit = `translate(${SINGLE_C[0] - bbCx * singleS}px,${
+    SINGLE_C[1] - bbCy * singleS
+  }px) scale(${singleS})`;
+  const w3s = W3_TARGET_W / wingW;
+  const wingLeftStatic = `translate(${W3_LX - bbCx * w3s}px,${W3_CY - bbCy * w3s}px) scale(${w3s})`;
+
   cached = {
     comp,
     ink,
@@ -275,6 +290,9 @@ function buildData() {
     geomL,
     geomR,
     geom,
+    bbCx,
+    singleFit,
+    wingLeftStatic,
   };
   return cached;
 }
@@ -443,6 +461,9 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
     geomL,
     geomR,
     geom,
+    bbCx,
+    singleFit,
+    wingLeftStatic,
   } = buildData();
   const rel = t - T0;
   const sy = scrollY(rel);
@@ -482,7 +503,6 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
   // reuses the identical string wrapped in a screen-space mirror about
   // the cell center, so both wings are exact mirror images. Transform
   // lists apply right-to-left, so the comp-space fit is rightmost.
-  const wingLeftStatic = `translate(${W3_LX - BB_CX * W3_S}px,${W3_CY - BB_CY * W3_S}px) scale(${W3_S})`;
   const wingRightStatic =
     `translate(${2 * W3_MX}px,0px) scale(-1,1) ` + wingLeftStatic;
 
@@ -506,7 +526,7 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
       <StrokeField
         comp={comp}
         strokes={emblemInkL}
-        poseT={0.5}
+        poseT={POSE_T}
         opacity={final3}
         strokeTransform={(s, i) =>
           proofTransform(
@@ -520,7 +540,7 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
           )
         }
       />
-      {/* right-half strokes mirrored about comp x=BB_CX so they land
+      {/* right-half strokes mirrored about comp x=bbCx so they land
           inside the wing's half-char region */}
       <div
         style={{
@@ -529,14 +549,14 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
           top: 0,
           width: comp.width,
           height: comp.height,
-          transform: `translate(${2 * BB_CX}px,0px) scale(-1,1)`,
+          transform: `translate(${2 * bbCx}px,0px) scale(-1,1)`,
           transformOrigin: "0 0",
         }}
       >
         <StrokeField
           comp={comp}
           strokes={emblemInkR}
-          poseT={0.5}
+          poseT={POSE_T}
           opacity={final3}
           strokeTransform={(s, i) =>
             proofTransform(
@@ -556,7 +576,7 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
           <StrokeField
             comp={comp}
             strokes={proofL}
-            poseT={0.5}
+            poseT={POSE_T}
             opacity={p3.proof}
             strokeTransform={(s, i) =>
               proofTransform(
@@ -577,14 +597,14 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
               top: 0,
               width: comp.width,
               height: comp.height,
-              transform: `translate(${2 * BB_CX}px,0px) scale(-1,1)`,
+              transform: `translate(${2 * bbCx}px,0px) scale(-1,1)`,
               transformOrigin: "0 0",
             }}
           >
             <StrokeField
               comp={comp}
               strokes={proofR}
-              poseT={0.5}
+              poseT={POSE_T}
               opacity={p3.proof}
               strokeTransform={(s, i) =>
                 proofTransform(
@@ -658,7 +678,7 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                       top: 0,
                       width: comp.width,
                       height: comp.height,
-                      transform: SINGLE_FIT,
+                      transform: singleFit,
                       transformOrigin: "0 0",
                     }}
                   >
@@ -666,7 +686,7 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                     <StrokeField
                       comp={comp}
                       strokes={ink}
-                      poseT={0.5}
+                      poseT={POSE_T}
                       opacity={final1}
                       strokeTransform={(s, i) =>
                         proofTransform(
@@ -686,7 +706,7 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                       <StrokeField
                         comp={comp}
                         strokes={proof}
-                        poseT={0.5}
+                        poseT={POSE_T}
                         opacity={proof1}
                         strokeTransform={(s, i) =>
                           proofTransform(
@@ -711,7 +731,7 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                       top: 0,
                       width: comp.width,
                       height: comp.height,
-                      transform: SINGLE_FIT,
+                      transform: singleFit,
                       transformOrigin: "0 0",
                     }}
                   >
@@ -719,7 +739,7 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                     <StrokeField
                       comp={comp}
                       strokes={waveColor}
-                      poseT={0.5}
+                      poseT={POSE_T}
                       opacity={final2}
                       strokeTransform={(s, i) =>
                         proofTransform(
@@ -739,7 +759,7 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                       <StrokeField
                         comp={comp}
                         strokes={proof2}
-                        poseT={0.5}
+                        poseT={POSE_T}
                         opacity={p2.proof}
                         strokeTransform={(s, i) =>
                           proofTransform(
