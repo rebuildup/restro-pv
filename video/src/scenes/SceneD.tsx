@@ -20,14 +20,12 @@ import { STAGE_MIN_X } from "../layout/zones.ts";
 // deliverable assets/rec/ae-decompose-ui.mp4. Footage audit that rejected
 // every existing clip: docs/design/06-recordings-audit.md.
 //
-// INTERIM STATE: ae-decompose-ui.mp4 is not yet recorded (requires real
-// AE + Ae_Restro). W_main keeps the previous curated clip
-// ae-decompose-auto.mp4 so the layout is reviewable, but that file is a
-// rendered comp WITHOUT AE UI — the audit marks it "[x Scene D として不適]"
-// and it is NOT proof of real operation. W_inset renders an explicit
-// placeholder panel. Dropping in the real take only requires wiring
-// WIN_MAIN.file/roi/clips and WIN_INSET.file/roi below — geometry,
-// frames, labels, and timing do not change.
+// Real take wired: assets/rec/ae-decompose-ui.mp4 is the 18s real-AE
+// recording (1920x1080@24, verification/rec-d/take2 frames, log:
+// verification/rec-d/decompose-log.txt). Causal moment is early in the
+// take: SOURCE 筆 + [BG] hold, the Decompose click lands ~1s in, and the
+// 13 STROKE_* layers fill the timeline over the next ~2s; selection and
+// drag proof follow through ~12s.
 
 const T0 = 281 / 24;
 const T1 = 371 / 24;
@@ -40,15 +38,27 @@ type Clip = {
   dur: number; // window frames this clip occupies
 };
 
-const SRC_W = 2504;
-const SRC_H = 1392;
+const SRC_W = 1920;
+const SRC_H = 1080;
 
-// Interim ROI for ae-decompose-auto.mp4 (r36b ink-bounds measurement):
-// the 1280x720 comp places the kanji high, ink occupies x400-878 y0-432.
-// This ROI hugs that content box. It MUST be re-measured against real
-// frames of ae-decompose-ui.mp4 once recorded (runbook §3.4 — the old
-// 1920x1080 measurements came from a different UI scale).
-const ROI_AUTO: Roi = { x: 370, y: 0, w: 560, h: 470 };
+// Measured on the real take (assets/rec/ae-decompose-ui.mp4, 1920x1080,
+// 24fps, 18s — verification/rec-d/take2 frames).
+//
+//   W_main  — the timeline's layer-name column, cropped so the row names
+//             are legible: the one layer ("SOURCE 筆") becomes thirteen
+//             "STROKE_*_runs4" rows. The character itself is unchanged by
+//             the plugin, so it is the layer list that carries the proof
+//             (the character is on screen throughout the rest of the film).
+//   W_inset — the Restro panel's own column (Decompose / Merge / Refine)
+//             with the cursor on the button: the cause.
+const ROI_MAIN: Roi = { x: 340, y: 700, w: 480, h: 260 };
+const ROI_PANEL: Roi = { x: 1640, y: 320, w: 280, h: 480 };
+// Two-beat clip: beat 1 = hold -> Decompose click -> STROKE_* appear;
+// beat 2 = selection/drag proof later in the same take.
+const TAKE_BEATS: Clip[] = [
+  { srcStart: 0.9, dur: 45 },
+  { srcStart: 9.0, dur: 45 },
+];
 
 // Frame + label spec (05 §3 / runbook §3.4): 1.5-2px dark frame
 // (#18181b / #3f3f46 — the old #ebebf0 matte disappears on the #f7f7f7
@@ -68,6 +78,9 @@ interface WindowSpec {
   roi?: Roi;
   clips?: Clip[];
   filter?: string;
+  // how the roi is placed in the window: "cover" fills it (crops the
+  // excess), "contain" fits the whole roi (letterboxes it)
+  fit?: "cover" | "contain";
 }
 
 // Right-stage coordinates per runbook §3.4 (stage x = 480..1080):
@@ -79,16 +92,12 @@ const WIN_MAIN: WindowSpec = {
   y: 60,
   w: 600,
   h: 540,
-  // INTERIM: placeholder footage until ae-decompose-ui.mp4 is recorded.
-  // One continuous take, 0.3s before-text hold -> trigger -> ~1.3s of
-  // stroke materialization -> held result. Replace with the real take's
-  // measured ROI/clips per runbook §3.4/§3.6.
-  file: "ae-decompose-auto.mp4",
-  roi: ROI_AUTO,
-  clips: [{ srcStart: 1.3, dur: 90 }],
-  // Light-BG footage — the old heavy grade tuned for dark checkerboard
-  // capture would crush this material.
-  filter: "contrast(1.03) saturate(1.05)",
+  // The real take: the workspace with the character in the viewer and the
+  // timeline below it — Decompose press, STROKE_* layers appearing, then
+  // the selection/drag proof from later in the same take.
+  file: "ae-decompose-ui.mp4",
+  roi: ROI_MAIN,
+  clips: TAKE_BEATS,
 };
 
 const WIN_INSET: WindowSpec = {
@@ -97,14 +106,13 @@ const WIN_INSET: WindowSpec = {
   y: 624,
   w: 600,
   h: 396,
-  // INTERIM: the inset crops the SAME take as the main window, tighter on
-  // the ink, so the film never shows a development message. When the real
-  // take (ae-decompose-ui.mp4) lands, this must be re-measured to the
-  // Restro panel + STROKE_* close-up per runbook §3.4/§3.6.
-  file: "ae-decompose-auto.mp4",
-  roi: { x: 430, y: 40, w: 440, h: 300 },
-  clips: [{ srcStart: 1.55, dur: 90 }],
-  filter: "contrast(1.03) saturate(1.05)",
+  // The same take cropped to the panel column: all three Restro buttons
+  // plus the cursor on Decompose. "contain" fits the tall column into the
+  // landscape window without cropping a button out.
+  file: "ae-decompose-ui.mp4",
+  roi: ROI_PANEL,
+  clips: TAKE_BEATS,
+  fit: "contain",
 };
 
 const WINDOWS: WindowSpec[] = [WIN_MAIN, WIN_INSET];
@@ -115,8 +123,9 @@ const smooth = (x: number) => x * x * (3 - 2 * x);
 
 // Uniform-scale cover of `roi` inside w x h, then center the roi. Returns
 // the inner video box (source pixel size * scale) and its offset.
-function coverBox(roi: Roi, w: number, h: number) {
-  const s = Math.max(w / roi.w, h / roi.h);
+function coverBox(roi: Roi, w: number, h: number, fit: "cover" | "contain" = "cover") {
+  const s =
+    fit === "contain" ? Math.min(w / roi.w, h / roi.h) : Math.max(w / roi.w, h / roi.h);
   return {
     scale: s,
     width: SRC_W * s,
@@ -134,7 +143,7 @@ const WindowFootage: React.FC<{ win: WindowSpec }> = ({ win }) => {
   const innerH = win.h - FRAME_W * 2;
   const clips = win.clips;
   if (!win.file || !win.roi || !clips?.length) return null;
-  const vb = coverBox(win.roi, innerW, innerH);
+  const vb = coverBox(win.roi, innerW, innerH, win.fit);
   return (
     <>
       {clips.map((clip, i) => {
