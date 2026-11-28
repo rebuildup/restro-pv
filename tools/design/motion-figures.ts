@@ -268,4 +268,59 @@ function tintSvg(raw: string, fillHex: string, opacity: number): string {
 </svg>`;
   saveSvgAndPng("motion-kai-designed-a2-onion.svg", svg, 1140);
 }
+
+// ============================================================================
+// 4. SCENE C WORKS — the three gallery pieces' REAL stroke sources.
+//    Same compStrokes geometry path SceneC.tsx consumes; shows each work's
+//    rest-pose polygons, measured char bbox, per-stroke centroids, and the
+//    source provenance (comp / layer pattern / poseT) so the figure proves
+//    the works differ in content, not only finish.
+// ============================================================================
+{
+  // keep in sync with video/src/scenes/SceneC.tsx WORK_SOURCES
+  const SOURCES = [
+    { comp: "PV glyph", pattern: /^FUDE S\d+/, poseT: 2, title: "作例01 筆墨", sub: "06-PV glyph / FUDE S01..S13", mode: "orbit・墨", col: "#18181b" },
+    { comp: "bunkai", pattern: /^STROKE_\d+_runs5$/, poseT: 1.8, title: "作例02 解彩", sub: "02-bunkai / STROKE_*_runs5 (12画)", mode: "wave・縦グラデーション", col: "#1d4ed8" },
+    { comp: "BG decomposed strokes", pattern: /^FUDE S\d+/, poseT: 0.5, title: "作例03 筆構", sub: "41-BG decomposed / FUDE S01..S13 (筆の第2分解)", mode: "左右対称エンブレム・rock", col: "#334155" },
+  ];
+  const PANEL_W = 330;
+  const bodies: string[] = [];
+  SOURCES.forEach((src, w) => {
+    const { strokes } = compStrokes(src.comp, { pattern: src.pattern, poseT: src.poseT });
+    const px = 40 + w * (PANEL_W + 20);
+    let minX = 1e9, minY = 1e9, maxX = -1e9, maxY = -1e9;
+    for (const s of strokes)
+      for (const [x, y] of s.points) {
+        if (x < minX) minX = x; if (x > maxX) maxX = x;
+        if (y < minY) minY = y; if (y > maxY) maxY = y;
+      }
+    // normalize: fit char bbox into ~260x300 box centered in the panel
+    const s = Math.min(260 / Math.max(1, maxX - minX), 300 / Math.max(1, maxY - minY));
+    const tx = px + PANEL_W / 2 - ((minX + maxX) / 2) * s;
+    const ty = 210 + 160 - ((minY + maxY) / 2) * s;
+    const panelStrokes = strokes
+      .map((s2) => `<polygon points="${s2.points.map((p) => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" ")}" fill="${src.col}" fill-opacity="0.82"/>`)
+      .join("\n");
+    const dots = strokes
+      .map((s2) => `<circle cx="${(s2.center[0] * s + tx).toFixed(1)}" cy="${(s2.center[1] * s + ty).toFixed(1)}" r="3.5" fill="#e51515"/>`)
+      .join("");
+    bodies.push(`
+      <g transform="translate(${tx.toFixed(1)},${ty.toFixed(1)}) scale(${s.toFixed(4)})">${panelStrokes}</g>
+      ${dots}
+      <text x="${px + PANEL_W / 2}" y="70" text-anchor="middle" font-size="20" font-weight="700" fill="#111111" font-family="${F_JP}">${src.title}</text>
+      <text x="${px + PANEL_W / 2}" y="94" text-anchor="middle" font-size="11" fill="#52525b" font-family="${F_MONO}">${src.sub}</text>
+      <text x="${px + PANEL_W / 2}" y="114" text-anchor="middle" font-size="12" fill="#b45309" font-family="${F_JP}">${src.mode}</text>
+      <text x="${px + PANEL_W / 2}" y="560" text-anchor="middle" font-size="12" fill="#52525b" font-family="${F_MONO}">${strokes.length} strokes | poseT=${src.poseT} | char ${Math.round(maxX - minX)}×${Math.round(maxY - minY)}px</text>
+    `);
+  });
+  const svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1140" height="640" viewBox="0 0 1140 640">
+  <rect width="1140" height="640" fill="#f8fafc"/>
+  <rect x="20" y="20" width="1100" height="600" rx="10" fill="#ffffff" stroke="#d4d4d8"/>
+  <text x="40" y="56" font-size="19" font-weight="700" fill="#111111" font-family="${F_JP}">Scene C 3作例 — 実ストロークソース比較（compStrokes rest pose・正規化表示）</text>
+  <text x="40" y="76" font-size="12" fill="#52525b" font-family="${F_MONO}">SceneC.tsx WORK_SOURCES と同一データ | 赤点 = 各筆画重心 | 3作例は内容（分解・文字）が異なる</text>
+  ${bodies.join("\n")}
+</svg>`;
+  saveSvgAndPng("motion-scene-c-works.svg", svg, 1140);
+}
 void readFileSync;
