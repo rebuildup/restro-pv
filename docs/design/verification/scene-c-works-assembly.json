@@ -1,9 +1,9 @@
 {
-  "verifiedAt": "2026-11-28T09:01:10.375Z",
+  "verifiedAt": "2026-11-28T09:28:18.468Z",
   "works": [
     {
       "work": 1,
-      "title": "筆墨",
+      "title": "墨帖",
       "comp": "PV glyph",
       "poseT": 2,
       "pattern": "/^FUDE S\\d+/",
@@ -63,10 +63,10 @@
     },
     {
       "work": 2,
-      "title": "解彩",
+      "title": "深解",
       "comp": "bunkai",
-      "poseT": 1.8,
-      "pattern": "indices 3,18",
+      "poseT": 3,
+      "pattern": "indices 21,36",
       "compSize": [
         1080,
         1080
@@ -81,22 +81,22 @@
         "h": 726.2
       },
       "strokeNames": [
-        "STROKE_016_runs5",
-        "STROKE_017_runs5",
-        "STROKE_015_runs5",
-        "STROKE_014_runs5",
-        "STROKE_011_runs5",
-        "Ae_Restro merged shape 3",
-        "STROKE_010_runs5",
-        "STROKE_007_runs5",
-        "STROKE_004_runs5",
-        "STROKE_005_runs5",
-        "Ae_Restro merged shape 2",
-        "STROKE_003_runs5",
-        "STROKE_006_runs7",
-        "STROKE_002_runs7",
-        "STROKE_000_runs5",
-        "STROKE_001_runs6"
+        "STROKE_016_runs4",
+        "STROKE_017_runs4",
+        "STROKE_015_runs4",
+        "STROKE_014_runs4",
+        "STROKE_011_runs4",
+        "Ae_Restro merged shape A (runs4)",
+        "STROKE_010_runs4",
+        "STROKE_007_runs4",
+        "STROKE_004_runs4",
+        "STROKE_005_runs4",
+        "Ae_Restro merged shape B (runs4)",
+        "STROKE_003_runs4",
+        "STROKE_006_runs6",
+        "STROKE_002_runs6",
+        "STROKE_000_runs4",
+        "STROKE_001_runs5"
       ],
       "strokeUnion": {
         "pixelCount": 262528,
@@ -108,6 +108,10 @@
         }
       },
       "reference": {
+        "selectedIndices": [
+          21,
+          36
+        ],
         "groupHeaderShapes": {
           "▾ stroke runs5": {
             "pixelCount": 0,
@@ -175,25 +179,25 @@
             "onlyBpx": 0
           }
         },
-        "candidateFixIndices3to18": {
+        "selectedRangeCheck": {
           "strokeCount": 16,
           "strokeNames": [
-            "STROKE_016_runs5",
-            "STROKE_017_runs5",
-            "STROKE_015_runs5",
-            "STROKE_014_runs5",
-            "STROKE_011_runs5",
-            "Ae_Restro merged shape 3",
-            "STROKE_010_runs5",
-            "STROKE_007_runs5",
-            "STROKE_004_runs5",
-            "STROKE_005_runs5",
-            "Ae_Restro merged shape 2",
-            "STROKE_003_runs5",
-            "STROKE_006_runs7",
-            "STROKE_002_runs7",
-            "STROKE_000_runs5",
-            "STROKE_001_runs6"
+            "STROKE_016_runs4",
+            "STROKE_017_runs4",
+            "STROKE_015_runs4",
+            "STROKE_014_runs4",
+            "STROKE_011_runs4",
+            "Ae_Restro merged shape A (runs4)",
+            "STROKE_010_runs4",
+            "STROKE_007_runs4",
+            "STROKE_004_runs4",
+            "STROKE_005_runs4",
+            "Ae_Restro merged shape B (runs4)",
+            "STROKE_003_runs4",
+            "STROKE_006_runs6",
+            "STROKE_002_runs6",
+            "STROKE_000_runs4",
+            "STROKE_001_runs5"
           ],
           "charBBox": {
             "minX": 173,
@@ -221,89 +225,96 @@
     },
     {
       "work": 3,
-      "title": "筆構",
-      "comp": "BG decomposed strokes",
-      "poseT": 0.5,
-      "pattern": "/^FUDE S\\d+/",
+      "title": "紋章",
+      "comp": "Logo",
+      "poseT": 1,
+      "pattern": "/(STROKE|Ae_Restro)/",
       "compSize": [
-        1080,
-        1080
+        416,
+        260
       ],
-      "strokeCount": 13,
+      "strokeCount": 45,
       "charBBox": {
-        "minX": 602,
-        "minY": 297.1,
-        "maxX": 1290.5,
-        "maxY": 994.1,
-        "w": 688.5,
-        "h": 697.1
+        "minX": 0,
+        "minY": 0,
+        "maxX": 415.4,
+        "maxY": 260.3,
+        "w": 415.4,
+        "h": 260.3
       },
       "strokeNames": [
-        "FUDE S01 (STROKE_000_runs5)",
-        "FUDE S02 (STROKE_001_runs2)",
-        "FUDE S05 (STROKE_002_runs2)",
-        "FUDE S09 (STROKE_004_runs6)",
-        "FUDE S11 (STROKE_007_runs2)",
-        "FUDE S12 (STROKE_008_runs2)",
-        "FUDE S06 (Ae_Restro part 1)",
-        "FUDE S08 (Ae_Restro part 5)",
-        "FUDE S03 (Ae_Restro part 1)",
-        "FUDE S07 (Ae_Restro part 3)",
-        "FUDE S10 (Ae_Restro part 4)",
-        "FUDE S04 (Ae_Restro part 1)",
-        "FUDE S13 (Ae_Restro merged shape)"
+        "Ae_Restro merged shape",
+        "STROKE_034_runs3",
+        "STROKE_033_runs6",
+        "STROKE_032_runs4",
+        "STROKE_031_runs5",
+        "STROKE_030_runs7",
+        "STROKE_029_runs2",
+        "STROKE_028_runs9",
+        "STROKE_027_runs7",
+        "STROKE_026_runs7",
+        "STROKE_025_runs6",
+        "STROKE_024_runs2",
+        "STROKE_023_runs4",
+        "STROKE_022_runs3",
+        "STROKE_021_runs6",
+        "STROKE_019_runs5",
+        "STROKE_020_runs3",
+        "STROKE_018_runs4",
+        "STROKE_016_runs5",
+        "STROKE_015_runs5",
+        "STROKE_017_runs2",
+        "STROKE_014_runs7",
+        "STROKE_013_runs2",
+        "STROKE_012_runs5",
+        "STROKE_011_runs6",
+        "STROKE_010_runs6",
+        "Ae_Restro part 3",
+        "Ae_Restro part 2",
+        "Ae_Restro part 1",
+        "STROKE_008_runs6",
+        "STROKE_007_runs7",
+        "STROKE_006_runs8",
+        "Ae_Restro part 2",
+        "Ae_Restro merged shape",
+        "STROKE_001_runs3",
+        "Ae_Restro part 2",
+        "STROKE_009_runs1",
+        "STROKE_008_runs7",
+        "STROKE_006_runs6",
+        "STROKE_007_runs7",
+        "STROKE_005_runs6",
+        "STROKE_004_runs6",
+        "STROKE_003_runs3",
+        "Ae_Restro merged shape",
+        "STROKE_001_runs4"
       ],
       "strokeUnion": {
-        "pixelCount": 182126,
+        "pixelCount": 62584,
         "bbox": {
-          "x0": 602,
-          "y0": 297,
-          "x1": 1079,
-          "y1": 994
-        }
-      },
-      "crossCompCheck": {
-        "sharedCanvas": {
-          "w": 1400,
-          "h": 1080
-        },
-        "w3UnionVsPvGlyphStrokeUnion": {
-          "iou": 1,
-          "interPx": 250460,
-          "onlyApx": 0,
-          "onlyBpx": 0
-        },
-        "w3UnionVsPvGlyphOutlineBase": {
-          "iou": 0.9998,
-          "interPx": 250434,
-          "onlyApx": 26,
-          "onlyBpx": 32
-        },
-        "w1UnionVsOutlineBaseSanity": {
-          "iou": 0.9998,
-          "interPx": 250434,
-          "onlyApx": 26,
-          "onlyBpx": 32
+          "x0": 0,
+          "y0": 0,
+          "x1": 415,
+          "y1": 259
         }
       },
       "reference": {
-        "allShapeLayersInComp": 13,
-        "allShapeUnion": {
-          "pixelCount": 182126,
-          "bbox": {
-            "x0": 602,
-            "y0": 297,
-            "x1": 1079,
-            "y1": 994
-          },
-          "vsSelectedStrokes": {
-            "iou": 1,
-            "interPx": 182126,
-            "onlyApx": 0,
-            "onlyBpx": 0
-          }
+        "officialArtwork": "docs/design/assets/individual/logo/logo-full-clean.png",
+        "officialPixelCount": 61725,
+        "strokeUnionPixelCount": 62584,
+        "strokeUnionBBox": {
+          "x0": 0,
+          "y0": 0,
+          "x1": 415,
+          "y1": 259
         },
-        "note": "comp has no whole-glyph outline layer; cross-comp IoU vs PV glyph outline base uses the shared coordinate space verified by identical char bboxes"
+        "vsOfficialArtwork": {
+          "iou": 0.9797,
+          "interPx": 61518,
+          "onlyApx": 1066,
+          "onlyBpx": 207
+        },
+        "note": "dumped fills are all black; the 7 vermilion accent strokes are restored at render time via LOGO_RED_INDICES (IoU-verified vs logo-red-accents.svg)"
       }
     }
   ]

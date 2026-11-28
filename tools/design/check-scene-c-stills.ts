@@ -12,18 +12,18 @@ mkdirSync(OUT, { recursive: true });
 mkdirSync(PROTO, { recursive: true });
 
 // Must match SceneC.tsx WIN_* constants.
-const WIN_X = 490;
+const WIN_X = 480;
 const WIN_Y = 60;
-const WIN_W = 570;
+const WIN_W = 600;
 const WIN_H = 960;
 // Footer (index + title) starts ~y880 inside each cell; exclude the
 // strip's bottom 90px so captions don't dominate the color stats.
 const ART_BOTTOM = WIN_Y + WIN_H - 90;
 
 const STILLS = [
-  { work: 1, title: "筆墨", frame: 212, file: ".tmp/sc-c-w1.png", proto: "w1-f212-orbit.png" },
-  { work: 2, title: "解彩", frame: 242, file: ".tmp/sc-c-w2.png", proto: "w2-f242-wave.png" },
-  { work: 3, title: "筆構", frame: 270, file: ".tmp/sc-c-w3.png", proto: "w3-f270-fold.png" },
+  { work: 1, title: "墨帖", frame: 219, file: ".tmp/sc-c2-w1.png", proto: "w1-f219-writeon.png" },
+  { work: 2, title: "深解", frame: 248, file: ".tmp/sc-c2-w2.png", proto: "w2-f248-depth.png" },
+  { work: 3, title: "紋章", frame: 258, file: ".tmp/sc-c2-w3.png", proto: "w3-f258-build.png" },
 ];
 
 interface Stats {
@@ -99,7 +99,7 @@ for (const s of STILLS) {
 const report = {
   verifiedAt: new Date().toISOString(),
   viewport: { x: WIN_X, y: WIN_Y, w: WIN_W, h: ART_BOTTOM - WIN_Y },
-  note: "ink = any channel <235; colorful = channel spread >40 (proof palette/gradient). Frames: W1 orbit beat, W2 wave beat, W3 fold beat — all works docked in the strip.",
+  note: "ink = any channel <235; colorful = channel spread >40 (proof palette/accent). Frames: W1 f219 finished hold + seal (post write-on), W2 f248 finished hold (dark depth field — ink metric counts the dark ground), W3 f258 finished hold (official mark, red accents). All works docked in the 600x960 strip at x480-1080.",
   stills: results,
 };
 writeFileSync(`${OUT}/scene-c-stills.json`, JSON.stringify(report, null, 2));

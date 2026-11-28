@@ -20,7 +20,7 @@
 //                         "FUDE outline base" on a shared 1400x1080
 //                         canvas.
 // Run: bun tools/design/verify-scene-c-works.ts
-import { writeFileSync, mkdirSync } from "node:fs";
+import { writeFileSync, mkdirSync, readFileSync } from "node:fs";
 import { Resvg } from "@resvg/resvg-js";
 import { PNG } from "pngjs";
 import { compByName } from "../../video/src/ae/project.ts";
@@ -199,15 +199,19 @@ for (const [wi, src] of WORK_SOURCES.entries()) {
     const ref4 = rasterizeLayers(comp, runs4Layers, src.poseT);
     const hdr5 = rasterizeLayers(comp, [header5], src.poseT);
     const hdr4 = rasterizeLayers(comp, [header4], src.poseT);
-    // Candidate fix: the runs5 group's own index range IS the assembled
-    // runs5 decomposition (all 16 layers share the 2.79-4.58s window).
-    const fixed = compStrokes("bunkai", { indices: [3, 18], poseT: src.poseT });
+    // Candidate check: the WORK_SOURCES index range IS the selected
+    // decomposition (2026-12: runs4 group, indices 21..36).
+    const fixed = compStrokes("bunkai", {
+      indices: src.indices ?? [3, 18],
+      poseT: src.poseT,
+    });
     const fixedMask = rasterizeLayers(
       comp,
       fixed.strokes.map((s) => s.layer),
       src.poseT,
     );
     entry.reference = {
+      selectedIndices: src.indices ?? [3, 18],
       groupHeaderShapes: {
         "▾ stroke runs5": { pixelCount: hdr5.count, bbox: hdr5.bbox },
         "▾ stroke runs4": { pixelCount: hdr4.count, bbox: hdr4.bbox },
@@ -226,7 +230,7 @@ for (const [wi, src] of WORK_SOURCES.entries()) {
         vsSelectedPatternStrokes: iou(strokeMask, ref4),
         vsRuns5Group: iou(ref5, ref4),
       },
-      candidateFixIndices3to18: {
+      selectedRangeCheck: {
         strokeCount: fixed.strokes.length,
         strokeNames: fixed.strokes.map((s) => s.name),
         charBBox: strokeUnionBBox(fixed.strokes),
@@ -235,40 +239,44 @@ for (const [wi, src] of WORK_SOURCES.entries()) {
         vsRuns4GroupUnion: iou(fixedMask, ref4),
       },
     };
-  } else if (src.comp === "BG decomposed strokes") {
-    // Comp 41 shares comp 06's stroke coordinate space (identical char
-    // bboxes), so render both unions on comp 06's 1400x1080 canvas.
-    const shared = { w: 1400, h: 1080 };
-    const w3Mask = rasterizeLayers(comp, strokes.map((s) => s.layer), src.poseT, shared);
-    const pvGlyph = compByName("PV glyph")!;
-    const w1 = compStrokes("PV glyph", {
-      pattern: /^FUDE S\d+/,
-      poseT: 2,
-    });
-    const w1Mask = rasterizeLayers(
-      pvGlyph,
-      w1.strokes.map((s) => s.layer),
-      2,
-      shared,
+  } else if (src.comp === "Logo") {
+    // Reference: the recovered official lockup artwork
+    // docs/design/assets/individual/logo/logo-full-clean.png (416x260,
+    // same space as the Logo comp). IoU of the selected stroke union
+    // against the PNG's ink mask proves the 45 layers reconstruct the
+    // real mark.
+    const refPng = PNG.sync.read(
+      readFileSync("docs/design/assets/individual/logo/logo-full-clean.png"),
     );
-    const outline = pvGlyph.layers.find((l) => l.name === "FUDE outline base")!;
-    const outlineMask = rasterizeLayers(pvGlyph, [outline], 2, shared);
-    const allShape = comp.layers.filter((l) => l.kind === "shape" && l.shapes);
-    const refAll = rasterizeLayers(comp, allShape, src.poseT);
-    entry.crossCompCheck = {
-      sharedCanvas: shared,
-      w3UnionVsPvGlyphStrokeUnion: iou(w3Mask, w1Mask),
-      w3UnionVsPvGlyphOutlineBase: iou(w3Mask, outlineMask),
-      w1UnionVsOutlineBaseSanity: iou(w1Mask, outlineMask),
+    const refMask: Mask = {
+      w: refPng.width,
+      h: refPng.height,
+      px: new Uint8Array(refPng.width * refPng.height),
+      count: 0,
+      bbox: null,
     };
+    for (let i = 0; i < refPng.width * refPng.height; i++) {
+      const a = refPng.data[i * 4 + 3];
+      const r = refPng.data[i * 4];
+      // ink = visible pixel (alpha) that is not near-white
+      if (a > 40 && r < 240) {
+        refMask.px[i] = 1;
+        refMask.count++;
+      }
+    }
+    const logoMask = rasterizeLayers(
+      comp,
+      strokes.map((s) => s.layer),
+      src.poseT,
+      { w: refPng.width, h: refPng.height },
+    );
     entry.reference = {
-      allShapeLayersInComp: allShape.length,
-      allShapeUnion: {
-        pixelCount: refAll.count,
-        bbox: refAll.bbox,
-        vsSelectedStrokes: iou(strokeMask, refAll),
-      },
-      note: "comp has no whole-glyph outline layer; cross-comp IoU vs PV glyph outline base uses the shared coordinate space verified by identical char bboxes",
+      officialArtwork: "docs/design/assets/individual/logo/logo-full-clean.png",
+      officialPixelCount: refMask.count,
+      strokeUnionPixelCount: logoMask.count,
+      strokeUnionBBox: logoMask.bbox,
+      vsOfficialArtwork: iou(logoMask, refMask),
+      note: "dumped fills are all black; the 7 vermilion accent strokes are restored at render time via LOGO_RED_INDICES (IoU-verified vs logo-red-accents.svg)",
     };
   }
   works.push(entry);
