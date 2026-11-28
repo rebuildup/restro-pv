@@ -71,24 +71,39 @@ export const SCENE_A2 = {
   vertName: "STROKE_016_runs4",
   crossNames: ["STROKE_015_runs4", "STROKE_016_runs4", "STROKE_017_runs4"] as const,
   crossOrder: ["STROKE_016_runs4", "STROKE_015_runs4", "STROKE_017_runs4"] as const,
-  /** Measured crossing points in comp space (bbox-overlap centroids). */
+  /** Measured crossing points in comp space (bbox-overlap centroids of
+   *  STROKE_016 x STROKE_015 / x STROKE_017, after the masterPatch
+   *  hero column shift). */
   crossings: [
-    [1066, 579],
-    [1066, 728],
+    [1064, 579],
+    [1064, 727],
   ] as Array<[number, number]>,
   // ---- field transform constants ----
-  ZC: [860, 540] as [number, number],
+  // r16 (A2 rework): the scene's SUBJECT is the crossing cluster
+  // (SPEC §5 A2), so the field is framed ON it, not on the whole
+  // character. ZC is the restored vertical's axis at the crossing
+  // mid-height — the zoom anchor sits on the proof.
+  //
+  // Framed extents (comp -> screen, screen = (p-ZC)*zoom + SC), measured
+  // by tools/design/verify-local-motion.ts:
+  //   rest cluster   (rel 0)  -> screen 540..969
+  //   hold cluster   (rel 1.5) -> screen 528..1029
+  //   peak cluster   (rel 0.42) -> screen 504..1058  (widest: the
+  //                 horizontal strokes' full jolt excursion, which is
+  //                 what has to stay inside the frame)
+  // The vertical itself lands at screen x 699..790 (91px wide) and the
+  // two crossings at x 745 — the rail the accent marks.
+  ZC: [1064, 653] as [number, number],
   // SC0 is the pre-drift origin; during the hold scx = SC0+DRIFT_IN[0],
   // scy = SC0+DRIFT_IN[1] (driftUp only engages after the scene fade).
-  // Hold framing (zoom 0.89): union x 419.8..1184 comp -> screen
-  // ~473..1153 — left column clear, crossings at x~1048 visible,
-  // right edge bleeds ~70px (cropped giant-stroke read, kai-zoom ref).
-  SC0: [824, 440] as [number, number],
-  Z0: 0.8,
-  Z1: 0.89,
+  SC0: [745, 482] as [number, number],
+  Z0: 1.24,
+  Z1: 1.38,
   /** Exit settle zoom (bunkai scale 128->100 reference, softened). */
-  ZS: 0.85,
-  DRIFT_IN: [40, 40] as [number, number],
+  ZS: 1.32,
+  /** The cluster is the subject, so the settle drift is vertical only:
+   *  a horizontal drift would walk the cluster into the frame edge. */
+  DRIFT_IN: [0, 18] as [number, number],
   DRIFT_UP: 170,
   // ---- jolt & settle (replaces peel cascade) ----
   /** Simultaneous attack window (rel s) — the original's instant hit. */
@@ -130,8 +145,26 @@ export const SCENE_A2 = {
     STROKE_002_runs6: -38,
     STROKE_001_runs5: -19,
   } as Record<string, number>,
-  /** Hard guarantee: no hero stroke renders left of this screen px. */
-  SAFE_LEFT: 470,
+  // r16: the left-column guarantee is STRUCTURAL, not per-stroke.
+  // The A2 hero is clipped at the stage's left edge (STAGE_MIN_X=480)
+  // by the scene, so nothing can paint into the confirmed left column
+  // (x<460). The former per-stroke SAFE_LEFT floor is gone: with the
+  // field framed on the crossing cluster, most of the character sits
+  // off-frame left, and a floor would drag those strokes back INTO
+  // the stage.
+  //
+  /** 元輪郭 (original outline) correspondence zone in MASTER comp units:
+   *  only ghost contour paths whose ring bbox intersects this rect
+   *  survive. The whole-char outline rendered as one field read as a
+   *  gray wash (wu-a-r8 FAIL); the proof only needs the 元輪郭 around
+   *  the two measured crossings — and the tighter zone keeps the ghost
+   *  inside the crossing neighbourhood it belongs to. */
+  ghostZone: { x0: 990, y0: 520, x1: 1140, y1: 790 } as {
+    x0: number;
+    y0: number;
+    x1: number;
+    y1: number;
+  },
   // ---- envelopes (rel seconds) ----
   SETTLE_IN: [1.92, 2.24] as [number, number],
   ZOOM_PUSH: [0.0, 0.45] as [number, number],
@@ -248,37 +281,11 @@ export function createA2Choreo(strokes: A2StrokeGeom[]): A2Choreo {
 
   const strokeDelta = (name: string, rel: number): [number, number] => {
     const env = joltEnv(name, rel);
-    const field = fieldAt(rel);
     const [fx, fy] = peelDelta(name);
-    let sx = fx * env;
-    const sy = fy * env;
-    const rot = (S.JOLT_ROT[name] ?? 0) * env;
-    // Left-column floor evaluated on the ROTATED bbox: the jolt rotation
-    // can push a stroke's screen extent left of its translated bbox, so
-    // clamping sx against bbox[0] alone is not sufficient. Screen x is
-    // linear in sx (shift = zoom * dsx), so one correction is exact.
-    const minScreenX = (dx: number): number => {
-      const item = geomOf(name);
-      const [cx, cy] = item.center;
-      const rad = (rot * Math.PI) / 180;
-      const cos = Math.cos(rad), sin = Math.sin(rad);
-      let m = Infinity;
-      for (const [x, y] of [
-        [item.bbox[0], item.bbox[1]],
-        [item.bbox[2], item.bbox[1]],
-        [item.bbox[2], item.bbox[3]],
-        [item.bbox[0], item.bbox[3]],
-      ] as Array<[number, number]>) {
-        const rx = x - cx, ry = y - cy;
-        const px = cx + rx * cos - ry * sin + dx;
-        m = Math.min(m, (px - S.ZC[0]) * field.zoom + field.scx);
-      }
-      return m;
-    };
-    if (minScreenX(sx) < S.SAFE_LEFT) {
-      sx += (S.SAFE_LEFT - minScreenX(sx)) / field.zoom;
-    }
-    return [sx, sy];
+    // No left-column floor here (see SCENE_A2): the scene clips the hero
+    // at the stage's left edge, and the cluster framing deliberately
+    // parks the rest of the character off-frame left.
+    return [fx * env, fy * env];
   };
 
   const strokeRot = (name: string, rel: number): number => {

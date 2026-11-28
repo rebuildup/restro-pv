@@ -14,6 +14,7 @@ import {
   evalFudeStep4ReleaseU,
 } from "../../video/src/design/choreography.ts";
 import { compStrokes } from "../../video/src/scenes/glyph.tsx";
+import { STAGE_MIN_X } from "../../video/src/layout/zones.ts";
 import { GridRef, MASTER_GRID, buildSceneBAccordionRig } from "../../video/src/design/rig.ts";
 
 const B_GRID = new GridRef(MASTER_GRID);
@@ -259,8 +260,8 @@ function tintSvg(raw: string, fillHex: string, opacity: number): string {
   ${legend}
   <!-- screen frame + left clip boundary -->
   <rect x="40" y="130" width="1080" height="1080" fill="none" stroke="#a1a1aa" stroke-dasharray="6 4"/>
-  <line x1="500" y1="130" x2="500" y2="1210" stroke="#d97706" stroke-width="2" stroke-dasharray="8 5"/>
-  <text x="508" y="150" font-size="12" font-weight="700" fill="#b45309" font-family="${F_MONO}">x=460 clip (left column guard)</text>
+  <line x1="${40 + STAGE_MIN_X}" y1="130" x2="${40 + STAGE_MIN_X}" y2="1210" stroke="#d97706" stroke-width="2" stroke-dasharray="8 5"/>
+  <text x="${48 + STAGE_MIN_X}" y="150" font-size="12" font-weight="700" fill="#b45309" font-family="${F_MONO}">x=${STAGE_MIN_X} clip (stage left edge / left column guard)</text>
   <g transform="translate(40,130)">
     ${bodies.join("\n")}
     ${trajSvg.join("\n")}

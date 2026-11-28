@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-11-28T06:04:00.497Z",
+  "checkedAt": "2026-11-28T17:47:18.891Z",
   "sourceModules": [
     "video/src/design/rig.ts",
     "video/src/design/choreography.ts",
@@ -164,7 +164,7 @@
     "valid": true
   },
   "sceneA2ProductionCheck": {
-    "note": "Verified through the identical path production renders: compStrokes rest geometry + createA2Choreo jolt&settle field/stroke transforms + comp->screen similarity. v2: simultaneous attack + long settle tail + bleed giant-hold (original AEP grammar), crossing trio keeps residual separation through the proof beat.",
+    "note": "Verified through the identical path production renders: compStrokes rest geometry + createA2Choreo jolt&settle field/stroke transforms + comp->screen similarity. r16: the field is framed ON the crossing cluster (the scene's subject) — the cluster stays fully inside the frame at every sampled instant, the character keeps running off the stage's left edge, and the hero is clipped at the stage edge so the confirmed left column is untouched. Simultaneous attack + long settle tail + bleed giant-hold (original AEP grammar), crossing trio keeps residual separation through the proof beat.",
     "strokeCount": 16,
     "peelOrder": [
       "STROKE_016_runs4",
@@ -188,292 +188,476 @@
       {
         "rel": 0,
         "compFrame": 45,
-        "zoom": 0.8,
-        "scx": 824,
-        "scy": 440,
+        "zoom": 1.24,
+        "scx": 745,
+        "scy": 482,
         "opacity": 1,
         "unionScreenBBox": {
-          "minX": 471.8,
-          "maxX": 1034.2,
-          "minY": 146.1,
-          "maxY": 739.3
+          "minX": 97.7,
+          "maxX": 969.4,
+          "minY": -113.7,
+          "maxY": 805.8
         },
-        "minStrokeScreenX": 471.8,
+        "minStrokeScreenX": 97.7,
+        "clusterScreenBBox": {
+          "minX": 539.5,
+          "maxX": 969.4,
+          "minY": 276.7,
+          "maxY": 805.8
+        },
         "crossBoxes": {
           "STROKE_015_runs4": {
-            "minX": 780.9,
-            "maxX": 1003.9,
-            "minY": 442.3,
-            "maxY": 500.1
+            "minX": 576.8,
+            "maxX": 922.4,
+            "minY": 345.5,
+            "maxY": 435.1
           },
           "STROKE_016_runs4": {
-            "minX": 863,
-            "maxX": 915.8,
-            "minY": 398,
-            "maxY": 739.3
+            "minX": 704,
+            "maxX": 785.8,
+            "minY": 276.7,
+            "maxY": 805.8
           },
           "STROKE_017_runs4": {
-            "minX": 756.9,
-            "maxX": 1034.2,
-            "minY": 563.9,
-            "maxY": 615.7
+            "minX": 539.5,
+            "maxX": 969.4,
+            "minY": 533.9,
+            "maxY": 614.1
           }
         }
       },
       {
         "rel": 0.3,
         "compFrame": 52,
-        "zoom": 0.877,
-        "scx": 841.1,
-        "scy": 457.1,
+        "zoom": 1.359,
+        "scx": 745,
+        "scy": 489.7,
         "opacity": 1,
         "unionScreenBBox": {
-          "minX": 470,
-          "maxX": 1106.6,
-          "minY": 115.2,
-          "maxY": 825.3
+          "minX": -46.5,
+          "maxX": 1045.4,
+          "minY": -194,
+          "maxY": 906.9
         },
-        "minStrokeScreenX": 470,
+        "minStrokeScreenX": -46.5,
+        "clusterScreenBBox": {
+          "minX": 513.4,
+          "maxX": 1045.4,
+          "minY": 320.2,
+          "maxY": 906.9
+        },
         "crossBoxes": {
           "STROKE_015_runs4": {
-            "minX": 763.5,
-            "maxX": 1013.8,
-            "minY": 446.9,
-            "maxY": 539.9
+            "minX": 513.4,
+            "maxX": 901.5,
+            "minY": 320.2,
+            "maxY": 464.4
           },
           "STROKE_016_runs4": {
-            "minX": 883.9,
-            "maxX": 941.7,
-            "minY": 451.2,
-            "maxY": 825.3
+            "minX": 700,
+            "maxX": 789.7,
+            "minY": 327,
+            "maxY": 906.9
           },
           "STROKE_017_runs4": {
-            "minX": 802.7,
-            "maxX": 1106.6,
-            "minY": 592.9,
-            "maxY": 649.6
+            "minX": 574.2,
+            "maxX": 1045.4,
+            "minY": 546.6,
+            "maxY": 634.6
+          }
+        }
+      },
+      {
+        "rel": 0.42,
+        "compFrame": 55,
+        "zoom": 1.38,
+        "scx": 745,
+        "scy": 495.9,
+        "opacity": 1,
+        "unionScreenBBox": {
+          "minX": -70.4,
+          "maxX": 1057.6,
+          "minY": -201.5,
+          "maxY": 927.1
+        },
+        "minStrokeScreenX": -70.4,
+        "clusterScreenBBox": {
+          "minX": 503.9,
+          "maxX": 1057.6,
+          "minY": 321.3,
+          "maxY": 927.1
+        },
+        "crossBoxes": {
+          "STROKE_015_runs4": {
+            "minX": 503.9,
+            "maxX": 898.6,
+            "minY": 321.3,
+            "maxY": 473.6
+          },
+          "STROKE_016_runs4": {
+            "minX": 699.4,
+            "maxX": 790.4,
+            "minY": 338.4,
+            "maxY": 927.1
+          },
+          "STROKE_017_runs4": {
+            "minX": 579.2,
+            "maxX": 1057.6,
+            "minY": 553.6,
+            "maxY": 642.9
+          }
+        }
+      },
+      {
+        "rel": 0.6,
+        "compFrame": 59,
+        "zoom": 1.38,
+        "scx": 745,
+        "scy": 500,
+        "opacity": 1,
+        "unionScreenBBox": {
+          "minX": -30.8,
+          "maxX": 1030.1,
+          "minY": -185.3,
+          "maxY": 900.2
+        },
+        "minStrokeScreenX": -30.8,
+        "clusterScreenBBox": {
+          "minX": 527,
+          "maxX": 1030.1,
+          "minY": 311.4,
+          "maxY": 900.2
+        },
+        "crossBoxes": {
+          "STROKE_015_runs4": {
+            "minX": 527,
+            "maxX": 918.3,
+            "minY": 335.2,
+            "maxY": 464.7
+          },
+          "STROKE_016_runs4": {
+            "minX": 699.3,
+            "maxX": 790.4,
+            "minY": 311.4,
+            "maxY": 900.2
+          },
+          "STROKE_017_runs4": {
+            "minX": 551.6,
+            "maxX": 1030.1,
+            "minY": 557.7,
+            "maxY": 647.1
           }
         }
       },
       {
         "rel": 0.9,
         "compFrame": 67,
-        "zoom": 0.89,
-        "scx": 864,
-        "scy": 480,
+        "zoom": 1.38,
+        "scx": 745,
+        "scy": 500,
         "opacity": 1,
         "unionScreenBBox": {
-          "minX": 470,
-          "maxX": 1104.1,
-          "minY": 148.6,
-          "maxY": 819.9
+          "minX": 9.2,
+          "maxX": 1004.3,
+          "minY": -169.7,
+          "maxY": 871.1
         },
-        "minStrokeScreenX": 470,
+        "minStrokeScreenX": 9.2,
+        "clusterScreenBBox": {
+          "minX": 525.9,
+          "maxX": 1004.3,
+          "minY": 282.3,
+          "maxY": 871.1
+        },
         "crossBoxes": {
           "STROKE_015_runs4": {
-            "minX": 810.6,
-            "maxX": 1060,
-            "minY": 480.3,
-            "maxY": 549.9
+            "minX": 549.3,
+            "maxX": 936,
+            "minY": 344.6,
+            "maxY": 452.4
           },
           "STROKE_016_runs4": {
-            "minX": 907.4,
-            "maxX": 966.1,
-            "minY": 440.2,
-            "maxY": 819.9
+            "minX": 699.3,
+            "maxX": 790.4,
+            "minY": 282.3,
+            "maxY": 871.1
           },
           "STROKE_017_runs4": {
-            "minX": 795.5,
-            "maxX": 1104.1,
-            "minY": 617.8,
-            "maxY": 675.4
+            "minX": 525.9,
+            "maxX": 1004.3,
+            "minY": 557.7,
+            "maxY": 647.1
+          }
+        }
+      },
+      {
+        "rel": 1.2,
+        "compFrame": 74,
+        "zoom": 1.38,
+        "scx": 745,
+        "scy": 500,
+        "opacity": 1,
+        "unionScreenBBox": {
+          "minX": 23.1,
+          "maxX": 1006.2,
+          "minY": -163.6,
+          "maxY": 873.3
+        },
+        "minStrokeScreenX": 23.1,
+        "clusterScreenBBox": {
+          "minX": 527.8,
+          "maxX": 1006.2,
+          "minY": 284.5,
+          "maxY": 873.3
+        },
+        "crossBoxes": {
+          "STROKE_015_runs4": {
+            "minX": 547.6,
+            "maxX": 934.7,
+            "minY": 343.8,
+            "maxY": 453.4
+          },
+          "STROKE_016_runs4": {
+            "minX": 699.3,
+            "maxX": 790.4,
+            "minY": 284.5,
+            "maxY": 873.3
+          },
+          "STROKE_017_runs4": {
+            "minX": 527.8,
+            "maxX": 1006.2,
+            "minY": 557.7,
+            "maxY": 647.1
           }
         }
       },
       {
         "rel": 1.5,
         "compFrame": 81,
-        "zoom": 0.89,
-        "scx": 864,
-        "scy": 480,
+        "zoom": 1.38,
+        "scx": 745,
+        "scy": 500,
         "opacity": 1,
         "unionScreenBBox": {
-          "minX": 472.2,
-          "maxX": 1120.2,
-          "minY": 153,
-          "maxY": 838.1
+          "minX": 24.6,
+          "maxX": 1029.3,
+          "minY": -163,
+          "maxY": 899.3
         },
-        "minStrokeScreenX": 472.2,
+        "minStrokeScreenX": 24.6,
+        "clusterScreenBBox": {
+          "minX": 527.6,
+          "maxX": 1029.3,
+          "minY": 310.6,
+          "maxY": 899.3
+        },
         "crossBoxes": {
           "STROKE_015_runs4": {
-            "minX": 796.7,
-            "maxX": 1049,
-            "minY": 474.5,
-            "maxY": 557.6
+            "minX": 527.6,
+            "maxX": 918.8,
+            "minY": 335.5,
+            "maxY": 464.4
           },
           "STROKE_016_runs4": {
-            "minX": 907.4,
-            "maxX": 966.1,
-            "minY": 458.4,
-            "maxY": 838.1
+            "minX": 699.3,
+            "maxX": 790.4,
+            "minY": 310.6,
+            "maxY": 899.3
           },
           "STROKE_017_runs4": {
-            "minX": 811.6,
-            "maxX": 1120.2,
-            "minY": 617.8,
-            "maxY": 675.4
+            "minX": 550.9,
+            "maxX": 1029.3,
+            "minY": 557.7,
+            "maxY": 647.1
           }
         }
       },
       {
         "rel": 1.75,
         "compFrame": 87,
-        "zoom": 0.89,
-        "scx": 864,
-        "scy": 480,
+        "zoom": 1.38,
+        "scx": 745,
+        "scy": 500,
         "opacity": 1,
         "unionScreenBBox": {
-          "minX": 472.2,
-          "maxX": 1120.2,
-          "minY": 153,
-          "maxY": 838.1
+          "minX": 24.6,
+          "maxX": 1029.3,
+          "minY": -163,
+          "maxY": 899.3
         },
-        "minStrokeScreenX": 472.2,
+        "minStrokeScreenX": 24.6,
+        "clusterScreenBBox": {
+          "minX": 527.6,
+          "maxX": 1029.3,
+          "minY": 310.6,
+          "maxY": 899.3
+        },
         "crossBoxes": {
           "STROKE_015_runs4": {
-            "minX": 796.7,
-            "maxX": 1049,
-            "minY": 474.5,
-            "maxY": 557.6
+            "minX": 527.6,
+            "maxX": 918.8,
+            "minY": 335.5,
+            "maxY": 464.4
           },
           "STROKE_016_runs4": {
-            "minX": 907.4,
-            "maxX": 966.1,
-            "minY": 458.4,
-            "maxY": 838.1
+            "minX": 699.3,
+            "maxX": 790.4,
+            "minY": 310.6,
+            "maxY": 899.3
           },
           "STROKE_017_runs4": {
-            "minX": 811.6,
-            "maxX": 1120.2,
-            "minY": 617.8,
-            "maxY": 675.4
+            "minX": 550.9,
+            "maxX": 1029.3,
+            "minY": 557.7,
+            "maxY": 647.1
           }
         }
       },
       {
         "rel": 1.9,
         "compFrame": 91,
-        "zoom": 0.89,
-        "scx": 864,
-        "scy": 480,
+        "zoom": 1.38,
+        "scx": 745,
+        "scy": 500,
         "opacity": 0.711,
         "unionScreenBBox": {
-          "minX": 472.2,
-          "maxX": 1119.5,
-          "minY": 153,
-          "maxY": 837.3
+          "minX": 24.6,
+          "maxX": 1028.2,
+          "minY": -163,
+          "maxY": 898.1
         },
-        "minStrokeScreenX": 472.2,
+        "minStrokeScreenX": 24.6,
+        "clusterScreenBBox": {
+          "minX": 528.6,
+          "maxX": 1028.2,
+          "minY": 309.3,
+          "maxY": 898.1
+        },
         "crossBoxes": {
           "STROKE_015_runs4": {
-            "minX": 797.3,
-            "maxX": 1049.4,
-            "minY": 474.7,
-            "maxY": 557.3
+            "minX": 528.6,
+            "maxX": 919.6,
+            "minY": 335.9,
+            "maxY": 463.9
           },
           "STROKE_016_runs4": {
-            "minX": 907.4,
-            "maxX": 966.1,
-            "minY": 457.6,
-            "maxY": 837.3
+            "minX": 699.3,
+            "maxX": 790.4,
+            "minY": 309.3,
+            "maxY": 898.1
           },
           "STROKE_017_runs4": {
-            "minX": 810.9,
-            "maxX": 1119.5,
-            "minY": 617.8,
-            "maxY": 675.4
+            "minX": 549.8,
+            "maxX": 1028.2,
+            "minY": 557.7,
+            "maxY": 647.1
           }
         }
       },
       {
         "rel": 2.1,
         "compFrame": 95,
-        "zoom": 0.863,
-        "scx": 864,
-        "scy": 421.6,
+        "zoom": 1.34,
+        "scx": 745,
+        "scy": 441.6,
         "opacity": 0,
         "unionScreenBBox": {
-          "minX": 483.9,
-          "maxX": 1090.9,
-          "minY": 104.4,
-          "maxY": 744.6
+          "minX": 45.4,
+          "maxX": 987.5,
+          "minY": -202.2,
+          "maxY": 791.5
         },
-        "minStrokeScreenX": 483.9,
+        "minStrokeScreenX": 45.4,
+        "clusterScreenBBox": {
+          "minX": 522.9,
+          "maxX": 987.5,
+          "minY": 219.8,
+          "maxY": 791.5
+        },
         "crossBoxes": {
           "STROKE_015_runs4": {
-            "minX": 817.5,
-            "maxX": 1058.2,
-            "minY": 424.1,
-            "maxY": 486.5
+            "minX": 563.2,
+            "maxX": 936.7,
+            "minY": 294.1,
+            "maxY": 390.9
           },
           "STROKE_016_runs4": {
-            "minX": 906.1,
-            "maxX": 963.1,
-            "minY": 376.2,
-            "maxY": 744.6
+            "minX": 700.7,
+            "maxX": 789.1,
+            "minY": 219.8,
+            "maxY": 791.5
           },
           "STROKE_017_runs4": {
-            "minX": 791.6,
-            "maxX": 1090.9,
-            "minY": 555.3,
-            "maxY": 611.2
+            "minX": 522.9,
+            "maxX": 987.5,
+            "minY": 497.7,
+            "maxY": 584.4
           }
         }
       }
     ],
     "holdRel": 1.6,
     "unionAtHold": {
-      "minX": 472.2,
-      "maxX": 1120.2,
-      "minY": 153,
-      "maxY": 838.1
+      "minX": 24.6,
+      "maxX": 1029.3,
+      "minY": -163,
+      "maxY": 899.3
     },
     "bleedHoldExpected": true,
     "crossBoxesAtHold": [
       {
-        "minX": 796.7,
-        "maxX": 1049,
-        "minY": 474.5,
-        "maxY": 557.6
+        "minX": 527.6,
+        "maxX": 918.8,
+        "minY": 335.5,
+        "maxY": 464.4
       },
       {
-        "minX": 907.4,
-        "maxX": 966.1,
-        "minY": 458.4,
-        "maxY": 838.1
+        "minX": 699.3,
+        "maxX": 790.4,
+        "minY": 310.6,
+        "maxY": 899.3
       },
       {
-        "minX": 811.6,
-        "maxX": 1120.2,
-        "minY": 617.8,
-        "maxY": 675.4
+        "minX": 550.9,
+        "maxX": 1029.3,
+        "minY": 557.7,
+        "maxY": 647.1
       }
     ],
     "crossingPointsScreen": [
       [
-        1047.34,
-        514.71
+        745,
+        397.88
       ],
       [
-        1047.34,
-        647.3199999999999
+        745,
+        602.12
       ]
     ],
     "crossingFullyVisible": true,
+    "crossingClusterInsideFrame": true,
+    "concealedBand": {
+      "y0": 542.9223605484104,
+      "y1": 759.570007324219
+    },
+    "hiddenBandCoversCrossings": true,
+    "ghostZoneScreenBox": {
+      "minX": 642.9,
+      "maxX": 849.9,
+      "minY": 316.5,
+      "maxY": 689.1
+    },
+    "ghostConfinedToCrossing": true,
+    "heroClipRightOfColumn": true,
+    "characterBleedsPastStageEdge": true,
+    "visibleInkStartsAtStageEdge": true,
     "checks": {
       "crossingFullyVisible": true,
+      "crossingClusterInsideFrame": true,
       "bleedHoldExpected": true,
       "leftColumnClear": true,
+      "hiddenBandCoversCrossings": true,
+      "ghostConfinedToCrossing": true,
       "joltAttackSimultaneous": true,
       "nonCrossSettled": true,
       "crossResidHeld": true,

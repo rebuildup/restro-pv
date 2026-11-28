@@ -15,7 +15,18 @@ import {
   buildSceneCShowreelRig,
 } from "../../video/src/design/rig.ts";
 import { SCENE_A2, createA2Choreo } from "../../video/src/design/choreography.ts";
+import { applyMasterPatches } from "../../video/src/ae/masterPatch.ts";
+import { LEFT_COLUMN_MAX_X } from "../../video/src/layout/zones.ts";
 import { compStrokes } from "../../video/src/scenes/glyph.tsx";
+import { A2_HERO_CLIP_X } from "../../video/src/scenes/SceneA2.tsx";
+
+// Production patches (the Scene-A hero column clearance, +130px on the
+// runs4 group) must be applied BEFORE measuring: production renders the
+// patched master (video/src/layout/Chrome.tsx applies the patches at
+// module load), so the verifier has to measure the same geometry —
+// otherwise every comp-space constant in SCENE_A2 (crossings, ghost
+// zone, hidden band) is compared against a shifted stroke set.
+applyMasterPatches();
 
 const grid = new GridRef(MASTER_GRID);
 
@@ -133,7 +144,7 @@ function a2ScreenBBox(name: string, rel: number) {
   };
 }
 
-const a2SampleRels = [0, 0.3, 0.9, 1.5, 1.75, 1.9, 2.1];
+const a2SampleRels = [0, 0.3, 0.42, 0.6, 0.9, 1.2, 1.5, 1.75, 1.9, 2.1];
 const a2Sweep = a2SampleRels.map((rel) => {
   const field = a2.fieldAt(rel);
   let union = { minX: 1e9, maxX: -1e9, minY: 1e9, maxY: -1e9 };
@@ -148,6 +159,15 @@ const a2Sweep = a2SampleRels.map((rel) => {
     union.maxY = Math.max(union.maxY, b.maxY);
     minStrokeX = Math.min(minStrokeX, b.minX);
   }
+  // crossing cluster union — the scene's SUBJECT (SPEC §5 A2)
+  const cluster = { minX: 1e9, maxX: -1e9, minY: 1e9, maxY: -1e9 };
+  for (const n of SCENE_A2.crossNames) {
+    const b = boxes[n];
+    cluster.minX = Math.min(cluster.minX, b.minX);
+    cluster.maxX = Math.max(cluster.maxX, b.maxX);
+    cluster.minY = Math.min(cluster.minY, b.minY);
+    cluster.maxY = Math.max(cluster.maxY, b.maxY);
+  }
   return {
     rel: +rel.toFixed(2),
     compFrame: Math.round((SCENE_A2.t0 + rel) * 24),
@@ -160,6 +180,11 @@ const a2Sweep = a2SampleRels.map((rel) => {
       minY: +union.minY.toFixed(1), maxY: +union.maxY.toFixed(1),
     },
     minStrokeScreenX: +minStrokeX.toFixed(1),
+    // crossing cluster screen box at this instant
+    clusterScreenBBox: {
+      minX: +cluster.minX.toFixed(1), maxX: +cluster.maxX.toFixed(1),
+      minY: +cluster.minY.toFixed(1), maxY: +cluster.maxY.toFixed(1),
+    },
     // crossing trio boxes at this instant (only meaningful near hold)
     crossBoxes: Object.fromEntries(
       [...SCENE_A2.crossNames].map((n) => [n, boxes[n]]),
@@ -170,13 +195,8 @@ const a2Sweep = a2SampleRels.map((rel) => {
 const holdRel = 1.6; // bleed giant-hold: strokes settled, crossing resid held
 const holdField = a2.fieldAt(holdRel);
 const crossAtHold = [...SCENE_A2.crossNames].map((n) => a2ScreenBBox(n, holdRel));
-// Crossing proof: both measured crossing POINTS stay inside the frame and
-// the three crossing strokes' screen boxes still pairwise overlap (the
-// strokes genuinely cross, not merely sit near each other).
-const crossingPointsScreen = SCENE_A2.crossings.map((c) => a2.toScreen(c, holdField));
-const crossingPointsVisible = crossingPointsScreen.every(
-  ([x, y]) => x >= 460 && x <= 1080 && y >= 0 && y <= 1080,
-);
+// Crossing proof: the three crossing strokes' screen boxes still pairwise
+// overlap (the strokes genuinely cross, not merely sit near each other).
 const crossOverlap = (() => {
   const [a, b, c] = crossAtHold;
   const overlap = (p: typeof a, q: typeof a) =>
@@ -184,7 +204,25 @@ const crossOverlap = (() => {
   // 015 x 016 and 017 x 016 are the two crossing pairs
   return overlap(a, b) && overlap(c, b);
 })();
-const crossingFullyVisible = crossingPointsVisible && crossOverlap;
+// r16 (cluster framing): the crossing cluster is the scene's subject, so
+// it must be FULLY inside the frame at EVERY sampled instant — never
+// cropped by the frame edge (r15 had it in the last 66px, half cut).
+// The frame is 1080 wide; the stage's left edge (480) is where the
+// character's own mass is cropped.
+const crossingClusterInsideFrame = a2Sweep.every(
+  (s) =>
+    s.clusterScreenBBox.minX >= A2_HERO_CLIP_X &&
+    s.clusterScreenBBox.maxX <= 1080 &&
+    s.clusterScreenBBox.minY >= 0 &&
+    s.clusterScreenBBox.maxY <= 1080,
+);
+// The measured crossing POINTS must also stay inside the frame.
+const crossingPointsScreen = SCENE_A2.crossings.map((c) => a2.toScreen(c, holdField));
+const crossingPointsVisible = crossingPointsScreen.every(
+  ([x, y]) => x >= A2_HERO_CLIP_X && x <= 1080 && y >= 0 && y <= 1080,
+);
+const crossingFullyVisible =
+  crossingPointsVisible && crossOverlap && crossingClusterInsideFrame;
 const unionAtHold = (() => {
   let u = { minX: 1e9, maxX: -1e9, minY: 1e9, maxY: -1e9 };
   for (const g of a2geoms) {
@@ -194,15 +232,64 @@ const unionAtHold = (() => {
   }
   return { minX: +u.minX.toFixed(1), maxX: +u.maxX.toFixed(1), minY: +u.minY.toFixed(1), maxY: +u.maxY.toFixed(1) };
 })();
-// v2 intent: the hold is a BLEED giant glyph (kai-zoom reference), not a
-// fit-inside-frame composition — right/bottom bleed is deliberate. The
-// invariant is: left edge respects the column, the glyph is genuinely
-// larger than the frame on at least one side, and the vertical center
-// stays inside the frame so the hold reads as a held image, not a crop.
+// r16 intent: the SUBJECT (crossing cluster) is framed INSIDE the frame,
+// while the CHARACTER stays bigger than the frame — the hero runs off the
+// stage's left edge and off the top/bottom of the frame, which is the
+// established kai-zoom "giant glyph" read.
 const bleedHoldExpected =
-  unionAtHold.minX >= 460 &&
-  (unionAtHold.maxX > 1080 || unionAtHold.maxY > 1080) &&
+  unionAtHold.minX < A2_HERO_CLIP_X &&
+  (unionAtHold.maxX > 1080 || unionAtHold.maxY > 1080 || unionAtHold.minY < 0) &&
   unionAtHold.minY < 1080 && unionAtHold.maxY > 0;
+
+// Left column: the hero is clipped at the STAGE's left edge, so the
+// confirmed left column (x<460) is structurally unreachable. The check
+// reads the scene's REAL clip (not a copy of the number), so moving the
+// clip into the column is a failure, not a silent change.
+const heroClipRightOfColumn = A2_HERO_CLIP_X > LEFT_COLUMN_MAX_X;
+const visibleInkStartsAtStageEdge = a2geoms.every((g) => {
+  const b = a2ScreenBBox(g.name, holdRel);
+  // ink that survives the clip starts at the clip edge, never left of
+  // the confirmed column
+  return Math.max(b.minX, A2_HERO_CLIP_X) >= LEFT_COLUMN_MAX_X;
+});
+// The clip must be load-bearing: the character is bigger than the stage,
+// so its mass really does run off the left edge and get cropped there.
+const characterBleedsPastStageEdge = unionAtHold.minX < A2_HERO_CLIP_X;
+const leftColumnClear =
+  heroClipRightOfColumn && visibleInkStartsAtStageEdge && characterBleedsPastStageEdge;
+
+// The accent band (the concealed stretch of the vertical) is derived from
+// the crossing horizontals' own bboxes: it must cover BOTH measured
+// crossings, otherwise the accent would mark the wrong stretch.
+const h015 = geomByName.get("STROKE_015_runs4")!;
+const h017 = geomByName.get("STROKE_017_runs4")!;
+const vertGeom = geomByName.get(SCENE_A2.vertName)!;
+const concealedBand = {
+  y0: Math.min(h015.bbox[1], h017.bbox[1]),
+  y1: Math.max(h015.bbox[3], h017.bbox[3]),
+};
+const hiddenBandCoversCrossings = SCENE_A2.crossings.every(
+  ([x, y]) =>
+    y >= concealedBand.y0 && y <= concealedBand.y1 &&
+    x >= vertGeom.bbox[0] && x <= vertGeom.bbox[2],
+);
+
+// The 元輪郭 ghost is confined to its correspondence zone; that zone must
+// land inside the stage at the hold (never in the left column) so the
+// "before" reference stays where the proof is.
+const ghostZoneBox = (() => {
+  const p0 = a2.toScreen([SCENE_A2.ghostZone.x0, SCENE_A2.ghostZone.y0], holdField);
+  const p1 = a2.toScreen([SCENE_A2.ghostZone.x1, SCENE_A2.ghostZone.y1], holdField);
+  return {
+    minX: +Math.min(p0[0], p1[0]).toFixed(1), maxX: +Math.max(p0[0], p1[0]).toFixed(1),
+    minY: +Math.min(p0[1], p1[1]).toFixed(1), maxY: +Math.max(p0[1], p1[1]).toFixed(1),
+  };
+})();
+const ghostConfinedToCrossing =
+  ghostZoneBox.minX >= A2_HERO_CLIP_X &&
+  ghostZoneBox.maxX <= 1080 &&
+  ghostZoneBox.minY >= 0 &&
+  ghostZoneBox.maxY <= 1080;
 
 // jolt timing: every stroke attacks together (env >= 0.9 inside the hit
 // window) and non-crossing strokes fully settle by JOLT_TAIL_END.
@@ -215,7 +302,6 @@ const nonCrossSettled = a2geoms
 const crossResidHeld = [...SCENE_A2.crossNames].every(
   (n) => a2.peelP(n, 1.6) > SCENE_A2.CROSS_RESID * 0.8,
 );
-const leftColumnClear = a2Sweep.every((s) => s.minStrokeScreenX >= 460);
 const fadeComplete = a2.fieldAt(1.97).opacity === 0 && a2.fieldAt(2.2).opacity === 0;
 // The bleed hold is a true hold: field transform is constant across the
 // proof window (no drift/settle/fade until the exit envelopes engage).
@@ -245,7 +331,7 @@ const result = {
   allSceneBStatesValid: accordionChecks.every((a) => a.valid),
   sceneCShowreelRig: cCheck.invariants,
   sceneA2ProductionCheck: {
-    note: "Verified through the identical path production renders: compStrokes rest geometry + createA2Choreo jolt&settle field/stroke transforms + comp->screen similarity. v2: simultaneous attack + long settle tail + bleed giant-hold (original AEP grammar), crossing trio keeps residual separation through the proof beat.",
+    note: "Verified through the identical path production renders: compStrokes rest geometry + createA2Choreo jolt&settle field/stroke transforms + comp->screen similarity. r16: the field is framed ON the crossing cluster (the scene's subject) — the cluster stays fully inside the frame at every sampled instant, the character keeps running off the stage's left edge, and the hero is clipped at the stage edge so the confirmed left column is untouched. Simultaneous attack + long settle tail + bleed giant-hold (original AEP grammar), crossing trio keeps residual separation through the proof beat.",
     strokeCount: a2geoms.length,
     peelOrder: a2.order,
     relSweep: a2Sweep,
@@ -255,10 +341,21 @@ const result = {
     crossBoxesAtHold: crossAtHold,
     crossingPointsScreen,
     crossingFullyVisible,
+    crossingClusterInsideFrame,
+    concealedBand,
+    hiddenBandCoversCrossings,
+    ghostZoneScreenBox: ghostZoneBox,
+    ghostConfinedToCrossing,
+    heroClipRightOfColumn,
+    characterBleedsPastStageEdge,
+    visibleInkStartsAtStageEdge,
     checks: {
       crossingFullyVisible,
+      crossingClusterInsideFrame,
       bleedHoldExpected,
       leftColumnClear,
+      hiddenBandCoversCrossings,
+      ghostConfinedToCrossing,
       joltAttackSimultaneous,
       nonCrossSettled,
       crossResidHeld,
@@ -266,7 +363,8 @@ const result = {
       fadeComplete,
     },
     allChecksPass:
-      crossingFullyVisible && bleedHoldExpected && leftColumnClear &&
+      crossingFullyVisible && crossingClusterInsideFrame && bleedHoldExpected &&
+      leftColumnClear && hiddenBandCoversCrossings && ghostConfinedToCrossing &&
       joltAttackSimultaneous && nonCrossSettled && crossResidHeld &&
       bleedHoldStable && fadeComplete,
   },

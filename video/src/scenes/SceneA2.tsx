@@ -16,31 +16,52 @@ import type { LayerSpec } from "../ae/project.ts";
 import { compByName } from "../ae/project.ts";
 import { worldMatrix } from "../ae/transform.ts";
 import { SCENE_A2, createA2Choreo } from "../design/choreography.ts";
-import { LEFT_COLUMN_MAX_X } from "../layout/zones.ts";
+import { STAGE_MIN_X } from "../layout/zones.ts";
 
 // Scene A2, frames [45,100) = seconds [1.875,4.17) per SPEC §3/§5 A2,
 // extended through the A3 bridge window per docs/pv-art-direction.md v13:
 // the scene's last visible frames must be the separated stroke group —
 // the film's opening question — drifting up into scene B.
 //
-// v13 redesign (WU-A r9): the hero is NO LONGER a zoomed crossing detail.
-// It is the SAME material A1 used — the dumped master stroke layers
-// (indices 239-254, "▾ (A) stroke runs4" group: STROKE_*_runs4/5/6 of the
-// giant 解) re-rendered at their dumped rest pose (poseT 1.46, the pose A1
-// ends in). In master/screen space that field already bleeds off the right
-// frame edge (union x420-1123) — exactly the art-direction hero. A2 now
-// continues THAT hero and decomposes it left→right on the hero itself
-// instead of cutting to a floating detail.
+// r16 rework (A2: ghost outline hierarchy + crossing visibility):
+// The scene's SUBJECT is the crossing cluster, not the whole character.
+// SPEC §5 A2 stages it as "f45〜55で交差周辺を大きく見せる → f56〜66で
+// 縦画を分離 → f67〜78で横画を離し、復元された縦画の全体をアクセント
+// 色で強調 → f79〜89で比較状態を保持しBへ接続", and the r15
+// implementation framed the whole character instead — which parked the
+// crossing in the last 66px of the frame, half cropped by the frame
+// edge, with a field of grey contour boxes over it. The field is now
+// framed ON the cluster (see SCENE_A2's field constants) and the
+// layers are re-ranked into ONE reading order:
 //
-//   hero    = master STROKE_* layers (14 strokes, merged shapes excluded —
-//             they would stay merged while strokes part)
+//   1. ink       — the restored strokes (near-black). The subject.
+//   2. accent    — ONE marking: the restored vertical's contour, drawn
+//                  ON TOP of the horizontals so it crosses them
+//                  unbroken (the continuity proof), brighter over the
+//                  stretch that was concealed behind them. Nothing else
+//                  in the scene wears the accent — no boxes around the
+//                  horizontals, no marker dots.
+//   3. ghost     — the 元輪郭 (original outline) around the crossing:
+//                  a quiet "before" reference. Lighter, thinner and
+//                  confined to the crossing neighbourhood, so the ink
+//                  stays the darkest, most present thing in frame.
+//
+// The 11 non-crossing strokes' guide contours are GONE, and so are the
+// crossing horizontals' origin echoes: a per-stroke contour field (grey
+// boxes around every stroke) is Scene B's step-by-step analysis, not
+// this scene's proof. What is left in the scene is the ink, one accent
+// marking, and the ghost.
+//
+//   hero    = master STROKE_* layers (indices 239-254, "▾ (A) stroke
+//             runs4" group: STROKE_*_runs4/5/6 of the giant 解) at
+//             their dumped rest pose (poseT 1.46, the pose A1 ends in).
 //   ghost   = "PV glyph A2" comp "FUDE outline base" contour line-art,
 //             mapped ghost comp -> PV-A2 space (dumped reconstruction
 //             matrix) -> master space by the measured similarity REG2
 //             (see below), then -> screen by the shared fieldTransform.
 //   proof   = SPEC §5 A2 crossing cluster STROKE_016 (vertical) /
-//             STROKE_015 / STROKE_017 (horizontals): hidden-part contour,
-//             crossing markers, accent contour on the restored vertical.
+//             STROKE_015 / STROKE_017 (horizontals): the accent rail
+//             on the restored vertical.
 //
 // Registration contract (WU-A manualGate):
 //  - Same material family: master strokes ARE the A1 hero layers; the
@@ -53,67 +74,51 @@ import { LEFT_COLUMN_MAX_X } from "../layout/zones.ts";
 //    ghost field — the shared-fieldTransform contract is preserved.
 //
 // Choreography (SPEC §5 A2 beats kept; form per art direction):
-//   f45-55  hero establishes at A1 pose; gentle push z 1.0->1.08 — the
-//           COMPLETED kanji holds clean while the camera pushes in
-//   f55-66  crossing proof first: each of the three crossing strokes gets
-//           its own slot — guide contour highlights, then the filled shape
-//           peels away along its separation vector (vertical out from
-//           under the horizontals, horizontals part up/down)
-//   f57-82  remaining 11 strokes decompose one at a time, strictly
-//           left->right: guide line -> peel along the stroke's own axis.
-//           Every stroke's origin contour stays as a fading echo so the
-//           contour -> shape correspondence is traceable per stroke
-//   f68-75  restored vertical carries a persistent accent contour (its
-//           Restro-red emphasis — contour language, not a flat fill)
-//   f82-92  comparison hold — camera eases to the hold-fit framing that
-//           keeps the FULL separated union inside the frame
-//   f92-100 group drift up + fade — the separated strokes ARE the A3
-//           bridge and the scene's final question frame
+//   f45-55  the crossing cluster establishes large; gentle push z
+//           1.24->1.38 — the camera closes on the proof
+//   f55-66  the three crossing strokes jolt together (the dumped
+//           simultaneous attack) — the vertical lifts out from under the
+//           horizontals, the horizontals part left/right
+//   f57-82  the remaining strokes jolt with them; with the field framed
+//           on the cluster they sit off-frame left, clipped at the
+//           stage's left edge
+//   f68-78  the restored vertical carries the accent marking — the
+//           rail along its full length, brighter over the stretch
+//           that was hidden behind the horizontals
+//   f79-89  comparison hold — the ghost (元輪郭) fades in as the quiet
+//           "before" reference and the field holds still
+//   f89-100 the group drifts up + fades — the separated strokes ARE
+//           the A3 bridge and the scene's final question frame
 //
 const { t0: T0, t1: T1, poseT: POSE_T } = SCENE_A2;
 
 const ACCENT: [number, number, number] = [0.84, 0.27, 0.13]; // #D64520系
 const ACCENT_CSS = `rgb(${ACCENT.map((v) => Math.round(v * 255)).join(",")})`;
 const INK: [number, number, number] = [0.08, 0.08, 0.09];
-// Ghost contour tone: light warm gray so ink strokes and the red accent
-// stay readable on top.
-const GHOST_RGB: [number, number, number] = [0.4, 0.38, 0.35];
+// Ghost contour tone: a LIGHT warm grey. The 元輪郭 is a "before"
+// whisper; it must never read as a peer of the ink or of the accent.
+const GHOST_RGB: [number, number, number] = [0.66, 0.64, 0.6];
 const GHOST_CSS = `rgb(${GHOST_RGB.map((v) => Math.round(v * 255)).join(",")})`;
-// Hidden-part contour: the vertical stroke's own boundary left at the
-// crossing — darker neutral ink, distinct from ghost gray and red.
-const HIDDEN_RGB: [number, number, number] = [0.3, 0.3, 0.32];
-const HIDDEN_CSS = `rgb(${HIDDEN_RGB.map((v) => Math.round(v * 255)).join(",")})`;
-const MARKER_RGB: [number, number, number] = [0.25, 0.25, 0.27];
-// Non-crossing guide contours: neutral ink — a pencil-sketch tone that
-// reads as "contour line" on both the black fill and the white field,
-// reserving accent for the crossing proof (v15 color-canon fix).
-const GUIDE_RGB: [number, number, number] = [0.42, 0.42, 0.45];
-const GUIDE_CSS = `rgb(${GUIDE_RGB.map((v) => Math.round(v * 255)).join(",")})`;
-
 // Crossing cluster: SPEC §5 A2 runs4 016/015/017 only (014 removed in r8 —
-// do not restore). Master-space bboxes at POSE_T AFTER the +130 hero
-// column-clearance shift (masterPatch; r12 bumped HERO_SHIFT 90->130, so
-// comp-space x constants carry the extra +40 vs r11):
-//   STROKE_016_runs4 x1033-1099 y487-914 (vertical)
-//   STROKE_015_runs4 x931-1209 y543-615 (horizontal, upper)
-//   STROKE_017_runs4 x901-1247 y695-760 (horizontal, lower)
-// Intersection centers (bbox-overlap centroids): vert∩015 ≈ (1066,579),
-// vert∩017 ≈ (1066,728) -> crossing cluster focus (1066,653).
+// do not restore). Master-space bboxes at POSE_T AFTER the masterPatch
+// hero column-clearance shift (+130):
+//   STROKE_016_runs4 x1031-1097 y487-914 (vertical)
+//   STROKE_015_runs4 x928-1207 y543-615 (horizontal, upper)
+//   STROKE_017_runs4 x898-1245 y695-760 (horizontal, lower)
+// Intersection centers (bbox-overlap centroids): vert∩015 = (1064,579),
+// vert∩017 = (1064,727) -> crossing cluster focus (1064,653).
 const VERT_NAME = "STROKE_016_runs4";
-const CROSS_SET = new Set([
-  "STROKE_015_runs4",
-  "STROKE_016_runs4",
-  "STROKE_017_runs4",
-]);
-const CROSSINGS: [number, number][] = [
-  [1066, 579],
-  [1066, 728],
-];
+// Hero clip: the scene's painted area starts at the STAGE's left edge,
+// so the confirmed left column (x < LEFT_COLUMN_MAX_X = 460) and the
+// 460-480 safety gap can never be touched by the A2 hero. Exported so
+// tools/design/verify-local-motion.ts can assert the clip against the
+// column instead of trusting a copy of the number.
+export const A2_HERO_CLIP_X = STAGE_MIN_X;
+
 // Zoom/pan anchor + hold-fit framing + peel cascade + timing envelopes
 // all live in video/src/design/choreography.ts (SCENE_A2 / createA2Choreo)
 // — the single source shared by this scene, the verifier, the onion
-// figures, and the raster prototype. See that module for the r12/v15
-// contract notes (union x482-1219 y63-1019 -> screen ~x550-1000 y308-891).
+// figures, and the raster prototype.
 
 // Ghost pose: the dumped "reconstruction" layer transform sampled once at
 // PV A2 comp-local t=0.8 (mid-scene), same as the r8 pipeline.
@@ -130,20 +135,23 @@ const REG_CSS = `matrix(${REG_S},0,0,${REG_S},${REG_TX},${REG_TY})`;
 // paths whose ring bbox intersects this rect survive. The whole-char
 // outline rendered as one field read as a gray wash (wu-a-r8 FAIL); the
 // proof only needs the 元輪郭 around the two measured crossings.
-const GHOST_ZONE = { x0: 904, y0: 460, x1: 1224, y1: 840 };
+const GHOST_ZONE = SCENE_A2.ghostZone;
 
-// Ghost spatial mask: 元輪郭 confined to the crossing neighborhood, soft
-// radial falloff — no panel edge. Center/radius in comp (=master) units.
+// Ghost spatial mask: 元輪郭 confined to the crossing neighbourhood, soft
+// radial falloff — no panel edge. The zone filter keeps the paths whose
+// BBOX touches the zone, but a kept path may run far past it (the
+// outline-base strokes are long), so the mask is what actually confines
+// the ghost to the crossing. Center/radius in comp (=master) units.
 const GHOST_MASK =
-  "radial-gradient(320px 260px at 1066px 653px, #000 0px, #000 165px, transparent 320px)";
+  "radial-gradient(130px 190px at 1064px 653px, #000 0px, #000 90px, transparent 195px)";
 
 interface GlyphData {
   comp: CompSpec; // master
-  strokes: StrokeItem[]; // 14 hero strokes, cleaned + ink
+  strokes: StrokeItem[]; // hero strokes, cleaned + ink
   byName: Map<string, StrokeItem>;
-  rank: Map<string, number>; // x-rank 0..1 for the left->right wave
   vertContours: ContourPath[]; // vertical stroke boundary at rest pose
-  guides: ContourPath[][]; // per-stroke boundary contours (parallel to strokes)
+  vertBbox: [number, number, number, number];
+  hiddenBand: { x0: number; y0: number; x1: number; y1: number };
   ghostComp: CompSpec; // PV glyph A2
   ghostContours: ContourPath[][]; // outline-base contours per ghost stroke
   ghostCss: string; // reconstruction layer matrix, ghost comp -> PV-A2 space
@@ -174,15 +182,22 @@ export function glyphData(): GlyphData {
   const vert = byName.get(VERT_NAME);
   if (!vert) throw new Error("STROKE_016_runs4 missing from master hero");
   const vertContours = strokeContours(comp, vert, POSE_T);
-  // Per-stroke boundary contours at the rest pose — the "selected contour"
-  // guide lines that precede each stroke's separation (v15 decomposition
-  // correspondence fix). Same real Restro geometry as the fills.
-  const guides = clean.map((s) => strokeContours(comp, s, POSE_T));
+  const vertBbox = vert.bbox as [number, number, number, number];
 
-  // x-rank for the left->right decomposition wave: leftmost stroke = 0
-  const sorted = [...clean].sort((a, b) => a.center[0] - b.center[0]);
-  const rank = new Map<string, number>();
-  sorted.forEach((s, i) => rank.set(s.name, sorted.length > 1 ? i / (sorted.length - 1) : 0));
+  // The concealed stretch of the vertical: the vertical's own run from
+  // the top of the upper horizontal to the bottom of the lower one — in
+  // the vertical's LOCAL (pre-jolt) comp space, so the marking travels
+  // with the stroke. This is the band the accent brightens: exactly the
+  // part that was behind the horizontals.
+  const h015 = byName.get("STROKE_015_runs4");
+  const h017 = byName.get("STROKE_017_runs4");
+  if (!h015 || !h017) throw new Error("crossing horizontals missing");
+  const hiddenBand = {
+    x0: vertBbox[0] - 60,
+    x1: vertBbox[2] + 60,
+    y0: Math.min(h015.bbox[1], h017.bbox[1]),
+    y1: Math.max(h015.bbox[3], h017.bbox[3]),
+  };
 
   // ---- ghost (PV glyph A2 comp space -> PV-A2 space via reconstruction,
   //      then -> master space via the measured REG2 similarity) ----
@@ -232,9 +247,9 @@ export function glyphData(): GlyphData {
     comp,
     strokes: clean,
     byName,
-    rank,
     vertContours,
-    guides,
+    vertBbox,
+    hiddenBand,
     ghostComp: gcompSpec,
     ghostContours,
     ghostCss,
@@ -250,9 +265,8 @@ function compByNameSafe(name: string): CompSpec {
 
 export const SceneA2: React.FC<{ t: number }> = ({ t }) => {
   if (t < T0 || t >= T1) return null;
-  const { comp, strokes, byName, guides, vertContours, ghostComp, ghostContours, ghostCss } =
+  const { comp, strokes, byName, vertContours, vertBbox, hiddenBand, ghostComp, ghostContours, ghostCss } =
     glyphData();
-  const vertOrig = byName.get(VERT_NAME);
   const rel = t - T0;
   const choreo = createA2Choreo(strokes);
   const field = choreo.fieldAt(rel);
@@ -263,58 +277,15 @@ export const SceneA2: React.FC<{ t: number }> = ({ t }) => {
   }px) scale(${zoom})`;
   const sceneOpacity = field.opacity;
 
-  // ---- jolt & settle guide timing (envelope: choreography.ts) ----
-  // Attack peaks ~rel 0.42; settle tail ends ~rel 1.45. Guide contours
-  // highlight during the hit, then linger as faint origin echoes while
-  // the stroke settles back — the "contour became that stroke" reading.
-  const guideOp = (item: StrokeItem): number => {
-    const sel = choreo.selOf(item.name);
-    const isCross = CROSS_SET.has(item.name);
-    const p0 = sel - 0.02;
-    const p1 = sel + 0.05;
-    const brightEnd = sel + 0.28;
-    const holdEnd = 0.85;
-    const isVert = item.name === VERT_NAME;
-    // Hold declutter (r5 review): during the comparison hold ONLY the
-    // restored vertical keeps its accent contour — the crossing
-    // horizontals' origin guides fade out across the hold-fit reframe so
-    // the hold reads as strokes + one marked stroke, not a diagram.
-    const outEnd = isVert ? 2.02 : isCross ? 1.9 : sel + 1.0;
-    if (rel < p0 || rel > outEnd) return 0;
-    if (rel < p1) return easeInOutCubic(seg(rel, p0, p1));
-    if (rel <= brightEnd) return 1;
-    if (rel <= holdEnd)
-      return 1 - 0.65 * easeInOutCubic(seg(rel, brightEnd, holdEnd));
-    if (isCross) {
-      // hold anchor: fade only as the whole scene exits. The restored
-      // vertical's accent contour IS its emphasis now (v15 r4: the solid
-      // red fill read as a flat UI bar) — it persists brighter and longer
-      // so "the recovered stroke" stays marked through the comparison hold.
-      const anchor = isVert ? 0.9 : 0.3;
-      const fadeStart = isVert ? 1.9 : 1.5;
-      return anchor * (1 - easeInOutCubic(seg(rel, fadeStart, outEnd)));
-    }
-    return 0.22 * (1 - easeInOutCubic(seg(rel, holdEnd, outEnd)));
-  };
+  // ---- accent ramp (SPEC §5 A2 f67〜78: 復元された縦画をアクセント色で
+  //      強調). The marking arrives with the settled separation and stays
+  //      through the comparison hold and the exit. ----
+  const accentIn = easeInOutCubic(seg(rel, 1.0, 1.375));
 
   const vertItem = byName.get(VERT_NAME);
-  const vertSep = vertItem ? choreo.peelP(VERT_NAME, rel) : 0;
-  // comparison hold f83-~90 — the separated stroke group IS the film's
-  // opening question, now WITHOUT the dumped bunkai bridge ghosting in
-  // behind it (A2B_HIDDEN extended to 3.9s + opacity retimed in
-  // masterPatch: the bridge arrives only as this group exits, so the
-  // hold is a single clean hero). The group then fades across the A3
-  // bridge window while bunkai fades in — a sequential handoff, not a
-  // double exposure — and is ~clear by f94, before SceneB's viewport
-  // ramp (t=3.98-4.22 ≈ f96-101) turns prominent.
-  // Fade tightened (r5): fully out by rel 1.97 ≈ t3.845 (f92) — BEFORE
-  // the bunkai bridge layer fades in at 3.92s, so f93+ never
-  // double-exposes A2 residue under Scene B (r4/r5 review FAIL on the
-  // mixed old/new frame).
+  // Ghost (元輪郭) fades in as the "before" reference of the comparison
+  // hold (f79〜89), never before.
   const ghostIn = easeInOutCubic(seg(rel, 1.5, 1.7));
-  const markersIn = easeInOutCubic(seg(rel, 1.52, 1.74));
-  // Hidden-part contour revealed exactly as the filled stroke pulls away
-  const hiddenIn = vertSep;
 
   const strokeTransform = (item: StrokeItem): string | undefined => {
     const [sx, sy] = choreo.strokeDelta(item.name, rel);
@@ -331,6 +302,7 @@ export const SceneA2: React.FC<{ t: number }> = ({ t }) => {
       ` translate(${-cx.toFixed(2)}px,${-cy.toFixed(2)}px)`
     );
   };
+  const vertTransform = vertItem ? strokeTransform(vertItem) : undefined;
 
   return (
     <div
@@ -341,18 +313,18 @@ export const SceneA2: React.FC<{ t: number }> = ({ t }) => {
         pointerEvents: "none",
       }}
     >
-      {/* hero field in master/screen space, clipped at the left column
-          boundary (right of the "Restro" wordmark's ~x455 edge) so
-          reconstructed strokes never collide with the left copy;
-          right/bottom bleed off the frame edge is preserved. The
-          per-stroke leftFloor clamp keeps strokes off this edge in
-          normal operation — this is only a backstop. */}
+      {/* hero field in master/screen space, clipped at the STAGE's left
+          edge (STAGE_MIN_X = 480) so the reconstructed strokes can never
+          reach into the confirmed left column (x<460) nor into the
+          460-480 safety gap; the character's own mass bleeds off the
+          frame edge, which is the established "the character is bigger
+          than the frame" read. */}
       <div
         style={{
           position: "absolute",
-          left: LEFT_COLUMN_MAX_X,
+          left: A2_HERO_CLIP_X,
           top: 0,
-          width: 620,
+          width: 1080 - A2_HERO_CLIP_X,
           height: 1080,
           overflow: "hidden",
         }}
@@ -360,7 +332,7 @@ export const SceneA2: React.FC<{ t: number }> = ({ t }) => {
       <div
         style={{
           position: "absolute",
-          left: -LEFT_COLUMN_MAX_X, // keep comp->screen transform in absolute coords
+          left: -A2_HERO_CLIP_X, // keep comp->screen transform in absolute coords
           top: 0,
           width: comp.width,
           height: comp.height,
@@ -370,7 +342,7 @@ export const SceneA2: React.FC<{ t: number }> = ({ t }) => {
       >
         {/* ghost first (under everything): PV glyph A2 "FUDE outline
             base" contour line-art, confined by a soft radial mask to the
-            crossing neighborhood. ghostCss = dumped reconstruction
+            crossing neighbourhood. ghostCss = dumped reconstruction
             matrix (ghost comp -> PV-A2 space); REG2 = measured
             registration similarity (PV-A2 space -> master space);
             fieldTransform = shared comp->screen zoom+drift. The mask div
@@ -412,38 +384,39 @@ export const SceneA2: React.FC<{ t: number }> = ({ t }) => {
               comp={ghostComp}
               contours={ghostContours}
               color={GHOST_CSS}
-              width={5}
-              opacity={0.95 * ghostIn}
+              width={3}
+              opacity={0.62 * ghostIn}
             />
           </div>
         </div>
         </div>
-        {/* hidden-part contour: the vertical stroke's own boundary left
-            at the crossing position — drawn UNDER the hero strokes so the
-            crossings cover its middle, leaving visible proof of where the
-            stroke was concealed */}
-        <ContourField
+        <StrokeField
           comp={comp}
-          contours={[vertContours]}
-          color={HIDDEN_CSS}
-          width={5}
-          itemOpacity={() => 0.85 * hiddenIn}
+          strokes={strokes}
+          poseT={POSE_T}
+          strokeTransform={strokeTransform}
         />
-        {/* origin echo: the restored stroke's own filled shape left at
-            the crossing position (no strokeTransform) at low opacity —
-            the "was here" half of the same-material registration proof.
-            Fades in with vertSep and stays through the hold so origin
-            vs displaced stroke reads as one stroke's two positions
-            (wu-a-r11 A-1). */}
-        {vertOrig && (
-          <StrokeField
-            comp={comp}
-            strokes={[vertOrig]}
-            poseT={POSE_T}
-            strokeOpacity={() => 0.34 * hiddenIn}
-          />
-        )}
-        {/* crossing-point markers at the two measured intersections */}
+        {/* THE ACCENT: one marking, on one stroke — the restored
+            vertical's own contour, drawn ON TOP of the horizontals so it
+            crosses them UNBROKEN. That unbroken crossing IS the proof
+            (SPEC §5 A2: 交差で見えなかった部分まで連続した一本の縦画).
+            Over the stretch that was concealed behind the horizontals
+            (hiddenBand, in the vertical's local comp space so it travels
+            with the stroke) the same contour is brighter and heavier —
+            so "where the hidden part was" is legible at a glance
+            without painting a slab of colour over the ink. */}
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: comp.width,
+            height: comp.height,
+            transform: vertTransform,
+            transformOrigin: "0 0",
+            opacity: accentIn,
+          }}
+        >
         <svg
           width={comp.width}
           height={comp.height}
@@ -453,55 +426,60 @@ export const SceneA2: React.FC<{ t: number }> = ({ t }) => {
             left: 0,
             top: 0,
             overflow: "visible",
-            opacity: markersIn,
           }}
         >
-          {CROSSINGS.map(([cx, cy], i) => (
-            <g key={i}>
-              {/* origin ring: the measured crossing on the hidden-part
-                  contour — where the vertical stroke was concealed.
-                  Small and neutral: with the per-stroke guides carrying
-                  correspondence, long accent track lines read as UI
-                  diagrammatics (M3 critique), so they are gone. */}
-              <circle
-                cx={cx}
-                cy={cy}
-                r={10}
-                fill="none"
-                stroke={`rgb(${MARKER_RGB.map((v) => Math.round(v * 255)).join(",")})`}
-                strokeWidth={3}
+          <defs>
+            <clipPath id="a2-hidden-band">
+              <rect
+                x={hiddenBand.x0}
+                y={hiddenBand.y0}
+                width={hiddenBand.x1 - hiddenBand.x0}
+                height={hiddenBand.y1 - hiddenBand.y0}
               />
-            </g>
-          ))}
+            </clipPath>
+            {/* the rail runs the vertical's length WITHOUT its end caps:
+                a closed outline would read as a box drawn around the
+                stroke, which is exactly what the accent must not be. */}
+            <clipPath id="a2-rail-span">
+              <rect
+                x={hiddenBand.x0}
+                y={vertBbox[1] + 12}
+                width={hiddenBand.x1 - hiddenBand.x0}
+                height={vertBbox[3] - vertBbox[1] - 24}
+              />
+            </clipPath>
+          </defs>
+          <g clipPath="url(#a2-rail-span)">
+            {vertContours.map((p, i) => (
+              <path
+                key={`rail-${i}`}
+                d={p.d}
+                transform={p.matrix}
+                fill="none"
+                stroke={ACCENT_CSS}
+                strokeWidth={2.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                opacity={0.65}
+              />
+            ))}
+          </g>
+          <g clipPath="url(#a2-hidden-band)">
+            {vertContours.map((p, i) => (
+              <path
+                key={`band-${i}`}
+                d={p.d}
+                transform={p.matrix}
+                fill="none"
+                stroke={ACCENT_CSS}
+                strokeWidth={5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            ))}
+          </g>
         </svg>
-        <StrokeField
-          comp={comp}
-          strokes={strokes}
-          poseT={POSE_T}
-          strokeTransform={strokeTransform}
-        />
-        {/* per-stroke guide contours (v15): each stroke's REAL boundary
-            highlights right before its fill peels away, then stays as a
-            faint origin echo — the contour -> shape correspondence is
-            drawn, not implied. Crossing strokes keep accent guides as
-            hold anchors; the other 11 use a neutral ink so the cascade
-            does not read as an orange technical diagram (color canon:
-            red = current proof/brand, not every stroke). */}
-        <ContourField
-          comp={comp}
-          contours={guides}
-          color={GUIDE_CSS}
-          width={6}
-          itemOpacity={(i) => guideOp(strokes[i])}
-          itemColor={(i) => (CROSS_SET.has(strokes[i].name) ? ACCENT_CSS : undefined)}
-          // The restored vertical's accent contour tracks its displaced
-          // fill (small lift) so it reads as a highlight ON the stroke,
-          // not a second outline at the origin. The two horizontals keep
-          // origin-pinned guides — the "was here" half of the parting.
-          itemTransform={(i) =>
-            strokes[i]?.name === VERT_NAME ? strokeTransform(strokes[i]) : undefined
-          }
-        />
+        </div>
       </div>
       </div>
     </div>
