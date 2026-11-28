@@ -240,12 +240,17 @@ export const SceneE: React.FC<{ t: number }> = ({ t }) => {
     heroP * entryP(i);
 
   // --- end card stagger ---
+  // Tightened (was logo .05/.5, desc .22/.4, booth .38/.4, url .52/.4):
+  // the old pacing left the CTA ramp running until ~18.37s (f441), giving
+  // only ~1.6s of settled hold before the comp ends — short of the §3.4
+  // "2s+ quiet settle / CTA readable ~f427-480" intent. Same entrance
+  // order and easing, just compressed so the group is readable earlier.
   const itemP = (delay: number, dur = 0.4) =>
     t >= CARD_IN + delay ? easeOutCubic(seg(t, CARD_IN + delay, CARD_IN + delay + dur)) : 0;
-  const logoP = itemP(0.05, 0.5);
-  const descP = itemP(0.22, 0.4);
-  const boothP = itemP(0.38, 0.4);
-  const urlP = itemP(0.52, 0.4);
+  const logoP = itemP(0.0, 0.45);
+  const descP = itemP(0.15, 0.35);
+  const boothP = itemP(0.28, 0.35);
+  const urlP = itemP(0.4, 0.35);
 
   // Left-column closing copy moved to video/src/layout/LeftCopy.tsx
   // (Issue #30): the left information column is confirmed layout owned by
