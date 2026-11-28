@@ -40,8 +40,8 @@ type Clip = {
   dur: number; // window frames this clip occupies
 };
 
-const SRC_W = 1920;
-const SRC_H = 1080;
+const SRC_W = 2504;
+const SRC_H = 1392;
 
 // Interim ROI for ae-decompose-auto.mp4 (r36b ink-bounds measurement):
 // the 1280x720 comp places the kanji high, ink occupies x400-878 y0-432.
