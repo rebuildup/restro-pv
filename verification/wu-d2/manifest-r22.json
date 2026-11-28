@@ -1,0 +1,17 @@
+{
+  "id": "wu-d-r22",
+  "scene": "D",
+  "subject": "scene D left column after essay/EN-sub removal and center-justify fix",
+  "frames": [
+    { "file": "verification/wu-d2/f281.png", "frame": 281, "note": "D cut" },
+    { "file": "verification/wu-d2/f295.png", "frame": 295, "note": "D early" },
+    { "file": "verification/wu-d2/f330.png", "frame": 330, "note": "D mid" }
+  ],
+  "requirements": [
+    "左カラムの説明コピーが窓に隠れず・切れずに読める",
+    "表示中のすべての窓に対応する日本語ラベルがある",
+    "各フレームで少なくとも2つの窓に操作過程または結果を判別できる映像がある",
+    "明らかな描画破綻・残像・レイアウト崩壊がない"
+  ],
+  "context": "Scene D frames 281-370. This round: disabled essay-length description layers (>150 chars, per SPEC rejection of long essays) and the redundant English sub; fixed point-text center justification so text anchors at its true center instead of running half a line too far right. Left column should now show only the JP headline + sub, fully left of the windows."
+}

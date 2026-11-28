@@ -1,0 +1,103 @@
+{
+  "prototype": "scene-a2-kai",
+  "generatedAt": "2026-11-28T06:04:34.596Z",
+  "revision": "production-path (createA2Choreo shared with SceneA2.tsx)",
+  "designSources": [
+    "video/src/design/choreography.ts (SCENE_A2 + createA2Choreo — single source)",
+    "video/src/scenes/glyph.tsx compStrokes (production rest geometry, comp space)",
+    "video/src/scenes/SceneA2.tsx (same choreo consumed for Remotion render)",
+    "tools/design/verify-local-motion.ts (same path, numeric checks)"
+  ],
+  "comp": "master",
+  "frameRange": {
+    "firstCompFrame": 45,
+    "lastCompFrame": 100,
+    "count": 56,
+    "fps": 24
+  },
+  "poseTime": 1.46,
+  "strokes": [
+    {
+      "name": "STROKE_016_runs4"
+    },
+    {
+      "name": "STROKE_017_runs4"
+    },
+    {
+      "name": "STROKE_015_runs4"
+    },
+    {
+      "name": "STROKE_014_runs4"
+    },
+    {
+      "name": "STROKE_011_runs4"
+    },
+    {
+      "name": "Ae_Restro merged shape 3"
+    },
+    {
+      "name": "STROKE_010_runs4"
+    },
+    {
+      "name": "STROKE_007_runs4"
+    },
+    {
+      "name": "STROKE_004_runs4"
+    },
+    {
+      "name": "STROKE_005_runs4"
+    },
+    {
+      "name": "Ae_Restro merged shape 2"
+    },
+    {
+      "name": "STROKE_003_runs4"
+    },
+    {
+      "name": "STROKE_006_runs6"
+    },
+    {
+      "name": "STROKE_002_runs6"
+    },
+    {
+      "name": "STROKE_000_runs4"
+    },
+    {
+      "name": "STROKE_001_runs5"
+    }
+  ],
+  "peelOrder": [
+    "STROKE_016_runs4",
+    "STROKE_015_runs4",
+    "STROKE_017_runs4",
+    "STROKE_006_runs6",
+    "STROKE_001_runs5",
+    "STROKE_003_runs4",
+    "STROKE_007_runs4",
+    "STROKE_000_runs4",
+    "STROKE_005_runs4",
+    "STROKE_004_runs4",
+    "STROKE_002_runs6",
+    "Ae_Restro merged shape 2",
+    "STROKE_014_runs4",
+    "STROKE_011_runs4",
+    "STROKE_010_runs4",
+    "Ae_Restro merged shape 3"
+  ],
+  "approximations": [
+    "fills + restored-vertical accent contour only; ghost contours, guide echoes, crossing markers, hidden-part contour omitted (SceneA2.tsx presentation layer)",
+    "accent contour rasterized as polyline (production uses real bezier contours)",
+    "left-column clip replicated at x=460; right/bottom bleed clipped by frame",
+    "background = docs/design/assets/background-grid-plane.png over white",
+    "no per-stroke opacity envelopes (production controls visibility via strokeOpacity defaults = 1 here)"
+  ],
+  "outputs": {
+    "video": "scene-a2-kai.mp4",
+    "stills": [
+      "still-entry.png (comp f45)",
+      "still-hold.png (comp f~89, comparison hold)",
+      "still-exit.png (comp f100)"
+    ],
+    "frames": "regenerate via `bun tools/design/render-scene-a2-prototype.ts` (56 PNG frames, not committed)"
+  }
+}

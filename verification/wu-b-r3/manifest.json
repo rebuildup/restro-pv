@@ -1,0 +1,14 @@
+{
+  "id": "wu-b-r3",
+  "wu": "WU-B",
+  "subject": "scene B v2: zone-fixed glyph + real per-step geometry + re-authored tab strip above glyph",
+  "frames": [
+    {"file": "verification/wu-b-r3/f110.png", "frame": 110, "note": "step0 輪郭を解析: red silhouette+contour"},
+    {"file": "verification/wu-b-r3/f135.png", "frame": 135, "note": "step1 輪郭線を延長: green draft contours"},
+    {"file": "verification/wu-b-r3/f146.png", "frame": 146, "note": "step2 start: markers+lens"},
+    {"file": "verification/wu-b-r3/f158.png", "frame": 158, "note": "step2 隠れた頂点を推定"},
+    {"file": "verification/wu-b-r3/f170.png", "frame": 170, "note": "step3 start: strokes separating"},
+    {"file": "verification/wu-b-r3/f178.png", "frame": 178, "note": "step3 一画ずつに分割: yellow strokes"}
+  ],
+  "context": "Scene B [101,191), 1080x1080. Same giant 筆 throughout, now kept inside the right zone (left edge ~x478, right edge intentionally cropped). Steps add real geometry: 01 char contour silhouette, 02 per-stroke draft contours (real Restro stroke boundaries), 03 junction markers at real stroke-outline crossings + circular lens, 04 13 real strokes slightly displaced, individually tinted yellow-family, one selected. Step tabs are white bars with progressive reveal above the glyph; labels read 中/した."
+}

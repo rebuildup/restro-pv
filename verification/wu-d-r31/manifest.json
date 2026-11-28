@@ -1,0 +1,33 @@
+{
+  "id": "wu-d-r31",
+  "wu": "WU-D",
+  "subject": "scene D r31: identical to r30 except the authored emphasis ring on the W1 panel inset is removed per review feedback — the footage never recorded a button press (panel pixels are identical across the swap), so the scene now shows only passive result evidence: the real Restro panel callout, the comp-name callout literally reading 'REC decomposed', and the real before->after swap in the main view",
+  "frames": [
+    { "file": "verification/wu-d-r31/f281.png", "frame": 281, "note": "D start: copy + W1 entering (before: single text)" },
+    { "file": "verification/wu-d-r31/f290.png", "frame": 290, "note": "W1 before state; both callouts visible" },
+    { "file": "verification/wu-d-r31/f300.png", "frame": 300, "note": "W1 before state, decompose swap imminent; panel + comp-name callouts" },
+    { "file": "verification/wu-d-r31/f304.png", "frame": 304, "note": "W1 last before frame; static inset borders, no emphasis" },
+    { "file": "verification/wu-d-r31/f305.png", "frame": 305, "note": "W1 decompose swap lands; W2 entered" },
+    { "file": "verification/wu-d-r31/f306.png", "frame": 306, "note": "post-swap result; static borders" },
+    { "file": "verification/wu-d-r31/f310.png", "frame": 310, "note": "W1 result + both callouts; W2 state1 hold" },
+    { "file": "verification/wu-d-r31/f315.png", "frame": 315, "note": "all windows live; W2 state1" },
+    { "file": "verification/wu-d-r31/f320.png", "frame": 320, "note": "W4 entering (reprocess redraw arc)" },
+    { "file": "verification/wu-d-r31/f326.png", "frame": 326, "note": "W3 adjustment; W2 post-jump1 state2; W4 mid-arc" },
+    { "file": "verification/wu-d-r31/f329.png", "frame": 329, "note": "W2 clip-B hard cut = second jump lands (state3)" },
+    { "file": "verification/wu-d-r31/f330.png", "frame": 330, "note": "W2 state3 hold begins" },
+    { "file": "verification/wu-d-r31/f336.png", "frame": 336, "note": "W4 executing-dialog beat; W3 clip-A tail" },
+    { "file": "verification/wu-d-r31/f339.png", "frame": 339, "note": "W3 clip-B jump cut; W1 clip-B upcoming; W4 result landing" },
+    { "file": "verification/wu-d-r31/f340.png", "frame": 340, "note": "W1 clip-B jump cut; W4 'Restro' readable, MV forming" },
+    { "file": "verification/wu-d-r31/f345.png", "frame": 345, "note": "W4 result hold; W3 clip-B event" },
+    { "file": "verification/wu-d-r31/f348.png", "frame": 348, "note": "W2 mid-exit; W4 completed Restro+MV" },
+    { "file": "verification/wu-d-r31/f350.png", "frame": 350, "note": "W2 exiting; W4 result hold" },
+    { "file": "verification/wu-d-r31/f355.png", "frame": 355, "note": "W4 completed 'Restro'+'MV' readable; W2/W3 exiting" },
+    { "file": "verification/wu-d-r31/f360.png", "frame": 360, "note": "W4 exit begins (fOut 365); W1 mid" },
+    { "file": "verification/wu-d-r31/f365.png", "frame": 365, "note": "W4 gone, W1 mid-exit" },
+    { "file": "verification/wu-d-r31/f368.png", "frame": 368, "note": "W1 exit fade" },
+    { "file": "verification/wu-d-r31/f370.png", "frame": 370, "note": "all windows gone (D tail)" },
+    { "file": "verification/wu-d-r31/f371.png", "frame": 371, "note": "D->E boundary" },
+    { "file": "verification/wu-d-r31/f375.png", "frame": 375, "note": "E handoff" }
+  ],
+  "context": "Scene D r31: identical layout/segments to r30 minus one authored annotation. Per the wu-d-r30 review, the W1 emphasis ring (warm glow synced to the f305 swap) was removed because it implied a button press the footage never recorded — exhaustive pixel-diff across all three recordings shows the Restro panel buttons are STATIC (the operation was script-triggered; no cursor over the panel, no press state, no execution dialog in this segment). What remains is purely passive result evidence, all real footage: (a) enlarged PiP of the actual Restro plugin panel Decompose/Merge/Refine button row (source x1330-1610,y500-625, ~1.2x, labels readable); (b) second PiP of the comp viewer header where the open comp is literally named 'REC decomposed' (source x280-720,y58-125); (c) the real before->after swap at source f886-887 (PV f305-306) in the main window, followed by stepped part-adjustments. No authored element claims or simulates an interaction that was not recorded. W4 (ae-reprocess): full-decode diff proves the source is static after ~f170; completed comp is WHITE 'Restro' over 'MV' on the transparency checkerboard at source x~470-1073,y~200-640; new taller roi + 450x330 window shows the whole stack; transient 'Executing' dialog passes mid-clip; filter brightness(0.8) contrast(1.2) saturate(1.3). W2 (ae-stroke-animate): verified stepped jumps at source f623/f666; two clips give each state >=10 frames hold, second jump as hard cut. Left copy, captions, window positions and scene boundaries unchanged from r29/r30."
+}

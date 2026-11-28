@@ -1,0 +1,18 @@
+{
+  "id": "wu-d-r14",
+  "scene": "D",
+  "subject": "scene D entry with two windows from the cut",
+  "frames": [
+    { "file": "verification/wu-d2/f281.png", "frame": 281, "note": "D cut - W1 instant + W2 fading in" },
+    { "file": "verification/wu-d2/f283.png", "frame": 283, "note": "D +0.08s - W1+W2" },
+    { "file": "verification/wu-d2/f295.png", "frame": 295, "note": "D early" },
+    { "file": "verification/wu-d2/f330.png", "frame": 330, "note": "D mid" }
+  ],
+  "requirements": [
+    "f281-283 で少なくとも2つの窓に判別可能な操作映像がある",
+    "窓群が画面内に収まり、ラベルが対応する窓に同期して表示される",
+    "C→D の切り替えが明確（左カラムは description コンポのシーンコピーのみ）",
+    "明らかな描画破綻がない"
+  ],
+  "context": "Scene D frames 281-370, ops comp inset to 90%, W1 instant at cut, W2 now starts at local 0.2s so two windows are live from the first frames. Left column = description comp per-scene copy only (brand lockup hidden per SPEC). Checkerboard inside windows is the authentic AE screen-recording content."
+}

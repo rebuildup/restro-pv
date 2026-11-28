@@ -1,0 +1,88 @@
+{
+  "id": "wu-a-v15-r5",
+  "wu": "WU-A",
+  "subject": "Scene A v15 r5: accent contour opacity raised (vert 0.9, horizontals 0.3), non-cross guide echoes dimmed to 0.22, A2 scene fade tightened to fully exit by t=3.90s BEFORE the bunkai bridge fades in at 3.92s - no double exposure into Scene B",
+  "frames": [
+    {
+      "file": "verification/wu-a-v15/f30.png",
+      "frame": 30,
+      "note": "A1 hero protected"
+    },
+    {
+      "file": "verification/wu-a-v15/f48.png",
+      "frame": 48,
+      "note": "A2 establish: completed kanji"
+    },
+    {
+      "file": "verification/wu-a-v15/f55.png",
+      "frame": 55,
+      "note": "push-in ends, cascade begins"
+    },
+    {
+      "file": "verification/wu-a-v15/f58.png",
+      "frame": 58,
+      "note": "crossing trio peel starts"
+    },
+    {
+      "file": "verification/wu-a-v15/f62.png",
+      "frame": 62,
+      "note": "crossing strokes part"
+    },
+    {
+      "file": "verification/wu-a-v15/f66.png",
+      "frame": 66,
+      "note": "horizontals part, cascade L->R underway"
+    },
+    {
+      "file": "verification/wu-a-v15/f70.png",
+      "frame": 70,
+      "note": "mid cascade"
+    },
+    {
+      "file": "verification/wu-a-v15/f74.png",
+      "frame": 74,
+      "note": "late cascade"
+    },
+    {
+      "file": "verification/wu-a-v15/f78.png",
+      "frame": 78,
+      "note": "cascade tail"
+    },
+    {
+      "file": "verification/wu-a-v15/f82.png",
+      "frame": 82,
+      "note": "hold-fit reframe begins"
+    },
+    {
+      "file": "verification/wu-a-v15/f86.png",
+      "frame": 86,
+      "note": "comparison hold"
+    },
+    {
+      "file": "verification/wu-a-v15/f90.png",
+      "frame": 90,
+      "note": "hold tail / cluster receding"
+    },
+    {
+      "file": "verification/wu-a-v15/f92.png",
+      "frame": 92,
+      "note": "handoff to bridge"
+    },
+    {
+      "file": "verification/wu-a-v15/f94.png",
+      "frame": 94,
+      "note": "bridge arrives"
+    },
+    {
+      "file": "verification/wu-a-v15/f96.png",
+      "frame": 96,
+      "note": "SceneB viewport opens"
+    },
+    {
+      "file": "verification/wu-a-v15/f100.png",
+      "frame": 100,
+      "note": "last A frame"
+    }
+  ],
+  "context": "v15 r5 final polish: vert accent contour 0.65->0.9 for legibility; horizontal crossing guides 0.35->0.3; non-crossing guide echo 0.3->0.22; sceneOpacity fade window moved to rel 1.85-2.02 (t3.725-3.895) so the authored group is fully gone before bunkai (hidden until 3.9s, fade 3.92-4.1) arrives. All r4 changes kept: no solid red fill, ink vertical + tracking accent contour, per-stroke L->R cascade, hold-fit reframe, grid dim 1.95-3.68s."
+}

@@ -1,0 +1,17 @@
+{
+  "id": "wu-d-r6",
+  "scene": "D",
+  "subject": "scene D four recording windows with content labels",
+  "frames": [
+    { "file": "verification/wu-d2/f312.png", "frame": 312, "note": "D window, W2 stroke-animate 5s segment" },
+    { "file": "verification/wu-d2/f330.png", "frame": 330, "note": "D window, W3 stroke-animate 22s segment" },
+    { "file": "verification/wu-d2/f350.png", "frame": 350, "note": "D window, W4 reprocess segment" }
+  ],
+  "requirements": [
+    "4つの窓それぞれに判別可能なAE/プラグイン操作の映像が写っている（黒画面・無関係領域・潰れた表示でない）",
+    "4つの窓がキャプションと内容の両面で異なる操作フェーズとして区別できる",
+    "各窓の上にある日本語キャプションが読み取れ、レイアウトを壊していない",
+    "フレーム間・窓の境界に明らかな描画破綻（重なりゴミ・枠のずれ・はみ出し）がない"
+  ],
+  "context": "Scene D is frames 281-370 of a 480-frame 24fps promo PV. The four windows on the right half show async-recorded After Effects footage of a stroke-decomposition plugin: W1 top = anchor-point estimation (decompose), W2 mid-left = stroke generation (stroke-animate 5s), W3 mid-right = control-point editing (stroke-animate 22s), W4 bottom = reprocess/result. Small Japanese labels were added above each window to distinguish them. The left column holds product copy."
+}

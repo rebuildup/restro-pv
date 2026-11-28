@@ -1,0 +1,11 @@
+{
+  "id": "wu-e-r1",
+  "wu": "WU-E",
+  "subject": "scene E closing (f390 tiles->futsu hero->f465 product card hold)",
+  "frames": [
+    { "file": "verification/wu-e1/f390.png", "frame": 390, "note": "tiles recap / hero transition" },
+    { "file": "verification/wu-e1/f430.png", "frame": 430, "note": "hero fude / card approach" },
+    { "file": "verification/wu-e1/f465.png", "frame": 465, "note": "product card hold" }
+  ],
+  "context": "Scene E spans PV-Master frames 371-479: f371-388 B/C/D tiles recap, f389-430 large hero 筆 with stroke separation/reassembly, f431-479 product card hold (Restro/筆画復元/BOOTH/URL). Judge whether the closing recovers prior scenes then lands on product identity."
+}

@@ -1,0 +1,75 @@
+{
+  "verifiedAt": "2026-11-28T09:29:00.234Z",
+  "viewport": {
+    "x": 480,
+    "y": 60,
+    "w": 600,
+    "h": 870
+  },
+  "note": "ink = any channel <235; colorful = channel spread >40 (proof palette/accent). Frames: W1 f219 finished hold + seal (post write-on), W2 f248 finished hold (dark depth field — ink metric counts the dark ground), W3 f258 finished hold (official mark, red accents). All works docked in the 600x960 strip at x480-1080.",
+  "stills": [
+    {
+      "work": 1,
+      "title": "墨帖",
+      "frame": 219,
+      "file": ".tmp/sc-c2-w1.png",
+      "inkPixelCount": 109458,
+      "inkFraction": 0.2097,
+      "meanInkRGB": [
+        38.2,
+        35.2,
+        32.2
+      ],
+      "colorfulPixelCount": 727,
+      "colorfulFraction": 0.0014,
+      "inkBBox": {
+        "x0": 541,
+        "y0": 235,
+        "x1": 1059,
+        "y1": 724
+      }
+    },
+    {
+      "work": 2,
+      "title": "深解",
+      "frame": 248,
+      "file": ".tmp/sc-c2-w2.png",
+      "inkPixelCount": 522000,
+      "inkFraction": 1,
+      "meanInkRGB": [
+        47.9,
+        45.3,
+        49.6
+      ],
+      "colorfulPixelCount": 16518,
+      "colorfulFraction": 0.0316,
+      "inkBBox": {
+        "x0": 480,
+        "y0": 60,
+        "x1": 1079,
+        "y1": 929
+      }
+    },
+    {
+      "work": 3,
+      "title": "紋章",
+      "frame": 258,
+      "file": ".tmp/sc-c2-w3.png",
+      "inkPixelCount": 102687,
+      "inkFraction": 0.1967,
+      "meanInkRGB": [
+        27.4,
+        11.4,
+        11.1
+      ],
+      "colorfulPixelCount": 7815,
+      "colorfulFraction": 0.015,
+      "inkBBox": {
+        "x0": 510,
+        "y0": 230,
+        "x1": 1049,
+        "y1": 677
+      }
+    }
+  ]
+}

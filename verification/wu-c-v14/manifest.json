@@ -1,0 +1,25 @@
+{
+  "id": "wu-c-v14-r6",
+  "wu": "WU-C",
+  "subject": "scene C gallery motion rework (v14 r6) — longer finished holds, brief per-work color proof, per-stroke motion in each work's own finish, recomposition, finished hold; no B->C contour overlay",
+  "frames": [
+    { "file": "verification/wu-c-v14/f191.png", "frame": 191, "note": "work01 clean entry: finished ink char hold (no contour overlay)" },
+    { "file": "verification/wu-c-v14/f200.png", "frame": 200, "note": "work01 finished ink hold" },
+    { "file": "verification/wu-c-v14/f208.png", "frame": 208, "note": "work01 brief color-separated stroke proof" },
+    { "file": "verification/wu-c-v14/f213.png", "frame": 213, "note": "work01 per-stroke orbit motion in ink finish" },
+    { "file": "verification/wu-c-v14/f217.png", "frame": 217, "note": "work01 strokes recomposing" },
+    { "file": "verification/wu-c-v14/f221.png", "frame": 221, "note": "work01 finished ink hold before page turn" },
+    { "file": "verification/wu-c-v14/f229.png", "frame": 229, "note": "work02 finished gradient hold" },
+    { "file": "verification/wu-c-v14/f238.png", "frame": 238, "note": "work02 brief color-separated stroke proof" },
+    { "file": "verification/wu-c-v14/f242.png", "frame": 242, "note": "work02 left-to-right stroke wave in gradient finish" },
+    { "file": "verification/wu-c-v14/f246.png", "frame": 246, "note": "work02 strokes recomposing" },
+    { "file": "verification/wu-c-v14/f249.png", "frame": 249, "note": "work02 finished gradient hold" },
+    { "file": "verification/wu-c-v14/f258.png", "frame": 258, "note": "work03 finished two-wing emblem hold" },
+    { "file": "verification/wu-c-v14/f267.png", "frame": 267, "note": "work03 brief color-separated stroke proof" },
+    { "file": "verification/wu-c-v14/f272.png", "frame": 272, "note": "work03 per-stroke rock motion in emblem finish" },
+    { "file": "verification/wu-c-v14/f275.png", "frame": 275, "note": "work03 strokes recomposing" },
+    { "file": "verification/wu-c-v14/f280.png", "frame": 280, "note": "last in-scene frame: finished emblem still held" },
+    { "file": "verification/wu-c-v14/f281.png", "frame": 281, "note": "D boundary: scene C fully gone" }
+  ],
+  "context": "Scene C spans frames 191-280 (rel 0-3.75s). Right-stage window x490-1060 y60-1020, thin border, three contiguous white artboard cells (570x960) in a vertical strip; page-turn legs ~0.12s at rel 1.20-1.32 and 2.40-2.52. All stroke geometry is real Baseline FUDE S01-S13 material. Each work now holds the finished piece ~12-13 frames before a ~0.3s color-separated proof flash (palette rotated per work), then runs per-stroke motion on the work's own finish and recomposes to a finished hold. Work01 near-black ink char, work02 cobalt-to-vermilion gradient char, work03 near-black two-wing emblem. Captions are one line each: 作例 01 筆墨 / 作例 02 筆彩 / 作例 03 筆構."
+}

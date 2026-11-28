@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="380" viewBox="0 0 500 380">
+  <style>
+    text { font-family: 'Yu Gothic UI', 'Meiryo', 'Hiragino Kaku Gothic ProN', sans-serif; }
+    .mono { font-family: 'Consolas', 'Cascadia Mono', monospace; }
+  </style>
+  
+  
+    <text x="20" y="96" font-size="84" font-weight="700" fill="#1a1a1f" letter-spacing="1">Restro</text>
+    <text x="24" y="152" font-size="36" font-weight="700" fill="#1a1a1f" letter-spacing="0.6">筆画復元</text>
+    <text x="24" y="192" font-size="22" fill="#666670" letter-spacing="0.3">After Effects プラグイン</text>
+    <text x="24" y="270" font-size="32" font-weight="700" fill="#1a1a1f" letter-spacing="0.5">BOOTHで販売中</text>
+    <text x="24" y="308" font-size="20" fill="#666670" letter-spacing="0.2" class="mono">361do.booth.pm/items/9029239</text>
+    <text x="24" y="338" font-size="18" fill="#666670" letter-spacing="0.2">Stroke Reconstruction for After Effects</text>
+  
+</svg>

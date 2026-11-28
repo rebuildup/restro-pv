@@ -1,0 +1,11 @@
+{
+  "id": "wu-e-r3",
+  "wu": "WU-E",
+  "subject": "scene E v3: non-overlapping tiles recap (f375) -> hero -> card (f465)",
+  "frames": [
+    { "file": "verification/wu-e2/f375b.png", "frame": 375, "note": "B/C/D tiles recap v3" },
+    { "file": "verification/wu-e2/f410.png", "frame": 410, "note": "hero 筆 held separated" },
+    { "file": "verification/wu-e2/f465.png", "frame": 465, "note": "product card hold" }
+  ],
+  "context": "SPEC §5 E recap phase. Tiles were repositioned to be non-overlapping inside the right zone (x480-1080). Compare against r2 where tiles overlapped and were illegible."
+}

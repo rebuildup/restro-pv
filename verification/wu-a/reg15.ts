@@ -1,0 +1,12 @@
+import { compByName } from "../../video/src/ae/project.ts";
+import { children } from "../../video/src/ae/eval.ts";
+import { evalProp } from "../../video/src/ae/eval.ts";
+const bk = compByName("bunkai")!;
+const l = bk.layers.find(x=>x.name==="STROKE_016_runs4")!;
+const g = children(l.shapes).find(c=>c.name==="shell 16")!;
+const vg = children(g).find(c=>c.matchName==="ADBE Vectors Group")!;
+const grp = children(vg).find(c=>c.matchName==="ADBE Vector Shape - Group")!;
+const path = children(grp).find(c=>c.matchName==="ADBE Vector Shape")!;
+console.log(JSON.stringify(path).slice(0,3000));
+const s = evalProp(path,0.5) as any;
+console.log("EVAL", JSON.stringify(s).slice(0,2000));

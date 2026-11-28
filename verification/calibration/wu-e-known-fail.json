@@ -1,0 +1,11 @@
+{
+  "id": "calib-e-fail-1",
+  "wu": "WU-E",
+  "subject": "calibration: user-flagged defective E frames (tile overflow/label collision, placeholder C/D tiles, hero intrusion, web-style card)",
+  "frames": [
+    { "file": "verification/wu-e2/f375c.png", "frame": 375, "note": "user-flagged: tile stroke overflow, label collision, empty rects for C/D" },
+    { "file": "verification/wu-e2/f410.png", "frame": 410, "note": "user-flagged: separated strokes intrude into brand area" },
+    { "file": "verification/wu-e2/f465.png", "frame": 465, "note": "user-flagged: web-style card, duplicate info, frame/shadow, URL margin" }
+  ],
+  "context": "Calibration run: user inspected these exact frames and ruled them defective (retracted wu-e-r4 pass). Expected outcome FAIL."
+}

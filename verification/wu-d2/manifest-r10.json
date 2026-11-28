@@ -1,0 +1,19 @@
+{
+  "id": "wu-d-r10",
+  "scene": "D entry",
+  "subject": "scene D first frames after C->D cut",
+  "frames": [
+    { "file": "verification/wu-c7/f279.png", "frame": 279, "note": "last C frame" },
+    { "file": "verification/wu-d2/f281.png", "frame": 281, "note": "D cut frame" },
+    { "file": "verification/wu-d2/f283.png", "frame": 283, "note": "D +0.08s" },
+    { "file": "verification/wu-d2/f285.png", "frame": 285, "note": "D +0.17s" },
+    { "file": "verification/wu-d2/f295.png", "frame": 295, "note": "D mid-early" }
+  ],
+  "requirements": [
+    "f281-283 で D の録画窓が「ほぼ見えない」「非常に薄い」状態ではなく、判別可能な内容で立ち上がっている",
+    "C→D の切り替えが明確で、C の作品要素が D に残らず、D の要素が唐突に出ない",
+    "f279-295 の間に明らかな描画破綻がない",
+    "左カラムのコピーと右の窓群の構成が D として成立している"
+  ],
+  "context": "Frames 281-370 = scene D. Previous review r4 failed because at f281/f283 the recording windows were nearly invisible (fade-in too slow, W1 started at local 0.05s). W1 now starts at local 0.0 with a 0.08s fade so the first window is decisive from the cut. C's left-column captions legitimately mention 'Restro'/'After Effects' as running description text — judge the boundary by whether scene elements change decisively, not by caption wording."
+}

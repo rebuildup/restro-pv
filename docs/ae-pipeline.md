@@ -121,3 +121,36 @@ ExtendScript は BOM 無し UTF-8 の非 ASCII を誤パースするため（`ev
   （全レイヤーで time remap を有効化してしまう dump バグ）も判明・修正済み。
   再ダンプ（`.tmp/aep-tree/pv-2dc99e1-v2`）で `L.timeRemapEnabled` の
   実状態を取得し、pv-2dc99e1.aep では **全レイヤー timeRemap 無効** と確定
+
+---
+
+## 9. 作業環境の容量管理（2026-11-29 追加）
+
+実機 AE の操作・録画・Remotion レンダリングは、1回の実行で数百MB〜数GB を書く。C: ドライブが満杯になると AE プロセスが落ち、Remotion のフレーム出力も書けなくなる（2026-11-28 の収録失敗は、この容量不足と AE のクラッシュが重なったため）。**実機作業を始める前に容量を確認し、書き先は C: 以外に置く。**
+
+### 9.1 現在の配置（worktree `restro-pv-23`）
+
+| 用途 | 場所 | 備考 |
+| --- | --- | --- |
+| 作業スクラッチ | `D:\pv-tmp\restro-pv-23-tmp` | worktree の `.tmp` は**この場所へのジャンクション**（`mklink /J`）。既存のパスを変えずに C: を消費しない |
+| 録画の生フレーム | `D:\pv-tmp\rec-d\takeN\` | WGC の連番 JPEG はここへ。製品物（mp4）のみ `assets/rec/` へ戻す |
+| Remotion の一時 | `%TEMP%` | レンダー時は `TEMP` / `TMPDIR` を `D:\pv-tmp\render` に向ける |
+| AE のキャッシュ | `AppData\Roaming\Adobe` | AE 自身の管理範囲。作業後に巨大化していれば `Common` を確認 |
+
+### 9.2 作業前・作業後の手順
+
+```sh
+# 作業前: 空き容量を確認する（C: が 10% を切っていたら先に確保する）
+df -h /c
+
+# レンダー: 一時を D: に向ける
+TEMP=/d/pv-tmp/render TMPDIR=/d/pv-tmp/render \
+  bunx remotion render video/src/index.ts PV-Master <out>.mp4 --codec=h264
+
+# 作業後: 生成物をリポジトリへ移し、スクラッチを片付ける
+```
+
+### 9.3 消してよいもの／消してはいけないもの
+
+- **消してよい**: `AppData\Local\Temp` の `DiagOutputDir` 等の診断出力、`%TEMP%` の作業用フレーム、`D:\pv-tmp` 配下の生フレーム（製品物へ移した後）。
+- **消してはいけない**: `pv/generated/`（ダンプ正本）、`verification/` の証跡、`assets/` の素材、`.tmp` 内の**未使用の成果物**（実機収録の生フレームなど、移す前に必ず `D:\pv-tmp` へ退避する）。作業中に落ちた AE の成果は `verification/rec-*/` に退避してから掃除する。

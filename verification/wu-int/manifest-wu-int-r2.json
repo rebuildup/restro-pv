@@ -1,0 +1,27 @@
+{
+  "id": "wu-int-r2",
+  "wu": "WU-INT",
+  "subject": "cross-scene seam check r3: A3->B handoff after bunkai fade retiming (f97-f104), plus all other boundaries unchanged since r1 pass",
+  "frames": [
+    { "file": "verification/wu-int/f97.png", "frame": 97, "note": "A3 bridge, bunkai fade begins" },
+    { "file": "verification/wu-int/f98.png", "frame": 98, "note": "A3 bridge" },
+    { "file": "verification/wu-int/f99.png", "frame": 99, "note": "A3 last-ish, 解 receding" },
+    { "file": "verification/wu-int/f100.png", "frame": 100, "note": "last A3 frame, faint bridge tail" },
+    { "file": "verification/wu-int/f101.png", "frame": 101, "note": "B first frame per SPEC — bridge must be fully gone" },
+    { "file": "verification/wu-int/f102.png", "frame": 102, "note": "B step-1 tab/label reveal + copy swap" },
+    { "file": "verification/wu-int/f103.png", "frame": 103, "note": "B inside" },
+    { "file": "verification/wu-int/f104.png", "frame": 104, "note": "B inside" },
+    { "file": "verification/wu-int/f43.png", "frame": 43, "note": "A1 context" },
+    { "file": "verification/wu-int/f44.png", "frame": 44, "note": "A1 last" },
+    { "file": "verification/wu-int/f45.png", "frame": 45, "note": "A2 first (clean cut, ghost fading in)" },
+    { "file": "verification/wu-int/f190.png", "frame": 190, "note": "B last" },
+    { "file": "verification/wu-int/f191.png", "frame": 191, "note": "C first" },
+    { "file": "verification/wu-int/f280.png", "frame": 280, "note": "C last" },
+    { "file": "verification/wu-int/f281.png", "frame": 281, "note": "D first" },
+    { "file": "verification/wu-int/f369.png", "frame": 369, "note": "D tail, copy faded" },
+    { "file": "verification/wu-int/f370.png", "frame": 370, "note": "D last" },
+    { "file": "verification/wu-int/f371.png", "frame": 371, "note": "E first, tiles entering" },
+    { "file": "verification/wu-int/f373.png", "frame": 373, "note": "E inside" }
+  ],
+  "context": "INTEGRATION SEAM RE-CHECK (round 3). r1 failed only on A3->B: the dumped bunkai bridge ghost still showed at f101. Fix: bunkai opacity now fades 4.02->4.19 and its outPoint is 4.20, so it is completely gone from f101 onward; last A3 frames keep a receding faint tail. SceneB was confirmed rendering (red silhouette ~64%->100% appear envelope). All other boundaries passed r1 and are re-included unchanged. Judge INT-1..3 + common criteria."
+}

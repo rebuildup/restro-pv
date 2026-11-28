@@ -1,0 +1,577 @@
+{
+ "schema": "restro-pv/composition@2",
+ "generatedAt": "2026-11-28T02:55:09.413Z",
+ "generatedBy": "tools/design/export-compositions.ts",
+ "canonicalSource": "pv/generated/*.ts dumps -> derived authoritative design JSON (preserves expressions, effects, nested group matrices, and reference-space matrices).",
+ "id": "heading",
+ "title": "Heading typography (43-Heading)",
+ "comp": {
+  "file": "pv/generated/43-Heading.ts",
+  "exportName": "comp_43",
+  "width": 416,
+  "height": 66,
+  "duration": 20,
+  "frameRate": 24
+ },
+ "layerIndices": [
+  1,
+  2
+ ],
+ "space": {
+  "kind": "comp"
+ },
+ "notes": "Authoritative text layer dump (ZenKakuGothicAntique-Bold 32pt). SVG previews under assets/individual/chrome are browser font layout references.",
+ "elements": [
+  {
+   "index": 1,
+   "name": "文字の輪郭から、 筆画ごとのシェイプへ。",
+   "kind": "text",
+   "source": "",
+   "inPoint": 0,
+   "outPoint": 20,
+   "startTime": 0,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": true,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "separatedPosition": false,
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       0.80000001192093,
+       -27.07200050354,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       0,
+       0,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       98,
+       98,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 90
+     }
+    ]
+   },
+   "effects": [],
+   "masks": [],
+   "text": {
+    "text": "文字の輪郭から、\r筆画ごとのシェイプへ。",
+    "font": "ZenKakuGothicAntique-Bold",
+    "fontFamily": "Zen Kaku Gothic Antique",
+    "fontStyle": "Bold",
+    "fontSize": 32,
+    "tracking": 15,
+    "leading": 38.4000015258789,
+    "justification": 7413,
+    "fillColor": [
+     0,
+     0,
+     0
+    ],
+    "strokeColor": null,
+    "strokeWidth": 1,
+    "boxText": false
+   },
+   "shapes": null,
+   "evals": [
+    {
+     "t": 0,
+     "transform": {
+      "anchor": [
+       0.80000001192093,
+       -27.07200050354,
+       0
+      ],
+      "position": [
+       0,
+       0,
+       0
+      ],
+      "scale": [
+       98,
+       98,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.9,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      0.98,
+      0,
+      0,
+      0,
+      0,
+      0.98,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -0.7840000116825113,
+      26.5305604934692,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      0,
+      0
+     ],
+     "world": [
+      0.98,
+      0,
+      0,
+      0,
+      0,
+      0.98,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -0.7840000116825113,
+      26.5305604934692,
+      0,
+      1
+     ],
+     "opacity": 0.9,
+     "effectFill": null
+    },
+    {
+     "t": 10,
+     "transform": {
+      "anchor": [
+       0.80000001192093,
+       -27.07200050354,
+       0
+      ],
+      "position": [
+       0,
+       0,
+       0
+      ],
+      "scale": [
+       98,
+       98,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.9,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      0.98,
+      0,
+      0,
+      0,
+      0,
+      0.98,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -0.7840000116825113,
+      26.5305604934692,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      0,
+      0
+     ],
+     "world": [
+      0.98,
+      0,
+      0,
+      0,
+      0,
+      0.98,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -0.7840000116825113,
+      26.5305604934692,
+      0,
+      1
+     ],
+     "opacity": 0.9,
+     "effectFill": null
+    },
+    {
+     "t": 20,
+     "transform": {
+      "anchor": [
+       0.80000001192093,
+       -27.07200050354,
+       0
+      ],
+      "position": [
+       0,
+       0,
+       0
+      ],
+      "scale": [
+       98,
+       98,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.9,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      0.98,
+      0,
+      0,
+      0,
+      0,
+      0.98,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -0.7840000116825113,
+      26.5305604934692,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      0,
+      0
+     ],
+     "world": [
+      0.98,
+      0,
+      0,
+      0,
+      0,
+      0.98,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -0.7840000116825113,
+      26.5305604934692,
+      0,
+      1
+     ],
+     "opacity": 0.9,
+     "effectFill": null
+    }
+   ]
+  },
+  {
+   "index": 2,
+   "name": "Blue Solid 1",
+   "kind": "footage",
+   "source": "Blue Solid 1",
+   "inPoint": 0,
+   "outPoint": 20,
+   "startTime": 0,
+   "stretch": 100,
+   "parentIndex": null,
+   "threeDLayer": false,
+   "enabled": false,
+   "shy": false,
+   "hasExpression": false,
+   "transform": {
+    "separatedPosition": false,
+    "props": [
+     {
+      "matchName": "ADBE Anchor Point",
+      "name": "Anchor Point",
+      "value": [
+       1500,
+       1500,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Position",
+      "name": "Position",
+      "value": [
+       208,
+       33,
+       0
+      ]
+     },
+     {
+      "matchName": "ADBE Scale",
+      "name": "Scale",
+      "value": [
+       100,
+       100,
+       100
+      ]
+     },
+     {
+      "matchName": "ADBE Rotate Z",
+      "name": "Rotation",
+      "value": 0
+     },
+     {
+      "matchName": "ADBE Opacity",
+      "name": "Opacity",
+      "value": 100
+     }
+    ]
+   },
+   "effects": [],
+   "masks": [],
+   "text": null,
+   "shapes": null,
+   "evals": [
+    {
+     "t": 0,
+     "transform": {
+      "anchor": [
+       1500,
+       1500,
+       0
+      ],
+      "position": [
+       208,
+       33,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -1292,
+      -1467,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      208,
+      33
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -1292,
+      -1467,
+      0,
+      1
+     ],
+     "opacity": 1,
+     "effectFill": null
+    },
+    {
+     "t": 10,
+     "transform": {
+      "anchor": [
+       1500,
+       1500,
+       0
+      ],
+      "position": [
+       208,
+       33,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -1292,
+      -1467,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      208,
+      33
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -1292,
+      -1467,
+      0,
+      1
+     ],
+     "opacity": 1,
+     "effectFill": null
+    },
+    {
+     "t": 20,
+     "transform": {
+      "anchor": [
+       1500,
+       1500,
+       0
+      ],
+      "position": [
+       208,
+       33,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -1292,
+      -1467,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      208,
+      33
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -1292,
+      -1467,
+      0,
+      1
+     ],
+     "opacity": 1,
+     "effectFill": null
+    }
+   ]
+  }
+ ]
+}

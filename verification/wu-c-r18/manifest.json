@@ -1,0 +1,128 @@
+{
+  "id": "wu-c-r18",
+  "wu": "WU-C",
+  "subject": "scene C redesign round 14 — strip gap reduced to 300px so transit frames show substantial parts of both works; w2->w3 scroll leg moved to rel 2.50-2.85 with w3 stream-in visible during entry; W3 left/right two-wing monochrome emblem; violet wave crest [wu-c-r18]",
+  "frames": [
+    {
+      "file": "verification/wu-c-r18/f195.png",
+      "frame": 195,
+      "note": "w1 entering, strokes scattered on paper with faint guide contour, footer visible"
+    },
+    {
+      "file": "verification/wu-c-r18/f200.png",
+      "frame": 200,
+      "note": "w1 gather beginning, writing-order stagger"
+    },
+    {
+      "file": "verification/wu-c-r18/f205.png",
+      "frame": 205,
+      "note": "w1 mid gather onto guide"
+    },
+    {
+      "file": "verification/wu-c-r18/f212.png",
+      "frame": 212,
+      "note": "w1 assembled 筆 on paper, guide receded"
+    },
+    {
+      "file": "verification/wu-c-r18/f220.png",
+      "frame": 220,
+      "note": "w1 settle ripple / hold"
+    },
+    {
+      "file": "verification/wu-c-r18/f223.png",
+      "frame": 223,
+      "note": "w1 final hold before scroll"
+    },
+    {
+      "file": "verification/wu-c-r18/f226.png",
+      "frame": 226,
+      "note": "scroll w1->w2 transit, w2 cell entering from bottom"
+    },
+    {
+      "file": "verification/wu-c-r18/f228.png",
+      "frame": 228,
+      "note": "scroll w1->w2 transit, both cells partially visible"
+    },
+    {
+      "file": "verification/wu-c-r18/f230.png",
+      "frame": 230,
+      "note": "scroll w1->w2 transit tail, w2 taking over"
+    },
+    {
+      "file": "verification/wu-c-r18/f233.png",
+      "frame": 233,
+      "note": "w2 centered, colored char assembling/recognition"
+    },
+    {
+      "file": "verification/wu-c-r18/f235.png",
+      "frame": 235,
+      "note": "w2 traveling wave with violet crest sweep"
+    },
+    {
+      "file": "verification/wu-c-r18/f240.png",
+      "frame": 240,
+      "note": "w2 traveling wave with violet crest sweep"
+    },
+    {
+      "file": "verification/wu-c-r18/f245.png",
+      "frame": 245,
+      "note": "w2 traveling wave with violet crest sweep"
+    },
+    {
+      "file": "verification/wu-c-r18/f250.png",
+      "frame": 250,
+      "note": "w2 resolved hold before scroll"
+    },
+    {
+      "file": "verification/wu-c-r18/f253.png",
+      "frame": 253,
+      "note": "w2 resolved hold before scroll"
+    },
+    {
+      "file": "verification/wu-c-r18/f256.png",
+      "frame": 256,
+      "note": "scroll w2->w3 transit, w3 upper emblem region entering with strokes in flight"
+    },
+    {
+      "file": "verification/wu-c-r18/f258.png",
+      "frame": 258,
+      "note": "scroll w2->w3 transit, w3 emblem region largely visible mid-assembly"
+    },
+    {
+      "file": "verification/wu-c-r18/f260.png",
+      "frame": 260,
+      "note": "w3 centered, emblem near-formed"
+    },
+    {
+      "file": "verification/wu-c-r18/f262.png",
+      "frame": 262,
+      "note": "w3 two-wing emblem formed and holding"
+    },
+    {
+      "file": "verification/wu-c-r18/f266.png",
+      "frame": 266,
+      "note": "w3 two-wing emblem formed and holding"
+    },
+    {
+      "file": "verification/wu-c-r18/f268.png",
+      "frame": 268,
+      "note": "w3 two-wing emblem formed and holding"
+    },
+    {
+      "file": "verification/wu-c-r18/f274.png",
+      "frame": 274,
+      "note": "w3 wings parted outward at peak separation"
+    },
+    {
+      "file": "verification/wu-c-r18/f280.png",
+      "frame": 280,
+      "note": "w3 wings rejoined, last frames before fade"
+    },
+    {
+      "file": "verification/wu-c-r18/f281.png",
+      "frame": 281,
+      "note": "D cut boundary"
+    }
+  ],
+  "context": "Scene C spans frames 191-280 (rel 0-3.75s). Cells are 570x960 with a 300px strip gap (pitch 1260) inside the right-zone window (x490-1060, y60-1020). Work timing: w1 settles by rel 0.3, gather 0.38-1.0 staggered by S-number writing order, settle ripple 1.0-1.28, scroll w1->w2 rel 1.36-1.71; w2 centered 1.71, wave rel 1.72-2.12 with violet crest sweep, resolved hold until scroll rel 2.50-2.85; w3 centered 2.85, monochrome emblem streams in from both outer edges rel 2.60-3.0 staggered by writing rank, wings part outward and rejoin rel 3.28-3.60, hold into fade rel 3.712-3.748. Work03 emblem: each wing is a symmetric half-mark — the char's left-half strokes upright plus right-half strokes mirrored about the char centerline — and the right wing mirrors the left about the cell center; one uniform light ink. All stroke material is Baseline FUDE S01-S13 plus the FUDE outline base contour for w1's guide. Works are titled 01-03 with a consistent footer (hairline + index + title) inside each cell."
+}

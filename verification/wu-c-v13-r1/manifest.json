@@ -1,0 +1,15 @@
+{
+  "id": "wu-c-v13-r1",
+  "wu": "WU-C",
+  "subject": "scene C gallery redesign (v13 art direction) — three finished works one at a time on white artboards, ~1.25s slots, page-turn transitions, name-only captions",
+  "frames": [
+    { "file": "verification/wu-c-v13-r1/p-f200.png", "frame": 200, "note": "work01 筆墨: strokes gathered, ink char settling on white artboard" },
+    { "file": "verification/wu-c-v13-r1/p-f216.png", "frame": 216, "note": "work01 held: black ink char + red seal, clean hold" },
+    { "file": "verification/wu-c-v13-r1/p-f228.png", "frame": 228, "note": "work02 筆彩: traveling wave with yellow crest through gradient char" },
+    { "file": "verification/wu-c-v13-r1/p-f244.png", "frame": 244, "note": "work02 held: cobalt-to-vermilion gradient char resolved" },
+    { "file": "verification/wu-c-v13-r1/p-f255.png", "frame": 255, "note": "work03 筆構: two-wing emblem strokes streaming in" },
+    { "file": "verification/wu-c-v13-r1/p-f270.png", "frame": 270, "note": "work03 held: symmetric black emblem + seal" },
+    { "file": "verification/wu-c-v13-r1/p-f281.png", "frame": 281, "note": "D cut boundary: scene C fully gone" }
+  ],
+  "context": "Scene C spans frames 191-280 (3.75s). Right-stage window x490-1060 y60-1020 with thin border. Three contiguous white artboard cells (570x960) in a vertical strip; page-turn scroll legs are ~0.12s at rel 1.20-1.32 and 2.40-2.52 so each work is centered ~1.1-1.2s plus partial visibility through turns (near-equal slots). Works: 01 ink char gathers in writing order then holds still (guide contour fully fades); 02 same char as vertical gradient with one wave pass then resolves; 03 strokes stream in from both edges forming a mirrored two-wing emblem then holds still. Captions are work names only (筆墨/筆彩/筆構) plus a small red seal. All stroke material is Baseline FUDE S01-S13."
+}

@@ -1,0 +1,11 @@
+{
+  "id": "wu-e-r7",
+  "wu": "WU-E",
+  "subject": "scene E v7: C tile = legible multicolor work glyph; D tile = real ops-footage still",
+  "frames": [
+    { "file": "verification/wu-e3/f375b.png", "frame": 375, "note": "tiles v7" },
+    { "file": "verification/wu-e2/f410d.png", "frame": 410, "note": "hero separated" },
+    { "file": "verification/wu-e3/f465.png", "frame": 465, "note": "product lockup" }
+  ],
+  "context": "v7: C tile shows one legible multicolor work glyph (the three C works share one char; tile scale favors one readable work); D tile is a real frame from the frame-verified decompose-ops segment. B tile unchanged (real tinted strokes)."
+}

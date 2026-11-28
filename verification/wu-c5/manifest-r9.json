@@ -1,0 +1,20 @@
+{
+  "id": "wu-c-r9",
+  "wu": "WU-C",
+  "subject": "scene C round 2 — delayed easeOutCubic gather arc, enlarged reflection emblem, D-boundary frames included",
+  "frames": [
+    { "file": "verification/wu-c5/f195.png", "frame": 195, "note": "work1 entering, strokes fully scattered" },
+    { "file": "verification/wu-c5/f205.png", "frame": 205, "note": "work1 early gather" },
+    { "file": "verification/wu-c5/f215.png", "frame": 215, "note": "work1 mid gather" },
+    { "file": "verification/wu-c5/f225.png", "frame": 225, "note": "work1 assembled hold" },
+    { "file": "verification/wu-c5/f240.png", "frame": 240, "note": "work2 centered, clean char recognized" },
+    { "file": "verification/wu-c5/f246.png", "frame": 246, "note": "work2 wave crest" },
+    { "file": "verification/wu-c5/f256.png", "frame": 256, "note": "work2 resolved clean char hold" },
+    { "file": "verification/wu-c5/f266.png", "frame": 266, "note": "scroll w2->w3 through blank gap" },
+    { "file": "verification/wu-c5/f273.png", "frame": 273, "note": "work3 emblem centered hold" },
+    { "file": "verification/wu-c5/f280.png", "frame": 280, "note": "last C frame, emblem legible" },
+    { "file": "verification/wu-c5/f281.png", "frame": 281, "note": "D cut — no C residue expected" },
+    { "file": "verification/wu-c5/f285.png", "frame": 285, "note": "D established" }
+  ],
+  "context": "Round 2 after wu-c-r8. Fixes: work1 gather now holds fully scattered through entry then travels with easeOutCubic stagger (previous easeOutBack snapped to ~90% instantly); work3 emblem enlarged to ~520px wings with ~150px center kiss; manifest now includes f281/f285 D frames for C-5. Left column x<460 is the dumped description comp, unchanged by SceneC and identical across all C frames."
+}

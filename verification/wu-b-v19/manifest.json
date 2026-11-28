@@ -1,0 +1,123 @@
+{
+  "id": "wu-b-v19-r1",
+  "wu": "WU-B",
+  "subject": "scene B v19 defect-fix pass on top of v16 rework: each of the 4 engineering steps DRAWS ON its real Restro intermediate geometry (scanline sweep -> red outline draw-on + dotted real anchor vertices -> green extend A/B draw-on + real joint nodes -> compressed angular-ordered solver vertex pops (last marker ~6.55s) THEN inferred render fade + inferred boundary draw-on 6.58-6.86s (strict cause->effect) -> faint parent-contour ghost + per-stroke blue source-contour lead (now fully gone before each fill completes, last lead ends ~7.66s) + stroke edges drawing on + staggered yellow split). Lens moved to (560,1010) r55 -> y955-1065, fully inside frame. Step band fade now completes ~7.7s leaving ~8 clean settle frames. Step boundaries: step0 f102-123, step1 f124-144, step2 f145-166, step3 f167-190.",
+  "frames": [
+    {
+      "file": "verification/wu-b-v19/r2/f102.png",
+      "frame": 102,
+      "note": "B open / step0 輪郭を解析 start: viewport + faint red silhouette, scanline sweep beginning"
+    },
+    {
+      "file": "verification/wu-b-v19/r2/f106.png",
+      "frame": 106,
+      "note": "step0 early: real scanline sweeping down, first red contour paths drawing on"
+    },
+    {
+      "file": "verification/wu-b-v19/r2/f110.png",
+      "frame": 110,
+      "note": "step0 mid: scanline mid-glyph, outline base+inset contours partially drawn along real paths"
+    },
+    {
+      "file": "verification/wu-b-v19/r2/f114.png",
+      "frame": 114,
+      "note": "step0 late: scanline near bottom, outline contours nearly complete"
+    },
+    {
+      "file": "verification/wu-b-v19/r2/f118.png",
+      "frame": 118,
+      "note": "step0 tail: full red extracted outline held, scanline exited"
+    },
+    {
+      "file": "verification/wu-b-v19/r2/f122.png",
+      "frame": 122,
+      "note": "step0->1 boundary: outline complete, green extend strokes beginning to draw"
+    },
+    {
+      "file": "verification/wu-b-v19/r2/f126.png",
+      "frame": 126,
+      "note": "step1 輪郭線を延長 early: green FUDE extend A/B contours drawing outward from contour endpoints, red outline ghosting"
+    },
+    {
+      "file": "verification/wu-b-v19/r2/f130.png",
+      "frame": 130,
+      "note": "step1 mid: extended skeleton still drawing on, staggered per path"
+    },
+    {
+      "file": "verification/wu-b-v19/r2/f134.png",
+      "frame": 134,
+      "note": "step1 late: most extend paths drawn, holding into step2"
+    },
+    {
+      "file": "verification/wu-b-v19/r2/f138.png",
+      "frame": 138,
+      "note": "step1 tail / step2 boundary approach: full extended skeleton present"
+    },
+    {
+      "file": "verification/wu-b-v19/r2/f142.png",
+      "frame": 142,
+      "note": "step2 隠れた頂点を推定 early: solver vertex markers popping in angular order + inferred render fading in + lens appearing"
+    },
+    {
+      "file": "verification/wu-b-v19/r2/f146.png",
+      "frame": 146,
+      "note": "step2 early-mid: markers propagating across skeleton, inferred boundary drawing on blue"
+    },
+    {
+      "file": "verification/wu-b-v19/r2/f150.png",
+      "frame": 150,
+      "note": "step2 mid: inferred render + markers + lens magnifying the real vertex cluster"
+    },
+    {
+      "file": "verification/wu-b-v19/r2/f154.png",
+      "frame": 154,
+      "note": "step2 mid-late: inference result held, analysis layers about to hand off"
+    },
+    {
+      "file": "verification/wu-b-v19/r2/f158.png",
+      "frame": 158,
+      "note": "step2 late: full inferred state, extend/outline receded to ghosts"
+    },
+    {
+      "file": "verification/wu-b-v19/r2/f162.png",
+      "frame": 162,
+      "note": "step2 tail: analysis state complete before split"
+    },
+    {
+      "file": "verification/wu-b-v19/r2/f166.png",
+      "frame": 166,
+      "note": "step2->3 boundary: last inference frame before analysis fade"
+    },
+    {
+      "file": "verification/wu-b-v19/r2/f170.png",
+      "frame": 170,
+      "note": "step3 一画ずつに分割 early: analysis fading to faint gray parent-contour ghost, first strokes' blue source-contour lead then yellow fill"
+    },
+    {
+      "file": "verification/wu-b-v19/r2/f174.png",
+      "frame": 174,
+      "note": "step3 mid: strokes separating outward with per-stroke tints over the ghost parent outline"
+    },
+    {
+      "file": "verification/wu-b-v19/r2/f178.png",
+      "frame": 178,
+      "note": "step3 mid-late: most strokes revealed, displacement + tints visible"
+    },
+    {
+      "file": "verification/wu-b-v19/r2/f182.png",
+      "frame": 182,
+      "note": "step3 late: remaining strokes finishing stagger, ghost retiring"
+    },
+    {
+      "file": "verification/wu-b-v19/r2/f186.png",
+      "frame": 186,
+      "note": "step3 end: full colored stroke set on same giant 筆"
+    },
+    {
+      "file": "verification/wu-b-v19/r2/f190.png",
+      "frame": 190,
+      "note": "B close: finished glyph sole subject, step band retired, clean handoff toward C"
+    }
+  ],
+  "context": "Frames are 1080x1080 renders of PV-Master @24fps, scene B window [101,191). v19 changes under review: (a) lens center y1025->1010 so the circle sits fully inside the frame (was tangent to bottom edge); (b) solver marker propagation compressed (stagger .016->.009, pop .2->.15s) so all 29 markers land by ~6.55s and the 4 inferred-boundary contours draw strictly AFTER at 6.58-6.86s; inferred render fade delayed to 6.35-6.67s; (c) existing-anchor baseline dots now dashed rings at 6% opacity that dim further during marker propagation; (d) blue source-contour lead per stroke now fades out by s0+0.17s, before its yellow fill completes at s0+0.24s; (e) step-band/ghost/selection retire windows tightened so all analysis residue is gone by ~7.7s and f182-190 show only yellow strokes + dark edges on the white viewport. Judge whether each step's operation is legible as continuous motion on the same giant 筆, cause->effect ordering per step, whether step3 strokes trace back to analyzed geometry, and whether the B->C handoff is clean."
+}

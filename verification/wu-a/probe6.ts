@@ -1,0 +1,14 @@
+import { compByName } from "../../video/src/ae/project.ts";
+import { compStrokes } from "../../video/src/scenes/glyph.tsx";
+import { worldMatrix } from "../../video/src/ae/transform.ts";
+const comp = compByName("PV glyph A2")!;
+const { strokes } = compStrokes("PV glyph A2", { pattern: /^FUDE/, poseT: 0.5 });
+const vert = strokes.find(s=>s.name.includes("S13"))!;
+console.log("vert layer index", vert.layer.index, "parentIndex", (vert.layer as any).parentIndex, "parent", (vert.layer as any).parent);
+const cache = new Map();
+const w1 = worldMatrix(vert.layer, comp.layers, 0.5, cache);
+const redLayer = { ...vert.layer, index: 9999 };
+const w2 = worldMatrix(redLayer as any, comp.layers, 0.5, cache);
+console.log("black m", w1.matrix.map(v=>v.toFixed(2)).join(","));
+console.log("red   m", w2.matrix.map(v=>v.toFixed(2)).join(","));
+console.log("black bbox", vert.bbox);

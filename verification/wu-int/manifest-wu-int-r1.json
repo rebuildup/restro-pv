@@ -1,0 +1,32 @@
+{
+  "id": "wu-int-r1",
+  "wu": "WU-INT",
+  "subject": "cross-scene seam check r2: boundary pairs plus in-scene context frames after timing fixes (A1->A2 f44/45, A3->B f100/101, B->C f190/191, C->D f280/281, D->E f370/371)",
+  "frames": [
+    { "file": "verification/wu-int/f43.png", "frame": 43, "note": "A1 context before cut" },
+    { "file": "verification/wu-int/f44.png", "frame": 44, "note": "A1 last frame" },
+    { "file": "verification/wu-int/f45.png", "frame": 45, "note": "A2 first frame (post-fix: ghost/context fade in)" },
+    { "file": "verification/wu-int/f47.png", "frame": 47, "note": "A2 early, ghost establishing" },
+    { "file": "verification/wu-int/f50.png", "frame": 50, "note": "A2 inside, push-in" },
+    { "file": "verification/wu-int/f98.png", "frame": 98, "note": "A3 bridge context" },
+    { "file": "verification/wu-int/f99.png", "frame": 99, "note": "A3 bridge tail" },
+    { "file": "verification/wu-int/f100.png", "frame": 100, "note": "B boundary-1 (bunkai fade-out + SceneB appear)" },
+    { "file": "verification/wu-int/f101.png", "frame": 101, "note": "B first frame per SPEC" },
+    { "file": "verification/wu-int/f103.png", "frame": 103, "note": "B early inside" },
+    { "file": "verification/wu-int/f105.png", "frame": 105, "note": "B inside near cut" },
+    { "file": "verification/wu-int/f189.png", "frame": 189, "note": "B last context" },
+    { "file": "verification/wu-int/f190.png", "frame": 190, "note": "B last frame" },
+    { "file": "verification/wu-int/f191.png", "frame": 191, "note": "C first frame" },
+    { "file": "verification/wu-int/f195.png", "frame": 195, "note": "C inside near cut" },
+    { "file": "verification/wu-int/f279.png", "frame": 279, "note": "C last context" },
+    { "file": "verification/wu-int/f280.png", "frame": 280, "note": "C last frame" },
+    { "file": "verification/wu-int/f281.png", "frame": 281, "note": "D first frame" },
+    { "file": "verification/wu-int/f285.png", "frame": 285, "note": "D inside near cut" },
+    { "file": "verification/wu-int/f369.png", "frame": 369, "note": "D last context (copy already faded)" },
+    { "file": "verification/wu-int/f370.png", "frame": 370, "note": "D last frame" },
+    { "file": "verification/wu-int/f371.png", "frame": 371, "note": "E first frame (tiles entering)" },
+    { "file": "verification/wu-int/f373.png", "frame": 373, "note": "E inside near cut" },
+    { "file": "verification/wu-int/f375.png", "frame": 375, "note": "E inside near cut" }
+  ],
+  "context": "INTEGRATION SEAM RE-CHECK (round 2). Round 1 (integration-bounds-1) failed on: f45 translucent ghost overlapping new strokes, f370 faint multi-line text ghost, f100->f101 visually identical. Fixes applied: (1) SceneA2 ghost layer + faint context strokes now fade in over f45-f53 so the cut frame shows only the hero cross strokes; (2) SceneD left copy fade now completes ~0.12s before the boundary; (3) dumped bunkai A3 bridge now fades out across f99-f102 overlapping SceneB's fade-in, and SceneE recap tiles begin entering at f371. Judge ONLY seam quality per INT-1..3 plus common criteria: intentional cuts, no ghost/leftover elements, no black/broken frames, zone continuity, meaningful change at each boundary."
+}

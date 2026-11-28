@@ -1,0 +1,30 @@
+{
+  "id": "wu-d-r29",
+  "wu": "WU-D",
+  "subject": "scene D r29: contrast-treated footage, W4 dialog cropped out, W3 switched to decompose-ops parts-adjustment segment, W1/W3 two-clip jump cuts for continuous change, staggered exits kept",
+  "frames": [
+    { "file": "verification/wu-d-r29/f281.png", "frame": 281, "note": "D start: copy + W1 entering (before: single text)" },
+    { "file": "verification/wu-d-r29/f290.png", "frame": 290, "note": "W1 before state (single Restro text)" },
+    { "file": "verification/wu-d-r29/f300.png", "frame": 300, "note": "W1 before, decompose swap imminent (~f306)" },
+    { "file": "verification/wu-d-r29/f305.png", "frame": 305, "note": "W1 swap / after: strokes+anchors; W2 entered" },
+    { "file": "verification/wu-d-r29/f310.png", "frame": 310, "note": "W1 result, W2 early" },
+    { "file": "verification/wu-d-r29/f315.png", "frame": 315, "note": "W1/W2 live, W3 entering" },
+    { "file": "verification/wu-d-r29/f320.png", "frame": 320, "note": "all 4 windows; W4 entering (reprocess redraw)" },
+    { "file": "verification/wu-d-r29/f326.png", "frame": 326, "note": "W3 adjustment event; W4 mid-arc" },
+    { "file": "verification/wu-d-r29/f330.png", "frame": 330, "note": "W2 between jumps, W4 arc" },
+    { "file": "verification/wu-d-r29/f336.png", "frame": 336, "note": "W3 clip-A tail, W4 approaching result" },
+    { "file": "verification/wu-d-r29/f339.png", "frame": 339, "note": "W3 clip-B jump cut; W1 clip-B upcoming" },
+    { "file": "verification/wu-d-r29/f340.png", "frame": 340, "note": "W1 clip-B jump cut; W4 result lands" },
+    { "file": "verification/wu-d-r29/f345.png", "frame": 345, "note": "W3 clip-B event; all windows live" },
+    { "file": "verification/wu-d-r29/f348.png", "frame": 348, "note": "W2 second stroke jump; W2 exit begins (fOut 356)" },
+    { "file": "verification/wu-d-r29/f350.png", "frame": 350, "note": "W2 mid-exit" },
+    { "file": "verification/wu-d-r29/f355.png", "frame": 355, "note": "W4 result hold; W2/W3 exiting" },
+    { "file": "verification/wu-d-r29/f360.png", "frame": 360, "note": "W4 exit begins (fOut 365); W1 mid" },
+    { "file": "verification/wu-d-r29/f365.png", "frame": 365, "note": "W4 gone, W1 mid-exit" },
+    { "file": "verification/wu-d-r29/f368.png", "frame": 368, "note": "W1 exit fade" },
+    { "file": "verification/wu-d-r29/f370.png", "frame": 370, "note": "all windows gone (D tail)" },
+    { "file": "verification/wu-d-r29/f371.png", "frame": 371, "note": "D->E boundary" },
+    { "file": "verification/wu-d-r29/f375.png", "frame": 375, "note": "E handoff" }
+  ],
+  "context": "Scene D authored per SPEC §5 D. Left copy 「After Effectsで、/そのまま動かせる。」 + sub-line at top:648 below the persistent brand lockup. Four async windows on the right grid: W1 main = ae-decompose-ops before->after (single text -> decompose swap -> strokes+rgb controls) then a jump cut into the stepped parts-adjustment phase, plus a picture-in-picture inset that shows the real Restro panel bottom (Decompose action row) from the same footage at readable size — the button state change at source f885 is genuine footage, not fake UI; W2 = ae-stroke-animate stepped stroke motion (two visible jumps inside the window); W3 = ae-decompose-ops parts-adjustment segment with two clip jump cuts; W4 = ae-reprocess redraw->result arc with the wait-dialog region cropped out of frame and a stronger contrast treatment for the near-white footage. Footage carries a contrast/brightness/saturation treatment for legibility at window size. Captions describe only what each segment shows. 'Restro / 筆画復元' lockup is the persistent brand required by SPEC §4 / D-6, present in all scenes."
+}

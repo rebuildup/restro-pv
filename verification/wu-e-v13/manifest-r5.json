@@ -1,0 +1,16 @@
+{
+  "id": "wu-e-v13-r5",
+  "wu": "WU-E",
+  "subject": "WU-E scene E v13 two-beat redesign r5: sub-second B/C/D recap flash (D tile now fully opaque through its slot), payoff return of the multicolor separated-stroke 筆 hero converging into the solid black kanji hero, then a quiet end card built on the official dumped AE Logo artwork (no generic-font product name) with After Effects プラグイン descriptor and BOOTH+URL CTA",
+  "frames": [
+    { "file": "verification/wu-e-v13/f372.png", "frame": 372, "note": "recap B still (B — 原理)" },
+    { "file": "verification/wu-e-v13/f375.png", "frame": 375, "note": "recap C still (C — 作例)" },
+    { "file": "verification/wu-e-v13/f378.png", "frame": 378, "note": "recap D still (D — 操作), full opacity" },
+    { "file": "verification/wu-e-v13/f394.png", "frame": 394, "note": "payoff peak: multicolor separated strokes at hero scale" },
+    { "file": "verification/wu-e-v13/f400.png", "frame": 400, "note": "convergence in progress" },
+    { "file": "verification/wu-e-v13/f412.png", "frame": 412, "note": "assembled black kanji hero hold" },
+    { "file": "verification/wu-e-v13/f445.png", "frame": 445, "note": "end card settled: logo + descriptor + BOOTH/URL" },
+    { "file": "verification/wu-e-v13/f479.png", "frame": 479, "note": "final frame held to end" }
+  ],
+  "context": "v13 art direction requires two beats: payoff return (multicolor separated-stroke hero reappears full-canvas scale and converges into the black kanji hero) then a quiet end card with the official logo artwork, product name once, BOOTH+URL CTA. The persistent left-column brand lockup is scene chrome present in every scene."
+}

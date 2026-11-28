@@ -1,0 +1,22 @@
+{
+  "id": "wu-a-r7",
+  "wu": "WU-A",
+  "subject": "Scene A2 r7 redesign: contour line-art ghost (FUDE outline base) with measured registration, crossing-cluster stroke set (runs4 014-017), separated vertical fully in frame, crossing markers + hidden-part contour, hold into A3 bridge",
+  "frames": [
+    { "file": "verification/wu-a-r7/f20.png", "frame": 20, "note": "A1 reference: giant 解 + independent strokes mid-scene" },
+    { "file": "verification/wu-a-r7/f40.png", "frame": 40, "note": "A1 tail: outline ghost state before A2 cut" },
+    { "file": "verification/wu-a-r7/f45.png", "frame": 45, "note": "A2 entry: cut to crossing cluster, push-in begins" },
+    { "file": "verification/wu-a-r7/f52.png", "frame": 52, "note": "push-in mid: crossing region enlarged, ghost contour fading in" },
+    { "file": "verification/wu-a-r7/f60.png", "frame": 60, "note": "vertical separation in progress" },
+    { "file": "verification/wu-a-r7/f66.png", "frame": 66, "note": "vertical separated; horizontals parting; accent begins" },
+    { "file": "verification/wu-a-r7/f72.png", "frame": 72, "note": "red accent on restored vertical, horizontals parted" },
+    { "file": "verification/wu-a-r7/f78.png", "frame": 78, "note": "comparison hold: separated vertical vs crossing ghost" },
+    { "file": "verification/wu-a-r7/f84.png", "frame": 84, "note": "hold tail before fade" },
+    { "file": "verification/wu-a-r7/f89.png", "frame": 89, "note": "A2 tail fading into A3 bridge" },
+    { "file": "verification/wu-a-r7/f90.png", "frame": 90, "note": "A3 bridge start (bunkai comp carries upward scroll)" },
+    { "file": "verification/wu-a-r7/f95.png", "frame": 95, "note": "bridge into scene B" },
+    { "file": "verification/wu-a-r7/f100.png", "frame": 100, "note": "A3 end / B boundary approach" },
+    { "file": "verification/wu-a-r7/f101.png", "frame": 101, "note": "scene B first frame" }
+  ],
+  "context": "Scene A2 was redesigned after user rejection: previous version cropped the separated vertical and the ghost/fill correspondence was unreadable. Current version renders the ghost as contour line-art (FUDE outline base via strokeContours/ContourField) registered to the bunkai strokes by a measured similarity transform, shows only the crossing-cluster runs4 strokes (014/015/016/017) as filled ink, separates the vertical stroke fully inside frame, adds crossing-point markers and a hidden-part contour at the original crossing position. Judge the fixed criteria on these frames."
+}

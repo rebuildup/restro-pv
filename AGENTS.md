@@ -20,6 +20,9 @@ Restro のプロモーション PV を、**TypeScript を正本**として制作
 | 対象 | 正本 |
 | --- | --- |
 | PV の構成・演出仕様 | `docs/SPEC.md` |
+| Remotion 制作経路の運用 | `docs/remotion-pipeline.md` |
+| 確定レイアウト境界・旧制作の回収記録 | `docs/issue30-recovery.md` |
+| AE 経路の運用 | `docs/ae-pipeline.md` |
 | 実装 scope / 受入条件 | GitHub Issues |
 | review / 統合 / 検証 evidence | GitHub Pull Requests |
 | 移管元との対応 | `docs/migration/PROVENANCE.md` |

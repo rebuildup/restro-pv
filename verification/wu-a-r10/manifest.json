@@ -1,0 +1,63 @@
+{
+  "id": "wu-a-r10",
+  "wu": "WU-A",
+  "subject": "Scene A r10: v13 art-direction pass — giant black kanji hero shifted right to clear the left brand/copy column and cropped by right/bottom frame edges, left-to-right decomposition traveling on the hero, final separated-stroke cluster held as the opening question, ghost-to-restored-stroke registration",
+  "frames": [
+    {
+      "file": "verification/wu-a-r10/f10.png",
+      "frame": 10,
+      "note": "A1 opening: giant 解 hero bleeding right/bottom, left column reserved for brand/copy"
+    },
+    {
+      "file": "verification/wu-a-r10/f40.png",
+      "frame": 40,
+      "note": "A1 tail: outline ghost state before A2 cut"
+    },
+    {
+      "file": "verification/wu-a-r10/f45.png",
+      "frame": 45,
+      "note": "A2 entry: cut to crossing cluster, push-in begins"
+    },
+    {
+      "file": "verification/wu-a-r10/f52.png",
+      "frame": 52,
+      "note": "push-in mid: crossing region enlarged, ghost contour fading in"
+    },
+    {
+      "file": "verification/wu-a-r10/f60.png",
+      "frame": 60,
+      "note": "decomposition traveling left-to-right on the hero"
+    },
+    {
+      "file": "verification/wu-a-r10/f66.png",
+      "frame": 66,
+      "note": "vertical separated; horizontals parting; accent begins"
+    },
+    {
+      "file": "verification/wu-a-r10/f72.png",
+      "frame": 72,
+      "note": "red accent on restored vertical, horizontals parted"
+    },
+    {
+      "file": "verification/wu-a-r10/f78.png",
+      "frame": 78,
+      "note": "comparison hold: separated strokes vs crossing ghost"
+    },
+    {
+      "file": "verification/wu-a-r10/f84.png",
+      "frame": 84,
+      "note": "hold tail: separated-stroke cluster is the final A2 state"
+    },
+    {
+      "file": "verification/wu-a-r10/f89.png",
+      "frame": 89,
+      "note": "A2 tail fading into A3 bridge"
+    },
+    {
+      "file": "verification/wu-a-r10/f95.png",
+      "frame": 95,
+      "note": "bridge into scene B"
+    }
+  ],
+  "context": "Scene A r10 after v13 art-direction FAIL on r9. Changes: (1) the dumped A1 giant-解 hero stroke group (master layers 239-254) is uniformly translated +60px in x inside applyMasterPatches — both the single ADBE Position vector and the separated ADBE Position_0/_1/_2 dimension nodes including all keys — clearing the left brand/copy column while preserving A1 choreography; the hero now bleeds the right and bottom frame edges (verified: ink touches right col and bottom row at f10/f89); (2) SceneA2 crossing-cluster constants re-measured for the shifted geometry (vertical 016 bbox x965-1031, crossings ~(1002,579)/(1002,728), ghost zone, zoom 1.0->1.12, separation offsets, x-rank staggered decomposition wave); (3) A2B_HIDDEN bunkai window extended to [1.875,4.21] so the authored A2/A3 bridge does not double-image. Scene A occupies frames 0-100 (A1 [0,45), A2 [45,90), A3 [90,101)); evidence frames end at f95."
+}

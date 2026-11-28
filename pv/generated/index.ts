@@ -74,6 +74,8 @@ import { comp_70 } from "./70-TMP ae-stroke-animate.ts";
 import { comp_71 } from "./71-TMP bunkai probe.ts";
 import { comp_72 } from "./72-TMP probe.ts";
 import { comp_73 } from "./73-TMP_fude.ts";
+import { comp_74 } from "./74-NEWMAT 無.ts";
+import { comp_75 } from "./75-NEWMAT 無 mincho.ts";
 
 export const GENERATED_COMPS: CompSpec[] = [
   comp_01,
@@ -149,6 +151,8 @@ export const GENERATED_COMPS: CompSpec[] = [
   comp_71,
   comp_72,
   comp_73,
+  comp_74,
+  comp_75,
 ];
 
 export const GENERATED_FOOTAGE: FootageSpec[] = [
@@ -202,6 +206,13 @@ export const GENERATED_FOOTAGE: FootageSpec[] = [
     color: [0.09000000357628, 0.09000000357628, 0.10000000149012],
     width: 496,
     height: 394,
+  },
+  {
+    name: "BG",
+    kind: "solid",
+    color: [0.96862697601318, 0.96862697601318, 0.96862697601318],
+    width: 1280,
+    height: 720,
   },
 ];
 
@@ -279,4 +290,6 @@ export const COMP_NAMES = [
   "TMP bunkai probe",
   "TMP probe",
   "TMP_fude",
+  "NEWMAT 無",
+  "NEWMAT 無 mincho",
 ];

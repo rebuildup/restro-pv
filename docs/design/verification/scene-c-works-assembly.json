@@ -1,0 +1,288 @@
+{
+  "verifiedAt": "2026-11-28T16:10:31.876Z",
+  "works": [
+    {
+      "work": 1,
+      "title": "墨帖",
+      "comp": "PV glyph",
+      "poseT": 2,
+      "pattern": "/^FUDE S\\d+/",
+      "compSize": [
+        1400,
+        1080
+      ],
+      "strokeCount": 13,
+      "charBBox": {
+        "minX": 602,
+        "minY": 297.1,
+        "maxX": 1290.5,
+        "maxY": 994.1,
+        "w": 688.5,
+        "h": 697.1
+      },
+      "strokeNames": [
+        "FUDE S13 (Ae_Restro merged shape)",
+        "FUDE S04 (Ae_Restro part 1)",
+        "FUDE S10 (Ae_Restro part 4)",
+        "FUDE S07 (Ae_Restro part 3)",
+        "FUDE S03 (Ae_Restro part 1)",
+        "FUDE S08 (Ae_Restro part 5)",
+        "FUDE S06 (Ae_Restro part 1)",
+        "FUDE S12 (STROKE_008_runs2)",
+        "FUDE S11 (STROKE_007_runs2)",
+        "FUDE S09 (STROKE_004_runs6)",
+        "FUDE S05 (STROKE_002_runs2)",
+        "FUDE S02 (STROKE_001_runs2)",
+        "FUDE S01 (STROKE_000_runs5)"
+      ],
+      "strokeUnion": {
+        "pixelCount": 250460,
+        "bbox": {
+          "x0": 602,
+          "y0": 297,
+          "x1": 1290,
+          "y1": 994
+        }
+      },
+      "reference": {
+        "layer": "FUDE outline base",
+        "pixelCount": 250466,
+        "bbox": {
+          "x0": 602,
+          "y0": 297,
+          "x1": 1290,
+          "y1": 994
+        },
+        "vsStrokeUnion": {
+          "iou": 0.9998,
+          "interPx": 250434,
+          "onlyApx": 26,
+          "onlyBpx": 32
+        }
+      }
+    },
+    {
+      "work": 2,
+      "title": "深解",
+      "comp": "bunkai",
+      "poseT": 3,
+      "pattern": "indices 21,36",
+      "compSize": [
+        1080,
+        1080
+      ],
+      "strokeCount": 16,
+      "charBBox": {
+        "minX": 173,
+        "minY": 176.9,
+        "maxX": 907,
+        "maxY": 903.1,
+        "w": 734,
+        "h": 726.2
+      },
+      "strokeNames": [
+        "STROKE_016_runs4",
+        "STROKE_017_runs4",
+        "STROKE_015_runs4",
+        "STROKE_014_runs4",
+        "STROKE_011_runs4",
+        "Ae_Restro merged shape A (runs4)",
+        "STROKE_010_runs4",
+        "STROKE_007_runs4",
+        "STROKE_004_runs4",
+        "STROKE_005_runs4",
+        "Ae_Restro merged shape B (runs4)",
+        "STROKE_003_runs4",
+        "STROKE_006_runs6",
+        "STROKE_002_runs6",
+        "STROKE_000_runs4",
+        "STROKE_001_runs5"
+      ],
+      "strokeUnion": {
+        "pixelCount": 262528,
+        "bbox": {
+          "x0": 173,
+          "y0": 177,
+          "x1": 906,
+          "y1": 902
+        }
+      },
+      "reference": {
+        "selectedIndices": [
+          21,
+          36
+        ],
+        "groupHeaderShapes": {
+          "▾ stroke runs5": {
+            "pixelCount": 0,
+            "bbox": null
+          },
+          "▾ stroke runs4": {
+            "pixelCount": 0,
+            "bbox": null
+          }
+        },
+        "runs5GroupLayers": [
+          "STROKE_016_runs5",
+          "STROKE_017_runs5",
+          "STROKE_015_runs5",
+          "STROKE_014_runs5",
+          "STROKE_011_runs5",
+          "Ae_Restro merged shape 3",
+          "STROKE_010_runs5",
+          "STROKE_007_runs5",
+          "STROKE_004_runs5",
+          "STROKE_005_runs5",
+          "Ae_Restro merged shape 2",
+          "STROKE_003_runs5",
+          "STROKE_006_runs7",
+          "STROKE_002_runs7",
+          "STROKE_000_runs5",
+          "STROKE_001_runs6",
+          "Null 3 (stroke)"
+        ],
+        "runs5GroupUnion": {
+          "shapeLayerCount": 16,
+          "pixelCount": 262528,
+          "bbox": {
+            "x0": 173,
+            "y0": 177,
+            "x1": 906,
+            "y1": 902
+          },
+          "vsSelectedPatternStrokes": {
+            "iou": 1,
+            "interPx": 262528,
+            "onlyApx": 0,
+            "onlyBpx": 0
+          }
+        },
+        "runs4GroupUnion": {
+          "layerCount": 16,
+          "pixelCount": 262528,
+          "bbox": {
+            "x0": 173,
+            "y0": 177,
+            "x1": 906,
+            "y1": 902
+          },
+          "vsSelectedPatternStrokes": {
+            "iou": 1,
+            "interPx": 262528,
+            "onlyApx": 0,
+            "onlyBpx": 0
+          },
+          "vsRuns5Group": {
+            "iou": 1,
+            "interPx": 262528,
+            "onlyApx": 0,
+            "onlyBpx": 0
+          }
+        },
+        "selectedRangeCheck": {
+          "strokeCount": 16,
+          "strokeNames": [
+            "STROKE_016_runs4",
+            "STROKE_017_runs4",
+            "STROKE_015_runs4",
+            "STROKE_014_runs4",
+            "STROKE_011_runs4",
+            "Ae_Restro merged shape A (runs4)",
+            "STROKE_010_runs4",
+            "STROKE_007_runs4",
+            "STROKE_004_runs4",
+            "STROKE_005_runs4",
+            "Ae_Restro merged shape B (runs4)",
+            "STROKE_003_runs4",
+            "STROKE_006_runs6",
+            "STROKE_002_runs6",
+            "STROKE_000_runs4",
+            "STROKE_001_runs5"
+          ],
+          "charBBox": {
+            "minX": 173,
+            "minY": 176.9,
+            "maxX": 907,
+            "maxY": 903.1,
+            "w": 734,
+            "h": 726.2
+          },
+          "unionPixelCount": 262528,
+          "vsRuns5GroupUnion": {
+            "iou": 1,
+            "interPx": 262528,
+            "onlyApx": 0,
+            "onlyBpx": 0
+          },
+          "vsRuns4GroupUnion": {
+            "iou": 1,
+            "interPx": 262528,
+            "onlyApx": 0,
+            "onlyBpx": 0
+          }
+        }
+      }
+    },
+    {
+      "work": 3,
+      "title": "飛白",
+      "comp": "NEWMAT 無 mincho",
+      "poseT": 0.5,
+      "pattern": "/^STROKE_/",
+      "compSize": [
+        1280,
+        720
+      ],
+      "strokeCount": 12,
+      "charBBox": {
+        "minX": 428.5,
+        "minY": 168.5,
+        "maxX": 856.1,
+        "maxY": 600.3,
+        "w": 427.6,
+        "h": 431.8
+      },
+      "strokeNames": [
+        "STROKE_011_runs4",
+        "STROKE_010_runs4",
+        "STROKE_009_runs4",
+        "STROKE_008_runs4",
+        "STROKE_007_runs8",
+        "STROKE_006_runs4",
+        "STROKE_005_runs4",
+        "STROKE_004_runs4",
+        "STROKE_003_runs4",
+        "STROKE_002_runs12",
+        "STROKE_001_runs6",
+        "STROKE_000_runs6"
+      ],
+      "strokeUnion": {
+        "pixelCount": 69904,
+        "bbox": {
+          "x0": 429,
+          "y0": 168,
+          "x1": 855,
+          "y1": 599
+        }
+      },
+      "reference": {
+        "decomposition": "Restro Decompose (real After Effects) — verification/rec-newmat",
+        "strokeCount": 12,
+        "sumOfPieceAreas": 80802,
+        "unionArea": 69904,
+        "overlapRatio": 0.15589951934081026,
+        "largestPiece": 12179,
+        "largestPieceOverUnion": 0.1742246509498741,
+        "inkCoverage": 0.37860094429262753,
+        "unionBBox": {
+          "minX": 428.5,
+          "minY": 168.5,
+          "maxX": 856.1,
+          "maxY": 600.3,
+          "w": 427.6,
+          "h": 431.8
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "id": "wu-b-r8",
+  "wu": "WU-B",
+  "subject": "scene B v7: smaller glyph fully inside frame, lens on strongest junction, fewer markers",
+  "frames": [
+    {"file": "verification/wu-b-r8/f110.png", "frame": 110, "note": "step0 輪郭を解析: red silhouette+contour"},
+    {"file": "verification/wu-b-r8/f135.png", "frame": 135, "note": "step1 輪郭線を延長: green draft contours"},
+    {"file": "verification/wu-b-r8/f146.png", "frame": 146, "note": "step2 start: junction markers + lens on densest crossing"},
+    {"file": "verification/wu-b-r8/f158.png", "frame": 158, "note": "step2 隠れた頂点を推定"},
+    {"file": "verification/wu-b-r8/f170.png", "frame": 170, "note": "step3 start: ONLY reconstructed strokes"},
+    {"file": "verification/wu-b-r8/f178.png", "frame": 178, "note": "step3 一画ずつに分割: 13 yellow strokes, no right-edge crop"}
+  ],
+  "context": "Scene B [101,191), 1080x1080. Same giant 筆 below the tab strip, scaled so the whole glyph (including step-4 displaced strokes) sits inside the right zone with no right-edge clipping. Real per-step geometry: 01 red char contour silhouette, 02 green per-stroke draft contours, 03 up to 5 blue junction markers at the strongest measured stroke-outline crossings + a circular lens in the free strip below the glyph magnifying the densest junction cluster (dashed leader, covers no tabs/body/focus), 04 the 13 real strokes displaced, individually tinted true-yellow with darker matching edges, selected stroke marked by dark contour + center dot. All analysis layers cut to opacity 0 at the step4 boundary frame."
+}

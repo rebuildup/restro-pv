@@ -1,0 +1,11 @@
+{
+  "id": "wu-e-r5",
+  "wu": "WU-E",
+  "subject": "scene E v5: hero clipped to right zone, typography-only product lockup, clipped tile glyphs",
+  "frames": [
+    { "file": "verification/wu-e2/f375d.png", "frame": 375, "note": "tiles recap" },
+    { "file": "verification/wu-e2/f410d.png", "frame": 410, "note": "hero separated, zone-clipped" },
+    { "file": "verification/wu-e2/f465d.png", "frame": 465, "note": "typographic product lockup" }
+  ],
+  "context": "v5 fixes: hero strokes clipped to x480-1080; product card chrome removed (SPEC §11 E); tile glyph overflow clipped. NOTE: C/D recap tiles are still placeholder glyphs — WU-C and WU-D are unfinished, so real-comp tiles cannot be produced yet; E-4 is expected to remain FAIL until C/D converge."
+}

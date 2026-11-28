@@ -1,0 +1,15 @@
+{
+  "id": "wu-d-r23",
+  "wu": "WU-D",
+  "subject": "scene D rebuilt: authored left copy + 4 async footage windows (decompose before->after, stroke edit, stroke motion, reprocess redraw)",
+  "frames": [
+    { "file": "verification/wu-d-v2/f285.png", "frame": 285, "note": "D start: copy + W1 only" },
+    { "file": "verification/wu-d-v2/f300.png", "frame": 300, "note": "W1 mid (before->after), W2 enters" },
+    { "file": "verification/wu-d-v2/f315.png", "frame": 315, "note": "W1 after, W2/W3 live" },
+    { "file": "verification/wu-d-v2/f345.png", "frame": 345, "note": "all 4 windows live" },
+    { "file": "verification/wu-d-v2/f360.png", "frame": 360, "note": "W2 exited, W1/W3/W4" },
+    { "file": "verification/wu-d-v2/f368.png", "frame": 368, "note": "tail: W1/W4 fading" },
+    { "file": "verification/wu-d-v2/f375.png", "frame": 375, "note": "D->E handoff" }
+  ],
+  "context": "Scene D was rebuilt per SPEC §5 D: dumped PV ops comp hidden; SceneD.tsx authors left copy 「After Effectsで、/そのまま動かせる。」 and four asynchronous windows fed by real screen recordings (assets/rec). W1 large shows decompose before->after inside one recording (src 35.9s); W2/W3 show stroke-animate edit (22.7s) and motion (25.0s); W4 shows reprocess redraw (26.8s). Footage is uniformly scaled and crop-masked, no distortion. Captions label each operation."
+}

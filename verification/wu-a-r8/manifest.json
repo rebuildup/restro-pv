@@ -1,0 +1,68 @@
+{
+  "id": "wu-a-r8",
+  "wu": "WU-A",
+  "subject": "Scene A2 r8b: SPEC-exact crossing cluster (runs4 015/016/017 only, translucent context stroke 014 removed), zone-filtered ghost contour line-art under tight elliptical mask at the crossings, darker hidden-part contour, fast tail fade clear before A3 bridge",
+  "frames": [
+    {
+      "file": "verification/wu-a-r8/f20.png",
+      "frame": 20,
+      "note": "A1 reference: giant 解 + independent strokes mid-scene"
+    },
+    {
+      "file": "verification/wu-a-r8/f40.png",
+      "frame": 40,
+      "note": "A1 tail: outline ghost state before A2 cut"
+    },
+    {
+      "file": "verification/wu-a-r8/f45.png",
+      "frame": 45,
+      "note": "A2 entry: cut to crossing cluster, push-in begins"
+    },
+    {
+      "file": "verification/wu-a-r8/f52.png",
+      "frame": 52,
+      "note": "push-in mid: crossing region enlarged, ghost contour fading in"
+    },
+    {
+      "file": "verification/wu-a-r8/f60.png",
+      "frame": 60,
+      "note": "vertical separation in progress"
+    },
+    {
+      "file": "verification/wu-a-r8/f66.png",
+      "frame": 66,
+      "note": "vertical separated; horizontals parting; accent begins"
+    },
+    {
+      "file": "verification/wu-a-r8/f72.png",
+      "frame": 72,
+      "note": "red accent on restored vertical, horizontals parted"
+    },
+    {
+      "file": "verification/wu-a-r8/f78.png",
+      "frame": 78,
+      "note": "comparison hold: separated vertical vs crossing ghost"
+    },
+    {
+      "file": "verification/wu-a-r8/f84.png",
+      "frame": 84,
+      "note": "hold tail before fade"
+    },
+    {
+      "file": "verification/wu-a-r8/f89.png",
+      "frame": 89,
+      "note": "A2 tail fading into A3 bridge"
+    },
+    {
+      "file": "verification/wu-a-r8/f90.png",
+      "frame": 90,
+      "note": "A3 bridge start (bunkai comp carries upward scroll)"
+    },
+    {
+      "file": "verification/wu-a-r8/f95.png",
+      "frame": 95,
+      "note": "bridge into scene B"
+    }
+  ],
+  "context": "Scene A2 r8 second pass after FAIL on gray-mass readability and transition residue. Changes vs previous r8 render: (1) STROKE_014_runs4 context stroke REMOVED - it was the translucent gray diagonal mass the reviewer saw (bbox x501-654 y505-703 at 0.6 opacity); (2) ghost FUDE outline now filtered to contour paths intersecting the crossing zone AND confined by a tighter elliptical radial mask (210x175 comp px at the crossing center) so only local 元輪郭 line-art shows; (3) hidden-part contour darkened to neutral ink w4; (4) tail fade accelerated (f84-88) so zero A2 elements remain when the A3 giant-解 bridge peaks - transition criterion now passes. Evidence frames end at f95 (Scene B territory beyond is another work unit)."
+}

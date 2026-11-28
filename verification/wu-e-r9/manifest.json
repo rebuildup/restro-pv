@@ -1,0 +1,23 @@
+{
+  "id": "wu-e-r9",
+  "wu": "WU-E",
+  "subject": "scene E v8: all three recap tiles fully visible together (stagger tightened) [wu-e-r9]",
+  "frames": [
+    {
+      "file": "verification/recheck/f382.png",
+      "frame": 382,
+      "note": "all 3 tiles fully in"
+    },
+    {
+      "file": "verification/recheck/f410.png",
+      "frame": 410,
+      "note": "hero separated"
+    },
+    {
+      "file": "verification/recheck/f465.png",
+      "frame": 465,
+      "note": "product lockup"
+    }
+  ],
+  "context": "POST-CLIP RE-VERIFICATION: frames re-rendered after interpreter change — nested precomps now clip to comp bounds (AE semantics, wu-int-r5 PASS). Left-column display text now crops at the comp edge exactly like the AE original (fidelity-legacy-vs-remotion.png). Judge the same criteria on these current frames. v8: tile stagger 0.14->0.06s and ramp 0.3->0.26s so B/C/D tiles are ALL fully visible together ~f379-386 (previously D tile had not entered at f375)."
+}

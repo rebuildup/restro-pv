@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="860" viewBox="0 0 1400 860">
+  <style>
+    text { font-family: 'Yu Gothic UI', 'Meiryo', 'Hiragino Kaku Gothic ProN', sans-serif; }
+    .mono { font-family: 'Consolas', 'Cascadia Mono', monospace; }
+  </style>
+  <rect width="1400" height="860" fill="#f4f4f5" />
+  
+    <defs><marker id="arrB" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1 L 10 5 L 0 9 z" fill="#2563eb"/></marker></defs>
+    <text x="24" y="34" font-size="20" font-weight="700" fill="#111111">G. モーション設計根拠図（巨大「解」非対称キーフレーム曲線 ＋ 筆画軸別／放射分離ベクトル）</text>
+    <text x="24" y="56" font-size="12" fill="#52525b">均等一斉移動（単調・機械的）を避ける AEP 実測の非対称イージング (f0→f9瞬発展開 / f9→f45長い余韻収束) と直交軸分離</text>
+
+    <!-- Curve Plot -->
+    <rect x="24" y="84" width="676" height="320" rx="8" fill="#ffffff" stroke="#d4d4d8"/>
+    <text x="44" y="110" font-size="14" font-weight="700" fill="#18181b">1. master [239..254] runs4 時間対変位曲線（0.0s → 0.375s[f9] → 1.875s[f45]）</text>
+    <rect x="70" y="120" width="600" height="260" fill="#f8fafc" stroke="#cbd5e1"/>
+    <line x1="190" y1="120" x2="190" y2="380" stroke="#e51515" stroke-dasharray="5 3" stroke-width="1.5"/>
+    <polyline points="70.0,380.0 83.3,311.5 96.7,258.2 110.0,218.1 123.3,189.4 136.7,170.2 150.0,158.5 163.3,152.5 176.7,150.3 190.0,150.0 203.3,150.0 216.7,150.1 230.0,150.4 243.3,150.8 256.7,151.4 270.0,152.2 283.3,153.3 296.7,154.6 310.0,156.3 323.3,158.2 336.7,160.5 350.0,163.2 363.3,166.3 376.7,169.7 390.0,173.6 403.3,177.9 416.7,182.7 430.0,187.9 443.3,193.7 456.7,199.9 470.0,206.6 483.3,213.9 496.7,221.8 510.0,230.1 523.3,239.1 536.7,248.7 550.0,258.9 563.3,269.7 576.7,281.1 590.0,293.2 603.3,305.9 616.7,319.3 630.0,333.4 643.3,348.2 656.7,363.8 670.0,380.0" fill="none" stroke="#e51515" stroke-width="3"/>
+    <polyline points="70,380 370,150 670,380" fill="none" stroke="#a1a1aa" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <text x="198" y="146" font-size="11" font-weight="700" fill="#e51515" class="mono">f9 (0.375s): Peak Split (inf=0.01% snap, 急立上り)</text>
+    <text x="660" y="340" font-size="11" text-anchor="end" fill="#52525b" class="mono">灰破線 = 単調な均等三角カーブ (禁止反例)</text>
+
+    <!-- Runs4 Vectors -->
+    <rect x="24" y="418" width="676" height="418" rx="8" fill="#ffffff" stroke="#d4d4d8"/>
+    <text x="44" y="442" font-size="14" font-weight="700" fill="#18181b" class="mono">2. 「解」runs4 14画の実測ピーク変位 (Δx, Δy, Z-rot) — 軸拘束＋回転混在</text>
+    
+      <text x="68" y="476" font-size="11" fill="#18181b" class="mono">STROKE_000</text>
+      <rect x="160" y="464" width="29.3" height="16" rx="2" fill="#3f3f46"/>
+      <text x="197.3" y="476" font-size="11" fill="#3f3f46" class="mono">Δ=(0, -45) rot=0°</text>
+    
+
+      <text x="68" y="501.5" font-size="11" fill="#18181b" class="mono">STROKE_001</text>
+      <rect x="160" y="489.5" width="64.0" height="16" rx="2" fill="#2563eb"/>
+      <text x="232.0" y="501.5" font-size="11" fill="#3f3f46" class="mono">Δ=(40, -90) rot=12°</text>
+    
+
+      <text x="68" y="527" font-size="11" fill="#18181b" class="mono">STROKE_002</text>
+      <rect x="160" y="515" width="55.9" height="16" rx="2" fill="#2563eb"/>
+      <text x="223.9" y="527" font-size="11" fill="#3f3f46" class="mono">Δ=(0, 86) rot=-42°</text>
+    
+
+      <text x="68" y="552.5" font-size="11" fill="#18181b" class="mono">STROKE_003</text>
+      <rect x="160" y="540.5" width="75.4" height="16" rx="2" fill="#3f3f46"/>
+      <text x="243.4" y="552.5" font-size="11" fill="#3f3f46" class="mono">Δ=(116, 0) rot=0°</text>
+    
+
+      <text x="68" y="578" font-size="11" fill="#18181b" class="mono">STROKE_004</text>
+      <rect x="160" y="566" width="46.8" height="16" rx="2" fill="#3f3f46"/>
+      <text x="214.8" y="578" font-size="11" fill="#3f3f46" class="mono">Δ=(-72, 0) rot=0°</text>
+    
+
+      <text x="68" y="603.5" font-size="11" fill="#18181b" class="mono">STROKE_005</text>
+      <rect x="160" y="591.5" width="68.3" height="16" rx="2" fill="#2563eb"/>
+      <text x="236.3" y="603.5" font-size="11" fill="#3f3f46" class="mono">Δ=(0, 105) rot=-24°</text>
+    
+
+      <text x="68" y="629" font-size="11" fill="#18181b" class="mono">STROKE_006</text>
+      <rect x="160" y="617" width="41.7" height="16" rx="2" fill="#2563eb"/>
+      <text x="209.7" y="629" font-size="11" fill="#3f3f46" class="mono">Δ=(-25, -59) rot=4°</text>
+    
+
+      <text x="68" y="654.5" font-size="11" fill="#18181b" class="mono">STROKE_007</text>
+      <rect x="160" y="642.5" width="64.4" height="16" rx="2" fill="#3f3f46"/>
+      <text x="232.4" y="654.5" font-size="11" fill="#3f3f46" class="mono">Δ=(99, 0) rot=0°</text>
+    
+
+      <text x="68" y="680" font-size="11" fill="#18181b" class="mono">STROKE_010</text>
+      <rect x="160" y="668" width="44.9" height="16" rx="2" fill="#3f3f46"/>
+      <text x="212.8" y="680" font-size="11" fill="#3f3f46" class="mono">Δ=(-69, 0) rot=0°</text>
+    
+
+      <text x="68" y="705.5" font-size="11" fill="#18181b" class="mono">STROKE_011</text>
+      <rect x="160" y="693.5" width="33.5" height="16" rx="2" fill="#2563eb"/>
+      <text x="201.5" y="705.5" font-size="11" fill="#3f3f46" class="mono">Δ=(51, 7) rot=25°</text>
+    
+
+      <text x="68" y="731" font-size="11" fill="#18181b" class="mono">STROKE_014</text>
+      <rect x="160" y="719" width="112.9" height="16" rx="2" fill="#2563eb"/>
+      <text x="280.9" y="731" font-size="11" fill="#3f3f46" class="mono">Δ=(161, 65) rot=-13°</text>
+    
+
+      <text x="68" y="756.5" font-size="11" fill="#18181b" class="mono">STROKE_015</text>
+      <rect x="160" y="744.5" width="243.1" height="16" rx="2" fill="#2563eb"/>
+      <text x="411.1" y="756.5" font-size="11" fill="#3f3f46" class="mono">Δ=(4, -374) rot=8°</text>
+    
+
+      <text x="68" y="782" font-size="11" fill="#18181b" class="mono">STROKE_016</text>
+      <rect x="160" y="770" width="4.0" height="16" rx="2" fill="#e51515"/>
+      <text x="168.0" y="782" font-size="11" fill="#3f3f46" class="mono">Δ=(0, 0) rot=0°</text>
+    
+
+      <text x="68" y="807.5" font-size="11" fill="#18181b" class="mono">STROKE_017</text>
+      <rect x="160" y="795.5" width="195.0" height="16" rx="2" fill="#3f3f46"/>
+      <text x="363.0" y="807.5" font-size="11" fill="#3f3f46" class="mono">Δ=(-4, 300) rot=0°</text>
+    
+
+    <!-- Baseline Radial + Anti-Monotonicity Rules -->
+    <rect x="720" y="84" width="656" height="490" rx="8" fill="#ffffff" stroke="#d4d4d8"/>
+    <text x="740" y="110" font-size="14" font-weight="700" fill="#18181b">3. 「筆」Baseline 式 m={S01..S13} 放射分離ベクトル分布</text>
+    <text x="740" y="130" font-size="11" fill="#52525b">一画ずつ固有方向・固有距離 (dx=-30..+40, dy=-20..+20) に離散、並列「日」部(S09–12)は左段差整列</text>
+    <line x1="800" y1="330" x2="1280" y2="330" stroke="#e4e4e7"/>
+    <line x1="1040" y1="170" x2="1040" y2="490" stroke="#e4e4e7"/>
+    
+      <line x1="1040" y1="330" x2="904.8" y2="382" stroke="#2563eb" stroke-width="2" marker-end="url(#arrB)"/>
+      <circle cx="904.8" cy="382" r="11" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+      <text x="904.8" y="386" font-size="9.5" font-weight="700" text-anchor="middle" fill="#1d4ed8" class="mono">S01</text>
+    
+
+      <line x1="1040" y1="330" x2="1081.6" y2="434" stroke="#2563eb" stroke-width="2" marker-end="url(#arrB)"/>
+      <circle cx="1081.6" cy="434" r="11" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+      <text x="1081.6" y="438" font-size="9.5" font-weight="700" text-anchor="middle" fill="#1d4ed8" class="mono">S02</text>
+    
+
+      <line x1="1040" y1="330" x2="1092" y2="236.39999999999998" stroke="#2563eb" stroke-width="2" marker-end="url(#arrB)"/>
+      <circle cx="1092" cy="236.39999999999998" r="11" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+      <text x="1092" y="240.39999999999998" font-size="9.5" font-weight="700" text-anchor="middle" fill="#1d4ed8" class="mono">S03</text>
+    
+
+      <line x1="1040" y1="330" x2="1123.2" y2="226" stroke="#2563eb" stroke-width="2" marker-end="url(#arrB)"/>
+      <circle cx="1123.2" cy="226" r="11" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+      <text x="1123.2" y="230" font-size="9.5" font-weight="700" text-anchor="middle" fill="#1d4ed8" class="mono">S04</text>
+    
+
+      <line x1="1040" y1="330" x2="1144" y2="423.6" stroke="#2563eb" stroke-width="2" marker-end="url(#arrB)"/>
+      <circle cx="1144" cy="423.6" r="11" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+      <text x="1144" y="427.6" font-size="9.5" font-weight="700" text-anchor="middle" fill="#1d4ed8" class="mono">S05</text>
+    
+
+      <line x1="1040" y1="330" x2="1185.6" y2="288.4" stroke="#2563eb" stroke-width="2" marker-end="url(#arrB)"/>
+      <circle cx="1185.6" cy="288.4" r="11" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+      <text x="1185.6" y="292.4" font-size="9.5" font-weight="700" text-anchor="middle" fill="#1d4ed8" class="mono">S06</text>
+    
+
+      <line x1="1040" y1="330" x2="884" y2="267.6" stroke="#2563eb" stroke-width="2" marker-end="url(#arrB)"/>
+      <circle cx="884" cy="267.6" r="11" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+      <text x="884" y="271.6" font-size="9.5" font-weight="700" text-anchor="middle" fill="#1d4ed8" class="mono">S07</text>
+    
+
+      <line x1="1040" y1="330" x2="1248" y2="298.8" stroke="#2563eb" stroke-width="2" marker-end="url(#arrB)"/>
+      <circle cx="1248" cy="298.8" r="11" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+      <text x="1248" y="302.8" font-size="9.5" font-weight="700" text-anchor="middle" fill="#1d4ed8" class="mono">S08</text>
+    
+
+      <line x1="1040" y1="330" x2="884" y2="304" stroke="#2563eb" stroke-width="2" marker-end="url(#arrB)"/>
+      <circle cx="884" cy="304" r="11" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+      <text x="884" y="308" font-size="9.5" font-weight="700" text-anchor="middle" fill="#1d4ed8" class="mono">S09</text>
+    
+
+      <line x1="1040" y1="330" x2="884" y2="340.4" stroke="#2563eb" stroke-width="2" marker-end="url(#arrB)"/>
+      <circle cx="884" cy="340.4" r="11" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+      <text x="884" y="344.4" font-size="9.5" font-weight="700" text-anchor="middle" fill="#1d4ed8" class="mono">S10</text>
+    
+
+      <line x1="1040" y1="330" x2="884" y2="371.6" stroke="#2563eb" stroke-width="2" marker-end="url(#arrB)"/>
+      <circle cx="884" cy="371.6" r="11" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+      <text x="884" y="375.6" font-size="9.5" font-weight="700" text-anchor="middle" fill="#1d4ed8" class="mono">S11</text>
+    
+
+      <line x1="1040" y1="330" x2="884" y2="402.8" stroke="#2563eb" stroke-width="2" marker-end="url(#arrB)"/>
+      <circle cx="884" cy="402.8" r="11" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+      <text x="884" y="406.8" font-size="9.5" font-weight="700" text-anchor="middle" fill="#1d4ed8" class="mono">S12</text>
+    
+
+      <line x1="1040" y1="330" x2="1248" y2="350.8" stroke="#2563eb" stroke-width="2" marker-end="url(#arrB)"/>
+      <circle cx="1248" cy="350.8" r="11" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+      <text x="1248" y="354.8" font-size="9.5" font-weight="700" text-anchor="middle" fill="#1d4ed8" class="mono">S13</text>
+    
+
+    <rect x="720" y="590" width="656" height="246" rx="8" fill="#ffffff" stroke="#d4d4d8"/>
+    <text x="740" y="618" font-size="15" font-weight="700" fill="#18181b">4. 反単調性・禁止パターン定量ゲート（Category G 正本ルール）</text>
+    <text x="740" y="646" font-size="12" fill="#18181b">• ① 時間非対称比: 往路/復路の時間比 1:1 均等を避け 1:3〜1:4（例 9f立上り vs 36f収束）を基準とする</text>
+    <text x="740" y="670" font-size="12" fill="#18181b">• ② 運動軸分離: 全画同じΔで動かさず「直交Xのみ / 直交Yのみ / 固有角度回転 / 静止アンカー(S16=0)」を混在</text>
+    <text x="740" y="694" font-size="12" fill="#18181b">• ③ ピボット設計: 各画 Anchor Point は画像中心ではなく実筆画バウンディング・屈曲点に個別配置</text>
+    <text x="740" y="718" font-size="12" fill="#18181b">• ④ ゼロ空白: 拍境界(45, 90, 101, 191, 281, 371f)で完全停止・空白フレームを出さず残余速度を重ねる</text>
+    <text x="740" y="742" font-size="12" fill="#b91c1c" font-weight="700">• ⑤ 定性レビュー必須項目: コンタクツシート上で「ゴム紐の一斉拡縮」「直線スライド感」に見えないかを人間が検品</text>
+  
+</svg>

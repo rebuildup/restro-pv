@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1420" height="820" viewBox="0 0 1420 820">
+  <style>
+    text { font-family: 'Yu Gothic UI', 'Meiryo', 'Hiragino Kaku Gothic ProN', sans-serif; }
+    .mono { font-family: 'Consolas', 'Cascadia Mono', monospace; }
+  </style>
+  <rect width="1420" height="820" fill="#f4f4f5" />
+  
+    <text x="24" y="34" font-size="20" font-weight="700" fill="#111111">確定 Chrome・共通レイアウト復元範囲（Issue #30＋元AEP 正構造 vs 現行 Remotion 乖離点）</text>
+    <text x="24" y="56" font-size="12" fill="#52525b">共通レイアウトの無断改変は禁止。本図は後続実装で Issue #30 確定レイアウトと元 AEP 開閉構造を一致させるための差分と最小修正範囲を示す。</text>
+
+    <!-- Left column: Confirmed AEP Structure -->
+    <rect x="24" y="84" width="670" height="712" rx="8" fill="#ffffff" stroke="#16a34a" stroke-width="2"/>
+    <text x="42" y="114" font-size="16" font-weight="700" fill="#15803d">正本構造（元 AEP 05-master.ts ＋ Issue #30 確定事項）</text>
+
+    <rect x="42" y="134" width="634" height="122" rx="6" fill="#f0fdf4" stroke="#86efac"/>
+    <text x="58" y="158" font-size="13" font-weight="700" fill="#166534">1. ブランドロックアップ [15 Heading / 16 Plugin / 17 Ae / 18 Logo]</text>
+    <text x="58" y="180" font-size="12" fill="#18181b">• 生存区間: 全編 0.000s 〜 20.000s（最終フレームまで維持・消去しない）</text>
+    <text x="58" y="200" font-size="12" fill="#18181b">• 動き: P5..12 の親子追従により 0..3.88s &amp; 16.17..20s は中央寄り、4.5..15.5s は上下展開</text>
+    <text x="58" y="220" font-size="12" fill="#18181b">• 色基準: Logo Red [0.890, 0.042, 0.042] → 合成後 sRGB #e51515（サムネ一致）</text>
+    <text x="58" y="240" font-size="12" fill="#18181b">• Heading [43-Heading.ts]: 「文字の輪郭から、筆画ごとのシェイプへ。」1本を20s保持</text>
+
+    <rect x="42" y="272" width="634" height="136" rx="6" fill="#f0fdf4" stroke="#86efac"/>
+    <text x="58" y="296" font-size="13" font-weight="700" fill="#166534">2. description スロット [8 Shape Layer 2 Matte / 10 description / 184 LQ3]</text>
+    <text x="58" y="318" font-size="12" fill="#18181b">• 開門前 (0..3.88s) ＆ 結末 (16.17..20s): マット高 h=27px（完全不可視）</text>
+    <text x="58" y="338" font-size="12" fill="#18181b">• 解説窓 (4.50..15.50s): h=337px (y=546..883) へ開き B・C・D の左説明を単一所有</text>
+    <text x="58" y="358" font-size="12" fill="#18181b">• 416px幅ルール: description comp は左 32..448px 内に厳密フィット</text>
+    <text x="58" y="378" font-size="12" fill="#18181b">• タイトル〜B 開閉 (3.88..4.50s) と D→E 閉鎖 (15.50..16.17s) は無空白連動</text>
+
+    <rect x="42" y="424" width="634" height="118" rx="6" fill="#f0fdf4" stroke="#86efac"/>
+    <text x="58" y="448" font-size="13" font-weight="700" fill="#166534">3. 背景 3D 製図空間 [257 grid-solid / 258 White Solid 1]</text>
+    <text x="58" y="470" font-size="12" fill="#18181b">• 全編背景として一貫露出（右全面への白ベール・不透明全覆いパネル禁止）</text>
+    <text x="58" y="490" font-size="12" fill="#18181b">• Z=+245 / Y=+20° 傾斜がA1〜E全体の空間連続性を担保する</text>
+    <text x="58" y="510" font-size="12" fill="#18181b">• 左右分離: 左境界 x=460 / 安全帯 460..480 / 右ステージ主基準 x≥480</text>
+
+    <rect x="42" y="558" width="634" height="220" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+    <text x="58" y="584" font-size="13" font-weight="700" fill="#1e293b">4. 維持すべき Remotion 構造ガード（Chrome.tsx / Stage.tsx）</text>
+    <text x="58" y="608" font-size="12" fill="#27272a">• 3層コンポジット順: PvChromeBase → PvStage → PvLeftGuard → PvChromeOverlay</text>
+    <text x="58" y="630" font-size="12" fill="#27272a">  (左領域 x&lt;460 の保護ピクセルを右ステージ演出が破壊しない安全防壁として有効)</text>
+    <text x="58" y="654" font-size="12" fill="#27272a">• Stage.tsx の右コンテンツ専用レジストリ分離（左カラムコードを Scene 側へ置かない）</text>
+    <text x="58" y="678" font-size="12" fill="#27272a">• pv-layout-contract.test.ts / stroke-contract.test.ts による自動契約検査</text>
+    <text x="58" y="704" font-size="12" font-weight="700" fill="#b91c1c">※注意点: PvLeftGuard が ChromeBase 側の開閉パネルを覆い隠さないよう対象層整理が必須</text>
+    <text x="58" y="726" font-size="12" fill="#52525b">  （現在 ChromeOverlay は {8,10,15,16,17,18} を保持済みで、10がdescription、8がShape Layer 2）</text>
+
+    <!-- Right column: Current Remotion Divergences & Exact Fix Scope -->
+    <rect x="726" y="84" width="670" height="712" rx="8" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+    <text x="744" y="114" font-size="16" font-weight="700" fill="#b91c1c">現行 Remotion 実装の乖離箇所と最小復元スコープ</text>
+
+    <rect x="744" y="134" width="634" height="122" rx="6" fill="#fef2f2" stroke="#fca5a5"/>
+    <text x="760" y="158" font-size="13" font-weight="700" fill="#991b1b">乖離①: hideBrandLockupForEndCard() [masterPatch.ts L472-484]</text>
+    <text x="760" y="180" font-size="12" fill="#18181b">• 現状: t=17.35s で [15..18]（Ae/Plugin/Logo/Heading）を Opacity=0 に消去</text>
+    <text x="760" y="200" font-size="12" fill="#18181b">• 原因: 右カード内にもう1つ Logo を置いたことによるロゴ重複の回避パッチ</text>
+    <text x="760" y="220" font-size="12" font-weight="700" fill="#15803d">→ 修正範囲: hideBrandLockupForEndCard 撤去。左Logo+Headingを16.17sに中央収束</text>
+    <text x="760" y="240" font-size="12" fill="#15803d">   保持し、右側 SceneE は「実復元筆画+製品/BOOTH CTA」へ役割分離</text>
+
+    <rect x="744" y="272" width="634" height="148" rx="6" fill="#fef2f2" stroke="#fca5a5"/>
+    <text x="760" y="296" font-size="13" font-weight="700" fill="#991b1b">乖離②: Heading早期終了 [L315] ＋ description無力化 [L158-235] ＋ LeftCopy.tsx</text>
+    <text x="760" y="318" font-size="12" fill="#18181b">• 現状: Headingを15.44sで消し、description D/E域をゼロ尺化して LeftCopy.tsx が</text>
+    <text x="760" y="338" font-size="12" fill="#18181b">   固定座標 (D: top=648 / E: top=706) へ HTML 文字列を上書き描画</text>
+    <text x="760" y="358" font-size="12" fill="#18181b">• 結果: AEP の P5..12 × Linked Quad 3 閉鎖運動と衝突・二重化・位置ズレが発生</text>
+    <text x="760" y="378" font-size="12" font-weight="700" fill="#15803d">→ 修正範囲: Heading の 15.44s カット除去／D 説明は 03-description.ts (416px</text>
+    <text x="760" y="398" font-size="12" fill="#15803d">   フィット済) へ一元化し、LeftCopy.tsx の静的 top=648/706 描画を廃止</text>
+
+    <rect x="744" y="436" width="634" height="118" rx="6" fill="#fffbeb" stroke="#fcd34d"/>
+    <text x="760" y="460" font-size="13" font-weight="700" fill="#b45309">乖離③: 色トークン変更 [SceneA2 / SceneB] と過度な dimGridForWindows [L437]</text>
+    <text x="760" y="482" font-size="12" fill="#18181b">• 現状: Brand Red が #d64520 へ色変わり。背景グリッドも A2=45% / B=35% / D=30% 減衰</text>
+    <text x="760" y="502" font-size="12" fill="#18181b">• 問題: サムネ赤 (#e51515) と統一が崩れ、背景減衰の度合いが場面ごとでばらつく</text>
+    <text x="760" y="522" font-size="12" font-weight="700" fill="#15803d">→ 修正範囲: ACCENT を #e51515 へ回復。Grid 減衰はBカード等必要な局所調整に限定</text>
+
+    <rect x="744" y="570" width="634" height="208" rx="6" fill="#fffbeb" stroke="#fcd34d"/>
+    <text x="760" y="594" font-size="13" font-weight="700" fill="#b45309">乖離④: HERO_SHIFT(+130) [L343] ＆ 右ステージ乗っ取り (B/C/D_HIDDEN)</text>
+    <text x="760" y="616" font-size="12" fill="#18181b">• HERO_SHIFT(+130px) は Left Column (x&lt;460) クリアの安全措置だが A1 beat 一致とトレード</text>
+    <text x="760" y="636" font-size="12" fill="#18181b">• B_HIDDEN [23層除去]・C_HIDDEN [14]・D_HIDDEN [13] は右側演出の完全置き換え境界</text>
+    <text x="760" y="660" font-size="12" font-weight="700" fill="#15803d">→ 今後の方針: 左カラム側のパッチ（①②）だけを確定レイアウト復元として先に分離適用し、</text>
+    <text x="760" y="680" font-size="12" fill="#15803d">   A1 保護は LeftGuard の下で元座標 or 最小クリア (beat-001..004 一致優先) を再検証。</text>
+    <text x="760" y="700" font-size="12" fill="#15803d">   B/C/D/E 右側再設計は Stage.tsx 契約の内側で新設計（05 / 06 / 07）に沿って再構築する。</text>
+    <text x="760" y="746" font-size="11.5" fill="#71717a" class="mono">※本図は設計監査ドキュメント（実装コード video/src/* は Issue #32 スコープ上まだ未編集）</text>
+  
+</svg>

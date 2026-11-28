@@ -1,0 +1,38 @@
+{
+  "id": "wu-b-r14",
+  "wu": "WU-B",
+  "subject": "scene B v12: lens boost shows real contours inside magnifier, truer-yellow palette [wu-b-r14]",
+  "frames": [
+    {
+      "file": "verification/recheck/f112.png",
+      "frame": 112,
+      "note": "step0 輪郭を解析 mid: red silhouette+contour"
+    },
+    {
+      "file": "verification/recheck/f140.png",
+      "frame": 140,
+      "note": "step1 輪郭線を延長 mid: green drafts"
+    },
+    {
+      "file": "verification/recheck/f154.png",
+      "frame": 154,
+      "note": "step2 mid: markers + lens showing magnified contours/markers"
+    },
+    {
+      "file": "verification/recheck/f166.png",
+      "frame": 166,
+      "note": "step2 late"
+    },
+    {
+      "file": "verification/recheck/f176.png",
+      "frame": 176,
+      "note": "step3 mid: only reconstructed strokes"
+    },
+    {
+      "file": "verification/recheck/f186.png",
+      "frame": 186,
+      "note": "step3 late: 13 true-yellow strokes + bold selection"
+    }
+  ],
+  "context": "POST-CLIP RE-VERIFICATION: frames re-rendered after interpreter change — nested precomps now clip to comp bounds (AE semantics, wu-int-r5 PASS). Left-column display text now crops at the comp edge exactly like the AE original (fidelity-legacy-vs-remotion.png). Judge the same criteria on these current frames. Scene B [101,191), 1080x1080. Same giant 筆 below the tab strip, fully inside the right zone. Per-step filters on real Restro geometry: 01 red char contour silhouette, 02 green per-stroke draft contours, 03 up to 5 blue junction markers at the strongest measured stroke-outline crossings in the lower glyph half + circular lens in the free strip below the glyph. Inside the lens the faint analysis layers are boosted x5 so the magnifier genuinely shows the enlarged draft contours + junction markers it points to (dashed leader stays under the strokes; covers no tabs/body/focus). 04 the 13 real strokes tightly displaced, individually tinted true-yellow (hue 47-57) with darker matching edges; selected stroke has bold dark contour (width 4) + center dot following its displacement. All analysis layers cut to opacity 0 at the step4 boundary frame."
+}

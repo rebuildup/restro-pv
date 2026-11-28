@@ -1,0 +1,14 @@
+{
+  "id": "wu-b-r7",
+  "wu": "WU-B",
+  "subject": "scene B v6: hard cut of all analysis layers + lens at step4 boundary",
+  "frames": [
+    {"file": "verification/wu-b-r7/f110.png", "frame": 110, "note": "step0 輪郭を解析: red silhouette+contour"},
+    {"file": "verification/wu-b-r7/f135.png", "frame": 135, "note": "step1 輪郭線を延長: green draft contours"},
+    {"file": "verification/wu-b-r7/f146.png", "frame": 146, "note": "step2 start: junction markers + lens"},
+    {"file": "verification/wu-b-r7/f158.png", "frame": 158, "note": "step2 隠れた頂点を推定"},
+    {"file": "verification/wu-b-r7/f170.png", "frame": 170, "note": "step3 start: ONLY reconstructed strokes appear"},
+    {"file": "verification/wu-b-r7/f178.png", "frame": 178, "note": "step3 一画ずつに分割: 13 yellow strokes + selected dot"}
+  ],
+  "context": "Scene B [101,191), 1080x1080. Same giant 筆 below the tab strip. Real per-step geometry: 01 red char contour silhouette, 02 green per-stroke draft contours, 03 blue junction markers at measured stroke-outline crossings + small lens in the free strip below the glyph with dashed leader to the focal junction, 04 the 13 real strokes displaced, individually tinted true-yellow with darker matching edges (width 2.6) and a selected stroke marked by dark contour + center dot. At the exact step4 boundary frame ALL analysis layers — silhouette, drafts, markers, lens, leader — cut to opacity 0 in the same frame; the last step shows only the reconstructed strokes."
+}

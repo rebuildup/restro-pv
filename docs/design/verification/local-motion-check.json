@@ -1,0 +1,669 @@
+{
+  "checkedAt": "2026-11-28T17:47:18.891Z",
+  "sourceModules": [
+    "video/src/design/rig.ts",
+    "video/src/design/choreography.ts",
+    "video/src/scenes/glyph.tsx (compStrokes — production geometry path)",
+    "video/src/scenes/SceneA2.tsx (consumes the same createA2Choreo)"
+  ],
+  "rigApertureSweep": [
+    {
+      "openProgress": 0,
+      "logoTopBottom": [
+        435,
+        695
+      ],
+      "headingTopBottom": [
+        746,
+        812
+      ],
+      "gapBetweenLogoAndHeading": 51,
+      "matteVisibleHeight": 27,
+      "noOverlapValid": true
+    },
+    {
+      "openProgress": 0.25,
+      "logoTopBottom": [
+        396.25,
+        656.25
+      ],
+      "headingTopBottom": [
+        784.75,
+        850.75
+      ],
+      "gapBetweenLogoAndHeading": 128.5,
+      "matteVisibleHeight": 104.5,
+      "noOverlapValid": true
+    },
+    {
+      "openProgress": 0.5,
+      "logoTopBottom": [
+        357.5,
+        617.5
+      ],
+      "headingTopBottom": [
+        823.5,
+        889.5
+      ],
+      "gapBetweenLogoAndHeading": 206,
+      "matteVisibleHeight": 182,
+      "noOverlapValid": true
+    },
+    {
+      "openProgress": 0.75,
+      "logoTopBottom": [
+        318.75,
+        578.75
+      ],
+      "headingTopBottom": [
+        862.25,
+        928.25
+      ],
+      "gapBetweenLogoAndHeading": 283.5,
+      "matteVisibleHeight": 259.5,
+      "noOverlapValid": true
+    },
+    {
+      "openProgress": 1,
+      "logoTopBottom": [
+        280,
+        540
+      ],
+      "headingTopBottom": [
+        901,
+        967
+      ],
+      "gapBetweenLogoAndHeading": 361,
+      "matteVisibleHeight": 337,
+      "noOverlapValid": true
+    }
+  ],
+  "allRigStatesValid": true,
+  "gridPropagationProof": {
+    "baselineCol0to4Width": 416.33,
+    "perturbedGutter16Col0to4Width": 414,
+    "perturbedLeftChromeValid": true,
+    "marginXPerturbationPx": 16,
+    "logoSlotDx": 16,
+    "matteSlotDx": 16,
+    "childWorldRectsTrackGrid": true,
+    "baselineSceneBWidth": 502,
+    "perturbedSceneBWidth": 500,
+    "gridDeltaB": 2,
+    "colDeltaB": 2,
+    "widthPropagated": true
+  },
+  "sceneBAccordionSweep": [
+    {
+      "activeStep": 0,
+      "tab0Y": 191.5,
+      "activeSlotY": 191.5,
+      "activeSlotHeight": 660.7,
+      "lensDisplayDiameter": 420,
+      "lensSourceDiameter": 140,
+      "lensMagnificationRatio": 3,
+      "valid": true
+    },
+    {
+      "activeStep": 0.5,
+      "tab0Y": 191.5,
+      "activeSlotY": 210.8,
+      "activeSlotHeight": 660.7,
+      "lensDisplayDiameter": 420,
+      "lensSourceDiameter": 140,
+      "lensMagnificationRatio": 3,
+      "valid": true
+    },
+    {
+      "activeStep": 1,
+      "tab0Y": 191.5,
+      "activeSlotY": 230.2,
+      "activeSlotHeight": 660.7,
+      "lensDisplayDiameter": 420,
+      "lensSourceDiameter": 140,
+      "lensMagnificationRatio": 3,
+      "valid": true
+    },
+    {
+      "activeStep": 2,
+      "tab0Y": 191.5,
+      "activeSlotY": 268.8,
+      "activeSlotHeight": 660.7,
+      "lensDisplayDiameter": 420,
+      "lensSourceDiameter": 140,
+      "lensMagnificationRatio": 3,
+      "valid": true
+    },
+    {
+      "activeStep": 2.5,
+      "tab0Y": 191.5,
+      "activeSlotY": 288.2,
+      "activeSlotHeight": 660.7,
+      "lensDisplayDiameter": 420,
+      "lensSourceDiameter": 140,
+      "lensMagnificationRatio": 3,
+      "valid": true
+    },
+    {
+      "activeStep": 3,
+      "tab0Y": 191.5,
+      "activeSlotY": 307.5,
+      "activeSlotHeight": 660.7,
+      "lensDisplayDiameter": 420,
+      "lensSourceDiameter": 140,
+      "lensMagnificationRatio": 3,
+      "valid": true
+    }
+  ],
+  "allSceneBStatesValid": true,
+  "sceneCShowreelRig": {
+    "viewportWidth": 600,
+    "viewportHeight": 960,
+    "cellScale": 1,
+    "viewportClearsSafety": true,
+    "valid": true
+  },
+  "sceneA2ProductionCheck": {
+    "note": "Verified through the identical path production renders: compStrokes rest geometry + createA2Choreo jolt&settle field/stroke transforms + comp->screen similarity. r16: the field is framed ON the crossing cluster (the scene's subject) — the cluster stays fully inside the frame at every sampled instant, the character keeps running off the stage's left edge, and the hero is clipped at the stage edge so the confirmed left column is untouched. Simultaneous attack + long settle tail + bleed giant-hold (original AEP grammar), crossing trio keeps residual separation through the proof beat.",
+    "strokeCount": 16,
+    "peelOrder": [
+      "STROKE_016_runs4",
+      "STROKE_015_runs4",
+      "STROKE_017_runs4",
+      "STROKE_006_runs6",
+      "STROKE_001_runs5",
+      "STROKE_003_runs4",
+      "STROKE_007_runs4",
+      "STROKE_000_runs4",
+      "STROKE_005_runs4",
+      "STROKE_004_runs4",
+      "STROKE_002_runs6",
+      "Ae_Restro merged shape 2",
+      "STROKE_014_runs4",
+      "STROKE_011_runs4",
+      "STROKE_010_runs4",
+      "Ae_Restro merged shape 3"
+    ],
+    "relSweep": [
+      {
+        "rel": 0,
+        "compFrame": 45,
+        "zoom": 1.24,
+        "scx": 745,
+        "scy": 482,
+        "opacity": 1,
+        "unionScreenBBox": {
+          "minX": 97.7,
+          "maxX": 969.4,
+          "minY": -113.7,
+          "maxY": 805.8
+        },
+        "minStrokeScreenX": 97.7,
+        "clusterScreenBBox": {
+          "minX": 539.5,
+          "maxX": 969.4,
+          "minY": 276.7,
+          "maxY": 805.8
+        },
+        "crossBoxes": {
+          "STROKE_015_runs4": {
+            "minX": 576.8,
+            "maxX": 922.4,
+            "minY": 345.5,
+            "maxY": 435.1
+          },
+          "STROKE_016_runs4": {
+            "minX": 704,
+            "maxX": 785.8,
+            "minY": 276.7,
+            "maxY": 805.8
+          },
+          "STROKE_017_runs4": {
+            "minX": 539.5,
+            "maxX": 969.4,
+            "minY": 533.9,
+            "maxY": 614.1
+          }
+        }
+      },
+      {
+        "rel": 0.3,
+        "compFrame": 52,
+        "zoom": 1.359,
+        "scx": 745,
+        "scy": 489.7,
+        "opacity": 1,
+        "unionScreenBBox": {
+          "minX": -46.5,
+          "maxX": 1045.4,
+          "minY": -194,
+          "maxY": 906.9
+        },
+        "minStrokeScreenX": -46.5,
+        "clusterScreenBBox": {
+          "minX": 513.4,
+          "maxX": 1045.4,
+          "minY": 320.2,
+          "maxY": 906.9
+        },
+        "crossBoxes": {
+          "STROKE_015_runs4": {
+            "minX": 513.4,
+            "maxX": 901.5,
+            "minY": 320.2,
+            "maxY": 464.4
+          },
+          "STROKE_016_runs4": {
+            "minX": 700,
+            "maxX": 789.7,
+            "minY": 327,
+            "maxY": 906.9
+          },
+          "STROKE_017_runs4": {
+            "minX": 574.2,
+            "maxX": 1045.4,
+            "minY": 546.6,
+            "maxY": 634.6
+          }
+        }
+      },
+      {
+        "rel": 0.42,
+        "compFrame": 55,
+        "zoom": 1.38,
+        "scx": 745,
+        "scy": 495.9,
+        "opacity": 1,
+        "unionScreenBBox": {
+          "minX": -70.4,
+          "maxX": 1057.6,
+          "minY": -201.5,
+          "maxY": 927.1
+        },
+        "minStrokeScreenX": -70.4,
+        "clusterScreenBBox": {
+          "minX": 503.9,
+          "maxX": 1057.6,
+          "minY": 321.3,
+          "maxY": 927.1
+        },
+        "crossBoxes": {
+          "STROKE_015_runs4": {
+            "minX": 503.9,
+            "maxX": 898.6,
+            "minY": 321.3,
+            "maxY": 473.6
+          },
+          "STROKE_016_runs4": {
+            "minX": 699.4,
+            "maxX": 790.4,
+            "minY": 338.4,
+            "maxY": 927.1
+          },
+          "STROKE_017_runs4": {
+            "minX": 579.2,
+            "maxX": 1057.6,
+            "minY": 553.6,
+            "maxY": 642.9
+          }
+        }
+      },
+      {
+        "rel": 0.6,
+        "compFrame": 59,
+        "zoom": 1.38,
+        "scx": 745,
+        "scy": 500,
+        "opacity": 1,
+        "unionScreenBBox": {
+          "minX": -30.8,
+          "maxX": 1030.1,
+          "minY": -185.3,
+          "maxY": 900.2
+        },
+        "minStrokeScreenX": -30.8,
+        "clusterScreenBBox": {
+          "minX": 527,
+          "maxX": 1030.1,
+          "minY": 311.4,
+          "maxY": 900.2
+        },
+        "crossBoxes": {
+          "STROKE_015_runs4": {
+            "minX": 527,
+            "maxX": 918.3,
+            "minY": 335.2,
+            "maxY": 464.7
+          },
+          "STROKE_016_runs4": {
+            "minX": 699.3,
+            "maxX": 790.4,
+            "minY": 311.4,
+            "maxY": 900.2
+          },
+          "STROKE_017_runs4": {
+            "minX": 551.6,
+            "maxX": 1030.1,
+            "minY": 557.7,
+            "maxY": 647.1
+          }
+        }
+      },
+      {
+        "rel": 0.9,
+        "compFrame": 67,
+        "zoom": 1.38,
+        "scx": 745,
+        "scy": 500,
+        "opacity": 1,
+        "unionScreenBBox": {
+          "minX": 9.2,
+          "maxX": 1004.3,
+          "minY": -169.7,
+          "maxY": 871.1
+        },
+        "minStrokeScreenX": 9.2,
+        "clusterScreenBBox": {
+          "minX": 525.9,
+          "maxX": 1004.3,
+          "minY": 282.3,
+          "maxY": 871.1
+        },
+        "crossBoxes": {
+          "STROKE_015_runs4": {
+            "minX": 549.3,
+            "maxX": 936,
+            "minY": 344.6,
+            "maxY": 452.4
+          },
+          "STROKE_016_runs4": {
+            "minX": 699.3,
+            "maxX": 790.4,
+            "minY": 282.3,
+            "maxY": 871.1
+          },
+          "STROKE_017_runs4": {
+            "minX": 525.9,
+            "maxX": 1004.3,
+            "minY": 557.7,
+            "maxY": 647.1
+          }
+        }
+      },
+      {
+        "rel": 1.2,
+        "compFrame": 74,
+        "zoom": 1.38,
+        "scx": 745,
+        "scy": 500,
+        "opacity": 1,
+        "unionScreenBBox": {
+          "minX": 23.1,
+          "maxX": 1006.2,
+          "minY": -163.6,
+          "maxY": 873.3
+        },
+        "minStrokeScreenX": 23.1,
+        "clusterScreenBBox": {
+          "minX": 527.8,
+          "maxX": 1006.2,
+          "minY": 284.5,
+          "maxY": 873.3
+        },
+        "crossBoxes": {
+          "STROKE_015_runs4": {
+            "minX": 547.6,
+            "maxX": 934.7,
+            "minY": 343.8,
+            "maxY": 453.4
+          },
+          "STROKE_016_runs4": {
+            "minX": 699.3,
+            "maxX": 790.4,
+            "minY": 284.5,
+            "maxY": 873.3
+          },
+          "STROKE_017_runs4": {
+            "minX": 527.8,
+            "maxX": 1006.2,
+            "minY": 557.7,
+            "maxY": 647.1
+          }
+        }
+      },
+      {
+        "rel": 1.5,
+        "compFrame": 81,
+        "zoom": 1.38,
+        "scx": 745,
+        "scy": 500,
+        "opacity": 1,
+        "unionScreenBBox": {
+          "minX": 24.6,
+          "maxX": 1029.3,
+          "minY": -163,
+          "maxY": 899.3
+        },
+        "minStrokeScreenX": 24.6,
+        "clusterScreenBBox": {
+          "minX": 527.6,
+          "maxX": 1029.3,
+          "minY": 310.6,
+          "maxY": 899.3
+        },
+        "crossBoxes": {
+          "STROKE_015_runs4": {
+            "minX": 527.6,
+            "maxX": 918.8,
+            "minY": 335.5,
+            "maxY": 464.4
+          },
+          "STROKE_016_runs4": {
+            "minX": 699.3,
+            "maxX": 790.4,
+            "minY": 310.6,
+            "maxY": 899.3
+          },
+          "STROKE_017_runs4": {
+            "minX": 550.9,
+            "maxX": 1029.3,
+            "minY": 557.7,
+            "maxY": 647.1
+          }
+        }
+      },
+      {
+        "rel": 1.75,
+        "compFrame": 87,
+        "zoom": 1.38,
+        "scx": 745,
+        "scy": 500,
+        "opacity": 1,
+        "unionScreenBBox": {
+          "minX": 24.6,
+          "maxX": 1029.3,
+          "minY": -163,
+          "maxY": 899.3
+        },
+        "minStrokeScreenX": 24.6,
+        "clusterScreenBBox": {
+          "minX": 527.6,
+          "maxX": 1029.3,
+          "minY": 310.6,
+          "maxY": 899.3
+        },
+        "crossBoxes": {
+          "STROKE_015_runs4": {
+            "minX": 527.6,
+            "maxX": 918.8,
+            "minY": 335.5,
+            "maxY": 464.4
+          },
+          "STROKE_016_runs4": {
+            "minX": 699.3,
+            "maxX": 790.4,
+            "minY": 310.6,
+            "maxY": 899.3
+          },
+          "STROKE_017_runs4": {
+            "minX": 550.9,
+            "maxX": 1029.3,
+            "minY": 557.7,
+            "maxY": 647.1
+          }
+        }
+      },
+      {
+        "rel": 1.9,
+        "compFrame": 91,
+        "zoom": 1.38,
+        "scx": 745,
+        "scy": 500,
+        "opacity": 0.711,
+        "unionScreenBBox": {
+          "minX": 24.6,
+          "maxX": 1028.2,
+          "minY": -163,
+          "maxY": 898.1
+        },
+        "minStrokeScreenX": 24.6,
+        "clusterScreenBBox": {
+          "minX": 528.6,
+          "maxX": 1028.2,
+          "minY": 309.3,
+          "maxY": 898.1
+        },
+        "crossBoxes": {
+          "STROKE_015_runs4": {
+            "minX": 528.6,
+            "maxX": 919.6,
+            "minY": 335.9,
+            "maxY": 463.9
+          },
+          "STROKE_016_runs4": {
+            "minX": 699.3,
+            "maxX": 790.4,
+            "minY": 309.3,
+            "maxY": 898.1
+          },
+          "STROKE_017_runs4": {
+            "minX": 549.8,
+            "maxX": 1028.2,
+            "minY": 557.7,
+            "maxY": 647.1
+          }
+        }
+      },
+      {
+        "rel": 2.1,
+        "compFrame": 95,
+        "zoom": 1.34,
+        "scx": 745,
+        "scy": 441.6,
+        "opacity": 0,
+        "unionScreenBBox": {
+          "minX": 45.4,
+          "maxX": 987.5,
+          "minY": -202.2,
+          "maxY": 791.5
+        },
+        "minStrokeScreenX": 45.4,
+        "clusterScreenBBox": {
+          "minX": 522.9,
+          "maxX": 987.5,
+          "minY": 219.8,
+          "maxY": 791.5
+        },
+        "crossBoxes": {
+          "STROKE_015_runs4": {
+            "minX": 563.2,
+            "maxX": 936.7,
+            "minY": 294.1,
+            "maxY": 390.9
+          },
+          "STROKE_016_runs4": {
+            "minX": 700.7,
+            "maxX": 789.1,
+            "minY": 219.8,
+            "maxY": 791.5
+          },
+          "STROKE_017_runs4": {
+            "minX": 522.9,
+            "maxX": 987.5,
+            "minY": 497.7,
+            "maxY": 584.4
+          }
+        }
+      }
+    ],
+    "holdRel": 1.6,
+    "unionAtHold": {
+      "minX": 24.6,
+      "maxX": 1029.3,
+      "minY": -163,
+      "maxY": 899.3
+    },
+    "bleedHoldExpected": true,
+    "crossBoxesAtHold": [
+      {
+        "minX": 527.6,
+        "maxX": 918.8,
+        "minY": 335.5,
+        "maxY": 464.4
+      },
+      {
+        "minX": 699.3,
+        "maxX": 790.4,
+        "minY": 310.6,
+        "maxY": 899.3
+      },
+      {
+        "minX": 550.9,
+        "maxX": 1029.3,
+        "minY": 557.7,
+        "maxY": 647.1
+      }
+    ],
+    "crossingPointsScreen": [
+      [
+        745,
+        397.88
+      ],
+      [
+        745,
+        602.12
+      ]
+    ],
+    "crossingFullyVisible": true,
+    "crossingClusterInsideFrame": true,
+    "concealedBand": {
+      "y0": 542.9223605484104,
+      "y1": 759.570007324219
+    },
+    "hiddenBandCoversCrossings": true,
+    "ghostZoneScreenBox": {
+      "minX": 642.9,
+      "maxX": 849.9,
+      "minY": 316.5,
+      "maxY": 689.1
+    },
+    "ghostConfinedToCrossing": true,
+    "heroClipRightOfColumn": true,
+    "characterBleedsPastStageEdge": true,
+    "visibleInkStartsAtStageEdge": true,
+    "checks": {
+      "crossingFullyVisible": true,
+      "crossingClusterInsideFrame": true,
+      "bleedHoldExpected": true,
+      "leftColumnClear": true,
+      "hiddenBandCoversCrossings": true,
+      "ghostConfinedToCrossing": true,
+      "joltAttackSimultaneous": true,
+      "nonCrossSettled": true,
+      "crossResidHeld": true,
+      "bleedHoldStable": true,
+      "fadeComplete": true
+    },
+    "allChecksPass": true
+  }
+}

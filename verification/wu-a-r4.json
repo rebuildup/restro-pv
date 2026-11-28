@@ -1,0 +1,17 @@
+{
+  "id": "wu-a-r4",
+  "wu": "WU-A",
+  "subject": "Scene A2 r4: A1 reference frames prepended (A1 protection proof), A2 registration+choreography, decluttered left column, A3 bridge re-framed, SceneB step labels gated by appear envelope",
+  "frames": [
+    {"file": "verification/wu-a2/f30d.png", "frame": 30, "note": "A1 reference: giant 解 + independent strokes, brand stack — must be unchanged"},
+    {"file": "verification/wu-a2/f44d.png", "frame": 44, "note": "A1 tail / A2 boundary approach"},
+    {"file": "verification/wu-a2/f45c.png", "frame": 45, "note": "A2 start: push-in begins, crossing cluster centered"},
+    {"file": "verification/wu-a2/f56c.png", "frame": 56, "note": "separation begins"},
+    {"file": "verification/wu-a2/f62c.png", "frame": 62, "note": "vertical stroke separated; left column shows only question copy"},
+    {"file": "verification/wu-a2/f76c.png", "frame": 76, "note": "red accent on restored vertical, horizontals parted"},
+    {"file": "verification/wu-a2/f86c.png", "frame": 86, "note": "comparison hold tail; bridge fade-in beginning at right"},
+    {"file": "verification/wu-a2/f90c.png", "frame": 90, "note": "A3 bridge: bunkai glyph shifted right+shrunk, clears left column"},
+    {"file": "verification/wu-a2/f95d.png", "frame": 95, "note": "bridge into scene B; step labels now fade with scene appear envelope"}
+  ],
+  "context": "Changes vs r3: (1) SceneB step labels '01-04' now use the same `appear` opacity envelope as the glyph/tabs — they were fully opaque from t=3.9 and floated over the A3 bridge glyph at f95 (cross-scene one-line fix, noted for WU-B owner). (2) f30/f44 A1 frames added so A1 protection is verifiable. Prior changes retained: kai-zoom callouts 192/193 hidden in A2 window; description '2'-variant copy clamped to end at 1.875s; bunkai bridge 232 re-framed (x+110, scale x0.9) + opacity fade-in. A1 [0,1.875) is untouched by all patches."
+}

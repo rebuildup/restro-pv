@@ -1,0 +1,11 @@
+{
+  "id": "calib-c-fail-1",
+  "wu": "WU-C",
+  "subject": "calibration: known-fail frames (user-flagged 不合格 wu-c4-f200, wu-c6-f279)",
+  "frames": [
+    { "file": "verification/wu-c4-f200.png", "frame": 200, "note": "known-fail c4" },
+    { "file": "verification/wu-c4-f275.png", "frame": 275, "note": "c4 boundary" },
+    { "file": "verification/wu-c6-f279.png", "frame": 279, "note": "known-fail c6" }
+  ],
+  "context": "Calibration run: these frames come from user-flagged failed iterations. Expected outcome is FAIL on at least one criterion."
+}

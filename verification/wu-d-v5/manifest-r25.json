@@ -1,0 +1,15 @@
+{
+  "id": "wu-d-r25",
+  "wu": "WU-D",
+  "subject": "scene D rebuilt r3: W4 enlarged to 480x270 with tight artwork+dialog crop; reprocess arc = partial redraw -> Executing Script dialog -> result",
+  "frames": [
+    { "file": "verification/wu-d-v5/f285.png", "frame": 285, "note": "D start: copy + W1 only" },
+    { "file": "verification/wu-d-v5/f300.png", "frame": 300, "note": "W1 before->after, W2 enters" },
+    { "file": "verification/wu-d-v5/f315.png", "frame": 315, "note": "W1 after, W2/W3 live" },
+    { "file": "verification/wu-d-v5/f345.png", "frame": 345, "note": "all 4; W4 Executing dialog" },
+    { "file": "verification/wu-d-v5/f355.png", "frame": 355, "note": "W4 result complete" },
+    { "file": "verification/wu-d-v5/f368.png", "frame": 368, "note": "tail fading" },
+    { "file": "verification/wu-d-v5/f375.png", "frame": 375, "note": "D->E handoff" }
+  ],
+  "context": "Scene D authored per SPEC §5 D. W1 large = decompose-ops 35.9s (single text -> decompose completes -> stroke layers+anchors). W2 = stroke-animate 25.0s strokes moving; W3 = stroke-animate 22.7s control-point editing; W4 = reprocess 5.0s partial redraw -> Executing Script dialog -> result. All frame-accurate verified. Footage uniformly scaled + crop-masked. NOTE: the large 'Restro / 筆画復元' lockup at upper-left is the PERSISTENT brand display required by SPEC §4 and criterion D-6 — it is present in every scene (B/C/E) and must NOT be removed; it is not a D-specific leftover."
+}

@@ -1,0 +1,53 @@
+{
+  "id": "wu-a-r6",
+  "wu": "WU-A",
+  "subject": "Scene A2 r5: A-scene '2'-variant description copy fully disabled (collided across A1-A3), A1 reference frames, A2 registration+choreography, decluttered left column, A3 bridge re-framed, SceneB labels gated [wu-a-r6]",
+  "frames": [
+    {
+      "file": "verification/recheck/f030.png",
+      "frame": 30,
+      "note": "A1 reference: giant 解 + independent strokes, brand stack, question copy — colliding teaser copy removed"
+    },
+    {
+      "file": "verification/recheck/f044.png",
+      "frame": 44,
+      "note": "A1 tail / A2 boundary approach, clean left column"
+    },
+    {
+      "file": "verification/recheck/f045.png",
+      "frame": 45,
+      "note": "A2 start: push-in begins, crossing cluster centered"
+    },
+    {
+      "file": "verification/recheck/f056.png",
+      "frame": 56,
+      "note": "separation begins"
+    },
+    {
+      "file": "verification/recheck/f062.png",
+      "frame": 62,
+      "note": "vertical stroke separated; left column shows only question copy"
+    },
+    {
+      "file": "verification/recheck/f076.png",
+      "frame": 76,
+      "note": "red accent on restored vertical, horizontals parted"
+    },
+    {
+      "file": "verification/recheck/f086.png",
+      "frame": 86,
+      "note": "comparison hold tail; bridge fade-in beginning at right"
+    },
+    {
+      "file": "verification/recheck/f090.png",
+      "frame": 90,
+      "note": "A3 bridge: bunkai glyph shifted right+shrunk, clears left column"
+    },
+    {
+      "file": "verification/recheck/f095.png",
+      "frame": 95,
+      "note": "bridge into scene B; step labels fade with scene appear envelope"
+    }
+  ],
+  "context": "POST-CLIP RE-VERIFICATION: frames re-rendered after interpreter change — nested precomps now clip to comp bounds (AE semantics, wu-int-r5 PASS). Left-column display text now crops at the comp edge exactly like the AE original (fidelity-legacy-vs-remotion.png). Judge the same criteria on these current frames. Changes vs r4: description comp '2'-variant layers ('HOW IT WORKS 2'/'Rebuild strokes from a connected outline' + JP headline, dumped window 0.5-4.15) are now fully disabled — r4 showed they collided with surrounding copy during A1 as well as A2/A3. They duplicate the B-section headline that starts at 4.25; A-scene copy remains the question set (master texts 189-191) + giant Heading + brand stack. All other r3/r4 changes retained: kai-zoom callouts 192/193 hidden in A2 window; bunkai bridge 232 re-framed (x+110, scale x0.9) + opacity fade-in; SceneB step labels gated by appear envelope."
+}

@@ -1,0 +1,13 @@
+import { compStrokes } from "../../video/src/scenes/glyph.tsx";
+import { worldMatrix } from "../../video/src/ae/transform.ts";
+const { comp, strokes } = compStrokes("bunkai", { pattern: /^STROKE_\d+_runs5$/, poseT: 0.5 });
+const vert = strokes.find(s=>s.name==="STROKE_016_runs5")!;
+const clone = { ...vert.layer, index: 9999 };
+const cache = new Map();
+const w1 = worldMatrix(vert.layer, comp.layers, 0.5, cache);
+const w2 = worldMatrix(clone, comp.layers, 0.5, cache);
+console.log("vert   ", w1.matrix.slice(12,14));
+console.log("clone  ", w2.matrix.slice(12,14));
+console.log("parentIndex", vert.layer.parentIndex);
+const parent = comp.layers.find(l=>l.index===vert.layer.parentIndex);
+console.log("parent", parent?.name, parent?.index);

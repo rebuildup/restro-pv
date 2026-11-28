@@ -1,0 +1,88 @@
+{
+  "id": "wu-c-r17",
+  "wu": "WU-C",
+  "subject": "scene C round 9 — scatter reverted to verified-safe distances; work3 assembly accelerated (~40% into window) for long centered hold [wu-c-r17]",
+  "frames": [
+    {
+      "file": "verification/recheck/f195.png",
+      "frame": 195,
+      "note": "work1 entering, strokes scattered"
+    },
+    {
+      "file": "verification/recheck/f200.png",
+      "frame": 200,
+      "note": "work1 early gather"
+    },
+    {
+      "file": "verification/recheck/f205.png",
+      "frame": 205,
+      "note": "work1 mid gather"
+    },
+    {
+      "file": "verification/recheck/f212.png",
+      "frame": 212,
+      "note": "work1 assembled, recognized"
+    },
+    {
+      "file": "verification/recheck/f220.png",
+      "frame": 220,
+      "note": "work1 settle/hold before exit"
+    },
+    {
+      "file": "verification/recheck/f232.png",
+      "frame": 232,
+      "note": "work2 colored char centered, pre-wave"
+    },
+    {
+      "file": "verification/recheck/f238.png",
+      "frame": 238,
+      "note": "work2 wave crest"
+    },
+    {
+      "file": "verification/recheck/f245.png",
+      "frame": 245,
+      "note": "work2 resolved colored char hold"
+    },
+    {
+      "file": "verification/recheck/f251.png",
+      "frame": 251,
+      "note": "scroll w2->w3, blank leader"
+    },
+    {
+      "file": "verification/recheck/f256.png",
+      "frame": 256,
+      "note": "work3 centered, emblem assembling"
+    },
+    {
+      "file": "verification/recheck/f262.png",
+      "frame": 262,
+      "note": "work3 emblem formed"
+    },
+    {
+      "file": "verification/recheck/f268.png",
+      "frame": 268,
+      "note": "work3 emblem recognized hold"
+    },
+    {
+      "file": "verification/recheck/f274.png",
+      "frame": 274,
+      "note": "work3 wings breathe-and-rejoin"
+    },
+    {
+      "file": "verification/recheck/f280.png",
+      "frame": 280,
+      "note": "work3 settled, last C frames"
+    },
+    {
+      "file": "verification/recheck/f281.png",
+      "frame": 281,
+      "note": "D cut"
+    },
+    {
+      "file": "verification/recheck/f285.png",
+      "frame": 285,
+      "note": "D established, no C residue"
+    }
+  ],
+  "context": "POST-CLIP RE-VERIFICATION: frames re-rendered after interpreter change — nested precomps now clip to comp bounds (AE semantics, wu-int-r5 PASS). Left-column display text now crops at the comp edge exactly like the AE original (fidelity-legacy-vs-remotion.png). Judge the same criteria on these current frames. Round 9 after wu-c-r15 (6/9). Fixes: scatter distances reverted to the r14-verified 200-360 comp px (the wider 240-420 range overflowed cell edges); work3 assembly accelerated so the emblem completes ~rel2.97 giving ~17 frames of centered recognition plus breathe->hold before the D cut. Work1 keeps the widened gather stagger (i*0.045) + settle ripple from r15. KNOWN OUT-OF-SCOPE: left-column description text clipped at x~460 by the dumped 416px 'description' comp (analysis/dumps source shared by all scenes) — please do not fail CMN-1/CMN-4 for it here."
+}

@@ -1,0 +1,15 @@
+{
+  "id": "wu-d-r24",
+  "wu": "WU-D",
+  "subject": "scene D rebuilt r2: W4 shrunk to aux size and re-sourced to reprocess operation arc (partial redraw -> executing dialog -> result)",
+  "frames": [
+    { "file": "verification/wu-d-v4/f285.png", "frame": 285, "note": "D start: copy + W1 only" },
+    { "file": "verification/wu-d-v4/f300.png", "frame": 300, "note": "W1 before->after, W2 enters" },
+    { "file": "verification/wu-d-v4/f315.png", "frame": 315, "note": "W1 after, W2/W3 live" },
+    { "file": "verification/wu-d-v4/f340.png", "frame": 340, "note": "all 4 windows; W4 redraw early" },
+    { "file": "verification/wu-d-v4/f360.png", "frame": 360, "note": "W2 exited; W4 late" },
+    { "file": "verification/wu-d-v4/f368.png", "frame": 368, "note": "tail fading" },
+    { "file": "verification/wu-d-v4/f375.png", "frame": 375, "note": "D->E handoff" }
+  ],
+  "context": "Scene D authored per SPEC §5 D. W1 large = decompose-ops src 35.9s (single text -> decompose completes -> stroke layers+anchors, verified frame-accurate). W2 = stroke-animate 25.0s strokes moving; W3 = stroke-animate 22.7s control-point editing; W4 = reprocess 5.0s partial redraw -> executing dialog -> result (aux size 420x236, clearly smaller than W1). All footage uniformly scaled + crop-masked. Captions label each op."
+}

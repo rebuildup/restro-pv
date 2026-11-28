@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="496" height="716" viewBox="0 0 496 716">
+  <style>
+    text { font-family: 'Yu Gothic UI', 'Meiryo', 'Hiragino Kaku Gothic ProN', sans-serif; }
+    .mono { font-family: 'Consolas', 'Cascadia Mono', monospace; }
+  </style>
+  
+  <g transform="translate(-435.000, -319.000)">
+<path d="M-210,0a210,210 0 1 0 420,0a210,210 0 1 0 -420,0Z" transform="matrix(1.00000 0.00000 0.00000 1.00000 660.0000 810.0000)" fill="none" stroke="rgb(0,0,0)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M-70,0a70,70 0 1 0 140,0a70,70 0 1 0 -140,0Z" transform="matrix(1.00000 0.00000 0.00000 1.00000 772.0000 403.0000)" fill="none" stroke="rgb(0,0,0)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M106.900009155273,-221.800018310547 C106.900009155273,-221.800018310547 91.1999969482422,-189.200012207031 91.1999969482422,-189.200012207031" transform="matrix(1.00000 0.00000 0.00000 1.00000 810.0000 810.0000)" fill="none" stroke="rgb(0,0,0)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+</g>
+</svg>

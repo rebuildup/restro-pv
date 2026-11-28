@@ -1,0 +1,21 @@
+{
+  "id": "wu-c-r13",
+  "wu": "WU-C",
+  "subject": "scene C round 6 — cell pitch 1920 (960px blank gap = window height): serial transitions, never two works in window",
+  "frames": [
+    { "file": "verification/wu-c9/f195.png", "frame": 195, "note": "work1 entering, strokes scattered" },
+    { "file": "verification/wu-c9/f212.png", "frame": 212, "note": "work1 gather completing" },
+    { "file": "verification/wu-c9/f220.png", "frame": 220, "note": "work1 assembled ink hold" },
+    { "file": "verification/wu-c9/f229.png", "frame": 229, "note": "blank leader between works (pure gap)" },
+    { "file": "verification/wu-c9/f236.png", "frame": 236, "note": "work2 colored char entering/centered" },
+    { "file": "verification/wu-c9/f242.png", "frame": 242, "note": "work2 wave crest" },
+    { "file": "verification/wu-c9/f248.png", "frame": 248, "note": "work2 colored resolve / scroll-out start" },
+    { "file": "verification/wu-c9/f258.png", "frame": 258, "note": "work3 centered, emblem assembling" },
+    { "file": "verification/wu-c9/f268.png", "frame": 268, "note": "work3 emblem formed, holding" },
+    { "file": "verification/wu-c9/f276.png", "frame": 276, "note": "work3 emblem late hold" },
+    { "file": "verification/wu-c9/f280.png", "frame": 280, "note": "last C frame" },
+    { "file": "verification/wu-c9/f281.png", "frame": 281, "note": "D cut" },
+    { "file": "verification/wu-c9/f285.png", "frame": 285, "note": "D established, no C residue" }
+  ],
+  "context": "Round 6 after wu-c-r12 (7/9; only transition purity failed: two works coexisted in window at f227/f252). Fix: pitch increased to 1920 with a 960px blank gap equal to window height, so the window mathematically cannot contain two cells at once; transit is serial (work slides out -> blank leader -> next work slides in). Scroll legs ~0.45s. All other elements unchanged from r12."
+}

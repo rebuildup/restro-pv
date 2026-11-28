@@ -1,0 +1,5 @@
+VIEWER_READY
+GO waitedMs=4000
+DECOMPOSED {"code":"","command":"decompose","created_layer_ids":[101,102,103,104,105,106,107,108,109,110,111,112,113],"message":"items=13 created=13 hidden=0 removed=1","ok":true,"schema":"restro.reply.v1","sett
+SHAPE_LAYERS=13
+DONE

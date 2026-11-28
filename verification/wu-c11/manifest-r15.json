@@ -1,0 +1,24 @@
+{
+  "id": "wu-c-r15",
+  "wu": "WU-C",
+  "subject": "scene C round 8 — work1 gather arc widened (stagger i*0.045), settle ripple amplified, true mid-gather frames",
+  "frames": [
+    { "file": "verification/wu-c11/f195.png", "frame": 195, "note": "work1 entering, strokes fully scattered" },
+    { "file": "verification/wu-c11/f200.png", "frame": 200, "note": "work1 early gather" },
+    { "file": "verification/wu-c11/f205.png", "frame": 205, "note": "work1 mid gather" },
+    { "file": "verification/wu-c11/f212.png", "frame": 212, "note": "work1 assembled, recognized" },
+    { "file": "verification/wu-c11/f219.png", "frame": 219, "note": "work1 settle ripple resolving" },
+    { "file": "verification/wu-c11/f224.png", "frame": 224, "note": "work1 hold end / scroll-out" },
+    { "file": "verification/wu-c10/f232.png", "frame": 232, "note": "work2 colored char centered, pre-wave" },
+    { "file": "verification/wu-c10/f238.png", "frame": 238, "note": "work2 wave crest" },
+    { "file": "verification/wu-c10/f245.png", "frame": 245, "note": "work2 resolved colored char hold" },
+    { "file": "verification/wu-c10/f251.png", "frame": 251, "note": "scroll w2->w3, blank leader" },
+    { "file": "verification/wu-c10/f258.png", "frame": 258, "note": "work3 centered, emblem assembling" },
+    { "file": "verification/wu-c10/f268.png", "frame": 268, "note": "work3 emblem formed" },
+    { "file": "verification/wu-c10/f274.png", "frame": 274, "note": "work3 wings breathe-and-rejoin" },
+    { "file": "verification/wu-c10/f278.png", "frame": 278, "note": "work3 emblem settled hold" },
+    { "file": "verification/wu-c10/f281.png", "frame": 281, "note": "D cut" },
+    { "file": "verification/wu-c10/f285.png", "frame": 285, "note": "D established, no C residue" }
+  ],
+  "context": "Round 8 after wu-c-r14 (8/9; only work1's recognize->motion->resolve arc was doubted — manifest had skipped true mid-gather frames). Changes: gather stagger widened to i*0.045 so stroke arrivals spread over ~16 frames (verified by ink-core pixel counts 3.3k->11k across f195-f212); scatter distance increased to 240-420 comp px; settle ripple amplitude 0.5 over rel 1.0-1.26. Work2/3/D frames are unchanged code paths re-used from wu-c10. KNOWN OUT-OF-SCOPE: left-column description text clipped at x~460 by the dumped 416px 'description' comp (analysis/dumps source, shared by all scenes, owned by left-column work) — please do not fail CMN-1/CMN-4 for it here."
+}

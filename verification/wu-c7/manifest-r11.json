@@ -1,0 +1,20 @@
+{
+  "id": "wu-c-r11",
+  "wu": "WU-C",
+  "subject": "scene C round 4 — work2 now resolves into a multicolored char (ink->palette handoff during wave release)",
+  "frames": [
+    { "file": "verification/wu-c7/f195.png", "frame": 195, "note": "work1 entering, strokes scattered" },
+    { "file": "verification/wu-c7/f210.png", "frame": 210, "note": "work1 gather in flight" },
+    { "file": "verification/wu-c7/f220.png", "frame": 220, "note": "work1 assembled ink hold" },
+    { "file": "verification/wu-c7/f237.png", "frame": 237, "note": "work2 wave crest on ink char" },
+    { "file": "verification/wu-c7/f244.png", "frame": 244, "note": "work2 resolved multicolored char" },
+    { "file": "verification/wu-c7/f250.png", "frame": 250, "note": "work2 colored char exiting" },
+    { "file": "verification/wu-c7/f255.png", "frame": 255, "note": "work3 entering, emblem assembling" },
+    { "file": "verification/wu-c7/f265.png", "frame": 265, "note": "work3 emblem forming" },
+    { "file": "verification/wu-c7/f275.png", "frame": 275, "note": "work3 emblem hold" },
+    { "file": "verification/wu-c7/f279.png", "frame": 279, "note": "emblem legible before fade" },
+    { "file": "verification/wu-c7/f281.png", "frame": 281, "note": "D cut" },
+    { "file": "verification/wu-c7/f285.png", "frame": 285, "note": "D established, no C residue" }
+  ],
+  "context": "Round 4 after wu-c-r10 (8/9, only C-1 failed: works 1&2 finished as identical black 筆). Fix: during work2's wave release, ink strokes fade out while a per-stroke palette field (index order (i*2+1)%4, different from work3's i%4) fades in — the resolved char is now multicolored, giving three visually distinct finished works: ink gather / colored wave char / dark reflection emblem."
+}

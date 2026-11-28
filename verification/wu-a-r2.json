@@ -1,0 +1,15 @@
+{
+  "id": "wu-a-r2",
+  "wu": "WU-A",
+  "subject": "Scene A2 r2: same-material ghost+strokes registration, separation choreography, A3 bridge handoff — orphaned kai-zoom callouts hidden, bridge re-framed right",
+  "frames": [
+    {"file": "verification/wu-a2/f45.png", "frame": 45, "note": "A2 start: push-in begins, crossing cluster centered"},
+    {"file": "verification/wu-a2/f56.png", "frame": 56, "note": "separation begins"},
+    {"file": "verification/wu-a2/f62b.png", "frame": 62, "note": "vertical stroke separated; kai-zoom callout texts now hidden"},
+    {"file": "verification/wu-a2/f76b.png", "frame": 76, "note": "red accent on restored vertical, horizontals parted"},
+    {"file": "verification/wu-a2/f86b.png", "frame": 86, "note": "comparison hold tail; bridge starting faint fade-in at right"},
+    {"file": "verification/wu-a2/f90b.png", "frame": 90, "note": "A3 bridge: bunkai glyph shifted right+shrunk, clears left column"},
+    {"file": "verification/wu-a2/f95b.png", "frame": 95, "note": "bridge into scene B, glyph inside right zone"}
+  ],
+  "context": "Changes vs r1: (1) master texts 192/193 'After Effects AEGP Plugin & Script'/'Restro for Ae' hidden during A2 window — they were kai-zoom callouts orphaned when kai-zoom comps 235/236 were replaced by the authored separation; they overlapped the A headline. (2) bunkai bridge layer 232 re-framed: position x 780->890, scale x0.9, so the giant 解 left edge stays right of the x480 zone boundary at f90-98. (3) bridge opacity fade-in keys retained. A2 choreography unchanged: ghost = PV glyph A2 FUDE layers via reconstruction matrix, strokes = bunkai runs4, shared fieldTransform."
+}

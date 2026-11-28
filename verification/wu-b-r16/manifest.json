@@ -1,0 +1,63 @@
+{
+  "id": "wu-b-r16",
+  "wu": "WU-B",
+  "subject": "scene B v14: real Restro pipeline intermediates; scanline clipped below tab band, lens over glyph bottom margin, analysis fade before step4 [wu-b-r16]",
+  "frames": [
+    {
+      "file": "verification/wu-b-r16/f101.png",
+      "frame": 101,
+      "note": "B window open: A3 bridge handing off, step tabs begin"
+    },
+    {
+      "file": "verification/wu-b-r16/f105.png",
+      "frame": 105,
+      "note": "step0 輪郭を解析 early: real FUDE scanline sweeping inside the glyph area (clipped below the tab band) + red extracted outline fading in"
+    },
+    {
+      "file": "verification/wu-b-r16/f115.png",
+      "frame": 115,
+      "note": "step0 mid: bold red outline base contour + inset contour on the same giant 筆"
+    },
+    {
+      "file": "verification/wu-b-r16/f130.png",
+      "frame": 130,
+      "note": "step1 輪郭線を延長 mid: real FUDE extend A/B contour strokes drawing in green, staggered"
+    },
+    {
+      "file": "verification/wu-b-r16/f145.png",
+      "frame": 145,
+      "note": "step1 late: full extend contour set held as context, outline receded to ghost"
+    },
+    {
+      "file": "verification/wu-b-r16/f160.png",
+      "frame": 160,
+      "note": "step2 隠れた頂点を推定 mid: Restro's own FUDE inferred render + 29 real solver vertex markers + enlarged lens (r=72) over the glyph's empty bottom margin"
+    },
+    {
+      "file": "verification/wu-b-r16/f166.png",
+      "frame": 166,
+      "note": "step2 late: analysis layers fading ahead of the step4 boundary, lens still up"
+    },
+    {
+      "file": "verification/wu-b-r16/f170.png",
+      "frame": 170,
+      "note": "step4 boundary: analysis gone, 13 real strokes filling in staggered"
+    },
+    {
+      "file": "verification/wu-b-r16/f175.png",
+      "frame": 175,
+      "note": "step3 mid: displaced per-stroke tints + darker edges + selected-stroke mark"
+    },
+    {
+      "file": "verification/wu-b-r16/f188.png",
+      "frame": 188,
+      "note": "step3 late: assembled tinted 筆"
+    },
+    {
+      "file": "verification/wu-b-r16/f190.png",
+      "frame": 190,
+      "note": "B window close: final assembled stroke set before C transition"
+    }
+  ],
+  "context": "Scene B [101,191), 1080x1080@24. Same giant 筆 on the right below the four step tabs; left column keeps the dumped description captions. Geometry is drawn ONLY from real Restro intermediate layers recovered from the pre-wipe checkpoint comps (master-time aligned, same 1080 space): step0 shows the real FUDE scanline layer (keyed sweep, viewport-clipped to comp y>=310 so it never enters the tab band) plus the real FUDE outline base/inset extracted contours; step1 shows the real FUDE extend A (6 paths) and FUDE extend B (12 paths) contour strokes; step2 shows Restro's own FUDE inferred render plus the 29 real inferred-vertex positions emitted by the solver as FUDE points markers, with a circular lens (r=72, zoom 2.8) over the glyph's bottom margin aimed by a short dashed leader at the real vertex nearest it; step3 shows the 13 real decomposed strokes filling in staggered, slightly displaced, individually yellow-tinted with darker matching edges and one selected stroke. Analysis layers fade out across the last ~5 frames before the step4 boundary rather than cutting instantly. Step tabs are the dumped white 502x26 bars with progressive 中->した label states."
+}

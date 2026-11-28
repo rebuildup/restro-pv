@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="416" height="298" viewBox="0 0 416 298">
+  <style>
+    text { font-family: 'Yu Gothic UI', 'Meiryo', 'Hiragino Kaku Gothic ProN', sans-serif; }
+    .mono { font-family: 'Consolas', 'Cascadia Mono', monospace; }
+  </style>
+  
+  
+    <text x="0" y="24" font-size="13" font-weight="700" fill="#000000" letter-spacing="2.6">APPLICATION</text>
+    <text x="0" y="64" font-size="26" font-weight="700" fill="#000000" letter-spacing="0.4">分解した筆画で作れる</text>
+    <text x="0" y="98" font-size="26" font-weight="700" fill="#000000" letter-spacing="0.4">アニメーション</text>
+    <text x="0" y="144" font-size="13.5" fill="#000000">書き順に合わせて一画ずつ描く・</text>
+    <text x="0" y="164" font-size="13.5" fill="#000000">筆画ごとに異なる動きを付ける・</text>
+    <text x="0" y="184" font-size="13.5" fill="#000000">一画の形を変えて文字そのものを変形。</text>
+    <text x="0" y="220" font-size="12" fill="#52525b">※03-description.ts [15..25] は 555px等広幅用配置が残存、フィット調整対象</text>
+  
+</svg>
