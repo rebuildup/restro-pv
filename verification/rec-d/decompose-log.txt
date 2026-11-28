@@ -1,40 +1,152 @@
-Scene D 実機収録ログ（runbook: docs/design/09-scene-d-recording-handoff.md §3）
+Scene D 実機収録ログ（runbook: docs/design/09-scene-d-recording-handoff.md §3.5-13）
 ========================================================================
 
 成果物:     assets/rec/ae-decompose-ui.mp4
-            2560x1440 / 24fps / 16.8s / H.264
-採用テイク:  D:\pv-tmp\rec-d\take2 のフレーム列（180枚、WGC 変化時
-            キャプチャ。マシンローカルの作業領域）を
-            verification/rec-d/encode-take.py で 24fps 等時刻リサンプル
-プロジェクト: verification/rec-d/REC-D.aep（REC-D 1280x720 / 24fps、
-            BG #f7f7f7、SOURCE 筆）
+            2560x1440 / 24fps 固定 / 403 frames / 16.792 s / H.264 (yuv420p)
+            699,822 bytes
+採用テイク:  D:\pv-tmp\rec-d\take2 のフレーム列（WGC 変化時キャプチャ 180 枚 /
+            実スパン 21.727 s）。前半 3.7 s の静止区間を落とし、変化時フレームを
+            24 fps の等時刻タイムラインへ再配置して前のフレームで隙間を埋めた
+            （可変 fps ではない）。
+            原材料（フレーム列・timestamps.json）はマシンローカルの作業領域に置き、
+            リポジトリには入れていない。
+プロジェクト: verification/rec-d/REC-D.aep
+            （REC-D 1280x720 / 24fps / 20.000s / pixel aspect 1:1、
+              BG #f7f7f7、SOURCE 筆 → 分解 + 4 画移動後の状態を保存済み。
+              直前の take1 時点の複製は verification/rec-d/REC-D-take1.aep に保存）
 
 環境
 ----
-- After Effects: Adobe After Effects 2027
-- プラグイン: Ae_Restro（Restro パネル: Decompose / Merge / Refine）
-- 収録方法: run-take.py（常駐 AE + WGC window capture + 実マウス入力
-  aeclick.py）→ encode-take.py で 24fps H.264 化
-- カーソル: WGC cursor_capture で可視
+- After Effects: Adobe After Effects 2027（app.version = 27.0x78 / AfterFX.exe
+  FileVersion 27.0）、常駐インスタンス 1 個で運用
+- プラグイン: Ae_Restro 0.7.2.0
+  D:\4_apps\adobe\Adobe After Effects 2027\Support Files\Plug-ins\third_party_plug\Ae_Restro.aex
+- OS: Windows 11 Home Insider Preview 10.0.29712
+- 収録方法: verification/rec-d/run-take.py（常駐 AE + WGC window capture +
+  実マウス入力 verification/rec-d/rec-d-drive.py）→ verification/rec-d/encode-take.py
+  で 24 fps H.264 化
+- カーソル: WGC cursor_capture で可視（クリック時は AE の busy 表示が重なる）
+- スクリーン座標は仮想スクリーン座標（2 枚 monitors、virtual origin = -2560,-178）。
+  AE ウィンドウは最大化で (-8,-8,2568,1448)。
 
-内容（フレーム監査済み）
-----------------------
-- 0.5s 時点: SOURCE 筆 + [BG] の2レイヤーのみ（分解前）
-- ~1s: Restro パネル Decompose を実クリック
-- ~1.5-3s: STROKE_* 形状レイヤーがタイムラインに出現（最終13枚、
-  STROKE_000_runs4 〜 STROKE_012_runs4/5。wu-d-live の実績13と一致）
-- 中盤: STROKE_* の選択・移動（赤アンカー/ハンドル表示）が確認できる
-- Merge/Refine は本テイクでは未実行（R4 は任意のため主テイクに含めず）
+座標の実測（成果物フレーム基準 = 仮想スクリーン座標）
+--------------------------------------------------
+  Restro ScriptUI パネル（3 ボタンとも画内、キャプション付き）:
+    Decompose アイコン   x 2442..2469, y 514..541  （中心 2455,527）
+                       キャプション "Decompose"  y 552..559
+    Merge アイコン       x 2442..2469, y 701..728  （中心 2455,714）
+                       キャプション "Merge"      y 739..749
+    Refine アイコン      x 2442..2469, y 888..915  （中心 2455,901）
+                       キャプション "Refine"     y 926..933
+  旧定数 Decompose_BTN=(2437,543) / MERGE_BTN=(2437,730) は、アイコンと
+  キャプションの間の死んでいた領域に当たっていた。今回 (2455,527)/(2455,714) に
+  修正して実クリックで成功を確認した。
+  コンポビューア → 画面: x = 485 + comp_x * 1.125 / y = 149 + comp_y * 1.125
+    （既知の STROKE 重心 4 点をクリックし AE が返した選択レイヤー名で 4/4 一致）
 
-プラグイン設定
+ROI 実測（成果物 2560x1440 フレーム内座標）
+------------------------------------------
+  W_main 相当（コンポビューア + タイムライン）:
+    コンポキャンバス（グリフ面） : x 485..1924, y 149..883   (w 1439, h 734)
+    タイムライン層名列           : x  137..250, y 995..1230  (14 行)
+  W_inset 相当（Restro パネル 3 ボタン）:
+    3 アイコン + キャプション      : x 2442..2469, y 514..933
+    パネル内側                    : x 2400..2500, y 495..945
+  注記: runbook §3.4 の 600x540 / 600x396 は編集ステージ側の指定であり、
+        素材中の実在領域は上表のとおり（編集時にこの矩形を切り出して拡大する想定）。
+
+内容（フレーム監査済み。frame 番号は成果物 mp4 の 0 始まりインデックス、t = frame/24）
+-------------------------------------------------------------------------------
+- M1 準備（分解前）: f000-f107 (t 0.00-4.46)
+    タイムラインは SOURCE 筆 + [BG] の 2 レイヤーのみ。Properties パネルは
+    "Properties: SOURCE 筆"。カーソルはコンポビューア上。
+- M2 操作: f108-f142 (t 4.50-5.92)
+    カーソルが Restro パネルの Decompose ボタンへ移動し、実マウスイベントで
+    クリックする。f142 でボタンの上に AE の busy 表示（青のスピナー）が現れる。
+    Properties はこの時点でも "SOURCE 筆"。
+- M3 結果: f143-f207 (t 5.96-8.63) 待機 → f208 (t 8.67) で
+    タイムラインに STROKE_* 形状レイヤーが 13 枚出現し、グリフが 13 画へ分解される。
+    f210 (t 8.75) の Properties は "STROKE_000_runs4"（最初の SHIFT+クリックが反映）。
+- M4 編集証明: f210-f291 (t 8.75-12.13)
+    コンポビューア上で SHIFT+クリック 4 回（STROKE_000 / 002 / 004 / 005）。
+    f250 (t 10.42) で Properties が "3 layers selected"、f285 (t 11.88) で
+    "4 layers selected" になり、タイムライン該当 4 行が選択枠で囲まれる。
+- M5 移動: f292-f313 (t 12.17-13.04)
+    STROKE_002 を実ドラッグ（comp -80,-70 px）し、選択した 4 画がまとめて移動して
+    グリフが分離する（Properties は "4 layers selected" のまま）。
+- M6 ホールド: f314-f402 (t 13.08-16.75)
+    分離した状態を静止保持。
+
+プラグイン設定（Decompose 実行時に実機が返した値）
+---------------------------------------------------
+  取得方法: $.setenv('RESTRO_CALL', '{"op":"get_settings"}') +
+            app.executeCommand(app.findMenuCommandId('Restro'))
+            → RESTRO_REPLY の settings オブジェクト
+  output_mode             : layers
+  decompose_source_action : delete     ← 元の SOURCE 筆は分解後に削除される
+  merge_source_action     : delete
+  anchor_mode             : center
+  anchor_x / anchor_y     : 0.0 / 0.0
+  fit_curves              : true      fit_tolerance : 0.25
+  simplify                : auto      simplify_tolerance : 0.0
+  debug_logging           : false     layout : auto   labels : auto
+  label_align             : aligned
+
+レイヤー数の変化
 --------------
-- output_mode=Layers（1 stroke = 1 layer）であることは生成物の
-  STROKE_* レイヤー群で確認。decompose_source_action=Keep（SOURCE 筆
-  が残存）も確認。設定ダイアログ値の個別記録は未実施。
+  before : 2   (1:SOURCE 筆, 2:[BG])
+  after  : 14  (1..13 = STROKE_*, 14 = [BG])
+           SOURCE 筆 は decompose_source_action=delete により削除
+  生成された STROKE_* 名一覧（index 順）:
+    1  STROKE_012_runs4
+    2  STROKE_011_runs4
+    3  STROKE_010_runs4
+    4  STROKE_009_runs5
+    5  STROKE_008_runs4
+    6  STROKE_007_runs4
+    7  STROKE_006_runs5
+    8  STROKE_005_runs4
+    9  STROKE_004_runs4
+    10 STROKE_003_runs4
+    11 STROKE_002_runs4
+    12 STROKE_001_runs4
+    13 STROKE_000_runs4
+    14 [BG]
+  生成数 = 13（「筆」の実績 13 と一致。runbook §3.2）
 
-注意
+開始/終了時刻（実機 wall clock, JST）
+------------------------------------
+  録画開始   2026-11-29 01:56:32
+  録画終了   2026-11-29 01:56:54
+  録画開始の 2.5 秒後に driver 開始（クリック t=2.97s、driver 終了 t=16.60s）
+  プロジェクト保存 2026-11-29 02:00:01
+
+受入条件（§3.6）に対する確認（実フレームを目視確認）
+---------------------------------------------------
+  因果の連続性 : 同一 comp / 同一タイムライン / 同一テイク内で
+                 SOURCE 筆 → Decompose → STROKE_* 13 枚 → 選択・ドラッグを追える
+  UI 判読性   : Restro パネル 3 ボタン（Decompose/Merge/Refine）すべて画内、
+                 キャプション可読。expressions errors バナー / 他プラグインの
+                 ダイアログ / デバッグオーバーレイは出ている箇所がない
+  編集可能性   : STROKE_* が独立レイヤーとして 4 枚選択（"4 Layers selected"）され、
+                 ドラッグで実際に移動している
+  コントラスト : コンポ #f7f7f7 / インク #111111
+  技術         : 2560x1440 / 24fps 固定 / 403 frames / 16.792 s / カーソル可視
+
+未実施
+------
+- P5（任意 R4）: Merge / Refine の往復は本テイクでは収録していない
+  （別テイク assets/rec/ae-decompose-merge.mp4 も作っていない）。
+- 設定ダイアログでの個別確認（値は get_settings 返信で機械的に取得した）。
+
+付記
 ----
+- 本テイクは AE の Mouse 実入力のみで成立させている。収録中に AE スクリプト
+  （-r 委譲）を走らせないことが重要で、前回の失敗は「2 本目のスクリプトを
+  起動した瞬間に AE が "Attempt was made to run a second script while another
+  script was already running" を表示して操作が成立しなかったことによる。
 - WGC は変化時のみフレームを出すため、静止区間は直前フレームを保持して
-  24fps 化している（可変fps ではない）。
-- それ以前の試行テイク（take1 ほか、キーボードナッジ版を含む）は
-  D:\pv-tmp\rec-d\old-take* に退避済みで成果物には使っていない。
+  24 fps 化している（可変 fps ではない）。
+- 以前の試行テイク（take1 ほか）は D:\pv-tmp\rec-d\old-take* と
+  stale-take2-partial に退避済みで、成果物には使っていない。
+  verification/rec-d/take1 は指示どおり現物（左）を残置している（.gitignore 済み）。
