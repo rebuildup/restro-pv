@@ -1,0 +1,40 @@
+Scene D 実機収録ログ（runbook: docs/design/09-scene-d-recording-handoff.md §3）
+========================================================================
+
+成果物:     assets/rec/ae-decompose-ui.mp4
+            2560x1440 / 24fps / 16.8s / H.264
+採用テイク:  D:\pv-tmp\rec-d\take2 のフレーム列（180枚、WGC 変化時
+            キャプチャ。マシンローカルの作業領域）を
+            verification/rec-d/encode-take.py で 24fps 等時刻リサンプル
+プロジェクト: verification/rec-d/REC-D.aep（REC-D 1280x720 / 24fps、
+            BG #f7f7f7、SOURCE 筆）
+
+環境
+----
+- After Effects: Adobe After Effects 2027
+- プラグイン: Ae_Restro（Restro パネル: Decompose / Merge / Refine）
+- 収録方法: run-take.py（常駐 AE + WGC window capture + 実マウス入力
+  aeclick.py）→ encode-take.py で 24fps H.264 化
+- カーソル: WGC cursor_capture で可視
+
+内容（フレーム監査済み）
+----------------------
+- 0.5s 時点: SOURCE 筆 + [BG] の2レイヤーのみ（分解前）
+- ~1s: Restro パネル Decompose を実クリック
+- ~1.5-3s: STROKE_* 形状レイヤーがタイムラインに出現（最終13枚、
+  STROKE_000_runs4 〜 STROKE_012_runs4/5。wu-d-live の実績13と一致）
+- 中盤: STROKE_* の選択・移動（赤アンカー/ハンドル表示）が確認できる
+- Merge/Refine は本テイクでは未実行（R4 は任意のため主テイクに含めず）
+
+プラグイン設定
+--------------
+- output_mode=Layers（1 stroke = 1 layer）であることは生成物の
+  STROKE_* レイヤー群で確認。decompose_source_action=Keep（SOURCE 筆
+  が残存）も確認。設定ダイアログ値の個別記録は未実施。
+
+注意
+----
+- WGC は変化時のみフレームを出すため、静止区間は直前フレームを保持して
+  24fps 化している（可変fps ではない）。
+- それ以前の試行テイク（take1 ほか、キーボードナッジ版を含む）は
+  D:\pv-tmp\rec-d\old-take* に退避済みで成果物には使っていない。

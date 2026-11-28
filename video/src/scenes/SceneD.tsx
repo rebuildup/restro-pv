@@ -20,8 +20,8 @@ import { STAGE_MIN_X } from "../layout/zones.ts";
 // deliverable assets/rec/ae-decompose-ui.mp4. Footage audit that rejected
 // every existing clip: docs/design/06-recordings-audit.md.
 //
-// Real take wired: assets/rec/ae-decompose-ui.mp4 is the 18s real-AE
-// recording (1920x1080@24, verification/rec-d/take2 frames, log:
+// Real take wired: assets/rec/ae-decompose-ui.mp4 is the 16.8s real-AE
+// recording (2560x1440@24, verification/rec-d/take2 frames, log:
 // verification/rec-d/decompose-log.txt). Causal moment is early in the
 // take: SOURCE 筆 + [BG] hold, the Decompose click lands ~1s in, and the
 // 13 STROKE_* layers fill the timeline over the next ~2s; selection and
@@ -38,26 +38,32 @@ type Clip = {
   dur: number; // window frames this clip occupies
 };
 
-const SRC_W = 1920;
-const SRC_H = 1080;
+const SRC_W = 2560;
+const SRC_H = 1440;
 
-// Measured on the real take (assets/rec/ae-decompose-ui.mp4, 1920x1080,
-// 24fps, 18s — verification/rec-d/take2 frames).
+// Measured on the real take (assets/rec/ae-decompose-ui.mp4, 2560x1440,
+// 24fps, 16.8s — verification/rec-d/take2 frames, native capture res).
 //
-//   W_main  — the timeline's layer-name column, cropped so the row names
-//             are legible: the one layer ("SOURCE 筆") becomes thirteen
+//   W_main  — the timeline's layer list, cropped so the row names are
+//             legible: the one layer ("SOURCE 筆") becomes thirteen
 //             "STROKE_*_runs4" rows. The character itself is unchanged by
 //             the plugin, so it is the layer list that carries the proof
 //             (the character is on screen throughout the rest of the film).
-//   W_inset — the Restro panel's own column (Decompose / Merge / Refine)
-//             with the cursor on the button: the cause.
-const ROI_MAIN: Roi = { x: 340, y: 700, w: 480, h: 260 };
-const ROI_PANEL: Roi = { x: 1640, y: 320, w: 280, h: 480 };
+//             Cover-fit shows source x ~= 129..441 of the ROI (window
+//             596x536 at scale ~1.914 crops ~124px off each side), which
+//             keeps the "Layer Name" header (~x136) and every STROKE_*
+//             name (~x155..310) inside the frame.
+//   W_inset — the right-hand panel column: comp right edge, the effect
+//             panels and the Restro button stack (Decompose ~y525,
+//             Merge ~y710, Refine ~y896), cover-fit so all three buttons
+//             sit inside the crop.
+const ROI_MAIN: Roi = { x: 25, y: 950, w: 520, h: 280 };
+const ROI_PANEL: Roi = { x: 1900, y: 350, w: 660, h: 740 };
 // Two-beat clip: beat 1 = hold -> Decompose click -> STROKE_* appear;
 // beat 2 = selection/drag proof later in the same take.
 const TAKE_BEATS: Clip[] = [
-  { srcStart: 0.9, dur: 45 },
-  { srcStart: 9.0, dur: 45 },
+  { srcStart: 4.2, dur: 50 },
+  { srcStart: 10.6, dur: 40 },
 ];
 
 // Frame + label spec (05 §3 / runbook §3.4): 1.5-2px dark frame
@@ -107,12 +113,11 @@ const WIN_INSET: WindowSpec = {
   w: 600,
   h: 396,
   // The same take cropped to the panel column: all three Restro buttons
-  // plus the cursor on Decompose. "contain" fits the tall column into the
-  // landscape window without cropping a button out.
+  // plus the cursor on Decompose. Cover-fit fills the landscape window
+  // while keeping every button inside the vertical crop.
   file: "ae-decompose-ui.mp4",
   roi: ROI_PANEL,
   clips: TAKE_BEATS,
-  fit: "contain",
 };
 
 const WINDOWS: WindowSpec[] = [WIN_MAIN, WIN_INSET];
