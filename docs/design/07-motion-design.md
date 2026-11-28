@@ -79,20 +79,25 @@
 
 ### 3.3 Scene C（`f191..f281`）：3作例の独立運動文法（差別化設計）
 
-> **2026-11 実装同期**: 3作例は内容（ストロークソース）も分離済み。`SceneC.tsx` の `WORK_SOURCES` が正本：W1「筆墨」=`06-PV glyph` FUDE 13画・orbit・墨、W2「解彩」=`02-bunkai` runs5 群16層（indices 3-18）・wave・縦グラデーション、W3「筆構」=`41-BG decomposed strokes` FUDE 13画・左右対称エンブレム・fold。以下は各作例の運動文法の設計意図。
+> **2026-12 再設計（差し戻し対応）**: 前版3作例（同一「筆」字形に orbit/wave/fold を割り当てただけの仕上げバリエーション）は表現として不採用となり、`SceneC.tsx` を全面再設計した。3作例は**内容・構成・空間・運動が互いに独立した作品**であり、`SceneC.tsx` の `WORK_SOURCES` が正本：W1「墨帖」=`06-PV glyph` FUDE S01..S13・書き順ドローオン＋朱印、W2「深解」=`02-bunkai` runs4 群16層（indices 21-36、runs5 とは別の分解境界）・3層深度パララックス＋暗部、W3「紋章」=`46-Logo` 公式ロックアップ45層・構築スイープ。ビューポートも SPEC/`rig.ts` 通り **x480-1080・600×960** へ修正済み。
 >
-> **ソース比較図（2026-11 追加）**: [`diagrams/motion-scene-c-works.png`](./diagrams/motion-scene-c-works.png)（[SVG](./diagrams/motion-scene-c-works.svg)）— `SceneC.tsx` と同一の `compStrokes` rest pose 幾何を3パネルに正規化描画し、各作例の実筆画集合・筆画数・文字 bbox・ソース provenance（comp/レイヤーパターン/poseT）を並置。3作例が仕上げではなく**内容（分解・文字）で異なる**ことを図で確認できる。
+> **ソース比較図（2026-12 再生成済み）**: [`diagrams/motion-scene-c-works.png`](./diagrams/motion-scene-c-works.png)（[SVG](./diagrams/motion-scene-c-works.svg)）— `SceneC.tsx` と同一の `compStrokes` rest pose 幾何を3パネルに正規化描画し、新ソース（runs4 群・Logo 45層）を反映済み。
 
-- **作例 01「筆墨」（筆・墨）**: 完成形の墨字を先に見せ、色分けされた筆画が文字中心から**独立 orbit**（個別位相・半径・回転）で散開し、再合成して完成形へ戻る。書き順グループではなく各画の固有リズムで動かす。
-- **作例 02「解彩」（解・グラデーション）**: 別文字「解」の分解16層（runs5 群）を、コバルト→朱の縦グラデーションで一つの色面として見せ、左→右へ**位相差のある per-stroke wave** が走り、グラデーション完成形へ解決する。
-- **作例 03「筆構」（筆・対称エンブレム）**: 「筆」分解ストローク（`41-BG decomposed strokes` FUDE S01..S13）の左右半分を鏡像配置した対称エンブレム。各翼内で筆画がシーム軸を支点に **fold**（開閉スイング＋シーム法線の呼吸）し、ニアブラックの一つの意匠へ再合成する。**2026-11 実測注意**: comp 41 の幾何は W1（`06-PV glyph`）と画素同一（IoU 1.0）であり「第2の別分解」ではない — 差別化はエンブレム提示と fold 運動が担う。真に内容の異なる第3素材が必要なら別文字の実分解ダンプが要る（[`verification/scene-c-works-assembly.json`](./verification/scene-c-works-assembly.json)）。
-- **作例別検証（2026-11 追加）**: [`verification/scene-c-works-assembly.json`](./verification/scene-c-works-assembly.json)（`tools/design/verify-scene-c-works.ts`）— W1 結合 IoU 0.9998、W2 runs5 群16層で結合 IoU 1.0（旧パターンは runs4/5/6/7 混在で 0.6815 だった破損を修正）、W3 は W1 と幾何同一を確認。描画証拠は [`prototypes/scene-c/`](./prototypes/scene-c/) の3静止画と [`verification/scene-c-stills.json`](./verification/scene-c-stills.json)（W3 エンブレムは鏡像軸 x=775 に対し 99.3% 対称）。
+- **作例 01「墨帖」（筆・白紙の写経帖）**: 構成＝**非対称エディトリアル**。字はセル右寄り（fitW 448, center (356,420)）に据え、左端 x≈66 に**書き順レール**を配する — 各筆画のスクリーン高に揃えた13ノード＋通し罫で、ノードは対応画の書き上がりに追従して点灯し、完成後は字の右下へ朱の印（seal, 30px）が捺される。運動＝**書き順インスクリプション**：証明フラッシュのあと S01→S13 の順に各画が rank 0.032s stagger＋0.10s の draw で出現（わずかな上浮き translate/scale 収束）、最後に印が easeOutBack で捺印。orbit/wave/fold のような散開系ではなく「一画ずつ書き進める」文法。
+- **作例 02「深解」（解・暗部の深度スタディ）**: 構成＝**ダークスタジオ面 `#14161c`**（3セル中唯一の暗セルで、明るい作品の合間に挟まる転換点）。`bunkai` **runs4 群16層（indices 21-36, poseT 3）** — runs5 群とは別の分解境界を持つ実 Restro 出力 — を半径三分位で3深度面へ割当（内=near/外=far）、far/mid/near で slate→ash→warm white の空気遠近値を取り、最大面積の1画を朱アクセントに。運動＝**パララックス**：`perspective(1300px)` のカメラが comp 時間で緩慢に rotateX/Y し、各面は `translateZ(±70px)`＋位相差カウンタースライドで Z 分離。証明ビートは平面扇ではなく面ごとの奥行き押し広げ＋遠面減光。
+- **作例 03「紋章」（Restro 公式マーク・ポスター）**: 構成＝暖紙 `#f6f4ee` 上に**公式ロックアップ**（`46-Logo` 45層、fitW 540 で中央配置）＋下部のスペシメン微細文字行（`STROKE CONSTRUCTION / 45 PARTS`）。漢字デモではなくプロダクトのブランドマークそのものを「作品」として見せる構成。運動＝**構築スイープ**：証明フラッシュ後、完成インクの各画が自側（左半分は左・右半分は右）からセル外 ±330px を x-rank 順に飛び込み組み上がる。なおダンプ上の fill は全て黒だが、`logo-red-accents.svg` とのストローク単位 IoU 照合で特定した7画を `#e30b0b` に復元し公式配色を再現（`LOGO_RED_INDICES`）。
+- **作例別検証（2026-12 更新）**: [`verification/scene-c-works-assembly.json`](./verification/scene-c-works-assembly.json)（`tools/design/verify-scene-c-works.ts`）— W1 結合 IoU **0.9998**（`FUDE outline base` 比）、W2 runs4 選択 union は runs4/runs5 両群 union と IoU **1.0**（同一「解」字形の別分解境界16層）、W3 は公式 `logo-full-clean.png` との stroke union IoU **0.9797**。描画証拠は [`prototypes/scene-c/`](./prototypes/scene-c/) の3静止画（`w1-f219-writeon.png` / `w2-f248-depth.png` / `w3-f258-build.png`）とストリップ遷移クリップ `strip-f195-235.mp4`（f195-235）、[`verification/scene-c-stills.json`](./verification/scene-c-stills.json)。
 
 ### 3.4 Scene E（`f371..f480`）：呼吸する余韻収束と視認 CTA の共存
 
 - **運動文法**: **「穏やかな減衰呼吸収束（E1）→ 2秒以上の静謐定着（E2）」**。
 - **相互作用**: 右側の復元筆画（例 `PV glyph EE` 13画系）は小幅（`±5〜20px`）の緩慢な減衰収束で組まれ、左 `Logo`＋`Heading`（`15.50..16.167s` で中央復帰）と右 CTA テキスト群が読み取れる終盤 **`2.2s` 以上（`~f427..480`）** においては主文字の大きな移動を止め、微かな余韻または完全静止で読みやすさと品位を最大化する。
 - **2026-11 実測検証**: PV-Master/PV-Chrome の差分マスクでシーン内容のみを分離計測（`tools/design/sc-e-diff.ts`/`sc-e-motion.ts`/`sc-e-measure.ts`）。ヒーローは f410–415 で画素差分 0 の完全静止を確認。旧実装は CTA stagger が ~f441 まで残り静定が 1.58s しかなかったため、`SceneE.tsx` のスタッガーを圧縮し **f437 以降シーン内容が完全静止**（残り ~1.75s）へ改善。左カラム・ギャップへの侵入は全計測フレームで 0px。
+- **2026-11 構造修正（表現・構造レビュー指摘への対応）**: 以下の4件を `SceneE.tsx` で修正した。
+  - **筆画素材を無変位 rest ポーズへ差し替え**: ヒーローの筆画源を `Baseline`（01、ダンプ時 CTI の easeOut 途中で `Position.value` に ~0.73 散開オフセットが焼き付き、結合 IoU 0.7310）から `PV glyph`（06）の FUDE S01..S13 `poseT=2`（結合 IoU 0.9998 の検証済み正本、SceneC W1 と同一源）へ変更。分離・再集合の終端が真の字形に一致する。
+  - **散開則を index/mod ファンから形状拘束則へ**: 旧則は `dist = 80 + (i*89)%140`・`swing=(i*47)%60`・`rot=(i%2)…(i%4)` の配列 index 剰余で全方向へ機械的に散らしていた。新則は各画の実頂点の PCA 主軸の**法線方向**へ変位を拘束し（横画は縦へ、縦画は横へ、斜め画は自身の法線へ）、変位量は「文字中心から各画のスライド軸への射影距離」に比例（`SLIDE_MAX=170` comp px、中心軸上の画は静止アンカー）。小画（bbox が文字幅の18%未満の両軸）はドット扱いで変位0.4倍・回転なし。回転は各画の実重心ピボットで `reach*10°` まで。色相はダンプ配列順ではなく書き順 rank の巡回（SceneC proof と同じ convention）。
+  - **重複ロゴの解消**: エンドカードが描画していた `Logo` comp（公式ロックアップ artwork）は、chrome overlay が全編左カラムに保持する master[18] `Logo` と同一素材の二重出しだった。`e-end-card-clean.svg` の役割分担（左＝ブランド標章／右＝復元された造形と購買導線）に従い、カードからロゴブロックを撤去し descriptor→BOOTH→URL の CTA 階層のみへ。カードは内容高 ~210px に合わせ `CARD_TOP=425` へ再配置。
+  - **旧作例画像の更新**: recap タイル `assets/rec/e-band-{b,c,d}.png` は v13 時点（11-25）の B/C/D レンダー切り出しで、その後の Scene B accordion 再構成・Scene C 3作品差別化・Scene D 録画統合を反映していなかった。現行 PV-Master の代表フレーム（B=f185、C=f220、D=f330、右ステージ x480-1080 × y300-760 の 600×460）から再切り出しして差し替え。
 
 ---
 
