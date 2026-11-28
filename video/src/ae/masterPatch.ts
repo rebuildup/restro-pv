@@ -307,24 +307,12 @@ export function applyMasterPatches(): void {
     }
   }
 
-  // Persistent tagline 「文字の輪郭から、筆画ごとのシェイプへ。」 lives in
-  // the Heading and overlay comps with a 0-20s window. SceneE replaces it
-  // with the closing line 「輪郭から筆画へ。／筆画から表現へ。」 — the old
-  // tagline lingering into E duplicated the message (wu-e-r12 FAIL).
-  // End both at the E window start so the handoff is clean.
-  for (const compName of ["Heading", "overlay"]) {
-    const comp = GENERATED_COMPS.find((c) => c.name === compName);
-    for (const l of comp?.layers ?? []) {
-      const t = (
-        l.text?.properties?.find(
-          (p) => p.matchName === "ADBE Text Document",
-        )?.value as { text?: string } | undefined
-      )?.text;
-      if (typeof t === "string" && t.includes("筆画ごとのシェイプ")) {
-        l.outPoint = Math.min(l.outPoint ?? 20, 15.44);
-      }
-    }
-  }
+  // Confirmed common layout restoration (Issue #32):
+  // Original AEP (05-master.ts) keeps persistent Heading (`43-Heading.ts`)
+  // and brand lockup [15..18] visible across 0..20s, and keeps `grid-solid`
+  // [257] continuous without global window dimming or 17.35s fade-out.
+  // Heading smoothly returns via P 5..12 to y=746..812 during 15.50..16.167s;
+  // LeftCopy yields its E-scene overlay so Heading [15] never collides.
 
   // Scene-A hero column clearance (WU-A r9/r10/r12 / pv-art-direction v13):
   // the dumped A1 giant-解 stroke group (master layers 239-254, window
@@ -418,70 +406,13 @@ export function applyMasterPatches(): void {
       }
     }
   }
-
-  dimGridForWindows(m);
-  hideBrandLockupForEndCard(m);
 }
 
-// Scene-D: hide the dumped "PV ops" comp (master layer 13) for the scene
-// window; SceneD authors the windows itself.
+// Confirmed AEP structural restoration keeps grid-solid continuous at 100%
+// and brand lockup [15..18] visible through 0..20s (dimGridForWindows &
+// hideBrandLockupForEndCard intentionally retired per Issue #32 layout fix).
 export const D_HIDDEN = new Set([13]); // PV ops
 export const D_WINDOW: [number, number] = [11.71, 15.46];
-
-// Grid dimming windows (whole-film v13 review + WU-D r35): the global
-// "grid-solid" background (master layer 257, in 0-20s) competes with the
-// B diagram's own rules, crossed the left brand lockup in D, and
-// scattered the gaze under the A hero (M3 critique). Dim — not remove —
-// inside each window only; C/E keep the full-strength grid. Each window
-// gets fade brackets so boundaries stay clean.
-const GRID_DIM_WINDOWS: { in: number; out: number; level: number }[] = [
-  // A: the giant-解 hero is the only subject through the whole A2/A3
-  // window; the full-strength perspective grid competed with it and
-  // scattered the gaze (whole-film M3 critique). Dim — not remove — for
-  // the authored A window only; ends before the B window's own dim so
-  // the B/D timings below are unchanged. A1 [0,1.875) is untouched.
-  { in: 1.95, out: 3.68, level: 45 }, // A2/A3 hero vs grid
-  { in: 3.85, out: 7.9, level: 35 }, // B: diagram lines vs grid 混線
-  { in: 11.6, out: 15.62, level: 30 }, // D: lockup collision (r35)
-];
-function dimGridForWindows(m: ReturnType<typeof masterComp>): void {
-  const grid = m.layers.find((l) => l.index === 257);
-  const op = grid ? child(grid.transform, "ADBE Opacity") : undefined;
-  if (!grid || !op) return;
-  const k = (t: number, v: number) => ({ t, v, inT: 6612, outT: 6612 });
-  const keys: { t: number; v: number; inT: number; outT: number }[] = [];
-  let cur = 100;
-  for (const w of GRID_DIM_WINDOWS) {
-    keys.push(k(w.in, cur), k(w.in + 0.2, w.level));
-    cur = w.level;
-    keys.push(k(w.out, cur), k(w.out + 0.16, 100));
-    cur = 100;
-  }
-  op.keys = keys;
-  op.numKeys = keys.length;
-  op.value = 100;
-}
-
-// E end card (whole-film v13 review): the persistent brand lockup
-// (master layers 15 Heading / 16 AFTER EFFECTS PLUGIN / 17 Ae.png /
-// 18 Logo, all 0-20s) duplicates the official Logo comp SceneE renders
-// as the end-card hero — two product marks on one closing frame. Hide
-// the lockup only inside the end-card window (~f418+); the payoff
-// hero beat before it keeps the normal chrome, and SceneE's authored
-// closing line stays as the single left-column message.
-function hideBrandLockupForEndCard(m: ReturnType<typeof masterComp>): void {
-  const t0 = 17.35;
-  const k = (t: number, v: number) => ({ t, v, inT: 6612, outT: 6612 });
-  for (const idx of [15, 16, 17, 18]) {
-    const l = m.layers.find((x) => x.index === idx);
-    const op = l ? child(l.transform, "ADBE Opacity") : undefined;
-    if (!l || !op) continue;
-    op.keys = [k(0, 100), k(t0, 100), k(t0 + 0.15, 0), k(20, 0)];
-    op.numKeys = 4;
-    op.value = 100;
-    op.expression = "";
-  }
-}
 
 // Replace a layer's opacity keys with a short fade-in at `inP` and a
 // fade-out ending at `outP`, keeping full opacity between.

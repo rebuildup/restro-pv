@@ -159,10 +159,14 @@ test("official entry registers PV-Master and no rejected compositions", () => {
   assert.ok(!src.includes("Proto-Hook"), "rejected ProtoHook comps must not be registered");
 });
 
-test("left-column copy lives in the chrome layer for both authored scenes", () => {
+test("left-column copy uses decoupled AnchorRig matte slot without Scene E collision, and chrome persists 0-20s", () => {
   const src = read("video/src/layout/LeftCopy.tsx");
-  // Scene D copy + Scene E closing line, recovered verbatim.
+  assert.ok(src.includes("buildLeftChromeRig"), "LeftCopy must derive coordinates from decoupled AnchorRig");
   assert.ok(src.includes("そのまま動かせる。"), "missing recovered D left copy");
-  assert.ok(src.includes("輪郭から筆画へ。"), "missing recovered E left copy");
   assert.ok(src.includes("分解した筆画がレイヤーとして動く"), "missing D sub-line");
+  assert.ok(!src.includes("輪郭から筆画へ。"), "Scene E LeftCopy must yield to restored Heading [15]");
+
+  const patchSrc = read("video/src/ae/masterPatch.ts");
+  assert.ok(!patchSrc.includes("hideBrandLockupForEndCard("), "brand lockup [15..18] must stay visible 0-20s");
+  assert.ok(!patchSrc.includes("dimGridForWindows("), "background grid must remain continuous");
 });

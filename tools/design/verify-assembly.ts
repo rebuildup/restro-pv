@@ -1,13 +1,20 @@
 // Issue #32 req 1 & QA verification:
-// Reconstructs glyphs strictly from the exported composition JSONs
-// (docs/design/data/*.composition.json) AND verifies individual exported SVGs
-// (docs/design/assets/individual/**/*.svg) inside a SINGLE unified unclipped
-// coordinate space — NO per-bbox cropping and NO scaling/resizing hacks.
+// Clearly separates THREE distinct guarantees inside a SINGLE unified unclipped
+// coordinate frame (ZERO heuristic bbox cropping or scale-fitting hacks):
+//   A) Composition JSON reconstruction check (docs/design/data/*.composition.json)
+//   B) Standalone Individual SVG readability & non-zero Resvg render check (54/54)
+//   C) Registered Individual SVG Re-Assembly Verification using ONLY manifest.json
+//      registration transforms (video/src/design/assetRegistry.ts) against outlines!
 // Run: bun tools/design/verify-assembly.ts
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { Resvg } from "@resvg/resvg-js";
 import { PNG } from "pngjs";
 import { mat2DSvg, pathD, type Mat2D, type PathSpec, type PaintSpec, type ShapeItem } from "./lib/spec.ts";
+import {
+  parseIndividualSvg,
+  renderRegisteredSvgPaths,
+  type ManifestEntry,
+} from "../../video/src/design/assetRegistry.ts";
 
 const DATA_DIR = "docs/design/data";
 const IND_DIR = "docs/design/assets/individual";
@@ -28,66 +35,64 @@ interface ExportedDoc {
       world: number[];
       effectFill: [number, number, number, number] | null;
     }>;
-    shapes: {
-      items: Array<{
-        name: string;
-        path?: PathSpec;
-        primitiveD?: string;
-        paints: PaintSpec[];
-        localMatrix?: Mat2D;
-        transformRaw?: string;
-        opacity?: number;
-        paintScopeKey?: string;
-      }>;
-    } | null;
+    shapes: { items: ShapeItem[]; hash?: string } | null;
   }>;
 }
 
-function loadJson(name: string): ExportedDoc {
-  return JSON.parse(readFileSync(`${DATA_DIR}/${name}.composition.json`, "utf8"));
+function loadJson(id: string): ExportedDoc {
+  return JSON.parse(readFileSync(`${DATA_DIR}/${id}.composition.json`, "utf8")) as ExportedDoc;
 }
 
-function mat4ToSvg2d(m: number[]): string {
-  return `matrix(${m[0].toFixed(6)} ${m[1].toFixed(6)} ${m[4].toFixed(6)} ${m[5].toFixed(6)} ${m[12].toFixed(4)} ${m[13].toFixed(4)})`;
+function m4to2D(m: number[]): Mat2D {
+  return [m[0], m[1], m[4], m[5], m[12], m[13]];
 }
 
-// Render an exported element using ONLY JSON-stored shapes + JSON-stored matrix into unified canvas (w x h, offset ox, oy)
-function elementSvgFromJson(
-  el: ExportedDoc["elements"][number],
-  targetT: number,
-  useRefSpace: boolean,
-  forceBlack = true,
-): string {
-  if (!el.shapes?.items?.length) return "";
-  // Pick closest eval timestamp
-  let ev = el.evals[0];
-  let bestDist = Infinity;
-  for (const e of el.evals) {
-    const d = Math.abs(e.t - targetT);
-    if (d < bestDist) { bestDist = d; ev = e; }
-  }
-  const m = useRefSpace ? ev.toReferenceSpace : ev.world;
-  // Reconstruct compound subpaths per paintScopeKey so counter holes punch out properly
-  const buckets = new Map<string, { tf: string; ds: string[]; rule: string }>();
-  for (const it of el.shapes.items) {
-    const d = it.path ? pathD(it.path) : (it.primitiveD ?? "");
+function renderItemsSvg(items: ShapeItem[], effectFill?: [number, number, number, number] | null): string {
+  type Bucket = { key: string; tf: string; op: number; ds: string[]; paints: PaintSpec[] };
+  const buckets: Bucket[] = [];
+  const byKey = new Map<string, Bucket>();
+  for (const it of items) {
+    const d = it.path ? pathD(it.path as PathSpec) : (it.primitiveD ?? "");
     if (!d) continue;
-    const tf = it.transformRaw || (it.localMatrix ? mat2DSvg(it.localMatrix) : "");
-    const key = `${it.paintScopeKey ?? "root"}|${tf}`;
-    let b = buckets.get(key);
-    const fillRule = it.paints.find((p) => p.kind === "fill")?.fillRule ?? "nonzero";
+    const tf = it.transformRaw || mat2DSvg(it.localMatrix);
+    const sig = JSON.stringify(it.paints);
+    const key = `${it.paintScopeKey}|${tf}|${it.opacity.toFixed(3)}|${sig}`;
+    let b = byKey.get(key);
     if (!b) {
-      b = { tf, ds: [], rule: fillRule };
-      buckets.set(key, b);
+      b = { key, tf, op: it.opacity, ds: [], paints: it.paints };
+      byKey.set(key, b);
+      buckets.push(b);
     }
     b.ds.push(d);
   }
-  const paths = [...buckets.values()].map((b) => {
-    const rule = b.rule === "evenodd" || b.ds.length > 1 ? "evenodd" : b.rule;
+  const out: string[] = [];
+  for (const b of buckets) {
+    const dAll = b.ds.join(" ");
     const tfAttr = b.tf ? ` transform="${b.tf}"` : "";
-    return `<path d="${b.ds.join(" ")}" fill="${forceBlack ? "#000000" : "#000000"}" fill-rule="${rule}"${tfAttr}/>`;
-  });
-  return `<g transform="${mat4ToSvg2d(m)}">${paths.join("")}</g>`;
+    const opAttr = b.op < 0.999 ? ` opacity="${b.op.toFixed(3)}"` : "";
+    const rule = b.ds.length > 1 || b.paints.some((p) => p.fillRule === "evenodd") ? "evenodd" : "nonzero";
+    const fillCol = effectFill ? `rgba(${Math.round(effectFill[0] * 255)},${Math.round(effectFill[1] * 255)},${Math.round(effectFill[2] * 255)},1)` : "#18181b";
+    out.push(`<path d="${dAll}" fill="${fillCol}" fill-rule="${rule}"${tfAttr}${opAttr}/>`);
+  }
+  return out.join("");
+}
+
+function pickEval(el: ExportedDoc["elements"][number], targetT: number) {
+  let best = el.evals[0];
+  let bestDiff = Infinity;
+  for (const ev of el.evals) {
+    const d = Math.abs(ev.t - targetT);
+    if (d < bestDiff) { bestDiff = d; best = ev; }
+  }
+  return best;
+}
+
+function elementSvgFromJson(el: ExportedDoc["elements"][number], targetT: number, useRefSpace: boolean): string {
+  const ev = pickEval(el, targetT);
+  const mat = m4to2D(useRefSpace ? ev.toReferenceSpace : ev.world);
+  const tf = mat2DSvg(mat);
+  const inner = renderItemsSvg(el.shapes?.items ?? [], ev.effectFill);
+  return tf ? `<g transform="${tf}">${inner}</g>` : inner;
 }
 
 interface CanvasMask {
@@ -123,7 +128,6 @@ function renderUnified(body: string, w = 1800, h = 1400, ox = 200, oy = 150): Ca
   };
 }
 
-// Strict pixel IoU in the exact same coordinate frame (ZERO cropping, ZERO resizing!)
 function strictIoU(a: CanvasMask, b: CanvasMask, clipRect?: { x0: number; y0: number; x1: number; y1: number }) {
   let inter = 0, uni = 0, onlyA = 0, onlyB = 0;
   for (let y = 0; y < a.h; y++) {
@@ -165,8 +169,8 @@ function writeDiffPng(filename: string, a: CanvasMask, b: CanvasMask) {
       const av = a.mask[i], bv = b.mask[i];
       const p = (y * cw + x) * 4;
       if (av && bv) { png.data[p] = 24; png.data[p + 1] = 24; png.data[p + 2] = 27; png.data[p + 3] = 255; }
-      else if (av && !bv) { png.data[p] = 229; png.data[p + 1] = 21; png.data[p + 2] = 21; png.data[p + 3] = 255; } // red = assembled only
-      else if (!av && bv) { png.data[p] = 37; png.data[p + 1] = 99; png.data[p + 2] = 235; png.data[p + 3] = 255; } // blue = outline only
+      else if (av && !bv) { png.data[p] = 229; png.data[p + 1] = 21; png.data[p + 2] = 21; png.data[p + 3] = 255; }
+      else if (!av && bv) { png.data[p] = 37; png.data[p + 1] = 99; png.data[p + 2] = 235; png.data[p + 3] = 255; }
       else { png.data[p] = 248; png.data[p + 1] = 248; png.data[p + 2] = 250; png.data[p + 3] = 255; }
     }
   }
@@ -174,15 +178,12 @@ function writeDiffPng(filename: string, a: CanvasMask, b: CanvasMask) {
 }
 
 // ============================================================================
-// 1. FUDE 「筆」 VERIFICATION (from JSONs — NO crop/scale hiding!)
+// A. JSON COMPOSITION RECONSTRUCTION (FUDE & KAI)
 // ============================================================================
 const fudeBaselineJson = loadJson("fude-decomposition");
 const fudeRestJson = loadJson("pv-glyph-fude");
 
-const fudeRestStrokesSvg = fudeRestJson.elements
-  .filter((e) => e.name.startsWith("FUDE S"))
-  .map((e) => elementSvgFromJson(e, 0, false))
-  .join("");
+const fudeRestStrokesSvg = fudeRestJson.elements.filter((e) => e.name.startsWith("FUDE S")).map((e) => elementSvgFromJson(e, 0, false)).join("");
 const fudeRestOutlineSvg = elementSvgFromJson(fudeRestJson.elements.find((e) => e.name === "FUDE outline base")!, 0, false);
 
 const mFudeRestAssembled = renderUnified(fudeRestStrokesSvg);
@@ -191,10 +192,7 @@ const fudeRestUnclipped = strictIoU(mFudeRestAssembled, mFudeRestOutline);
 const fudeRest1080Clipped = strictIoU(mFudeRestAssembled, mFudeRestOutline, { x0: 0, y0: 0, x1: 1080, y1: 1080 });
 writeDiffPng("fude-rest-diff.png", mFudeRestAssembled, mFudeRestOutline);
 
-const fudeBaseStrokesSvg = fudeBaselineJson.elements
-  .filter((e) => e.name.startsWith("FUDE S"))
-  .map((e) => elementSvgFromJson(e, 0, false))
-  .join("");
+const fudeBaseStrokesSvg = fudeBaselineJson.elements.filter((e) => e.name.startsWith("FUDE S")).map((e) => elementSvgFromJson(e, 0, false)).join("");
 const fudeBaseOutlineSvg = elementSvgFromJson(fudeBaselineJson.elements.find((e) => e.name === "FUDE outline base")!, 0, false);
 const mFudeBaseAssembled = renderUnified(fudeBaseStrokesSvg);
 const mFudeBaseOutline = renderUnified(fudeBaseOutlineSvg);
@@ -202,31 +200,16 @@ const fudeBaselineUnclipped = strictIoU(mFudeBaseAssembled, mFudeBaseOutline);
 const fudeBaseline1080Clipped = strictIoU(mFudeBaseAssembled, mFudeBaseOutline, { x0: 0, y0: 0, x1: 1080, y1: 1080 });
 writeDiffPng("fude-baseline-diff.png", mFudeBaseAssembled, mFudeBaseOutline);
 
-// Also test FUDE Baseline dispersed state at t=7.611 (via expression-evaluated evals in JSON!)
-const fudeBaseDispersedSvg = fudeBaselineJson.elements
-  .filter((e) => e.name.startsWith("FUDE S"))
-  .map((e) => elementSvgFromJson(e, 7.611, false))
-  .join("");
+const fudeBaseDispersedSvg = fudeBaselineJson.elements.filter((e) => e.name.startsWith("FUDE S")).map((e) => elementSvgFromJson(e, 7.611, false)).join("");
 const mFudeBaseDispersed = renderUnified(fudeBaseDispersedSvg);
 
-// ============================================================================
-// 2. KAI 「解」 VERIFICATION (from JSONs — ALL 16 layers!)
-// ============================================================================
 const kaiRunsJson = loadJson("kai-stroke-runs-2d");
 const kaiZoomJson = loadJson("kai-zoom");
 
-// Compare ALL 16 runs4 layers (idx 21..36) in Null3 ref space, scaled 1.3x around (540,540) into kai-zoom Null4 space
-const kaiAll16Svg = kaiRunsJson.elements
-  .filter((e) => e.index >= 21 && e.index <= 36)
-  .map((e) => elementSvgFromJson(e, 1.875, true)) // in Null 3 ref space at rest (f45)
-  .join("");
-const kaiWithoutKuSvg = kaiRunsJson.elements
-  .filter((e) => e.index >= 21 && e.index <= 33) // exclude STROKE_002 [34], 000 [35], 001 [36] (intentionally cut away in kai-zoom [20])
-  .map((e) => elementSvgFromJson(e, 1.875, true))
-  .join("");
-// Map Null3-local point into Null4-comp space: Null3 pos [540,540] vs Null4 pos [540,540], scale 1.3
+const kaiAll16Svg = kaiRunsJson.elements.filter((e) => e.index >= 21 && e.index <= 36).map((e) => elementSvgFromJson(e, 1.875, true)).join("");
+const kaiWithoutKuSvg = kaiRunsJson.elements.filter((e) => e.index >= 21 && e.index <= 33).map((e) => elementSvgFromJson(e, 1.875, true)).join("");
 const kaiZoomOutlineEl = kaiZoomJson.elements.find((e) => e.index === 20)!;
-const kaiZoomOutlineSvg = elementSvgFromJson(kaiZoomOutlineEl, 0.5, false); // already multiplied by Null4 1.3x world
+const kaiZoomOutlineSvg = elementSvgFromJson(kaiZoomOutlineEl, 0.5, false);
 
 const mKaiAll16_inZoom = renderUnified(`<g transform="translate(540 540) scale(1.3)">${kaiAll16Svg}</g>`);
 const mKaiNoKu_inZoom = renderUnified(`<g transform="translate(540 540) scale(1.3)">${kaiWithoutKuSvg}</g>`);
@@ -237,9 +220,9 @@ const kaiNoKuMetric = strictIoU(mKaiNoKu_inZoom, mKaiZoomOutline);
 writeDiffPng("kai-runs4-vs-zoom-diff.png", mKaiAll16_inZoom, mKaiZoomOutline);
 
 // ============================================================================
-// 3. INDIVIDUAL SVG FILES VALIDATION (docs/design/assets/individual/**/*.svg)
+// B. STANDALONE INDIVIDUAL SVG READ/RENDER AUDIT (54/54)
 // ============================================================================
-const manifest = JSON.parse(readFileSync(`${IND_DIR}/manifest.json`, "utf8")) as Array<{ file: string; category: string; w: number; h: number }>;
+const manifest = JSON.parse(readFileSync(`${IND_DIR}/manifest.json`, "utf8")) as ManifestEntry[];
 const individualAudit: { totalManifest: number; readable: number; validPathCount: number; nonZeroRender: number; failed: string[] } = {
   totalManifest: manifest.length,
   readable: 0,
@@ -263,9 +246,54 @@ for (const entry of manifest) {
   }
 }
 
+// ============================================================================
+// C. REGISTERED INDIVIDUAL SVG RE-ASSEMBLY VERIFICATION (canonical pathway!)
+//    Loads individual SVG files from disk + places strictly via manifest
+//    AssetRegistration metadata (NO manual heuristics or per-bbox cropping!).
+// ============================================================================
+function loadRegisteredGroup(filesPrefix: string, filterFn: (e: ManifestEntry) => boolean, extraTransform = ""): string {
+  const entries = manifest.filter((e) => e.file.startsWith(filesPrefix) && filterFn(e));
+  return entries
+    .map((e) => {
+      const rel = e.file.replace(/^individual\//, "");
+      const parsed = parseIndividualSvg(e.file, readFileSync(`${IND_DIR}/${rel}`, "utf8"));
+      return renderRegisteredSvgPaths(parsed, e.registration, extraTransform, "#18181b", 1);
+    })
+    .join("");
+}
+
+// 1) FUDE individual SVGs (fude-s01..s13.svg) vs individual fude-outline-base.svg
+const regFudeStrokesSvg = loadRegisteredGroup("individual/fude/fude-s", () => true);
+const regFudeOutlineSvg = loadRegisteredGroup("individual/fude/fude-outline-base.svg", () => true);
+const mRegFudeStrokes = renderUnified(regFudeStrokesSvg);
+const mRegFudeOutline = renderUnified(regFudeOutlineSvg);
+const regFudeVsOutline = strictIoU(mRegFudeStrokes, mRegFudeOutline);
+const regFudeVsJson = strictIoU(mRegFudeStrokes, mFudeRestAssembled);
+writeDiffPng("svg-registered-fude-diff.png", mRegFudeStrokes, mRegFudeOutline);
+
+// 2) KAI individual SVGs (kai-01..16.svg) mapped from bunkai Comp (Null3@[540,540]) into kai-zoom Null4 (1.3x around [540,540])
+const KAI_TO_ZOOM = "translate(540, 540) scale(1.3) translate(-540, -540)";
+const regKaiAll16Svg = loadRegisteredGroup(
+  "individual/kai/kai-",
+  (e) => !e.file.includes("outline") && !e.file.includes("assembled"),
+  KAI_TO_ZOOM,
+);
+const regKaiExclKuSvg = loadRegisteredGroup(
+  "individual/kai/kai-",
+  (e) => !e.file.includes("outline") && !e.file.includes("assembled") && !/kai-1[456]-/.test(e.file),
+  KAI_TO_ZOOM,
+);
+const regKaiOutlineSvg = loadRegisteredGroup("individual/kai/kai-outline-merged.svg", () => true);
+const mRegKaiAll16 = renderUnified(regKaiAll16Svg);
+const mRegKaiExclKu = renderUnified(regKaiExclKuSvg);
+const mRegKaiOutline = renderUnified(regKaiOutlineSvg);
+const regKaiAll16VsOutline = strictIoU(mRegKaiAll16, mRegKaiOutline);
+const regKaiExclKuVsOutline = strictIoU(mRegKaiExclKu, mRegKaiOutline);
+writeDiffPng("svg-registered-kai-diff.png", mRegKaiAll16, mRegKaiOutline);
+
 const report = {
   verifiedAt: new Date().toISOString(),
-  methodology: "Strict unified unclipped coordinate-space pixel IoU from exported docs/design/data/*.composition.json (ZERO bbox cropping, ZERO scaling normalization).",
+  methodology: "Strict unified unclipped coordinate-space pixel IoU from composition JSONs AND registered individual SVGs via video/src/design/assetRegistry.ts.",
   fude: {
     restPoseComp06: {
       source: "docs/design/data/pv-glyph-fude.composition.json (06-PV glyph, 1400x1080)",
@@ -283,7 +311,7 @@ const report = {
       dispersedBboxT7611: mFudeBaseDispersed.bbox,
       sameSpaceUnclippedT0: fudeBaselineUnclipped,
       sameSpace1080ClippedT0: fudeBaseline1080Clipped,
-      rootCauseNote: "UNRESOLVED_IN_01_BASELINE: 01-Baseline.ts dumped Position.value with ~0.7278*m[k] post-expression offset already baked at CTI save time (e.g. S01 pos-anchor = [-18.92, +7.28] = 0.7278 * [-26, +10]), shifting strokes away from outline even at t=0. Using 06-PV glyph proves true rest assembly (IoU 0.9998); right edge (x=1290..1309) also exceeds 1080x1080 comp bounds.",
+      rootCauseNote: "UNRESOLVED_IN_01_BASELINE: 01-Baseline.ts dumped Position.value with ~0.7278*m[k] post-expression offset baked at CTI save time; 06-PV glyph proves true rest assembly (IoU 0.9998).",
     },
   },
   kai: {
@@ -292,9 +320,16 @@ const report = {
     zoomOutlineBbox: mKaiZoomOutline.bbox,
     all16VsZoomOutline: kaiAll16Metric,
     withoutTopLeftKu13LayersVsZoomOutline: kaiNoKuMetric,
-    finding: "ALL 16 runs4 layers (9 straight 4-vertex bars + 5 curved Bezier strokes + 2 merged shape layers) are genuine glyph geometry of 解. The gap vs comp_04[20] (kai-zoom) is strictly localized to the top-left ク radical (STROKE_000/001/002), which was intentionally removed from comp_04[20] so kai-zoom layers [3..19] could animate ク over the silhouette. Excluding those 3 strokes restores tight spatial registration; counter holes in comp_04[20] are properly punched via compound evenodd rendering.",
+    finding: "ALL 16 runs4 layers (9 straight 4-vertex bars + 5 curved Bezier strokes + 2 merged shape layers) are genuine glyph geometry of 解; kai-zoom [20] intentionally carved out top-left ク (000/001/002).",
   },
-  individualSvgAssets: individualAudit,
+  individualSvgStandaloneAudit: individualAudit,
+  registeredSvgReassemblyVerification: {
+    fude13IndividualSvgsVsOutlineBaseSvg: regFudeVsOutline,
+    fude13IndividualSvgsVsJsonRest: regFudeVsJson,
+    kai16IndividualSvgsVsZoomOutlineSvg: regKaiAll16VsOutline,
+    kai13ExclKuIndividualSvgsVsZoomOutlineSvg: regKaiExclKuVsOutline,
+    allRegisteredPathsValid: regFudeVsOutline.iou >= 0.99 && regKaiExclKuVsOutline.iou >= 0.99,
+  },
 };
 
 writeFileSync(`${OUT}/assembly-metrics.json`, JSON.stringify(report, null, 2));

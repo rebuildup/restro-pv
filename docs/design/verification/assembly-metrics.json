@@ -1,6 +1,6 @@
 {
-  "verifiedAt": "2026-11-28T02:56:47.821Z",
-  "methodology": "Strict unified unclipped coordinate-space pixel IoU from exported docs/design/data/*.composition.json (ZERO bbox cropping, ZERO scaling normalization).",
+  "verifiedAt": "2026-11-28T03:36:31.245Z",
+  "methodology": "Strict unified unclipped coordinate-space pixel IoU from composition JSONs AND registered individual SVGs via video/src/design/assetRegistry.ts.",
   "fude": {
     "restPoseComp06": {
       "source": "docs/design/data/pv-glyph-fude.composition.json (06-PV glyph, 1400x1080)",
@@ -70,7 +70,7 @@
         "recallOfOutline": 0.864,
         "precisionOfAssembled": 0.8261,
         "interPx": 216399,
-        "onlyAssembledPx": 45547,
+        "onlyAssembledPx": 45548,
         "onlyOutlinePx": 34067
       },
       "sameSpace1080ClippedT0": {
@@ -78,10 +78,10 @@
         "recallOfOutline": 0.8724,
         "precisionOfAssembled": 0.8327,
         "interPx": 158886,
-        "onlyAssembledPx": 31931,
+        "onlyAssembledPx": 31932,
         "onlyOutlinePx": 23236
       },
-      "rootCauseNote": "UNRESOLVED_IN_01_BASELINE: 01-Baseline.ts dumped Position.value with ~0.7278*m[k] post-expression offset already baked at CTI save time (e.g. S01 pos-anchor = [-18.92, +7.28] = 0.7278 * [-26, +10]), shifting strokes away from outline even at t=0. Using 06-PV glyph proves true rest assembly (IoU 0.9998); right edge (x=1290..1309) also exceeds 1080x1080 comp bounds."
+      "rootCauseNote": "UNRESOLVED_IN_01_BASELINE: 01-Baseline.ts dumped Position.value with ~0.7278*m[k] post-expression offset baked at CTI save time; 06-PV glyph proves true rest assembly (IoU 0.9998)."
     }
   },
   "kai": {
@@ -118,13 +118,48 @@
       "onlyAssembledPx": 23,
       "onlyOutlinePx": 20
     },
-    "finding": "ALL 16 runs4 layers (9 straight 4-vertex bars + 5 curved Bezier strokes + 2 merged shape layers) are genuine glyph geometry of 解. The gap vs comp_04[20] (kai-zoom) is strictly localized to the top-left ク radical (STROKE_000/001/002), which was intentionally removed from comp_04[20] so kai-zoom layers [3..19] could animate ク over the silhouette. Excluding those 3 strokes restores tight spatial registration; counter holes in comp_04[20] are properly punched via compound evenodd rendering."
+    "finding": "ALL 16 runs4 layers (9 straight 4-vertex bars + 5 curved Bezier strokes + 2 merged shape layers) are genuine glyph geometry of 解; kai-zoom [20] intentionally carved out top-left ク (000/001/002)."
   },
-  "individualSvgAssets": {
+  "individualSvgStandaloneAudit": {
     "totalManifest": 54,
     "readable": 54,
     "validPathCount": 54,
     "nonZeroRender": 54,
     "failed": []
+  },
+  "registeredSvgReassemblyVerification": {
+    "fude13IndividualSvgsVsOutlineBaseSvg": {
+      "iou": 0.9998,
+      "recallOfOutline": 0.9999,
+      "precisionOfAssembled": 0.9999,
+      "interPx": 250434,
+      "onlyAssembledPx": 26,
+      "onlyOutlinePx": 32
+    },
+    "fude13IndividualSvgsVsJsonRest": {
+      "iou": 1,
+      "recallOfOutline": 1,
+      "precisionOfAssembled": 1,
+      "interPx": 250460,
+      "onlyAssembledPx": 0,
+      "onlyOutlinePx": 0
+    },
+    "kai16IndividualSvgsVsZoomOutlineSvg": {
+      "iou": 0.8865,
+      "recallOfOutline": 0.9999,
+      "precisionOfAssembled": 0.8865,
+      "interPx": 391849,
+      "onlyAssembledPx": 50169,
+      "onlyOutlinePx": 20
+    },
+    "kai13ExclKuIndividualSvgsVsZoomOutlineSvg": {
+      "iou": 0.9999,
+      "recallOfOutline": 0.9999,
+      "precisionOfAssembled": 0.9999,
+      "interPx": 391849,
+      "onlyAssembledPx": 23,
+      "onlyOutlinePx": 20
+    },
+    "allRegisteredPathsValid": true
   }
 }

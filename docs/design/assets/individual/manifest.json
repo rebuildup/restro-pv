@@ -77,271 +77,917 @@
     "w": 991,
     "h": 932,
     "source": "04-kai-zoom.ts [20]",
-    "notes": "「解」分解前の一体連結シルエット単体（透過）"
+    "notes": "「解」分解前の一体連結シルエット単体（透過）",
+    "registration": {
+      "comp": "kai-zoom",
+      "elementIndex": 20,
+      "referenceSpace": "comp:kai-zoom (1080x1080)",
+      "sourceOrigin": [
+        66.963,
+        120.706
+      ],
+      "svgPad": 20,
+      "svgTranslate": [
+        -46.963,
+        -100.706
+      ],
+      "toReferenceTranslation": [
+        46.963,
+        100.706
+      ],
+      "poseTime": 0.5
+    }
   },
   {
     "category": "kai",
     "file": "individual/kai/kai-01-STROKE_016_runs4.svg",
-    "w": 107,
-    "h": 463,
+    "w": 103,
+    "h": 459,
     "source": "02-bunkai.ts [21] / master [239]",
-    "notes": "A2交差証明主軸（連続縦画・不動基準・赤強調用）"
+    "notes": "A2交差証明主軸（連続縦画・不動基準・赤強調用）",
+    "registration": {
+      "comp": "bunkai",
+      "elementIndex": 21,
+      "referenceSpace": "comp:bunkai (1080x1080, Null3@[540,540])",
+      "sourceOrigin": [
+        694.05,
+        471.75
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -678.05,
+        -455.75
+      ],
+      "toReferenceTranslation": [
+        678.05,
+        455.75
+      ],
+      "poseTime": 1.875
+    }
   },
   {
     "category": "kai",
     "file": "individual/kai/kai-02-STROKE_017_runs4.svg",
-    "w": 405,
-    "h": 101,
+    "w": 401,
+    "h": 97,
     "source": "02-bunkai.ts [22] / master [240]",
-    "notes": "A2交差横遮蔽画（上下へ開門し016の連続性を露出）"
+    "notes": "A2交差横遮蔽画（上下へ開門し016の連続性を露出）",
+    "registration": {
+      "comp": "bunkai",
+      "elementIndex": 22,
+      "referenceSpace": "comp:bunkai (1080x1080, Null3@[540,540])",
+      "sourceOrigin": [
+        538.05,
+        694.83
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -522.05,
+        -678.83
+      ],
+      "toReferenceTranslation": [
+        522.05,
+        678.83
+      ],
+      "poseTime": 1.875
+    }
   },
   {
     "category": "kai",
     "file": "individual/kai/kai-03-STROKE_015_runs4.svg",
-    "w": 337,
-    "h": 135,
+    "w": 327,
+    "h": 96,
     "source": "02-bunkai.ts [23] / master [241]",
-    "notes": "A2交差横遮蔽画（上下へ開門し016の連続性を露出）"
+    "notes": "A2交差横遮蔽画（上下へ開門し016の連続性を露出）",
+    "registration": {
+      "comp": "bunkai",
+      "elementIndex": 23,
+      "referenceSpace": "comp:bunkai (1080x1080, Null3@[540,540])",
+      "sourceOrigin": [
+        597.33,
+        547.41
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -581.33,
+        -531.41
+      ],
+      "toReferenceTranslation": [
+        581.33,
+        531.41
+      ],
+      "poseTime": 1.875
+    }
   },
   {
     "category": "kai",
     "file": "individual/kai/kai-04-STROKE_014_runs4.svg",
-    "w": 190,
-    "h": 234,
+    "w": 161,
+    "h": 235,
     "source": "02-bunkai.ts [24] / master [242]",
-    "notes": "周辺副筆画"
+    "notes": "周辺副筆画",
+    "registration": {
+      "comp": "bunkai",
+      "elementIndex": 24,
+      "referenceSpace": "comp:bunkai (1080x1080, Null3@[540,540])",
+      "sourceOrigin": [
+        524.79,
+        477.99
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -508.79,
+        -461.99
+      ],
+      "toReferenceTranslation": [
+        508.79,
+        461.99
+      ],
+      "poseTime": 1.875
+    }
   },
   {
     "category": "kai",
     "file": "individual/kai/kai-05-STROKE_011_runs4.svg",
-    "w": 169,
-    "h": 323,
+    "w": 227,
+    "h": 282,
     "source": "02-bunkai.ts [25] / master [243]",
-    "notes": "周辺副筆画"
+    "notes": "周辺副筆画",
+    "registration": {
+      "comp": "bunkai",
+      "elementIndex": 25,
+      "referenceSpace": "comp:bunkai (1080x1080, Null3@[540,540])",
+      "sourceOrigin": [
+        519.33,
+        236.97
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -503.33,
+        -220.97
+      ],
+      "toReferenceTranslation": [
+        503.33,
+        220.97
+      ],
+      "poseTime": 1.875
+    }
   },
   {
     "category": "kai",
     "file": "individual/kai/kai-06-merged_shape_3.svg",
-    "w": 277,
-    "h": 263,
+    "w": 204,
+    "h": 281,
     "source": "02-bunkai.ts [26] / master [244]",
-    "notes": "未分解残存merged層（位置関係注意）"
+    "notes": "未分解残存merged層（位置関係注意）",
+    "registration": {
+      "comp": "bunkai",
+      "elementIndex": 26,
+      "referenceSpace": "comp:bunkai (1080x1080, Null3@[540,540])",
+      "sourceOrigin": [
+        714.33,
+        217.47
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -698.33,
+        -201.47
+      ],
+      "toReferenceTranslation": [
+        698.33,
+        201.47
+      ],
+      "poseTime": 1.875
+    }
   },
   {
     "category": "kai",
     "file": "individual/kai/kai-07-STROKE_010_runs4.svg",
-    "w": 335,
-    "h": 97,
+    "w": 331,
+    "h": 93,
     "source": "02-bunkai.ts [27] / master [245]",
-    "notes": "周辺副筆画"
+    "notes": "周辺副筆画",
+    "registration": {
+      "comp": "bunkai",
+      "elementIndex": 27,
+      "referenceSpace": "comp:bunkai (1080x1080, Null3@[540,540])",
+      "sourceOrigin": [
+        542.73,
+        217.47
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -526.73,
+        -201.47
+      ],
+      "toReferenceTranslation": [
+        526.73,
+        201.47
+      ],
+      "poseTime": 1.875
+    }
   },
   {
     "category": "kai",
     "file": "individual/kai/kai-08-STROKE_007_runs4.svg",
-    "w": 258,
-    "h": 93,
+    "w": 254,
+    "h": 89,
     "source": "02-bunkai.ts [28] / master [246]",
-    "notes": "周辺副筆画"
+    "notes": "周辺副筆画",
+    "registration": {
+      "comp": "bunkai",
+      "elementIndex": 28,
+      "referenceSpace": "comp:bunkai (1080x1080, Null3@[540,540])",
+      "sourceOrigin": [
+        261.93,
+        640.23
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -245.93,
+        -624.23
+      ],
+      "toReferenceTranslation": [
+        245.93,
+        624.23
+      ],
+      "poseTime": 1.875
+    }
   },
   {
     "category": "kai",
     "file": "individual/kai/kai-09-STROKE_004_runs4.svg",
-    "w": 258,
-    "h": 90,
+    "w": 254,
+    "h": 86,
     "source": "02-bunkai.ts [29] / master [247]",
-    "notes": "周辺副筆画"
+    "notes": "周辺副筆画",
+    "registration": {
+      "comp": "bunkai",
+      "elementIndex": 29,
+      "referenceSpace": "comp:bunkai (1080x1080, Null3@[540,540])",
+      "sourceOrigin": [
+        261.93,
+        506.85
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -245.93,
+        -490.85
+      ],
+      "toReferenceTranslation": [
+        245.93,
+        490.85
+      ],
+      "poseTime": 1.875
+    }
   },
   {
     "category": "kai",
     "file": "individual/kai/kai-10-STROKE_005_runs4.svg",
-    "w": 155,
-    "h": 299,
+    "w": 84,
+    "h": 291,
     "source": "02-bunkai.ts [30] / master [248]",
-    "notes": "周辺副筆画"
+    "notes": "周辺副筆画",
+    "registration": {
+      "comp": "bunkai",
+      "elementIndex": 30,
+      "referenceSpace": "comp:bunkai (1080x1080, Null3@[540,540])",
+      "sourceOrigin": [
+        353.19,
+        404.67
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -337.19,
+        -388.67
+      ],
+      "toReferenceTranslation": [
+        337.19,
+        388.67
+      ],
+      "poseTime": 1.875
+    }
   },
   {
     "category": "kai",
     "file": "individual/kai/kai-11-merged_shape_2.svg",
-    "w": 212,
-    "h": 558,
+    "w": 187,
+    "h": 557,
     "source": "02-bunkai.ts [31] / master [249]",
-    "notes": "未分解残存merged層（位置関係注意）"
+    "notes": "未分解残存merged層（位置関係注意）",
+    "registration": {
+      "comp": "bunkai",
+      "elementIndex": 31,
+      "referenceSpace": "comp:bunkai (1080x1080, Null3@[540,540])",
+      "sourceOrigin": [
+        370.35,
+        376.59
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -354.35,
+        -360.59
+      ],
+      "toReferenceTranslation": [
+        354.35,
+        360.59
+      ],
+      "poseTime": 1.875
+    }
   },
   {
     "category": "kai",
     "file": "individual/kai/kai-12-STROKE_003_runs4.svg",
-    "w": 258,
-    "h": 93,
+    "w": 254,
+    "h": 89,
     "source": "02-bunkai.ts [32] / master [250]",
-    "notes": "周辺副筆画"
+    "notes": "周辺副筆画",
+    "registration": {
+      "comp": "bunkai",
+      "elementIndex": 32,
+      "referenceSpace": "comp:bunkai (1080x1080, Null3@[540,540])",
+      "sourceOrigin": [
+        261.93,
+        376.59
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -245.93,
+        -360.59
+      ],
+      "toReferenceTranslation": [
+        245.93,
+        360.59
+      ],
+      "poseTime": 1.875
+    }
   },
   {
     "category": "kai",
     "file": "individual/kai/kai-13-STROKE_006_runs6.svg",
-    "w": 140,
-    "h": 567,
+    "w": 150,
+    "h": 559,
     "source": "02-bunkai.ts [33] / master [251]",
-    "notes": "周辺副筆画"
+    "notes": "周辺副筆画",
+    "registration": {
+      "comp": "bunkai",
+      "elementIndex": 33,
+      "referenceSpace": "comp:bunkai (1080x1080, Null3@[540,540])",
+      "sourceOrigin": [
+        176.13,
+        376.59
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -160.13,
+        -360.59
+      ],
+      "toReferenceTranslation": [
+        160.13,
+        360.59
+      ],
+      "poseTime": 1.875
+    }
   },
   {
     "category": "kai",
     "file": "individual/kai/kai-14-STROKE_002_runs6.svg",
-    "w": 125,
-    "h": 199,
+    "w": 149,
+    "h": 206,
     "source": "02-bunkai.ts [34] / master [252]",
-    "notes": "周辺副筆画"
+    "notes": "周辺副筆画",
+    "registration": {
+      "comp": "bunkai",
+      "elementIndex": 34,
+      "referenceSpace": "comp:bunkai (1080x1080, Null3@[540,540])",
+      "sourceOrigin": [
+        360.99,
+        245.55
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -344.99,
+        -229.55
+      ],
+      "toReferenceTranslation": [
+        344.99,
+        229.55
+      ],
+      "poseTime": 1.875
+    }
   },
   {
     "category": "kai",
     "file": "individual/kai/kai-15-STROKE_000_runs4.svg",
-    "w": 163,
-    "h": 93,
+    "w": 159,
+    "h": 89,
     "source": "02-bunkai.ts [35] / master [253]",
-    "notes": "周辺副筆画"
+    "notes": "周辺副筆画",
+    "registration": {
+      "comp": "bunkai",
+      "elementIndex": 35,
+      "referenceSpace": "comp:bunkai (1080x1080, Null3@[540,540])",
+      "sourceOrigin": [
+        301.71,
+        248.67
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -285.71,
+        -232.67
+      ],
+      "toReferenceTranslation": [
+        285.71,
+        232.67
+      ],
+      "poseTime": 1.875
+    }
   },
   {
     "category": "kai",
     "file": "individual/kai/kai-16-STROKE_001_runs5.svg",
-    "w": 151,
-    "h": 337,
+    "w": 219,
+    "h": 322,
     "source": "02-bunkai.ts [36] / master [254]",
-    "notes": "周辺副筆画"
+    "notes": "周辺副筆画",
+    "registration": {
+      "comp": "bunkai",
+      "elementIndex": 36,
+      "referenceSpace": "comp:bunkai (1080x1080, Null3@[540,540])",
+      "sourceOrigin": [
+        173.01,
+        176.91
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -157.01,
+        -160.91
+      ],
+      "toReferenceTranslation": [
+        157.01,
+        160.91
+      ],
+      "poseTime": 1.875
+    }
   },
   {
     "category": "kai",
     "file": "individual/kai/kai-runs4-assembled.svg",
-    "w": 847,
-    "h": 841,
+    "w": 774,
+    "h": 767,
     "source": "02-bunkai.ts [21..36]",
-    "notes": "「解」実Restro 16層 rest組み上がり全姿（透過2D正射影）"
+    "notes": "「解」実Restro 16層 rest組み上がり全姿（透過2D正射影）",
+    "registration": {
+      "comp": "bunkai",
+      "elementIndex": -1,
+      "referenceSpace": "comp:bunkai (1080x1080, Null3@[540,540])",
+      "sourceOrigin": [
+        173.01,
+        176.91
+      ],
+      "svgPad": 20,
+      "svgTranslate": [
+        -153.01,
+        -156.91
+      ],
+      "toReferenceTranslation": [
+        153.01,
+        156.91
+      ],
+      "poseTime": 1.875
+    }
   },
   {
     "category": "fude",
     "file": "individual/fude/fude-outline-base.svg",
-    "w": 733,
-    "h": 742,
-    "source": "01-Baseline.ts [2]",
-    "notes": "「筆」連結元輪郭（黒ベース単体・透過）"
+    "w": 729,
+    "h": 738,
+    "source": "06-PV glyph.ts [2] (FUDE outline base)",
+    "notes": "「筆」連結元輪郭（黒ベース単体・透過）",
+    "registration": {
+      "comp": "PV glyph",
+      "elementIndex": 2,
+      "referenceSpace": "comp:PV glyph (1400x1080)",
+      "sourceOrigin": [
+        602.0625,
+        297.0625
+      ],
+      "svgPad": 20,
+      "svgTranslate": [
+        -582.0625,
+        -277.0625
+      ],
+      "toReferenceTranslation": [
+        582.0625,
+        277.0625
+      ],
+      "poseTime": 0
+    }
   },
   {
     "category": "fude",
     "file": "individual/fude/fude-outline-inset.svg",
-    "w": 733,
-    "h": 742,
-    "source": "01-Baseline.ts [1]",
-    "notes": "「筆」インセット基準輪郭（offset=-4単体・透過）"
+    "w": 729,
+    "h": 738,
+    "source": "06-PV glyph.ts [1] (FUDE outline inset)",
+    "notes": "「筆」インセット基準輪郭（offset=-4単体・透過）",
+    "registration": {
+      "comp": "PV glyph",
+      "elementIndex": 1,
+      "referenceSpace": "comp:PV glyph (1400x1080)",
+      "sourceOrigin": [
+        602.0625,
+        297.0625
+      ],
+      "svgPad": 20,
+      "svgTranslate": [
+        -582.0625,
+        -277.0625
+      ],
+      "toReferenceTranslation": [
+        582.0625,
+        277.0625
+      ],
+      "poseTime": 0
+    }
   },
   {
     "category": "fude",
     "file": "individual/fude/fude-s01.svg",
-    "w": 232,
-    "h": 249,
-    "source": "01-Baseline.ts [15] (FUDE S01 (STROKE_000_runs5))",
-    "notes": "実Restro出力「筆」FUDE S01 (STROKE_000_runs5) 単体筆画"
+    "w": 228,
+    "h": 245,
+    "source": "06-PV glyph.ts [15] (FUDE S01 (STROKE_000_runs5))",
+    "notes": "実Restro出力「筆」FUDE S01 (STROKE_000_runs5) 単体筆画",
+    "registration": {
+      "comp": "PV glyph",
+      "elementIndex": 15,
+      "referenceSpace": "comp:PV glyph (1400x1080)",
+      "sourceOrigin": [
+        602.0381,
+        297.0719
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -586.0381,
+        -281.0719
+      ],
+      "toReferenceTranslation": [
+        586.0381,
+        281.0719
+      ],
+      "poseTime": 0
+    }
   },
   {
     "category": "fude",
     "file": "individual/fude/fude-s02.svg",
-    "w": 154,
-    "h": 155,
-    "source": "01-Baseline.ts [14] (FUDE S02 (STROKE_001_runs2))",
-    "notes": "実Restro出力「筆」FUDE S02 (STROKE_001_runs2) 単体筆画"
+    "w": 150,
+    "h": 151,
+    "source": "06-PV glyph.ts [14] (FUDE S02 (STROKE_001_runs2))",
+    "notes": "実Restro出力「筆」FUDE S02 (STROKE_001_runs2) 単体筆画",
+    "registration": {
+      "comp": "PV glyph",
+      "elementIndex": 14,
+      "referenceSpace": "comp:PV glyph (1400x1080)",
+      "sourceOrigin": [
+        760.8333,
+        357.7997
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -744.8333,
+        -341.7997
+      ],
+      "toReferenceTranslation": [
+        744.8333,
+        341.7997
+      ],
+      "poseTime": 0
+    }
   },
   {
     "category": "fude",
     "file": "individual/fude/fude-s03.svg",
-    "w": 289,
-    "h": 98,
-    "source": "01-Baseline.ts [7] (FUDE S03 (Ae_Restro part 1))",
-    "notes": "実Restro出力「筆」FUDE S03 (Ae_Restro part 1) 単体筆画"
+    "w": 285,
+    "h": 94,
+    "source": "06-PV glyph.ts [7] (FUDE S03 (Ae_Restro part 1))",
+    "notes": "実Restro出力「筆」FUDE S03 (Ae_Restro part 1) 単体筆画",
+    "registration": {
+      "comp": "PV glyph",
+      "elementIndex": 7,
+      "referenceSpace": "comp:PV glyph (1400x1080)",
+      "sourceOrigin": [
+        690.2402,
+        356.1535
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -674.2402,
+        -340.1535
+      ],
+      "toReferenceTranslation": [
+        674.2402,
+        340.1535
+      ],
+      "poseTime": 0
+    }
   },
   {
     "category": "fude",
     "file": "individual/fude/fude-s04.svg",
-    "w": 202,
-    "h": 215,
-    "source": "01-Baseline.ts [4] (FUDE S04 (Ae_Restro part 1))",
-    "notes": "実Restro出力「筆」FUDE S04 (Ae_Restro part 1) 単体筆画"
+    "w": 198,
+    "h": 211,
+    "source": "06-PV glyph.ts [4] (FUDE S04 (Ae_Restro part 1))",
+    "notes": "実Restro出力「筆」FUDE S04 (Ae_Restro part 1) 単体筆画",
+    "registration": {
+      "comp": "PV glyph",
+      "elementIndex": 4,
+      "referenceSpace": "comp:PV glyph (1400x1080)",
+      "sourceOrigin": [
+        922.3408,
+        297.0719
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -906.3408,
+        -281.0719
+      ],
+      "toReferenceTranslation": [
+        906.3408,
+        281.0719
+      ],
+      "poseTime": 0
+    }
   },
   {
     "category": "fude",
     "file": "individual/fude/fude-s05.svg",
-    "w": 157,
-    "h": 157,
-    "source": "01-Baseline.ts [13] (FUDE S05 (STROKE_002_runs2))",
-    "notes": "実Restro出力「筆」FUDE S05 (STROKE_002_runs2) 単体筆画"
+    "w": 154,
+    "h": 153,
+    "source": "06-PV glyph.ts [13] (FUDE S05 (STROKE_002_runs2))",
+    "notes": "実Restro出力「筆」FUDE S05 (STROKE_002_runs2) 単体筆画",
+    "registration": {
+      "comp": "PV glyph",
+      "elementIndex": 13,
+      "referenceSpace": "comp:PV glyph (1400x1080)",
+      "sourceOrigin": [
+        1060.038,
+        357.8872
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -1044.038,
+        -341.8872
+      ],
+      "toReferenceTranslation": [
+        1044.038,
+        341.8872
+      ],
+      "poseTime": 0
+    }
   },
   {
     "category": "fude",
     "file": "individual/fude/fude-s06.svg",
-    "w": 342,
-    "h": 98,
-    "source": "01-Baseline.ts [9] (FUDE S06 (Ae_Restro part 1))",
-    "notes": "実Restro出力「筆」FUDE S06 (Ae_Restro part 1) 単体筆画"
+    "w": 338,
+    "h": 94,
+    "source": "06-PV glyph.ts [9] (FUDE S06 (Ae_Restro part 1))",
+    "notes": "実Restro出力「筆」FUDE S06 (Ae_Restro part 1) 単体筆画",
+    "registration": {
+      "comp": "PV glyph",
+      "elementIndex": 9,
+      "referenceSpace": "comp:PV glyph (1400x1080)",
+      "sourceOrigin": [
+        983.3594,
+        355.5492
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -967.3594,
+        -339.5492
+      ],
+      "toReferenceTranslation": [
+        967.3594,
+        339.5492
+      ],
+      "poseTime": 0
+    }
   },
   {
     "category": "fude",
     "file": "individual/fude/fude-s07.svg",
-    "w": 536,
-    "h": 93,
-    "source": "01-Baseline.ts [6] (FUDE S07 (Ae_Restro part 3))",
-    "notes": "実Restro出力「筆」FUDE S07 (Ae_Restro part 3) 単体筆画"
+    "w": 532,
+    "h": 89,
+    "source": "06-PV glyph.ts [6] (FUDE S07 (Ae_Restro part 3))",
+    "notes": "実Restro出力「筆」FUDE S07 (Ae_Restro part 3) 単体筆画",
+    "registration": {
+      "comp": "PV glyph",
+      "elementIndex": 6,
+      "referenceSpace": "comp:PV glyph (1400x1080)",
+      "sourceOrigin": [
+        709.1294,
+        497.8861
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -693.1294,
+        -481.8861
+      ],
+      "toReferenceTranslation": [
+        693.1294,
+        481.8861
+      ],
+      "poseTime": 0
+    }
   },
   {
     "category": "fude",
     "file": "individual/fude/fude-s08.svg",
-    "w": 112,
-    "h": 267,
-    "source": "01-Baseline.ts [8] (FUDE S08 (Ae_Restro part 5))",
-    "notes": "実Restro出力「筆」FUDE S08 (Ae_Restro part 5) 単体筆画"
+    "w": 108,
+    "h": 263,
+    "source": "06-PV glyph.ts [8] (FUDE S08 (Ae_Restro part 5))",
+    "notes": "実Restro出力「筆」FUDE S08 (Ae_Restro part 5) 単体筆画",
+    "registration": {
+      "comp": "PV glyph",
+      "elementIndex": 8,
+      "referenceSpace": "comp:PV glyph (1400x1080)",
+      "sourceOrigin": [
+        1132.9307,
+        498.0784
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -1116.9307,
+        -482.0784
+      ],
+      "toReferenceTranslation": [
+        1116.9307,
+        482.0784
+      ],
+      "poseTime": 0
+    }
   },
   {
     "category": "fude",
     "file": "individual/fude/fude-s09.svg",
-    "w": 697,
-    "h": 95,
-    "source": "01-Baseline.ts [12] (FUDE S09 (STROKE_004_runs6))",
-    "notes": "実Restro出力「筆」FUDE S09 (STROKE_004_runs6) 単体筆画"
+    "w": 693,
+    "h": 91,
+    "source": "06-PV glyph.ts [12] (FUDE S09 (STROKE_004_runs6))",
+    "notes": "実Restro出力「筆」FUDE S09 (STROKE_004_runs6) 単体筆画",
+    "registration": {
+      "comp": "PV glyph",
+      "elementIndex": 12,
+      "referenceSpace": "comp:PV glyph (1400x1080)",
+      "sourceOrigin": [
+        623.0234,
+        584.9688
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -607.0234,
+        -568.9688
+      ],
+      "toReferenceTranslation": [
+        607.0234,
+        568.9688
+      ],
+      "poseTime": 0
+    }
   },
   {
     "category": "fude",
     "file": "individual/fude/fude-s10.svg",
-    "w": 537,
-    "h": 92,
-    "source": "01-Baseline.ts [5] (FUDE S10 (Ae_Restro part 4))",
-    "notes": "実Restro出力「筆」FUDE S10 (Ae_Restro part 4) 単体筆画"
+    "w": 533,
+    "h": 88,
+    "source": "06-PV glyph.ts [5] (FUDE S10 (Ae_Restro part 4))",
+    "notes": "実Restro出力「筆」FUDE S10 (Ae_Restro part 4) 単体筆画",
+    "registration": {
+      "comp": "PV glyph",
+      "elementIndex": 5,
+      "referenceSpace": "comp:PV glyph (1400x1080)",
+      "sourceOrigin": [
+        707.6938,
+        673.0728
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -691.6938,
+        -657.0728
+      ],
+      "toReferenceTranslation": [
+        691.6938,
+        657.0728
+      ],
+      "poseTime": 0
+    }
   },
   {
     "category": "fude",
     "file": "individual/fude/fude-s11.svg",
-    "w": 582,
-    "h": 95,
-    "source": "01-Baseline.ts [11] (FUDE S11 (STROKE_007_runs2))",
-    "notes": "実Restro出力「筆」FUDE S11 (STROKE_007_runs2) 単体筆画"
+    "w": 578,
+    "h": 91,
+    "source": "06-PV glyph.ts [11] (FUDE S11 (STROKE_007_runs2))",
+    "notes": "実Restro出力「筆」FUDE S11 (STROKE_007_runs2) 単体筆画",
+    "registration": {
+      "comp": "PV glyph",
+      "elementIndex": 11,
+      "referenceSpace": "comp:PV glyph (1400x1080)",
+      "sourceOrigin": [
+        681.9297,
+        759.8499
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -665.9297,
+        -743.8499
+      ],
+      "toReferenceTranslation": [
+        665.9297,
+        743.8499
+      ],
+      "poseTime": 0
+    }
   },
   {
     "category": "fude",
     "file": "individual/fude/fude-s12.svg",
-    "w": 710,
-    "h": 97,
-    "source": "01-Baseline.ts [10] (FUDE S12 (STROKE_008_runs2))",
-    "notes": "実Restro出力「筆」FUDE S12 (STROKE_008_runs2) 単体筆画"
+    "w": 706,
+    "h": 93,
+    "source": "06-PV glyph.ts [10] (FUDE S12 (STROKE_008_runs2))",
+    "notes": "実Restro出力「筆」FUDE S12 (STROKE_008_runs2) 単体筆画",
+    "registration": {
+      "comp": "PV glyph",
+      "elementIndex": 10,
+      "referenceSpace": "comp:PV glyph (1400x1080)",
+      "sourceOrigin": [
+        617.1328,
+        848.574
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -601.1328,
+        -832.574
+      ],
+      "toReferenceTranslation": [
+        601.1328,
+        832.574
+      ],
+      "poseTime": 0
+    }
   },
   {
     "category": "fude",
     "file": "individual/fude/fude-s13.svg",
-    "w": 125,
-    "h": 574,
-    "source": "01-Baseline.ts [3] (FUDE S13 (Ae_Restro merged shape))",
-    "notes": "S13 (Ae_Restro merged shape, 92pts: 縦軸+下部結合含む実Restro出力)"
+    "w": 121,
+    "h": 570,
+    "source": "06-PV glyph.ts [3] (FUDE S13 (Ae_Restro merged shape))",
+    "notes": "S13 (Ae_Restro merged shape, 92pts: 縦軸+下部結合含む実Restro出力)",
+    "registration": {
+      "comp": "PV glyph",
+      "elementIndex": 3,
+      "referenceSpace": "comp:PV glyph (1400x1080)",
+      "sourceOrigin": [
+        905.9166,
+        456.532
+      ],
+      "svgPad": 16,
+      "svgTranslate": [
+        -889.9166,
+        -440.532
+      ],
+      "toReferenceTranslation": [
+        889.9166,
+        440.532
+      ],
+      "poseTime": 0
+    }
   },
   {
     "category": "fude",
     "file": "individual/fude/fude-13-assembled.svg",
-    "w": 771,
-    "h": 759,
-    "source": "01-Baseline.ts [3..15]",
-    "notes": "「筆」実Restro 13画 全組み上がり（透過）"
+    "w": 729,
+    "h": 738,
+    "source": "06-PV glyph.ts [3..15]",
+    "notes": "「筆」実Restro 13画 全組み上がり（透過）",
+    "registration": {
+      "comp": "PV glyph",
+      "elementIndex": -1,
+      "referenceSpace": "comp:PV glyph (1400x1080)",
+      "sourceOrigin": [
+        602.0381,
+        297.0719
+      ],
+      "svgPad": 20,
+      "svgTranslate": [
+        -582.0381,
+        -277.0719
+      ],
+      "toReferenceTranslation": [
+        582.0381,
+        277.0719
+      ],
+      "poseTime": 0
+    }
   },
   {
     "category": "scene-b",

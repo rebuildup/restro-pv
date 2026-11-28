@@ -3,7 +3,7 @@
   <rect x="-520" y="-520" width="1100" height="960" fill="#f8fafc"/>
   <rect x="-500" y="-500" width="1060" height="920" rx="10" fill="#ffffff" stroke="#d4d4d8"/>
   <text x="-476" y="-464" font-size="20" font-weight="700" fill="#111111" font-family="'Yu Gothic UI','Meiryo',sans-serif">「解」runs4 元実測オニオンスキン（状態基準サンプリング：f0 → f3 → f9 ピーク → f21 → f45 定着）</text>
-  <text x="-476" y="-440" font-size="12" fill="#52525b" font-family="'Consolas','Cascadia Mono',monospace">Null 3 ローカル空間 | 全16層（直画9+曲線画5+residual merged 2）| 赤丸 = f9(0.375s) ピーク変位点 | 均等サンプリング廃止版</text>
+  <text x="-476" y="-440" font-size="12" fill="#52525b" font-family="'Consolas','Cascadia Mono',monospace">Null 3 ローカル空間 | 全16層（直画9+曲線画5+residual merged 2）| 赤丸 = f9(0.375s) ピーク変位点</text>
   <g transform="translate(80, 30) scale(0.88)">
     <g transform="matrix(1.00000 0.00000 0.00000 1.00000 0.0000 16.9153)"><path fill-opacity="0.18" d="M154.049987792969,-68.25 C154.049987792969,-68.25 224.25,-68.25 224.25,-68.25 C224.25,-68.25 224.25,358.410034179688 224.25,358.410034179688 C224.25,358.410034179688 154.049987792969,358.410034179688 154.049987792969,358.410034179688 C154.049987792969,358.410034179688 154.049987792969,-68.25 154.049987792969,-68.25 Z" fill="#94a3b8" fill-rule="nonzero" stroke="none"/></g>
 <g transform="matrix(1.00000 0.00000 0.00000 1.00000 15.9675 0.0000)"><path fill-opacity="0.18" d="M-1.95001220703125,219.570007324219 C-1.95001220703125,219.570007324219 -1.95001220703125,154.830017089844 -1.95001220703125,154.830017089844 C-1.95001220703125,154.830017089844 366.990051269531,154.830017089844 366.990051269531,154.830017089844 C366.990051269531,154.830017089844 366.990051269531,219.570007324219 366.990051269531,219.570007324219 C366.990051269531,219.570007324219 -1.95001220703125,219.570007324219 -1.95001220703125,219.570007324219 Z" fill="#94a3b8" fill-rule="nonzero" stroke="none"/></g>
@@ -107,7 +107,7 @@
     <text x="64" y="86" font-size="13" fill="#18181b" font-family="'Yu Gothic UI','Meiryo',sans-serif">f0 (0.000s) 初発キー</text>
   
     <rect x="40" y="98" width="16" height="14" rx="2" fill="#3b82f6" fill-opacity="0.49"/>
-    <text x="64" y="110" font-size="13" fill="#18181b" font-family="'Yu Gothic UI','Meiryo',sans-serif">f3 (0.125s) 最大加速度</text>
+    <text x="64" y="110" font-size="13" fill="#18181b" font-family="'Yu Gothic UI','Meiryo',sans-serif">f3 (0.125s) 最大加速度付近</text>
   
     <rect x="40" y="122" width="16" height="14" rx="2" fill="#e51515" fill-opacity="0.6699999999999999"/>
     <text x="64" y="134" font-size="13" fill="#18181b" font-family="'Yu Gothic UI','Meiryo',sans-serif">f9 (0.375s) ピーク分裂 (inf=0.01%)</text>

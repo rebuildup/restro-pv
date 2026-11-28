@@ -1,5 +1,9 @@
 {
-  "checkedAt": "2026-11-28T02:56:48.814Z",
+  "checkedAt": "2026-11-28T05:17:16.060Z",
+  "sourceModules": [
+    "video/src/design/rig.ts",
+    "video/src/design/choreography.ts"
+  ],
   "rigApertureSweep": [
     {
       "openProgress": 0,
@@ -73,23 +77,110 @@
     }
   ],
   "allRigStatesValid": true,
+  "gridPropagationProof": {
+    "baselineCol0to4Width": 416.33,
+    "perturbedGutter16Col0to4Width": 414,
+    "perturbedLeftChromeValid": true,
+    "marginXPerturbationPx": 16,
+    "logoSlotDx": 16,
+    "matteSlotDx": 16,
+    "childWorldRectsTrackGrid": true,
+    "baselineSceneBWidth": 502,
+    "perturbedSceneBWidth": 500,
+    "gridDeltaB": 2,
+    "colDeltaB": 2,
+    "widthPropagated": true
+  },
+  "sceneBAccordionSweep": [
+    {
+      "activeStep": 0,
+      "tab0Y": 191.5,
+      "activeSlotY": 191.5,
+      "activeSlotHeight": 660.7,
+      "lensDisplayDiameter": 420,
+      "lensSourceDiameter": 140,
+      "lensMagnificationRatio": 3,
+      "valid": true
+    },
+    {
+      "activeStep": 0.5,
+      "tab0Y": 191.5,
+      "activeSlotY": 210.8,
+      "activeSlotHeight": 660.7,
+      "lensDisplayDiameter": 420,
+      "lensSourceDiameter": 140,
+      "lensMagnificationRatio": 3,
+      "valid": true
+    },
+    {
+      "activeStep": 1,
+      "tab0Y": 191.5,
+      "activeSlotY": 230.2,
+      "activeSlotHeight": 660.7,
+      "lensDisplayDiameter": 420,
+      "lensSourceDiameter": 140,
+      "lensMagnificationRatio": 3,
+      "valid": true
+    },
+    {
+      "activeStep": 2,
+      "tab0Y": 191.5,
+      "activeSlotY": 268.8,
+      "activeSlotHeight": 660.7,
+      "lensDisplayDiameter": 420,
+      "lensSourceDiameter": 140,
+      "lensMagnificationRatio": 3,
+      "valid": true
+    },
+    {
+      "activeStep": 2.5,
+      "tab0Y": 191.5,
+      "activeSlotY": 288.2,
+      "activeSlotHeight": 660.7,
+      "lensDisplayDiameter": 420,
+      "lensSourceDiameter": 140,
+      "lensMagnificationRatio": 3,
+      "valid": true
+    },
+    {
+      "activeStep": 3,
+      "tab0Y": 191.5,
+      "activeSlotY": 307.5,
+      "activeSlotHeight": 660.7,
+      "lensDisplayDiameter": 420,
+      "lensSourceDiameter": 140,
+      "lensMagnificationRatio": 3,
+      "valid": true
+    }
+  ],
+  "allSceneBStatesValid": true,
+  "sceneCShowreelRig": {
+    "viewportWidth": 600,
+    "viewportHeight": 960,
+    "cellScale": 1,
+    "viewportClearsSafety": true,
+    "valid": true
+  },
   "sceneA2CrossingFeasibility": {
+    "holdFrame": 66,
     "spineS16ScreenY": [
       481.8,
       958.7
     ],
     "upperGateS15ScreenY_atHold": [
-      289.8,
-      385.4
+      209.2,
+      310.5
     ],
     "lowerGateS17ScreenY_atHold": [
-      905.6,
-      1017.2
+      1001,
+      1122.1
     ],
-    "clearOpeningWindowHeightPx": 520.2,
+    "clearOpeningWindowHeightPx": 690.5,
     "openingExceeds120pxForClearExposure": true,
     "leftStrokeS04_minScreenX_origDeltaNeg72": 446.7,
-    "leftStrokeS04_minScreenX_clampedDeltaNeg28": 490.4,
-    "clearsLeftColumnMaxX460": true
+    "leftStrokeS04_minScreenX_designedDelta": 490.4,
+    "leftStrokeS10_minScreenX_designedDelta": 770.7,
+    "clearsLeftColumnMaxX460": true,
+    "clearsStageMinX480": true
   }
 }
