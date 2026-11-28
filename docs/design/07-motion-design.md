@@ -79,18 +79,20 @@
 
 ### 3.3 Scene C（`f191..f281`）：3作例の独立運動文法（差別化設計）
 
-> **2026-11 実装同期**: 3作例は内容（ストロークソース）も分離済み。`SceneC.tsx` の `WORK_SOURCES` が正本：W1「筆墨」=`06-PV glyph` FUDE 13画・orbit・墨、W2「解彩」=`02-bunkai` runs5 12画・wave・縦グラデーション、W3「筆構」=`41-BG decomposed strokes` FUDE 13画（筆の第2分解）・左右対称エンブレム・rock。以下は各作例の運動文法の設計意図。
+> **2026-11 実装同期**: 3作例は内容（ストロークソース）も分離済み。`SceneC.tsx` の `WORK_SOURCES` が正本：W1「筆墨」=`06-PV glyph` FUDE 13画・orbit・墨、W2「解彩」=`02-bunkai` runs5 群16層（indices 3-18）・wave・縦グラデーション、W3「筆構」=`41-BG decomposed strokes` FUDE 13画・左右対称エンブレム・fold。以下は各作例の運動文法の設計意図。
 >
 > **ソース比較図（2026-11 追加）**: [`diagrams/motion-scene-c-works.png`](./diagrams/motion-scene-c-works.png)（[SVG](./diagrams/motion-scene-c-works.svg)）— `SceneC.tsx` と同一の `compStrokes` rest pose 幾何を3パネルに正規化描画し、各作例の実筆画集合・筆画数・文字 bbox・ソース provenance（comp/レイヤーパターン/poseT）を並置。3作例が仕上げではなく**内容（分解・文字）で異なる**ことを図で確認できる。
 
 - **作例 01「筆墨」（筆・墨）**: 完成形の墨字を先に見せ、色分けされた筆画が文字中心から**独立 orbit**（個別位相・半径・回転）で散開し、再合成して完成形へ戻る。書き順グループではなく各画の固有リズムで動かす。
-- **作例 02「解彩」（解・グラデーション）**: 別文字「解」の粗い分解12画を、コバルト→朱の縦グラデーションで一つの色面として見せ、左→右へ**位相差のある per-stroke wave** が走り、グラデーション完成形へ解決する。
-- **作例 03「筆構」（筆・対称エンブレム）**: 同一「筆」の**第2の実分解**（BG decomposed strokes）の左右半分を鏡像配置した対称エンブレム。各翼内で筆画が分離・rock し、ニアブラックの一つの意匠へ再合成する。
+- **作例 02「解彩」（解・グラデーション）**: 別文字「解」の分解16層（runs5 群）を、コバルト→朱の縦グラデーションで一つの色面として見せ、左→右へ**位相差のある per-stroke wave** が走り、グラデーション完成形へ解決する。
+- **作例 03「筆構」（筆・対称エンブレム）**: 「筆」分解ストローク（`41-BG decomposed strokes` FUDE S01..S13）の左右半分を鏡像配置した対称エンブレム。各翼内で筆画がシーム軸を支点に **fold**（開閉スイング＋シーム法線の呼吸）し、ニアブラックの一つの意匠へ再合成する。**2026-11 実測注意**: comp 41 の幾何は W1（`06-PV glyph`）と画素同一（IoU 1.0）であり「第2の別分解」ではない — 差別化はエンブレム提示と fold 運動が担う。真に内容の異なる第3素材が必要なら別文字の実分解ダンプが要る（[`verification/scene-c-works-assembly.json`](./verification/scene-c-works-assembly.json)）。
+- **作例別検証（2026-11 追加）**: [`verification/scene-c-works-assembly.json`](./verification/scene-c-works-assembly.json)（`tools/design/verify-scene-c-works.ts`）— W1 結合 IoU 0.9998、W2 runs5 群16層で結合 IoU 1.0（旧パターンは runs4/5/6/7 混在で 0.6815 だった破損を修正）、W3 は W1 と幾何同一を確認。描画証拠は [`prototypes/scene-c/`](./prototypes/scene-c/) の3静止画と [`verification/scene-c-stills.json`](./verification/scene-c-stills.json)（W3 エンブレムは鏡像軸 x=775 に対し 99.3% 対称）。
 
 ### 3.4 Scene E（`f371..f480`）：呼吸する余韻収束と視認 CTA の共存
 
 - **運動文法**: **「穏やかな減衰呼吸収束（E1）→ 2秒以上の静謐定着（E2）」**。
 - **相互作用**: 右側の復元筆画（例 `PV glyph EE` 13画系）は小幅（`±5〜20px`）の緩慢な減衰収束で組まれ、左 `Logo`＋`Heading`（`15.50..16.167s` で中央復帰）と右 CTA テキスト群が読み取れる終盤 **`2.2s` 以上（`~f427..480`）** においては主文字の大きな移動を止め、微かな余韻または完全静止で読みやすさと品位を最大化する。
+- **2026-11 実測検証**: PV-Master/PV-Chrome の差分マスクでシーン内容のみを分離計測（`tools/design/sc-e-diff.ts`/`sc-e-motion.ts`/`sc-e-measure.ts`）。ヒーローは f410–415 で画素差分 0 の完全静止を確認。旧実装は CTA stagger が ~f441 まで残り静定が 1.58s しかなかったため、`SceneE.tsx` のスタッガーを圧縮し **f437 以降シーン内容が完全静止**（残り ~1.75s）へ改善。左カラム・ギャップへの侵入は全計測フレームで 0px。
 
 ---
 
