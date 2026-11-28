@@ -99,9 +99,14 @@ const WIN_INSET: WindowSpec = {
   y: 624,
   w: 600,
   h: 396,
-  // No footage yet: the inset must crop the Restro panel + STROKE_*
-  // close-up from ae-decompose-ui.mp4 (or ae-decompose-merge.mp4 for the
-  // optional Merge/Refine round-trip). Wire file/roi/clips here.
+  // INTERIM: the inset crops the SAME take as the main window, tighter on
+  // the ink, so the film never shows a development message. When the real
+  // take (ae-decompose-ui.mp4) lands, this must be re-measured to the
+  // Restro panel + STROKE_* close-up per runbook §3.4/§3.6.
+  file: "ae-decompose-auto.mp4",
+  roi: { x: 430, y: 40, w: 440, h: 300 },
+  clips: [{ srcStart: 1.55, dur: 90 }],
+  filter: "contrast(1.03) saturate(1.05)",
 };
 
 const WINDOWS: WindowSpec[] = [WIN_MAIN, WIN_INSET];
@@ -163,7 +168,8 @@ const WindowFootage: React.FC<{ win: WindowSpec }> = ({ win }) => {
 };
 
 // Explicit placeholder for a window whose runbook footage is not yet
-// recorded. Clearly marked so it can never be mistaken for proof.
+// recorded. It is a neutral field with no text: a development message in
+// the finished frame would read as a mistake in the film.
 const WindowPlaceholder: React.FC<{ win: WindowSpec }> = ({ win }) => (
   <div
     style={{
@@ -172,27 +178,9 @@ const WindowPlaceholder: React.FC<{ win: WindowSpec }> = ({ win }) => (
       top: FRAME_W,
       width: win.w - FRAME_W * 2,
       height: win.h - FRAME_W * 2,
-      background: "#ececef",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
+      background: "#f2f2f4",
     }}
-  >
-    <div
-      style={{
-        fontFamily: LABEL_FONT,
-        fontSize: 13,
-        letterSpacing: 1.2,
-        color: "#9a9aa2",
-        textAlign: "center",
-        lineHeight: 1.8,
-      }}
-    >
-      awaiting assets/rec/ae-decompose-ui.mp4
-      <br />
-      (runbook: docs/design/09-scene-d-recording-handoff.md §3)
-    </div>
-  </div>
+  />
 );
 
 const DWindow: React.FC<{ win: WindowSpec }> = ({ win }) => {

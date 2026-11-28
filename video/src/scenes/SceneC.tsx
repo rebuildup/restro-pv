@@ -130,7 +130,8 @@ export const WORK_SOURCES: WorkSource[] = [
     // Effects (verification/rec-newmat). The official brand Logo comp is
     // deliberately NOT used here: the lockup is chrome, and the brand
     // emblem must not be presented as a restored-brush-stroke artwork.
-    comp: "NEWMAT 無",
+    comp: "NEWMAT 無 mincho",
+    pattern: /^STROKE_/,
     poseT: 0.5,
     title: "飛白",
     bg: "#efe9db",
@@ -140,6 +141,15 @@ export const WORK_SOURCES: WorkSource[] = [
     titleInk: "#1d1d20",
     ruleInk: "#ddd8c8",
   },
+];
+
+// Work 03's material candidates, in preference order: the mincho variant
+// first (a brush-derived face, so the three gallery works do not all
+// share the gothic texture of the 筆/解 material), then the gothic one.
+// Both are real plugin output from `verification/rec-newmat/`.
+const W3_CANDIDATES: WorkSource[] = [
+  { ...WORK_SOURCES[2], comp: "NEWMAT 無 mincho" },
+  { ...WORK_SOURCES[2], comp: "NEWMAT 無" },
 ];
 
 // Work 03's material is optional: until the real-AE decomposition is in
@@ -164,7 +174,12 @@ const W3_FALLBACK: WorkSource = {
 
 function resolveSource(src: WorkSource): WorkSource {
   if (compByName(src.comp)) return src;
-  if (compByName(W3_FALLBACK.comp)) return W3_FALLBACK;
+  if (src.comp.startsWith("NEWMAT")) {
+    for (const cand of W3_CANDIDATES) {
+      if (compByName(cand.comp)) return cand;
+    }
+    if (compByName(W3_FALLBACK.comp)) return W3_FALLBACK;
+  }
   throw new Error(`Scene C: material comp not found: ${src.comp}`);
 }
 
@@ -211,6 +226,8 @@ interface WorkPack {
   ink: StrokeItem[];
   /** W2 only: strokes grouped by structural part, each tinted for its depth */
   partStrokes: StrokeItem[][];
+  /** character bbox in comp space */
+  bbox: [number, number, number, number];
 }
 
 let cached: WorkPack[] | null = null;
@@ -292,6 +309,7 @@ function buildWork(src: WorkSource): WorkPack {
     screen,
     ink,
     partStrokes,
+    bbox: [minX, minY, maxX, maxY],
   };
 }
 
@@ -391,27 +409,26 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
   const sealOp = clamp01(seg(rel, sealStart, sealStart + 0.05));
   const sealScale = 1.7 - 0.7 * easeOutBack(clamp01(seg(rel, sealStart, sealStart + 0.13)));
 
-  // 筆順 margin: one tick per stroke, at the height where the brush
-  // started it, numbered with the derived writing order. The ticks are
-  // pushed apart where strokes start at the same height so the numbers
-  // never collide; each tick lights up as its stroke is laid down.
-  const marginTicks = w1.strokes
-    .map((s, i) => {
-      const r = roles.roles[i];
-      const p = w1.screen(r.axis.start);
-      return {
-        key: i,
-        x: 44,
-        y: p[1],
-        order: r.order,
-        done: writeProgress(i) > 0.02,
-      };
-    })
-    .sort((a, b) => a.y - b.y);
-  for (let i = 1; i < marginTicks.length; i++) {
-    if (marginTicks[i].y < marginTicks[i - 1].y + 15)
-      marginTicks[i].y = marginTicks[i - 1].y + 15;
-  }
+  // 筆順 margin: a score of the writing in the left margin. One row per
+  // true writing stroke (the 横折 counts once), numbered 01..12 in
+  // reading order, each row lighting up as its stroke is laid down. The
+  // column spans the character's own height, so the margin reads as the
+  // length of the writing rather than as decoration.
+  const charTop = w1.bbox[1] * w1.fit.k + w1.fit.ty;
+  const charBot = w1.bbox[3] * w1.fit.k + w1.fit.ty;
+  const orderDone = new Map<number, boolean>();
+  roles.roles.forEach((r, i) => {
+    const done = writeProgress(i) > 0.02;
+    orderDone.set(r.order, (orderDone.get(r.order) ?? true) && done);
+  });
+  const orders = [...orderDone.keys()].sort((a, b) => a - b);
+  const marginTicks = orders.map((order, k) => ({
+    key: order,
+    x: 44,
+    y: charTop + ((charBot - charTop) * k) / Math.max(1, orders.length - 1),
+    order,
+    done: orderDone.get(order) ?? false,
+  }));
 
   // ---- W2 ------------------------------------------------------------------
   const parts = splitKaiParts(w2.strokes);
@@ -428,10 +445,15 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
 
   // ---- W3 ------------------------------------------------------------------
   const s3 = rel - W3_START;
-  // strokes arrive in groups (not a uniform stagger): the character lands
-  // in three beats that follow the parts of the glyph.
+  // The strokes arrive in the character's own parts, not in an even
+  // stagger: the upper structure, then the verticals, then the lower
+  // marks — which is the order the character is written in.
   const n3 = w3.strokes.length;
-  const groupOf = (i: number) => (i % 3 === 0 ? 0 : i % 3 === 1 ? 1 : 2);
+  const groupOf = (i: number) => {
+    const y = w3.strokes[i].center[1];
+    const t = (y - w3.bbox[1]) / Math.max(1, w3.bbox[3] - w3.bbox[1]);
+    return t < 0.34 ? 0 : t < 0.68 ? 1 : 2;
+  };
   const arrival = (i: number): number => {
     const g = groupOf(i);
     const start = 0.06 + g * 0.11 + (i % 5) * 0.008;
