@@ -318,6 +318,27 @@ export function createA2Choreo(strokes: A2StrokeGeom[]): A2Choreo {
 
 // ---------------------------------------------------------------------------
 // Scene B Accordion & FUDE Step-4 Release Design Spec (f101..f191)
+//
+// CONSUMER MAP (do not "re-unify" blindly — several fields are
+// reference-only by deliberate review decision):
+//   - stepTimes        -> PRODUCTION: SceneB.tsx STEP_T (mirrors
+//                         05-master.ts STEP_REVEAL & P19..22 keys).
+//   - evalSceneBActiveStep -> verification sweep (verify-local-motion
+//                         accordion rig). The rig models the ORIGINAL
+//                         AEP's accordion tab UI; production replaced it
+//                         with an editorial ruled index (wu-b r19/r20 —
+//                         boxed tab chrome was rejected as "Web UI").
+//   - fudeRelease*/evalFudeStep4ReleaseU -> FIGURES ONLY: the easeOut
+//                         window is the 06-PV glyph / Baseline reference
+//                         comp's expression, used by motion-fude-onion.
+//                         SceneB renders the checkpoint comps' real
+//                         layers with its own reviewed staggered
+//                         draw-on (blue-lead traceability beats), which
+//                         intentionally does NOT copy that window.
+//   - lens*            -> REFERENCE: original-AEP lens constants for the
+//                         rig/figures. SceneB's lens was redesigned in
+//                         wu-b-v20 (content-derived focal on the inferred
+//                         bbox, LENS_IR/LENS constants inline).
 // ---------------------------------------------------------------------------
 export const SCENE_B_DESIGN = {
   fps: 24,

@@ -22,15 +22,16 @@ import type { CompSpec } from "../../../pv/model/types.ts";
 // finished hold. Work 01 opens directly on the finished ink piece so the
 // gallery starts on a completed design, not a decomposed demo state.
 //
-//   Work 01 「筆墨」— black ink char. Opens on the finished ink piece,
-//     then decomposes into color-coded strokes that orbit independently
-//     before recomposing.
-//   Work 02 「筆彩」— cobalt->vermilion gradient char. Decomposes into a
-//     rotated proof palette, runs a left-to-right per-stroke wave, then
-//     resolves back to the gradient finish.
-//   Work 03 「筆構」— symmetric two-wing emblem. Decomposes into proof
-//     strokes that separate/rock inside each wing, then recomposes to the
-//     near-black emblem.
+//   Work 01 「筆墨」— 筆 ink piece (PV glyph FUDE S01..S13). Opens on the
+//     finished ink piece, then decomposes into color-coded strokes that
+//     orbit independently before recomposing.
+//   Work 02 「解彩」— 解 gradient piece (bunkai runs5, 12 strokes). Runs a
+//     left-to-right per-stroke wave in the cobalt->vermilion finish,
+//     then resolves back to the gradient.
+//   Work 03 「筆構」— symmetric two-wing emblem built from the SECOND
+//     real 筆 decomposition (BG decomposed strokes). Proof strokes
+//     separate/rock inside each wing, then recompose to the near-black
+//     emblem.
 //
 // Timing: the strip window is kept (SPEC scroll), but page-turn legs are
 // ~0.12s — visually hard cuts per the v13 "基本はハードカット" rule.
@@ -55,12 +56,29 @@ const CELL_TOPS = [0, PITCH, PITCH * 2];
 const STRIP_H = PITCH * 3;
 
 // Work names only (v14: one clear name per artboard). Compound titles
-// 「筆墨」「筆彩」「筆構」 name each finished piece as a treatment of the
-// 筆 stroke set — they read as print names, not process labels, and keep
-// the shared 筆 motif explicit instead of letting the glyphs be mistaken
-// for three unrelated characters. The caption carries the 「作例 NN」
-// prefix so it cannot be confused with the product name Restro.
-const WORK_TITLES = ["筆墨", "筆彩", "筆構"];
+// name each finished piece by character + finish — print names, not
+// process labels; each must match its actual stroke source. The caption
+// carries the 「作例 NN」 prefix so it cannot be confused with the
+// product name Restro. Per-work stroke sources (Issue #32: works must
+// differ in CONTENT, not
+// only finish — SPEC §5 C "内容と動きが異なる作品…実Restro出力の個別筆画").
+// All three are real Restro decompositions recovered from the AEP dumps:
+//   W1 筆墨 — "PV glyph" (06) FUDE S01..S13, the verified rest pose
+//     (IoU 0.9998, docs/design/data/pv-glyph-fude.composition.json).
+//   W2 解彩 — "bunkai" (02) STROKE_*_runs5, the coarser 12-stroke 解
+//     decomposition (assembled pose ~t1.8, union covers the full char).
+//   W3 筆構 — "BG decomposed strokes" (41) FUDE S01..S13, a SECOND real
+//     筆 decomposition (part1/3/4/5 + runs2/5/6/8 parents) — different
+//     stroke boundaries from W1's partition of the same char.
+// poseT sits inside each comp's assembled window (shape keys are static
+// in these comps; the value only selects the evaluated transform pose).
+const WORK_SOURCES = [
+  { comp: "PV glyph", pattern: /^FUDE S\d+/, poseT: 2, title: "筆墨" },
+  { comp: "bunkai", pattern: /^STROKE_\d+_runs5$/, poseT: 1.8, title: "解彩" },
+  { comp: "BG decomposed strokes", pattern: /^FUDE S\d+/, poseT: 0.5, title: "筆構" },
+] as const;
+
+const WORK_TITLES = WORK_SOURCES.map((s) => s.title);
 const CELL_BG = "#ffffff";
 const TITLE_INK = "#1d1d20";
 const RULE_INK = "#d8d4c9";
@@ -97,15 +115,11 @@ const GRAD_BOT: [number, number, number] = [0.88, 0.28, 0.1];
 const INK: [number, number, number] = [0.1, 0.1, 0.11];
 const W3_INK: [number, number, number] = [0.12, 0.12, 0.13]; // emblem ink
 
-// Stroke source: "PV glyph" (06) at POSE_T — the verified rest-pose 正本
-// (IoU 0.9998 vs outline, docs/design/data/pv-glyph-fude.composition.json).
-// The previous source "Baseline" (01) has a baked ~0.73 scatter offset in
-// its dumped transforms (assembly-metrics rootCauseNote), so the gallery
-// pieces were built on displaced geometry. POSE_T=2 sits inside the
-// assembled window (release expression starts 7.142s; poseT>=8 shows the
-// separated state — verified by stroke-bbox sweep).
-const STROKE_COMP = "PV glyph";
-const POSE_T = 2;
+// Stroke source note: per-work sources live in WORK_SOURCES above; the
+// previous single source "PV glyph" (06) at POSE_T=2 was the verified
+// rest pose (IoU 0.9998). The old "Baseline" (01) source was rejected —
+// its dumped transforms carry a baked ~0.73 scatter offset
+// (assembly-metrics rootCauseNote).
 
 // char bbox is MEASURED at runtime in buildData() from the stroke points —
 // no hardcoded comp-space rect, so the fit survives a comp/asset swap.
@@ -134,42 +148,50 @@ interface WorkGeom {
   centers: [number, number][];
 }
 
-let cached: {
+interface WorkPack {
   comp: CompSpec;
-  ink: StrokeItem[];
-  waveColor: StrokeItem[];
-  proof: StrokeItem[];
-  proof2: StrokeItem[];
-  proofL: StrokeItem[];
-  proofR: StrokeItem[];
-  // work03 wings: left-half strokes upright + right-half strokes mirrored
-  // about the char centerline, per wing
-  emblemInkL: StrokeItem[];
-  emblemInkR: StrokeItem[];
-  geomL: WorkGeom;
-  geomR: WorkGeom;
+  poseT: number;
+  strokes: StrokeItem[];
   geom: WorkGeom;
   // measured char bbox center (comp space) for mirror transforms
   bbCx: number;
+  bbCy: number;
+  // finished palettes
+  ink: StrokeItem[];
+  wave: StrokeItem[];
+  // proof palette for THIS work (rotated so adjacent works' proof
+  // flashes cannot be mistaken for leftover strokes at the cut)
+  proof: StrokeItem[];
+  // emblem halves: strokes left/right of bbCx, per half (W3)
+  emblemInkL: StrokeItem[];
+  emblemInkR: StrokeItem[];
+  proofL: StrokeItem[];
+  proofR: StrokeItem[];
+  geomL: WorkGeom;
+  geomR: WorkGeom;
   // derived fit transforms (measured bbox -> optical targets)
   singleFit: string;
   wingLeftStatic: string;
-} | null = null;
+}
 
-// writing order = the S-number in the dumped layer name (same convention
-// as SceneB)
+let cached: WorkPack[] | null = null;
+
+// writing order = first digit group in the dumped layer name —
+// "FUDE S03 (...)" -> 3, "STROKE_016_runs5" -> 16, "...runs2" parents
+// keep their S-number via the FUDE prefix. Works across all three
+// stroke sources without a per-comp naming convention.
 function strokeOrderIndex(name: string): number {
-  const m = /S(\d+)/.exec(name);
+  const m = /(\d+)/.exec(name);
   return m ? parseInt(m[1], 10) : 99;
 }
 
-function buildData() {
-  if (cached) return cached;
-  const { comp, strokes } = compStrokes(STROKE_COMP, {
-    pattern: /^FUDE S\d+/,
-    poseT: POSE_T,
+function buildWork(src: (typeof WORK_SOURCES)[number], w: number): WorkPack {
+  const { comp, strokes } = compStrokes(src.comp, {
+    pattern: src.pattern,
+    poseT: src.poseT,
   });
-  if (!strokes.length) throw new Error(`${STROKE_COMP} FUDE strokes not found`);
+  if (!strokes.length)
+    throw new Error(`${src.comp} strokes not found for ${src.title}`);
 
   let minX = 1e9,
     minY = 1e9,
@@ -230,21 +252,18 @@ function buildData() {
     a[1] + (b[1] - a[1]) * t,
     a[2] + (b[2] - a[2]) * t,
   ];
-  const waveColor = tintedStrokes(strokes, (s) => {
+  const wave = tintedStrokes(strokes, (s) => {
     const t = clamp01((s.center[1] - minY) / Math.max(1, maxY - minY));
     return lerp3(GRAD_TOP, GRAD_BOT, t);
   });
-  // Proof strokes share the color-separated material across the three
-  // works, but each work rotates the palette so its proof cannot be
-  // mistaken for the previous work's leftover strokes at the cut. Color is
-  // assigned by writing-order rank so the same stroke keeps a stable proof
-  // color inside each work.
-  const proofColor = (shift: number) => (_s: StrokeItem, i: number) =>
-    PROOF_COLORS[(geom.rank[i] + shift) % PROOF_COLORS.length];
-  const proof = tintedStrokes(strokes, proofColor(0));
-  const proof2 = tintedStrokes(strokes, proofColor(2));
-  const proof3 = tintedStrokes(strokes, proofColor(4));
-  // work03 is deliberately monochrome: one near-black ink for the whole
+  // Proof color assigned by writing-order rank so a stroke keeps a stable
+  // proof color; the per-work shift keeps adjacent works' flashes distinct.
+  const proofShift = w * 2;
+  const proof = tintedStrokes(
+    strokes,
+    (_s, i) => PROOF_COLORS[(rank[i] + proofShift) % PROOF_COLORS.length],
+  );
+  // W3 is deliberately monochrome: one near-black ink for the whole
   // emblem so the mirrored pair reads as a single designed mark. Each
   // wing gets the strokes on its own half of the char; the other half is
   // supplied mirrored about the char centerline (see the wing markup).
@@ -262,8 +281,8 @@ function buildData() {
   };
   const emblemInkL = tintedStrokes(pick(strokes), () => W3_INK);
   const emblemInkR = tintedStrokes(pickR(strokes), () => W3_INK);
-  const proofL = pick(proof3);
-  const proofR = pickR(proof3);
+  const proofL = pick(proof);
+  const proofR = pickR(proof);
   const geomL = subsetGeom(true);
   const geomR = subsetGeom(false);
 
@@ -277,23 +296,30 @@ function buildData() {
   const w3s = W3_TARGET_W / wingW;
   const wingLeftStatic = `translate(${W3_LX - bbCx * w3s}px,${W3_CY - bbCy * w3s}px) scale(${w3s})`;
 
-  cached = {
+  return {
     comp,
-    ink,
-    waveColor,
-    proof,
-    proof2,
-    proofL,
-    proofR,
-    emblemInkL,
-    emblemInkR,
-    geomL,
-    geomR,
+    poseT: src.poseT,
+    strokes,
     geom,
     bbCx,
+    bbCy,
+    ink,
+    wave,
+    proof,
+    emblemInkL,
+    emblemInkR,
+    proofL,
+    proofR,
+    geomL,
+    geomR,
     singleFit,
     wingLeftStatic,
   };
+}
+
+function buildData(): WorkPack[] {
+  if (cached) return cached;
+  cached = WORK_SOURCES.map((src, w) => buildWork(src, w));
   return cached;
 }
 
@@ -448,23 +474,8 @@ function proofTransform(
 
 export const SceneC: React.FC<{ t: number }> = ({ t }) => {
   if (t < T0 || t >= T1) return null;
-  const {
-    comp,
-    ink,
-    waveColor,
-    proof,
-    proof2,
-    proofL,
-    proofR,
-    emblemInkL,
-    emblemInkR,
-    geomL,
-    geomR,
-    geom,
-    bbCx,
-    singleFit,
-    wingLeftStatic,
-  } = buildData();
+  const works = buildData();
+  const [w1, w2, w3] = works;
   const rel = t - T0;
   const sy = scrollY(rel);
   // hold the finished emblem until rel ~3.71, then a fast fade completes
@@ -504,7 +515,7 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
   // the cell center, so both wings are exact mirror images. Transform
   // lists apply right-to-left, so the comp-space fit is rightmost.
   const wingRightStatic =
-    `translate(${2 * W3_MX}px,0px) scale(-1,1) ` + wingLeftStatic;
+    `translate(${2 * W3_MX}px,0px) scale(-1,1) ` + w3.wingLeftStatic;
 
   // One emblem wing = left-half strokes upright + right-half strokes
   // mirrored about the char centerline. The right wing reuses this exact
@@ -517,21 +528,21 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
         position: "absolute",
         left: 0,
         top: 0,
-        width: comp.width,
-        height: comp.height,
+        width: w3.comp.width,
+        height: w3.comp.height,
         transform,
         transformOrigin: "0 0",
       }}
     >
       <StrokeField
-        comp={comp}
-        strokes={emblemInkL}
-        poseT={POSE_T}
+        comp={w3.comp}
+        strokes={w3.emblemInkL}
+        poseT={w3.poseT}
         opacity={final3}
         strokeTransform={(s, i) =>
           proofTransform(
             s,
-            geomL,
+            w3.geomL,
             i,
             p3.motionSep,
             p3.motion,
@@ -547,21 +558,21 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
           position: "absolute",
           left: 0,
           top: 0,
-          width: comp.width,
-          height: comp.height,
-          transform: `translate(${2 * bbCx}px,0px) scale(-1,1)`,
+          width: w3.comp.width,
+          height: w3.comp.height,
+          transform: `translate(${2 * w3.bbCx}px,0px) scale(-1,1)`,
           transformOrigin: "0 0",
         }}
       >
         <StrokeField
-          comp={comp}
-          strokes={emblemInkR}
-          poseT={POSE_T}
+          comp={w3.comp}
+          strokes={w3.emblemInkR}
+          poseT={w3.poseT}
           opacity={final3}
           strokeTransform={(s, i) =>
             proofTransform(
               s,
-              geomR,
+              w3.geomR,
               i,
               p3.motionSep,
               p3.motion,
@@ -574,14 +585,14 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
       {p3.proof > 0.001 && (
         <>
           <StrokeField
-            comp={comp}
-            strokes={proofL}
-            poseT={POSE_T}
+            comp={w3.comp}
+            strokes={w3.proofL}
+            poseT={w3.poseT}
             opacity={p3.proof}
             strokeTransform={(s, i) =>
               proofTransform(
                 s,
-                geomL,
+                w3.geomL,
                 i,
                 p3.separate,
                 0,
@@ -595,21 +606,21 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
               position: "absolute",
               left: 0,
               top: 0,
-              width: comp.width,
-              height: comp.height,
-              transform: `translate(${2 * bbCx}px,0px) scale(-1,1)`,
+              width: w3.comp.width,
+              height: w3.comp.height,
+              transform: `translate(${2 * w3.bbCx}px,0px) scale(-1,1)`,
               transformOrigin: "0 0",
             }}
           >
             <StrokeField
-              comp={comp}
-              strokes={proofR}
-              poseT={POSE_T}
+              comp={w3.comp}
+              strokes={w3.proofR}
+              poseT={w3.poseT}
               opacity={p3.proof}
               strokeTransform={(s, i) =>
                 proofTransform(
                   s,
-                  geomR,
+                  w3.geomR,
                   i,
                   p3.separate,
                   0,
@@ -676,22 +687,22 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                       position: "absolute",
                       left: 0,
                       top: 0,
-                      width: comp.width,
-                      height: comp.height,
-                      transform: singleFit,
+                      width: w1.comp.width,
+                      height: w1.comp.height,
+                      transform: w1.singleFit,
                       transformOrigin: "0 0",
                     }}
                   >
                     {/* finished ink piece — carries the long holds */}
                     <StrokeField
-                      comp={comp}
-                      strokes={ink}
-                      poseT={POSE_T}
+                      comp={w1.comp}
+                      strokes={w1.ink}
+                      poseT={w1.poseT}
                       opacity={final1}
                       strokeTransform={(s, i) =>
                         proofTransform(
                           s,
-                          geom,
+                          w1.geom,
                           i,
                           p1.motionSep,
                           p1.motion,
@@ -704,14 +715,14 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                         decompose -> orbit -> recombine beat */}
                     {proof1 > 0.001 && (
                       <StrokeField
-                        comp={comp}
-                        strokes={proof}
-                        poseT={POSE_T}
+                        comp={w1.comp}
+                        strokes={w1.proof}
+                        poseT={w1.poseT}
                         opacity={proof1}
                         strokeTransform={(s, i) =>
                           proofTransform(
                             s,
-                            geom,
+                            w1.geom,
                             i,
                             separate1,
                             0,
@@ -729,22 +740,22 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                       position: "absolute",
                       left: 0,
                       top: 0,
-                      width: comp.width,
-                      height: comp.height,
-                      transform: singleFit,
+                      width: w2.comp.width,
+                      height: w2.comp.height,
+                      transform: w2.singleFit,
                       transformOrigin: "0 0",
                     }}
                   >
                     {/* work02's finished form IS the gradient char */}
                     <StrokeField
-                      comp={comp}
-                      strokes={waveColor}
-                      poseT={POSE_T}
+                      comp={w2.comp}
+                      strokes={w2.wave}
+                      poseT={w2.poseT}
                       opacity={final2}
                       strokeTransform={(s, i) =>
                         proofTransform(
                           s,
-                          geom,
+                          w2.geom,
                           i,
                           p2.motionSep,
                           p2.motion,
@@ -757,14 +768,14 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                         swept by the x-ordered wave before recomposing */}
                     {p2.proof > 0.001 && (
                       <StrokeField
-                        comp={comp}
-                        strokes={proof2}
-                        poseT={POSE_T}
+                        comp={w2.comp}
+                        strokes={w2.proof}
+                        poseT={w2.poseT}
                         opacity={p2.proof}
                         strokeTransform={(s, i) =>
                           proofTransform(
                             s,
-                            geom,
+                            w2.geom,
                             i,
                             p2.separate,
                             0,
@@ -786,13 +797,13 @@ export const SceneC: React.FC<{ t: number }> = ({ t }) => {
                         position: "absolute",
                         left: 0,
                         top: 0,
-                        width: comp.width,
-                        height: comp.height,
+                        width: w3.comp.width,
+                        height: w3.comp.height,
                         transform: W3_WRAPPER,
                         transformOrigin: "0 0",
                       }}
                     >
-                      {renderEmblemWing(wingLeftStatic)}
+                      {renderEmblemWing(w3.wingLeftStatic)}
                       {renderEmblemWing(wingRightStatic)}
                     </div>
                   </>
