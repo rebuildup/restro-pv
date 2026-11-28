@@ -1,12 +1,17 @@
 {
+ "schema": "restro-pv/composition@2",
+ "generatedAt": "2026-11-28T02:55:09.405Z",
+ "generatedBy": "tools/design/export-compositions.ts",
+ "canonicalSource": "pv/generated/*.ts dumps -> derived authoritative design JSON (preserves expressions, effects, nested group matrices, and reference-space matrices).",
  "id": "fude-decomposition",
- "title": "「筆」筆画分解 + 元輪郭 (Baseline comp)",
+ "title": "「筆」筆画分解 + 元輪郭 (Baseline comp — 式プリベイク含む実態記録)",
  "comp": {
   "file": "pv/generated/01-Baseline.ts",
   "exportName": "comp_01",
   "width": 1080,
   "height": 1080,
-  "duration": 3.66666666666667
+  "duration": 3.66666666666667,
+  "frameRate": 24
  },
  "layerIndices": [
   1,
@@ -29,12 +34,13 @@
  "space": {
   "kind": "comp"
  },
- "notes": "Layers 1-2 are the connected outline references (base / offset=-4 inset); layers 4-16 are the 13 FUDE stroke shapes (S01-S13) plus merged leftovers. Position channels carry expressions (per-stroke easeOut offset table) — evals already include expression results. comp space = assembly space (no parents).",
+ "notes": "Layers 1-2 are connected outline references (inset / base; right edge extends past 1080px to x=1309); layers 3-15 are the 13 decomposed FUDE strokes (S01-S12 + S13 merged). NOTE: in 01-Baseline.ts, Position.value was dumped at a CTI frame during easeOut, baking ~0.7278*m[k] into Position.value (same-space IoU vs outline = 0.7310 unclipped). See pv-glyph-fude.composition.json for exact zero-offset rest assembly (IoU = 0.9998).",
  "elements": [
   {
    "index": 1,
    "name": "FUDE outline inset",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 3.66666666666667,
    "startTime": -4.25,
@@ -45,6 +51,7 @@
    "shy": false,
    "hasExpression": true,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -85,6 +92,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -353,29 +361,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S01",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S01"
      },
      {
       "name": "Path 1",
@@ -581,29 +601,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S02",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S02"
      },
      {
       "name": "Path 1",
@@ -737,29 +769,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S03",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S03"
      },
      {
       "name": "Path 1",
@@ -1085,29 +1129,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S04",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S04"
      },
      {
       "name": "Path 1",
@@ -1301,29 +1357,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S05",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S05"
      },
      {
       "name": "Path 1",
@@ -1601,29 +1669,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S06",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S06"
      },
      {
       "name": "Path 1",
@@ -1889,29 +1969,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S07",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S07"
      },
      {
       "name": "Path 1",
@@ -2105,29 +2197,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S08",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S08"
      },
      {
       "name": "Path 1",
@@ -2537,29 +2641,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S09",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S09"
      },
      {
       "name": "Path 1",
@@ -2825,29 +2941,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S10",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S10"
      },
      {
       "name": "Path 1",
@@ -3245,29 +3373,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S11",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S11"
      },
      {
       "name": "Path 1",
@@ -3677,29 +3817,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S12",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S12"
      },
      {
       "name": "Path 1",
@@ -4829,36 +4981,48 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S13",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S13"
      }
     ],
-    "hash": "943eefa0a9e94312"
+    "hash": "c36ecbaa4e1408ad"
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        0,
@@ -4882,6 +5046,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      540,
+      540
+     ],
      "world": [
       1,
       0,
@@ -4900,10 +5086,11 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     },
     {
-     "t": 1.833,
+     "t": 1.8333,
      "transform": {
       "anchor": [
        0,
@@ -4927,6 +5114,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      540,
+      540
+     ],
      "world": [
       1,
       0,
@@ -4945,10 +5154,11 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     },
     {
-     "t": 3.617,
+     "t": 3.6667,
      "transform": {
       "anchor": [
        0,
@@ -4972,6 +5182,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      540,
+      540
+     ],
      "world": [
       1,
       0,
@@ -4990,7 +5222,8 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     }
    ]
   },
@@ -4998,6 +5231,7 @@
    "index": 2,
    "name": "FUDE outline base",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 3.66666666666667,
    "startTime": -4.25,
@@ -5008,6 +5242,7 @@
    "shy": false,
    "hasExpression": true,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -5048,6 +5283,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -5316,29 +5552,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S01",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S01"
      },
      {
       "name": "Path 1",
@@ -5544,29 +5792,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S02",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S02"
      },
      {
       "name": "Path 1",
@@ -5700,29 +5960,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S03",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S03"
      },
      {
       "name": "Path 1",
@@ -6048,29 +6320,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S04",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S04"
      },
      {
       "name": "Path 1",
@@ -6264,29 +6548,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S05",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S05"
      },
      {
       "name": "Path 1",
@@ -6564,29 +6860,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S06",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S06"
      },
      {
       "name": "Path 1",
@@ -6852,29 +7160,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S07",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S07"
      },
      {
       "name": "Path 1",
@@ -7068,29 +7388,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S08",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S08"
      },
      {
       "name": "Path 1",
@@ -7500,29 +7832,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S09",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S09"
      },
      {
       "name": "Path 1",
@@ -7788,29 +8132,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S10",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S10"
      },
      {
       "name": "Path 1",
@@ -8208,29 +8564,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S11",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S11"
      },
      {
       "name": "Path 1",
@@ -8640,29 +9008,41 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S12",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S12"
      },
      {
       "name": "Path 1",
@@ -9792,36 +10172,48 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "S13",
        "Path 1"
-      ]
+      ],
+      "paintScopeKey": "S13"
      }
     ],
-    "hash": "a15aacc27892175c"
+    "hash": "3061d7066b1ad6ff"
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        0,
@@ -9845,6 +10237,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      540,
+      540
+     ],
      "world": [
       1,
       0,
@@ -9863,10 +10277,11 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     },
     {
-     "t": 1.833,
+     "t": 1.8333,
      "transform": {
       "anchor": [
        0,
@@ -9890,6 +10305,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      540,
+      540
+     ],
      "world": [
       1,
       0,
@@ -9908,10 +10345,11 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     },
     {
-     "t": 3.617,
+     "t": 3.6667,
      "transform": {
       "anchor": [
        0,
@@ -9935,6 +10373,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      540,
+      540
+     ],
      "world": [
       1,
       0,
@@ -9953,7 +10413,8 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     }
    ]
   },
@@ -9961,6 +10422,7 @@
    "index": 3,
    "name": "FUDE S13 (Ae_Restro merged shape)",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 3.66666666666667,
    "startTime": -4.25,
@@ -9971,6 +10433,7 @@
    "shy": false,
    "hasExpression": true,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -9988,7 +10451,8 @@
        979.495531403704,
        728.248069986073,
        0
-      ]
+      ],
+      "expression": "var m={'S01':[-26,10],'S02':[8,20],'S03':[10,-18],'S04':[16,-20],'S05':[20,18],'S06':[28,-8],'S07':[-30,-12],'S08':[40,-6],'S09':[-30,-5],'S10':[-30,2],'S11':[-30,8],'S12':[-30,14],'S13':[40,4]};\nvar k=thisLayer.name.substr(5,3);var d=m[k]?m[k]:[0,0];\nvar p=easeOut(time,7.142,7.611,0,1);\nvalue+[d[0]*p,d[1]*p,0].slice(0,value.length);"
      },
      {
       "matchName": "ADBE Scale",
@@ -10011,6 +10475,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -11143,36 +11608,48 @@
         "fillRule": "evenodd"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "merged geometry",
        "outline 0"
-      ]
+      ],
+      "paintScopeKey": "merged geometry"
      }
     ],
-    "hash": "c6ee3ebafe7806a8"
+    "hash": "d1717954f131f4c5"
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        390.385192871094,
@@ -11196,6 +11673,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      589.1103385326101,
+      202.91103385326096,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      979.4955,
+      728.2481
+     ],
      "world": [
       1,
       0,
@@ -11214,10 +11713,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 1.833,
+     "t": 1.8333,
      "transform": {
       "anchor": [
        390.385192871094,
@@ -11241,6 +11741,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      589.1103385326101,
+      202.91103385326096,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      979.4955,
+      728.2481
+     ],
      "world": [
       1,
       0,
@@ -11259,10 +11781,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 3.617,
+     "t": 3.6667,
      "transform": {
       "anchor": [
        390.385192871094,
@@ -11286,6 +11809,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      589.1103385326101,
+      202.91103385326096,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      979.4955,
+      728.2481
+     ],
      "world": [
       1,
       0,
@@ -11304,7 +11849,212 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.142,
+     "transform": {
+      "anchor": [
+       390.385192871094,
+       525.337036132812,
+       0
+      ],
+      "position": [
+       979.495531403704,
+       728.248069986073,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      589.1103385326101,
+      202.91103385326096,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      979.4955,
+      728.2481
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      589.1103385326101,
+      202.91103385326096,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.3765,
+     "transform": {
+      "anchor": [
+       390.385192871094,
+       525.337036132812,
+       0
+      ],
+      "position": [
+       1009.495531403704,
+       731.248069986073,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      619.1103385326101,
+      205.91103385326096,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1009.4955,
+      731.2481
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      619.1103385326101,
+      205.91103385326096,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.611,
+     "transform": {
+      "anchor": [
+       390.385192871094,
+       525.337036132812,
+       0
+      ],
+      "position": [
+       1019.495531403704,
+       732.248069986073,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      629.1103385326101,
+      206.91103385326096,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1019.4955,
+      732.2481
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      629.1103385326101,
+      206.91103385326096,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
     }
    ]
   },
@@ -11312,6 +12062,7 @@
    "index": 4,
    "name": "FUDE S04 (Ae_Restro part 1)",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 3.66666666666667,
    "startTime": -4.25,
@@ -11322,6 +12073,7 @@
    "shy": false,
    "hasExpression": true,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -11339,7 +12091,8 @@
        1016.26590054976,
        371.762060958304,
        0
-      ]
+      ],
+      "expression": "var m={'S01':[-26,10],'S02':[8,20],'S03':[10,-18],'S04':[16,-20],'S05':[20,18],'S06':[28,-8],'S07':[-30,-12],'S08':[40,-6],'S09':[-30,-5],'S10':[-30,2],'S11':[-30,8],'S12':[-30,14],'S13':[40,4]};\nvar k=thisLayer.name.substr(5,3);var d=m[k]?m[k]:[0,0];\nvar p=easeOut(time,7.142,7.611,0,1);\nvalue+[d[0]*p,d[1]*p,0].slice(0,value.length);"
      },
      {
       "matchName": "ADBE Scale",
@@ -11362,6 +12115,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -11690,36 +12444,48 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "part 1",
        "outline 0"
-      ]
+      ],
+      "paintScopeKey": "part 1"
      }
     ],
-    "hash": "ddbfb4adb82faea0"
+    "hash": "da118ea412a4b40d"
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        1004.62176513672,
@@ -11743,6 +12509,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      11.644135413039976,
+      -14.555169266304972,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1016.2659,
+      371.7621
+     ],
      "world": [
       1,
       0,
@@ -11761,10 +12549,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 1.833,
+     "t": 1.8333,
      "transform": {
       "anchor": [
        1004.62176513672,
@@ -11788,6 +12577,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      11.644135413039976,
+      -14.555169266304972,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1016.2659,
+      371.7621
+     ],
      "world": [
       1,
       0,
@@ -11806,10 +12617,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 3.617,
+     "t": 3.6667,
      "transform": {
       "anchor": [
        1004.62176513672,
@@ -11833,6 +12645,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      11.644135413039976,
+      -14.555169266304972,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1016.2659,
+      371.7621
+     ],
      "world": [
       1,
       0,
@@ -11851,7 +12685,212 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.142,
+     "transform": {
+      "anchor": [
+       1004.62176513672,
+       386.317230224609,
+       0
+      ],
+      "position": [
+       1016.26590054976,
+       371.762060958304,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      11.644135413039976,
+      -14.555169266304972,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1016.2659,
+      371.7621
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      11.644135413039976,
+      -14.555169266304972,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.3765,
+     "transform": {
+      "anchor": [
+       1004.62176513672,
+       386.317230224609,
+       0
+      ],
+      "position": [
+       1028.2659005497599,
+       356.762060958304,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      23.644135413039862,
+      -29.555169266304972,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1028.2659,
+      356.7621
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      23.644135413039862,
+      -29.555169266304972,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.611,
+     "transform": {
+      "anchor": [
+       1004.62176513672,
+       386.317230224609,
+       0
+      ],
+      "position": [
+       1032.2659005497599,
+       351.762060958304,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      27.644135413039862,
+      -34.55516926630497,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1032.2659,
+      351.7621
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      27.644135413039862,
+      -34.55516926630497,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
     }
    ]
   },
@@ -11859,6 +12898,7 @@
    "index": 5,
    "name": "FUDE S10 (Ae_Restro part 4)",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 3.66666666666667,
    "startTime": -4.25,
@@ -11869,6 +12909,7 @@
    "shy": false,
    "hasExpression": true,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -11886,7 +12927,8 @@
        936.244516608355,
        702.575267903193,
        0
-      ]
+      ],
+      "expression": "var m={'S01':[-26,10],'S02':[8,20],'S03':[10,-18],'S04':[16,-20],'S05':[20,18],'S06':[28,-8],'S07':[-30,-12],'S08':[40,-6],'S09':[-30,-5],'S10':[-30,2],'S11':[-30,8],'S12':[-30,14],'S13':[40,4]};\nvar k=thisLayer.name.substr(5,3);var d=m[k]?m[k]:[0,0];\nvar p=easeOut(time,7.142,7.611,0,1);\nvalue+[d[0]*p,d[1]*p,0].slice(0,value.length);"
      },
      {
       "matchName": "ADBE Scale",
@@ -11909,6 +12951,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -12177,36 +13220,48 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "part 4",
        "outline 0"
-      ]
+      ],
+      "paintScopeKey": "part 4"
      }
     ],
-    "hash": "c72835e5993aae27"
+    "hash": "170620eb786796d2"
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        958.077270507812,
@@ -12230,6 +13285,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.83275389945709,
+      1.455516926630935,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      936.2445,
+      702.5753
+     ],
      "world": [
       1,
       0,
@@ -12248,10 +13325,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 1.833,
+     "t": 1.8333,
      "transform": {
       "anchor": [
        958.077270507812,
@@ -12275,6 +13353,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.83275389945709,
+      1.455516926630935,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      936.2445,
+      702.5753
+     ],
      "world": [
       1,
       0,
@@ -12293,10 +13393,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 3.617,
+     "t": 3.6667,
      "transform": {
       "anchor": [
        958.077270507812,
@@ -12320,6 +13421,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.83275389945709,
+      1.455516926630935,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      936.2445,
+      702.5753
+     ],
      "world": [
       1,
       0,
@@ -12338,7 +13461,212 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.142,
+     "transform": {
+      "anchor": [
+       958.077270507812,
+       701.119750976562,
+       0
+      ],
+      "position": [
+       936.244516608355,
+       702.575267903193,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.83275389945709,
+      1.455516926630935,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      936.2445,
+      702.5753
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.83275389945709,
+      1.455516926630935,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.3765,
+     "transform": {
+      "anchor": [
+       958.077270507812,
+       701.119750976562,
+       0
+      ],
+      "position": [
+       913.744516608355,
+       704.075267903193,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -44.33275389945709,
+      2.955516926630935,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      913.7445,
+      704.0753
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -44.33275389945709,
+      2.955516926630935,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.611,
+     "transform": {
+      "anchor": [
+       958.077270507812,
+       701.119750976562,
+       0
+      ],
+      "position": [
+       906.244516608355,
+       704.575267903193,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -51.83275389945709,
+      3.455516926630935,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      906.2445,
+      704.5753
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -51.83275389945709,
+      3.455516926630935,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
     }
    ]
   },
@@ -12346,6 +13674,7 @@
    "index": 6,
    "name": "FUDE S07 (Ae_Restro part 3)",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 3.66666666666667,
    "startTime": -4.25,
@@ -12356,6 +13685,7 @@
    "shy": false,
    "hasExpression": true,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -12373,7 +13703,8 @@
        936.948496100543,
        517.489249514436,
        0
-      ]
+      ],
+      "expression": "var m={'S01':[-26,10],'S02':[8,20],'S03':[10,-18],'S04':[16,-20],'S05':[20,18],'S06':[28,-8],'S07':[-30,-12],'S08':[40,-6],'S09':[-30,-5],'S10':[-30,2],'S11':[-30,8],'S12':[-30,14],'S13':[40,4]};\nvar k=thisLayer.name.substr(5,3);var d=m[k]?m[k]:[0,0];\nvar p=easeOut(time,7.142,7.611,0,1);\nvalue+[d[0]*p,d[1]*p,0].slice(0,value.length);"
      },
      {
       "matchName": "ADBE Scale",
@@ -12396,6 +13727,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -12664,36 +13996,48 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "part 3",
        "outline 0"
-      ]
+      ],
+      "paintScopeKey": "part 3"
      }
     ],
-    "hash": "ee99edd5640f8648"
+    "hash": "cfef051e7553e9ff"
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        958.78125,
@@ -12717,6 +14061,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.832753899456975,
+      -8.733101559782995,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      936.9485,
+      517.4892
+     ],
      "world": [
       1,
       0,
@@ -12735,10 +14101,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 1.833,
+     "t": 1.8333,
      "transform": {
       "anchor": [
        958.78125,
@@ -12762,6 +14129,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.832753899456975,
+      -8.733101559782995,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      936.9485,
+      517.4892
+     ],
      "world": [
       1,
       0,
@@ -12780,10 +14169,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 3.617,
+     "t": 3.6667,
      "transform": {
       "anchor": [
        958.78125,
@@ -12807,6 +14197,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.832753899456975,
+      -8.733101559782995,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      936.9485,
+      517.4892
+     ],
      "world": [
       1,
       0,
@@ -12825,7 +14237,212 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.142,
+     "transform": {
+      "anchor": [
+       958.78125,
+       526.222351074219,
+       0
+      ],
+      "position": [
+       936.948496100543,
+       517.489249514436,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.832753899456975,
+      -8.733101559782995,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      936.9485,
+      517.4892
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.832753899456975,
+      -8.733101559782995,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.3765,
+     "transform": {
+      "anchor": [
+       958.78125,
+       526.222351074219,
+       0
+      ],
+      "position": [
+       914.448496100543,
+       508.489249514436,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -44.332753899456975,
+      -17.733101559782995,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      914.4485,
+      508.4892
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -44.332753899456975,
+      -17.733101559782995,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.611,
+     "transform": {
+      "anchor": [
+       958.78125,
+       526.222351074219,
+       0
+      ],
+      "position": [
+       906.948496100543,
+       505.489249514436,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -51.832753899456975,
+      -20.733101559782995,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      906.9485,
+      505.4892
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -51.832753899456975,
+      -20.733101559782995,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
     }
    ]
   },
@@ -12833,6 +14450,7 @@
    "index": 7,
    "name": "FUDE S03 (Ae_Restro part 1)",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 3.66666666666667,
    "startTime": -4.25,
@@ -12843,6 +14461,7 @@
    "shy": false,
    "hasExpression": true,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -12860,7 +14479,8 @@
        823.891781410496,
        373.721270511888,
        0
-      ]
+      ],
+      "expression": "var m={'S01':[-26,10],'S02':[8,20],'S03':[10,-18],'S04':[16,-20],'S05':[20,18],'S06':[28,-8],'S07':[-30,-12],'S08':[40,-6],'S09':[-30,-5],'S10':[-30,2],'S11':[-30,8],'S12':[-30,14],'S13':[40,4]};\nvar k=thisLayer.name.substr(5,3);var d=m[k]?m[k]:[0,0];\nvar p=easeOut(time,7.142,7.611,0,1);\nvalue+[d[0]*p,d[1]*p,0].slice(0,value.length);"
      },
      {
       "matchName": "ADBE Scale",
@@ -12883,6 +14503,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -13019,36 +14640,48 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "part 1",
        "outline 0"
-      ]
+      ],
+      "paintScopeKey": "part 1"
      }
     ],
-    "hash": "a322abb3f377a428"
+    "hash": "1ad1c4c942caaeb6"
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        816.614196777344,
@@ -13072,6 +14705,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      7.27758463315206,
+      -13.09965233967398,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      823.8918,
+      373.7213
+     ],
      "world": [
       1,
       0,
@@ -13090,10 +14745,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 1.833,
+     "t": 1.8333,
      "transform": {
       "anchor": [
        816.614196777344,
@@ -13117,6 +14773,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      7.27758463315206,
+      -13.09965233967398,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      823.8918,
+      373.7213
+     ],
      "world": [
       1,
       0,
@@ -13135,10 +14813,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 3.617,
+     "t": 3.6667,
      "transform": {
       "anchor": [
        816.614196777344,
@@ -13162,6 +14841,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      7.27758463315206,
+      -13.09965233967398,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      823.8918,
+      373.7213
+     ],
      "world": [
       1,
       0,
@@ -13180,7 +14881,212 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.142,
+     "transform": {
+      "anchor": [
+       816.614196777344,
+       386.820922851562,
+       0
+      ],
+      "position": [
+       823.891781410496,
+       373.721270511888,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      7.27758463315206,
+      -13.09965233967398,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      823.8918,
+      373.7213
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      7.27758463315206,
+      -13.09965233967398,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.3765,
+     "transform": {
+      "anchor": [
+       816.614196777344,
+       386.820922851562,
+       0
+      ],
+      "position": [
+       831.391781410496,
+       360.221270511888,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      14.77758463315206,
+      -26.59965233967398,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      831.3918,
+      360.2213
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      14.77758463315206,
+      -26.59965233967398,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.611,
+     "transform": {
+      "anchor": [
+       816.614196777344,
+       386.820922851562,
+       0
+      ],
+      "position": [
+       833.891781410496,
+       355.721270511888,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      17.27758463315206,
+      -31.09965233967398,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      833.8918,
+      355.7213
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      17.27758463315206,
+      -31.09965233967398,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
     }
    ]
   },
@@ -13188,6 +15094,7 @@
    "index": 8,
    "name": "FUDE S08 (Ae_Restro part 5)",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 3.66666666666667,
    "startTime": -4.25,
@@ -13198,6 +15105,7 @@
    "shy": false,
    "hasExpression": true,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -13215,7 +15123,8 @@
        1199.77537759511,
        609.129481934952,
        0
-      ]
+      ],
+      "expression": "var m={'S01':[-26,10],'S02':[8,20],'S03':[10,-18],'S04':[16,-20],'S05':[20,18],'S06':[28,-8],'S07':[-30,-12],'S08':[40,-6],'S09':[-30,-5],'S10':[-30,2],'S11':[-30,8],'S12':[-30,14],'S13':[40,4]};\nvar k=thisLayer.name.substr(5,3);var d=m[k]?m[k]:[0,0];\nvar p=easeOut(time,7.142,7.611,0,1);\nvalue+[d[0]*p,d[1]*p,0].slice(0,value.length);"
      },
      {
       "matchName": "ADBE Scale",
@@ -13238,6 +15147,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -13434,36 +15344,48 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "part 5",
        "outline 0"
-      ]
+      ],
+      "paintScopeKey": "part 5"
      }
     ],
-    "hash": "063394e0e0ee5174"
+    "hash": "ed3d06664893d072"
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        1170.6650390625,
@@ -13487,6 +15409,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      29.110338532610058,
+      -4.366550779892009,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1199.7754,
+      609.1295
+     ],
      "world": [
       1,
       0,
@@ -13505,10 +15449,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 1.833,
+     "t": 1.8333,
      "transform": {
       "anchor": [
        1170.6650390625,
@@ -13532,6 +15477,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      29.110338532610058,
+      -4.366550779892009,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1199.7754,
+      609.1295
+     ],
      "world": [
       1,
       0,
@@ -13550,10 +15517,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 3.617,
+     "t": 3.6667,
      "transform": {
       "anchor": [
        1170.6650390625,
@@ -13577,6 +15545,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      29.110338532610058,
+      -4.366550779892009,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1199.7754,
+      609.1295
+     ],
      "world": [
       1,
       0,
@@ -13595,7 +15585,212 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.142,
+     "transform": {
+      "anchor": [
+       1170.6650390625,
+       613.496032714844,
+       0
+      ],
+      "position": [
+       1199.77537759511,
+       609.129481934952,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      29.110338532610058,
+      -4.366550779892009,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1199.7754,
+      609.1295
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      29.110338532610058,
+      -4.366550779892009,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.3765,
+     "transform": {
+      "anchor": [
+       1170.6650390625,
+       613.496032714844,
+       0
+      ],
+      "position": [
+       1229.77537759511,
+       604.629481934952,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      59.11033853261006,
+      -8.866550779892009,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1229.7754,
+      604.6295
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      59.11033853261006,
+      -8.866550779892009,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.611,
+     "transform": {
+      "anchor": [
+       1170.6650390625,
+       613.496032714844,
+       0
+      ],
+      "position": [
+       1239.77537759511,
+       603.129481934952,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      69.11033853261006,
+      -10.366550779892009,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1239.7754,
+      603.1295
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      69.11033853261006,
+      -10.366550779892009,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
     }
    ]
   },
@@ -13603,6 +15798,7 @@
    "index": 9,
    "name": "FUDE S06 (Ae_Restro part 1)",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 3.66666666666667,
    "startTime": -4.25,
@@ -13613,6 +15809,7 @@
    "shy": false,
    "hasExpression": true,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -13630,7 +15827,8 @@
        1156.57096255876,
        380.639968426291,
        0
-      ]
+      ],
+      "expression": "var m={'S01':[-26,10],'S02':[8,20],'S03':[10,-18],'S04':[16,-20],'S05':[20,18],'S06':[28,-8],'S07':[-30,-12],'S08':[40,-6],'S09':[-30,-5],'S10':[-30,2],'S11':[-30,8],'S12':[-30,14],'S13':[40,4]};\nvar k=thisLayer.name.substr(5,3);var d=m[k]?m[k]:[0,0];\nvar p=easeOut(time,7.142,7.611,0,1);\nvalue+[d[0]*p,d[1]*p,0].slice(0,value.length);"
      },
      {
       "matchName": "ADBE Scale",
@@ -13653,6 +15851,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -13933,36 +16132,48 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "part 1",
        "outline 0"
-      ]
+      ],
+      "paintScopeKey": "part 1"
      }
     ],
-    "hash": "ae7354be5090dc8b"
+    "hash": "4b69461cf7e5168f"
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        1136.19372558594,
@@ -13986,6 +16197,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      20.3772369728199,
+      -5.822067706521011,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1156.571,
+      380.64
+     ],
      "world": [
       1,
       0,
@@ -14004,10 +16237,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 1.833,
+     "t": 1.8333,
      "transform": {
       "anchor": [
        1136.19372558594,
@@ -14031,6 +16265,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      20.3772369728199,
+      -5.822067706521011,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1156.571,
+      380.64
+     ],
      "world": [
       1,
       0,
@@ -14049,10 +16305,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 3.617,
+     "t": 3.6667,
      "transform": {
       "anchor": [
        1136.19372558594,
@@ -14076,6 +16333,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      20.3772369728199,
+      -5.822067706521011,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1156.571,
+      380.64
+     ],
      "world": [
       1,
       0,
@@ -14094,7 +16373,212 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.142,
+     "transform": {
+      "anchor": [
+       1136.19372558594,
+       386.462036132812,
+       0
+      ],
+      "position": [
+       1156.57096255876,
+       380.639968426291,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      20.3772369728199,
+      -5.822067706521011,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1156.571,
+      380.64
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      20.3772369728199,
+      -5.822067706521011,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.3765,
+     "transform": {
+      "anchor": [
+       1136.19372558594,
+       386.462036132812,
+       0
+      ],
+      "position": [
+       1177.57096255876,
+       374.639968426291,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      41.3772369728199,
+      -11.822067706521011,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1177.571,
+      374.64
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      41.3772369728199,
+      -11.822067706521011,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.611,
+     "transform": {
+      "anchor": [
+       1136.19372558594,
+       386.462036132812,
+       0
+      ],
+      "position": [
+       1184.57096255876,
+       372.639968426291,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      48.3772369728199,
+      -13.822067706521011,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1184.571,
+      372.64
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      48.3772369728199,
+      -13.822067706521011,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
     }
    ]
   },
@@ -14102,6 +16586,7 @@
    "index": 10,
    "name": "FUDE S12 (STROKE_008_runs2)",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 3.66666666666667,
    "startTime": -4.25,
@@ -14112,6 +16597,7 @@
    "shy": false,
    "hasExpression": true,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -14129,7 +16615,8 @@
        931.978403327105,
        888.923359697351,
        0
-      ]
+      ],
+      "expression": "var m={'S01':[-26,10],'S02':[8,20],'S03':[10,-18],'S04':[16,-20],'S05':[20,18],'S06':[28,-8],'S07':[-30,-12],'S08':[40,-6],'S09':[-30,-5],'S10':[-30,2],'S11':[-30,8],'S12':[-30,14],'S13':[40,4]};\nvar k=thisLayer.name.substr(5,3);var d=m[k]?m[k]:[0,0];\nvar p=easeOut(time,7.142,7.611,0,1);\nvalue+[d[0]*p,d[1]*p,0].slice(0,value.length);"
      },
      {
       "matchName": "ADBE Scale",
@@ -14152,6 +16639,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -14564,36 +17052,48 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "shell 8",
        "outline"
-      ]
+      ],
+      "paintScopeKey": "shell 8"
      }
     ],
-    "hash": "33fccb63898a08bd"
+    "hash": "d34a5a77d2d6cd7a"
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        953.811157226562,
@@ -14617,6 +17117,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.83275389945709,
+      10.18861848641302,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      931.9784,
+      888.9234
+     ],
      "world": [
       1,
       0,
@@ -14635,10 +17157,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 1.833,
+     "t": 1.8333,
      "transform": {
       "anchor": [
        953.811157226562,
@@ -14662,6 +17185,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.83275389945709,
+      10.18861848641302,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      931.9784,
+      888.9234
+     ],
      "world": [
       1,
       0,
@@ -14680,10 +17225,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 3.617,
+     "t": 3.6667,
      "transform": {
       "anchor": [
        953.811157226562,
@@ -14707,6 +17253,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.83275389945709,
+      10.18861848641302,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      931.9784,
+      888.9234
+     ],
      "world": [
       1,
       0,
@@ -14725,7 +17293,212 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.142,
+     "transform": {
+      "anchor": [
+       953.811157226562,
+       878.734741210938,
+       0
+      ],
+      "position": [
+       931.978403327105,
+       888.923359697351,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.83275389945709,
+      10.18861848641302,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      931.9784,
+      888.9234
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.83275389945709,
+      10.18861848641302,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.3765,
+     "transform": {
+      "anchor": [
+       953.811157226562,
+       878.734741210938,
+       0
+      ],
+      "position": [
+       909.478403327105,
+       899.423359697351,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -44.33275389945709,
+      20.68861848641302,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      909.4784,
+      899.4234
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -44.33275389945709,
+      20.68861848641302,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.611,
+     "transform": {
+      "anchor": [
+       953.811157226562,
+       878.734741210938,
+       0
+      ],
+      "position": [
+       901.978403327105,
+       902.923359697351,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -51.83275389945709,
+      24.18861848641302,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      901.9784,
+      902.9234
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -51.83275389945709,
+      24.18861848641302,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
     }
    ]
   },
@@ -14733,6 +17506,7 @@
    "index": 11,
    "name": "FUDE S11 (STROKE_007_runs2)",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 3.66666666666667,
    "startTime": -4.25,
@@ -14743,6 +17517,7 @@
    "shy": false,
    "hasExpression": true,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -14760,7 +17535,8 @@
        932.728464362261,
        794.699020831522,
        0
-      ]
+      ],
+      "expression": "var m={'S01':[-26,10],'S02':[8,20],'S03':[10,-18],'S04':[16,-20],'S05':[20,18],'S06':[28,-8],'S07':[-30,-12],'S08':[40,-6],'S09':[-30,-5],'S10':[-30,2],'S11':[-30,8],'S12':[-30,14],'S13':[40,4]};\nvar k=thisLayer.name.substr(5,3);var d=m[k]?m[k]:[0,0];\nvar p=easeOut(time,7.142,7.611,0,1);\nvalue+[d[0]*p,d[1]*p,0].slice(0,value.length);"
      },
      {
       "matchName": "ADBE Scale",
@@ -14783,6 +17559,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -15183,36 +17960,48 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "shell 7",
        "outline"
-      ]
+      ],
+      "paintScopeKey": "shell 7"
      }
     ],
-    "hash": "33014c630082eb2d"
+    "hash": "8d7a6233a7c7d0c6"
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        954.561218261719,
@@ -15236,6 +18025,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.832753899457998,
+      5.822067706522034,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      932.7285,
+      794.699
+     ],
      "world": [
       1,
       0,
@@ -15254,10 +18065,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 1.833,
+     "t": 1.8333,
      "transform": {
       "anchor": [
        954.561218261719,
@@ -15281,6 +18093,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.832753899457998,
+      5.822067706522034,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      932.7285,
+      794.699
+     ],
      "world": [
       1,
       0,
@@ -15299,10 +18133,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 3.617,
+     "t": 3.6667,
      "transform": {
       "anchor": [
        954.561218261719,
@@ -15326,6 +18161,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.832753899457998,
+      5.822067706522034,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      932.7285,
+      794.699
+     ],
      "world": [
       1,
       0,
@@ -15344,7 +18201,212 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.142,
+     "transform": {
+      "anchor": [
+       954.561218261719,
+       788.876953125,
+       0
+      ],
+      "position": [
+       932.728464362261,
+       794.699020831522,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.832753899457998,
+      5.822067706522034,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      932.7285,
+      794.699
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.832753899457998,
+      5.822067706522034,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.3765,
+     "transform": {
+      "anchor": [
+       954.561218261719,
+       788.876953125,
+       0
+      ],
+      "position": [
+       910.228464362261,
+       800.699020831522,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -44.332753899458,
+      11.822067706522034,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      910.2285,
+      800.699
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -44.332753899458,
+      11.822067706522034,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.611,
+     "transform": {
+      "anchor": [
+       954.561218261719,
+       788.876953125,
+       0
+      ],
+      "position": [
+       902.728464362261,
+       802.699020831522,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -51.832753899458,
+      13.822067706522034,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      902.7285,
+      802.699
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -51.832753899458,
+      13.822067706522034,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
     }
    ]
   },
@@ -15352,6 +18414,7 @@
    "index": 12,
    "name": "FUDE S09 (STROKE_004_runs6)",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 3.66666666666667,
    "startTime": -4.25,
@@ -15362,6 +18425,7 @@
    "shy": false,
    "hasExpression": true,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -15379,7 +18443,8 @@
        931.421274420855,
        610.406495769361,
        0
-      ]
+      ],
+      "expression": "var m={'S01':[-26,10],'S02':[8,20],'S03':[10,-18],'S04':[16,-20],'S05':[20,18],'S06':[28,-8],'S07':[-30,-12],'S08':[40,-6],'S09':[-30,-5],'S10':[-30,2],'S11':[-30,8],'S12':[-30,14],'S13':[40,4]};\nvar k=thisLayer.name.substr(5,3);var d=m[k]?m[k]:[0,0];\nvar p=easeOut(time,7.142,7.611,0,1);\nvalue+[d[0]*p,d[1]*p,0].slice(0,value.length);"
      },
      {
       "matchName": "ADBE Scale",
@@ -15402,6 +18467,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -15814,36 +18880,48 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "shell 4",
        "outline"
-      ]
+      ],
+      "paintScopeKey": "shell 4"
      }
     ],
-    "hash": "6a6e9497dc46a62d"
+    "hash": "e9e46c93edf069d5"
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        953.254028320312,
@@ -15867,6 +18945,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.83275389945709,
+      -3.638792316576996,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      931.4213,
+      610.4065
+     ],
      "world": [
       1,
       0,
@@ -15885,10 +18985,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 1.833,
+     "t": 1.8333,
      "transform": {
       "anchor": [
        953.254028320312,
@@ -15912,6 +19013,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.83275389945709,
+      -3.638792316576996,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      931.4213,
+      610.4065
+     ],
      "world": [
       1,
       0,
@@ -15930,10 +19053,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 3.617,
+     "t": 3.6667,
      "transform": {
       "anchor": [
        953.254028320312,
@@ -15957,6 +19081,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.83275389945709,
+      -3.638792316576996,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      931.4213,
+      610.4065
+     ],
      "world": [
       1,
       0,
@@ -15975,7 +19121,212 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.142,
+     "transform": {
+      "anchor": [
+       953.254028320312,
+       614.045288085938,
+       0
+      ],
+      "position": [
+       931.421274420855,
+       610.406495769361,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.83275389945709,
+      -3.638792316576996,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      931.4213,
+      610.4065
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -21.83275389945709,
+      -3.638792316576996,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.3765,
+     "transform": {
+      "anchor": [
+       953.254028320312,
+       614.045288085938,
+       0
+      ],
+      "position": [
+       908.921274420855,
+       606.656495769361,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -44.33275389945709,
+      -7.388792316576996,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      908.9213,
+      606.6565
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -44.33275389945709,
+      -7.388792316576996,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.611,
+     "transform": {
+      "anchor": [
+       953.254028320312,
+       614.045288085938,
+       0
+      ],
+      "position": [
+       901.421274420855,
+       605.406495769361,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -51.83275389945709,
+      -8.638792316576996,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      901.4213,
+      605.4065
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -51.83275389945709,
+      -8.638792316576996,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
     }
    ]
   },
@@ -15983,6 +19334,7 @@
    "index": 13,
    "name": "FUDE S05 (STROKE_002_runs2)",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 3.66666666666667,
    "startTime": -4.25,
@@ -15993,6 +19345,7 @@
    "shy": false,
    "hasExpression": true,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -16010,7 +19363,8 @@
        1134.74193684443,
        431.155652095534,
        0
-      ]
+      ],
+      "expression": "var m={'S01':[-26,10],'S02':[8,20],'S03':[10,-18],'S04':[16,-20],'S05':[20,18],'S06':[28,-8],'S07':[-30,-12],'S08':[40,-6],'S09':[-30,-5],'S10':[-30,2],'S11':[-30,8],'S12':[-30,14],'S13':[40,4]};\nvar k=thisLayer.name.substr(5,3);var d=m[k]?m[k]:[0,0];\nvar p=easeOut(time,7.142,7.611,0,1);\nvalue+[d[0]*p,d[1]*p,0].slice(0,value.length);"
      },
      {
       "matchName": "ADBE Scale",
@@ -16033,6 +19387,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -16229,36 +19584,48 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "shell 2",
        "outline"
-      ]
+      ],
+      "paintScopeKey": "shell 2"
      }
     ],
-    "hash": "767b6db1bbda64eb"
+    "hash": "e233df21fc8d3187"
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        1120.18676757812,
@@ -16282,6 +19649,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      14.555169266310031,
+      13.099652339675004,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1134.7419,
+      431.1557
+     ],
      "world": [
       1,
       0,
@@ -16300,10 +19689,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 1.833,
+     "t": 1.8333,
      "transform": {
       "anchor": [
        1120.18676757812,
@@ -16327,6 +19717,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      14.555169266310031,
+      13.099652339675004,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1134.7419,
+      431.1557
+     ],
      "world": [
       1,
       0,
@@ -16345,10 +19757,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 3.617,
+     "t": 3.6667,
      "transform": {
       "anchor": [
        1120.18676757812,
@@ -16372,6 +19785,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      14.555169266310031,
+      13.099652339675004,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1134.7419,
+      431.1557
+     ],
      "world": [
       1,
       0,
@@ -16390,7 +19825,212 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.142,
+     "transform": {
+      "anchor": [
+       1120.18676757812,
+       418.055999755859,
+       0
+      ],
+      "position": [
+       1134.74193684443,
+       431.155652095534,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      14.555169266310031,
+      13.099652339675004,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1134.7419,
+      431.1557
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      14.555169266310031,
+      13.099652339675004,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.3765,
+     "transform": {
+      "anchor": [
+       1120.18676757812,
+       418.055999755859,
+       0
+      ],
+      "position": [
+       1149.74193684443,
+       444.655652095534,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      29.55516926631003,
+      26.599652339675004,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1149.7419,
+      444.6557
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      29.55516926631003,
+      26.599652339675004,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.611,
+     "transform": {
+      "anchor": [
+       1120.18676757812,
+       418.055999755859,
+       0
+      ],
+      "position": [
+       1154.74193684443,
+       449.155652095534,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      34.55516926631003,
+      31.099652339675004,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1154.7419,
+      449.1557
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      34.55516926631003,
+      31.099652339675004,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
     }
    ]
   },
@@ -16398,6 +20038,7 @@
    "index": 14,
    "name": "FUDE S02 (STROKE_001_runs2)",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 3.66666666666667,
    "startTime": -4.25,
@@ -16408,6 +20049,7 @@
    "shy": false,
    "hasExpression": true,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -16425,7 +20067,8 @@
        825.329513995585,
        431.637475174508,
        0
-      ]
+      ],
+      "expression": "var m={'S01':[-26,10],'S02':[8,20],'S03':[10,-18],'S04':[16,-20],'S05':[20,18],'S06':[28,-8],'S07':[-30,-12],'S08':[40,-6],'S09':[-30,-5],'S10':[-30,2],'S11':[-30,8],'S12':[-30,14],'S13':[40,4]};\nvar k=thisLayer.name.substr(5,3);var d=m[k]?m[k]:[0,0];\nvar p=easeOut(time,7.142,7.611,0,1);\nvalue+[d[0]*p,d[1]*p,0].slice(0,value.length);"
      },
      {
       "matchName": "ADBE Scale",
@@ -16448,6 +20091,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -16656,36 +20300,48 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "shell 1",
        "outline"
-      ]
+      ],
+      "paintScopeKey": "shell 1"
      }
     ],
-    "hash": "3db0f3bf0b84fee0"
+    "hash": "b68addeb4ccfdc34"
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        819.507446289062,
@@ -16709,6 +20365,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      5.822067706522944,
+      14.555169266304972,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      825.3295,
+      431.6375
+     ],
      "world": [
       1,
       0,
@@ -16727,10 +20405,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 1.833,
+     "t": 1.8333,
      "transform": {
       "anchor": [
        819.507446289062,
@@ -16754,6 +20433,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      5.822067706522944,
+      14.555169266304972,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      825.3295,
+      431.6375
+     ],
      "world": [
       1,
       0,
@@ -16772,10 +20473,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 3.617,
+     "t": 3.6667,
      "transform": {
       "anchor": [
        819.507446289062,
@@ -16799,6 +20501,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      5.822067706522944,
+      14.555169266304972,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      825.3295,
+      431.6375
+     ],
      "world": [
       1,
       0,
@@ -16817,7 +20541,212 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.142,
+     "transform": {
+      "anchor": [
+       819.507446289062,
+       417.082305908203,
+       0
+      ],
+      "position": [
+       825.329513995585,
+       431.637475174508,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      5.822067706522944,
+      14.555169266304972,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      825.3295,
+      431.6375
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      5.822067706522944,
+      14.555169266304972,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.3765,
+     "transform": {
+      "anchor": [
+       819.507446289062,
+       417.082305908203,
+       0
+      ],
+      "position": [
+       831.329513995585,
+       446.637475174508,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      11.822067706522944,
+      29.555169266304972,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      831.3295,
+      446.6375
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      11.822067706522944,
+      29.555169266304972,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.611,
+     "transform": {
+      "anchor": [
+       819.507446289062,
+       417.082305908203,
+       0
+      ],
+      "position": [
+       833.329513995585,
+       451.637475174508,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      13.822067706522944,
+      34.55516926630497,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      833.3295,
+      451.6375
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      13.822067706522944,
+      34.55516926630497,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
     }
    ]
   },
@@ -16825,6 +20754,7 @@
    "index": 15,
    "name": "FUDE S01 (STROKE_000_runs5)",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 3.66666666666667,
    "startTime": -4.25,
@@ -16835,6 +20765,7 @@
    "shy": false,
    "hasExpression": true,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -16852,7 +20783,8 @@
        680.320894699897,
        410.564816078465,
        0
-      ]
+      ],
+      "expression": "var m={'S01':[-26,10],'S02':[8,20],'S03':[10,-18],'S04':[16,-20],'S05':[20,18],'S06':[28,-8],'S07':[-30,-12],'S08':[40,-6],'S09':[-30,-5],'S10':[-30,2],'S11':[-30,8],'S12':[-30,14],'S13':[40,4]};\nvar k=thisLayer.name.substr(5,3);var d=m[k]?m[k]:[0,0];\nvar p=easeOut(time,7.142,7.611,0,1);\nvalue+[d[0]*p,d[1]*p,0].slice(0,value.length);"
      },
      {
       "matchName": "ADBE Scale",
@@ -16875,6 +20807,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -17143,36 +21076,48 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "shell 0",
        "outline"
-      ]
+      ],
+      "paintScopeKey": "shell 0"
      }
     ],
-    "hash": "d12f8f2d73fef006"
+    "hash": "125fc02123fa9cd2"
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        699.242614746094,
@@ -17196,6 +21141,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -18.921720046196924,
+      7.277584633153026,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      680.3209,
+      410.5648
+     ],
      "world": [
       1,
       0,
@@ -17214,10 +21181,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 1.833,
+     "t": 1.8333,
      "transform": {
       "anchor": [
        699.242614746094,
@@ -17241,6 +21209,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -18.921720046196924,
+      7.277584633153026,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      680.3209,
+      410.5648
+     ],
      "world": [
       1,
       0,
@@ -17259,10 +21249,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 3.617,
+     "t": 3.6667,
      "transform": {
       "anchor": [
        699.242614746094,
@@ -17286,6 +21277,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -18.921720046196924,
+      7.277584633153026,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      680.3209,
+      410.5648
+     ],
      "world": [
       1,
       0,
@@ -17304,7 +21317,212 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.142,
+     "transform": {
+      "anchor": [
+       699.242614746094,
+       403.287231445312,
+       0
+      ],
+      "position": [
+       680.320894699897,
+       410.564816078465,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -18.921720046196924,
+      7.277584633153026,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      680.3209,
+      410.5648
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -18.921720046196924,
+      7.277584633153026,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.3765,
+     "transform": {
+      "anchor": [
+       699.242614746094,
+       403.287231445312,
+       0
+      ],
+      "position": [
+       660.820894699897,
+       418.064816078465,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -38.421720046196924,
+      14.777584633153026,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      660.8209,
+      418.0648
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -38.421720046196924,
+      14.777584633153026,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 7.611,
+     "transform": {
+      "anchor": [
+       699.242614746094,
+       403.287231445312,
+       0
+      ],
+      "position": [
+       654.320894699897,
+       420.564816078465,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -44.921720046196924,
+      17.277584633153026,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      654.3209,
+      420.5648
+     ],
+     "world": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -44.921720046196924,
+      17.277584633153026,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
     }
    ]
   },
@@ -17312,6 +21530,7 @@
    "index": 16,
    "name": "PAGE card",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 3.66666666666667,
    "startTime": 0,
@@ -17322,6 +21541,7 @@
    "shy": false,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -17362,15 +21582,69 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
-    "items": [],
-    "hash": "97d170e1550eee4a"
+    "items": [
+     {
+      "name": "Rectangle Path 1",
+      "primitiveD": "M-251,-311h502v622h-502Z",
+      "paints": [
+       {
+        "kind": "fill",
+        "color": [
+         1,
+         1,
+         1,
+         1
+        ],
+        "opacity": 1,
+        "fillRule": "nonzero"
+       }
+      ],
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
+      "transformRaw": "",
+      "groupPath": [
+       "PAGE card",
+       "Rectangle Path 1"
+      ],
+      "paintScopeKey": "PAGE card"
+     }
+    ],
+    "hash": "e9cab52a2d39fc05"
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        0,
@@ -17394,6 +21668,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      797,
+      534,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      797,
+      534
+     ],
      "world": [
       1,
       0,
@@ -17412,10 +21708,11 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     },
     {
-     "t": 1.833,
+     "t": 1.8333,
      "transform": {
       "anchor": [
        0,
@@ -17439,6 +21736,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      797,
+      534,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      797,
+      534
+     ],
      "world": [
       1,
       0,
@@ -17457,10 +21776,11 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     },
     {
-     "t": 3.617,
+     "t": 3.6667,
      "transform": {
       "anchor": [
        0,
@@ -17484,6 +21804,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      797,
+      534,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      797,
+      534
+     ],
      "world": [
       1,
       0,
@@ -17502,7 +21844,8 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     }
    ]
   }

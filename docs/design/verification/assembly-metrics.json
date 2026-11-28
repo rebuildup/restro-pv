@@ -1,172 +1,130 @@
 {
- "kai": [
-  {
-   "set": "runs4-parts",
-   "t": 0.1,
-   "bbox": {
-    "x0": 370,
-    "y0": 219,
-    "x1": 896,
-    "y1": 864,
-    "w": 527,
-    "h": 646
-   },
-   "shapeIoU_vs_mergedOutline": 0.1764
+  "verifiedAt": "2026-11-28T02:56:47.821Z",
+  "methodology": "Strict unified unclipped coordinate-space pixel IoU from exported docs/design/data/*.composition.json (ZERO bbox cropping, ZERO scaling normalization).",
+  "fude": {
+    "restPoseComp06": {
+      "source": "docs/design/data/pv-glyph-fude.composition.json (06-PV glyph, 1400x1080)",
+      "strokesCount": 13,
+      "assembledBbox": {
+        "x0": 602,
+        "y0": 297,
+        "x1": 1290,
+        "y1": 994,
+        "w": 689,
+        "h": 698
+      },
+      "outlineBbox": {
+        "x0": 602,
+        "y0": 297,
+        "x1": 1290,
+        "y1": 994,
+        "w": 689,
+        "h": 698
+      },
+      "sameSpaceUnclipped": {
+        "iou": 0.9998,
+        "recallOfOutline": 0.9999,
+        "precisionOfAssembled": 0.9999,
+        "interPx": 250434,
+        "onlyAssembledPx": 26,
+        "onlyOutlinePx": 32
+      },
+      "sameSpace1080Clipped": {
+        "iou": 0.9998,
+        "recallOfOutline": 0.9999,
+        "precisionOfAssembled": 0.9999,
+        "interPx": 182109,
+        "onlyAssembledPx": 17,
+        "onlyOutlinePx": 13
+      },
+      "status": "PASS_EXACT_REST_ASSEMBLY"
+    },
+    "baselineComp01": {
+      "source": "docs/design/data/fude-decomposition.composition.json (01-Baseline, 1080x1080)",
+      "assembledBboxT0": {
+        "x0": 583,
+        "y0": 282,
+        "x1": 1309,
+        "y1": 996,
+        "w": 727,
+        "h": 715
+      },
+      "outlineBbox": {
+        "x0": 602,
+        "y0": 297,
+        "x1": 1290,
+        "y1": 994,
+        "w": 689,
+        "h": 698
+      },
+      "dispersedBboxT7611": {
+        "x0": 557,
+        "y0": 262,
+        "x1": 1337,
+        "y1": 1000,
+        "w": 781,
+        "h": 739
+      },
+      "sameSpaceUnclippedT0": {
+        "iou": 0.731,
+        "recallOfOutline": 0.864,
+        "precisionOfAssembled": 0.8261,
+        "interPx": 216399,
+        "onlyAssembledPx": 45547,
+        "onlyOutlinePx": 34067
+      },
+      "sameSpace1080ClippedT0": {
+        "iou": 0.7423,
+        "recallOfOutline": 0.8724,
+        "precisionOfAssembled": 0.8327,
+        "interPx": 158886,
+        "onlyAssembledPx": 31931,
+        "onlyOutlinePx": 23236
+      },
+      "rootCauseNote": "UNRESOLVED_IN_01_BASELINE: 01-Baseline.ts dumped Position.value with ~0.7278*m[k] post-expression offset already baked at CTI save time (e.g. S01 pos-anchor = [-18.92, +7.28] = 0.7278 * [-26, +10]), shifting strokes away from outline even at t=0. Using 06-PV glyph proves true rest assembly (IoU 0.9998); right edge (x=1290..1309) also exceeds 1080x1080 comp bounds."
+    }
   },
-  {
-   "set": "runs4-parts",
-   "t": 0.9,
-   "bbox": {
-    "x0": 370,
-    "y0": 221,
-    "x1": 900,
-    "y1": 848,
-    "w": 531,
-    "h": 628
-   },
-   "shapeIoU_vs_mergedOutline": 0.1721
+  "kai": {
+    "source": "docs/design/data/kai-stroke-runs-2d.composition.json (runs4 idx 21..36, all 16 layers) vs kai-zoom.composition.json (idx 20)",
+    "all16RestBboxInZoomSpace": {
+      "x0": 63,
+      "y0": 68,
+      "x1": 1016,
+      "y1": 1011,
+      "w": 954,
+      "h": 944
+    },
+    "zoomOutlineBbox": {
+      "x0": 67,
+      "y0": 120,
+      "x1": 1016,
+      "y1": 1011,
+      "w": 950,
+      "h": 892
+    },
+    "all16VsZoomOutline": {
+      "iou": 0.8865,
+      "recallOfOutline": 0.9999,
+      "precisionOfAssembled": 0.8865,
+      "interPx": 391849,
+      "onlyAssembledPx": 50169,
+      "onlyOutlinePx": 20
+    },
+    "withoutTopLeftKu13LayersVsZoomOutline": {
+      "iou": 0.9999,
+      "recallOfOutline": 0.9999,
+      "precisionOfAssembled": 0.9999,
+      "interPx": 391849,
+      "onlyAssembledPx": 23,
+      "onlyOutlinePx": 20
+    },
+    "finding": "ALL 16 runs4 layers (9 straight 4-vertex bars + 5 curved Bezier strokes + 2 merged shape layers) are genuine glyph geometry of 解. The gap vs comp_04[20] (kai-zoom) is strictly localized to the top-left ク radical (STROKE_000/001/002), which was intentionally removed from comp_04[20] so kai-zoom layers [3..19] could animate ク over the silhouette. Excluding those 3 strokes restores tight spatial registration; counter holes in comp_04[20] are properly punched via compound evenodd rendering."
   },
-  {
-   "set": "runs4-parts",
-   "t": 1.8,
-   "bbox": {
-    "x0": 370,
-    "y0": 217,
-    "x1": 885,
-    "y1": 900,
-    "w": 516,
-    "h": 684
-   },
-   "shapeIoU_vs_mergedOutline": 0.1872
-  },
-  {
-   "set": "runs5-parts",
-   "t": 2.85,
-   "bbox": {
-    "x0": 370,
-    "y0": 217,
-    "x1": 885,
-    "y1": 900,
-    "w": 516,
-    "h": 684
-   },
-   "shapeIoU_vs_mergedOutline": 0.1872
-  },
-  {
-   "set": "runs5-parts",
-   "t": 3.7,
-   "bbox": {
-    "x0": 370,
-    "y0": 217,
-    "x1": 885,
-    "y1": 900,
-    "w": 516,
-    "h": 684
-   },
-   "shapeIoU_vs_mergedOutline": 0.1872
-  },
-  {
-   "set": "runs5-parts",
-   "t": 4.5,
-   "bbox": {
-    "x0": 370,
-    "y0": 217,
-    "x1": 885,
-    "y1": 900,
-    "w": 516,
-    "h": 684
-   },
-   "shapeIoU_vs_mergedOutline": 0.1872
+  "individualSvgAssets": {
+    "totalManifest": 54,
+    "readable": 54,
+    "validPathCount": 54,
+    "nonZeroRender": 54,
+    "failed": []
   }
- ],
- "fude": [
-  {
-   "t": 0.1,
-   "bbox": {
-    "x0": 583,
-    "y0": 282,
-    "x1": 1079,
-    "y1": 996,
-    "w": 497,
-    "h": 715
-   },
-   "shapeIoU_vs_outline": 0.7471
-  },
-  {
-   "t": 0.5,
-   "bbox": {
-    "x0": 583,
-    "y0": 282,
-    "x1": 1079,
-    "y1": 996,
-    "w": 497,
-    "h": 715
-   },
-   "shapeIoU_vs_outline": 0.7471
-  },
-  {
-   "t": 1,
-   "bbox": {
-    "x0": 583,
-    "y0": 282,
-    "x1": 1079,
-    "y1": 996,
-    "w": 497,
-    "h": 715
-   },
-   "shapeIoU_vs_outline": 0.7471
-  },
-  {
-   "t": 2,
-   "bbox": {
-    "x0": 583,
-    "y0": 282,
-    "x1": 1079,
-    "y1": 996,
-    "w": 497,
-    "h": 715
-   },
-   "shapeIoU_vs_outline": 0.7471
-  },
-  {
-   "t": 3,
-   "bbox": {
-    "x0": 583,
-    "y0": 282,
-    "x1": 1079,
-    "y1": 996,
-    "w": 497,
-    "h": 715
-   },
-   "shapeIoU_vs_outline": 0.7471
-  },
-  {
-   "t": 3.6,
-   "bbox": {
-    "x0": 583,
-    "y0": 282,
-    "x1": 1079,
-    "y1": 996,
-    "w": 497,
-    "h": 715
-   },
-   "shapeIoU_vs_outline": 0.7471
-  }
- ],
- "mergedBB": {
-  "x0": 67,
-  "y0": 120,
-  "x1": 1016,
-  "y1": 1011,
-  "w": 950,
-  "h": 892
- },
- "outlineBB": {
-  "x0": 602,
-  "y0": 297,
-  "x1": 1079,
-  "y1": 994,
-  "w": 478,
-  "h": 698
- }
 }

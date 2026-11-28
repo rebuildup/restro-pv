@@ -1,12 +1,17 @@
 {
+ "schema": "restro-pv/composition@2",
+ "generatedAt": "2026-11-28T02:55:09.393Z",
+ "generatedBy": "tools/design/export-compositions.ts",
+ "canonicalSource": "pv/generated/*.ts dumps -> derived authoritative design JSON (preserves expressions, effects, nested group matrices, and reference-space matrices).",
  "id": "kai-zoom",
- "title": "「解」一体輪郭 + ズーム用ストローク (kai-zoom comp)",
+ "title": "「解」ズーム用切り欠き輪郭 + ク追従ストローク群 (kai-zoom comp)",
  "comp": {
   "file": "pv/generated/04-kai-zoom.ts",
   "exportName": "comp_04",
   "width": 1080,
   "height": 1080,
-  "duration": 2.83333333333333
+  "duration": 2.83333333333333,
+  "frameRate": 24
  },
  "layerIndices": [
   1,
@@ -35,12 +40,13 @@
   "layerIndex": 1,
   "layerName": "Null 4 (stroke)"
  },
- "notes": "Zoom-in comp for the A2 beat. Layer 20 'Ae_Restro merged shape' (487 verts) is the full connected 解 silhouette — the canonical pre-decomposition outline. STROKE_000/001/002 runs are proxy elements (4-13 verts) at scale 130 via Null 4.",
+ "notes": "Zoom-in comp under Null 4 [1] (scale 130%, pos [540,540]). Layer 20 'Ae_Restro merged shape' (6 subpaths with compound counters) is NOT the complete 解 glyph: the top-left ク corner (STROKE_000/001/002) was intentionally subtracted from it so layers [3..19] can animate trails of STROKE_000/001/002 cleanly above the static silhouette.",
  "elements": [
   {
    "index": 1,
    "name": "Null 4 (stroke)",
    "kind": "null",
+   "source": "",
    "inPoint": 0,
    "outPoint": 2.83333333333333,
    "startTime": -1.66666666666667,
@@ -51,6 +57,7 @@
    "shy": true,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -157,12 +164,13 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": null,
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        0,
@@ -186,6 +194,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      0,
+      0
+     ],
      "world": [
       1.3,
       0,
@@ -204,10 +234,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 1.417,
+     "t": 0.0417,
      "transform": {
       "anchor": [
        0,
@@ -231,6 +262,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      0,
+      0
+     ],
      "world": [
       1.3,
       0,
@@ -249,10 +302,11 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
     },
     {
-     "t": 2.783,
+     "t": 1.4167,
      "transform": {
       "anchor": [
        0,
@@ -276,6 +330,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      0,
+      0
+     ],
      "world": [
       1.3,
       0,
@@ -294,7 +370,144 @@
       0,
       1
      ],
-     "opacity": 0
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 2.8333,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       540,
+       540,
+       0
+      ],
+      "scale": [
+       130,
+       130,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      0,
+      0
+     ],
+     "world": [
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
+    },
+    {
+     "t": 2.9583,
+     "transform": {
+      "anchor": [
+       0,
+       0,
+       0
+      ],
+      "position": [
+       540,
+       540,
+       0
+      ],
+      "scale": [
+       130,
+       130,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0,
+      "separatedPosition": false
+     },
+     "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      0,
+      0
+     ],
+     "world": [
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 0,
+     "effectFill": null
     }
    ]
   },
@@ -302,6 +515,7 @@
    "index": 2,
    "name": "▾  STROKE_002",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 2.83333333333333,
    "startTime": 0,
@@ -312,6 +526,7 @@
    "shy": false,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -352,6 +567,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -360,7 +576,7 @@
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        0,
@@ -384,6 +600,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      0.7692307692307692,
+      0,
+      0,
+      0,
+      0,
+      0.7692307692307692,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      0,
+      0
+     ],
      "world": [
       1,
       0,
@@ -402,10 +640,11 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     },
     {
-     "t": 1.417,
+     "t": 1.4167,
      "transform": {
       "anchor": [
        0,
@@ -429,6 +668,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      0.7692307692307692,
+      0,
+      0,
+      0,
+      0,
+      0.7692307692307692,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      0,
+      0
+     ],
      "world": [
       1,
       0,
@@ -447,10 +708,11 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     },
     {
-     "t": 2.783,
+     "t": 2.8333,
      "transform": {
       "anchor": [
        0,
@@ -474,6 +736,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      0.7692307692307692,
+      0,
+      0,
+      0,
+      0,
+      0.7692307692307692,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      0,
+      0
+     ],
      "world": [
       1,
       0,
@@ -492,7 +776,8 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     }
    ]
   },
@@ -500,6 +785,7 @@
    "index": 3,
    "name": "STROKE_002_runs7",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 0.54166666666667,
    "startTime": -0.58333333333333,
@@ -510,6 +796,7 @@
    "shy": false,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -550,6 +837,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -734,36 +1022,48 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "shell 2",
        "outline"
-      ]
+      ],
+      "paintScopeKey": "shell 2"
      }
     ],
-    "hash": "477794a7ba3c1134"
+    "hash": "fca3312d4d6dfcd2"
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        -120.510009765625,
@@ -804,6 +1104,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -120.51,
+      -207.87
+     ],
      "world": [
       1.3,
       0,
@@ -822,10 +1144,11 @@
       0,
       1
      ],
-     "opacity": 0.96
+     "opacity": 0.96,
+     "effectFill": null
     },
     {
-     "t": 0.271,
+     "t": 0.2708,
      "transform": {
       "anchor": [
        -120.510009765625,
@@ -866,6 +1189,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -120.51,
+      -207.87
+     ],
      "world": [
       1.3,
       0,
@@ -884,10 +1229,11 @@
       0,
       1
      ],
-     "opacity": 0.96
+     "opacity": 0.96,
+     "effectFill": null
     },
     {
-     "t": 0.492,
+     "t": 0.5417,
      "transform": {
       "anchor": [
        -120.510009765625,
@@ -928,6 +1274,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -120.51,
+      -207.87
+     ],
      "world": [
       1.3,
       0,
@@ -946,7 +1314,8 @@
       0,
       1
      ],
-     "opacity": 0.96
+     "opacity": 0.96,
+     "effectFill": null
     }
    ]
   },
@@ -954,6 +1323,7 @@
    "index": 4,
    "name": "STROKE_002_runs10",
    "kind": "shape",
+   "source": "",
    "inPoint": 0.625,
    "outPoint": 0.70833333333333,
    "startTime": -0.70833333333333,
@@ -964,6 +1334,7 @@
    "shy": false,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -1004,6 +1375,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -1188,32 +1560,44 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "shell 2",
        "outline"
-      ]
+      ],
+      "paintScopeKey": "shell 2"
      }
     ],
-    "hash": "477794a7ba3c1134"
+    "hash": "fca3312d4d6dfcd2"
    },
    "evals": [
     {
@@ -1258,6 +1642,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -120.51,
+      -207.87
+     ],
      "world": [
       1.3,
       0,
@@ -1276,7 +1682,178 @@
       0,
       1
      ],
-     "opacity": 0.96
+     "opacity": 0.96,
+     "effectFill": null
+    },
+    {
+     "t": 0.6667,
+     "transform": {
+      "anchor": [
+       -120.510009765625,
+       -207.870010375977,
+       0
+      ],
+      "position": [
+       -120.510009765625,
+       -207.870010375977,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -120.51,
+      -207.87
+     ],
+     "world": [
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 0.96,
+     "effectFill": null
+    },
+    {
+     "t": 0.7083,
+     "transform": {
+      "anchor": [
+       -120.510009765625,
+       -207.870010375977,
+       0
+      ],
+      "position": [
+       -120.510009765625,
+       -207.870010375977,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -120.51,
+      -207.87
+     ],
+     "world": [
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 0.96,
+     "effectFill": null
     }
    ]
   },
@@ -1284,6 +1861,7 @@
    "index": 5,
    "name": "STROKE_002_runs12",
    "kind": "shape",
+   "source": "",
    "inPoint": 0.54166666666667,
    "outPoint": 0.625,
    "startTime": -0.70833333333333,
@@ -1294,6 +1872,7 @@
    "shy": false,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -1334,6 +1913,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -1505,37 +2085,61 @@
        ],
        "closed": true
       },
-      "paints": [],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "paints": [
+       {
+        "kind": "stroke",
+        "color": [
+         0,
+         0,
+         0,
+         1
+        ],
+        "opacity": 1,
+        "width": 2
+       }
+      ],
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "shell 2",
        "outline"
-      ]
+      ],
+      "paintScopeKey": "root"
      }
     ],
-    "hash": "ccadf57b7d2486fd"
+    "hash": "c005ce210e8584a1"
    },
    "evals": [
     {
-     "t": 0.54166666666667,
+     "t": 0.5417,
      "transform": {
       "anchor": [
        -120.510009765625,
@@ -1576,6 +2180,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -120.51,
+      -207.87
+     ],
      "world": [
       1.3,
       0,
@@ -1594,7 +2220,178 @@
       0,
       1
      ],
-     "opacity": 0.96
+     "opacity": 0.96,
+     "effectFill": null
+    },
+    {
+     "t": 0.5833,
+     "transform": {
+      "anchor": [
+       -120.510009765625,
+       -207.870010375977,
+       0
+      ],
+      "position": [
+       -120.510009765625,
+       -207.870010375977,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -120.51,
+      -207.87
+     ],
+     "world": [
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 0.96,
+     "effectFill": null
+    },
+    {
+     "t": 0.625,
+     "transform": {
+      "anchor": [
+       -120.510009765625,
+       -207.870010375977,
+       0
+      ],
+      "position": [
+       -120.510009765625,
+       -207.870010375977,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -120.51,
+      -207.87
+     ],
+     "world": [
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 0.96,
+     "effectFill": null
     }
    ]
   },
@@ -1602,6 +2399,7 @@
    "index": 6,
    "name": "STROKE_002_runs13",
    "kind": "shape",
+   "source": "",
    "inPoint": 0.70833333333333,
    "outPoint": 0.75,
    "startTime": -0.70833333333333,
@@ -1612,6 +2410,7 @@
    "shy": false,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -1652,6 +2451,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -1823,37 +2623,61 @@
        ],
        "closed": true
       },
-      "paints": [],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "paints": [
+       {
+        "kind": "stroke",
+        "color": [
+         0,
+         0,
+         0,
+         1
+        ],
+        "opacity": 1,
+        "width": 2
+       }
+      ],
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "shell 2",
        "outline"
-      ]
+      ],
+      "paintScopeKey": "root"
      }
     ],
-    "hash": "ccadf57b7d2486fd"
+    "hash": "c005ce210e8584a1"
    },
    "evals": [
     {
-     "t": 0.70833333333333,
+     "t": 0.7083,
      "transform": {
       "anchor": [
        -120.510009765625,
@@ -1894,6 +2718,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -120.51,
+      -207.87
+     ],
      "world": [
       1.3,
       0,
@@ -1912,7 +2758,178 @@
       0,
       1
      ],
-     "opacity": 0.96
+     "opacity": 0.96,
+     "effectFill": null
+    },
+    {
+     "t": 0.7292,
+     "transform": {
+      "anchor": [
+       -120.510009765625,
+       -207.870010375977,
+       0
+      ],
+      "position": [
+       -120.510009765625,
+       -207.870010375977,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -120.51,
+      -207.87
+     ],
+     "world": [
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 0.96,
+     "effectFill": null
+    },
+    {
+     "t": 0.75,
+     "transform": {
+      "anchor": [
+       -120.510009765625,
+       -207.870010375977,
+       0
+      ],
+      "position": [
+       -120.510009765625,
+       -207.870010375977,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -120.51,
+      -207.87
+     ],
+     "world": [
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 0.96,
+     "effectFill": null
     }
    ]
   },
@@ -1920,6 +2937,7 @@
    "index": 7,
    "name": "STROKE_002_runs11",
    "kind": "shape",
+   "source": "",
    "inPoint": 0.75,
    "outPoint": 2.83333333333333,
    "startTime": -0.75,
@@ -1930,6 +2948,7 @@
    "shy": false,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -1970,6 +2989,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -2154,36 +3174,48 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "shell 2",
        "outline"
-      ]
+      ],
+      "paintScopeKey": "shell 2"
      }
     ],
-    "hash": "477794a7ba3c1134"
+    "hash": "fca3312d4d6dfcd2"
    },
    "evals": [
     {
-     "t": 0.8,
+     "t": 0.75,
      "transform": {
       "anchor": [
        -120.510009765625,
@@ -2224,6 +3256,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -120.51,
+      -207.87
+     ],
      "world": [
       1.3,
       0,
@@ -2242,10 +3296,11 @@
       0,
       1
      ],
-     "opacity": 0.96
+     "opacity": 0.96,
+     "effectFill": null
     },
     {
-     "t": 1.792,
+     "t": 1.7917,
      "transform": {
       "anchor": [
        -120.510009765625,
@@ -2286,6 +3341,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -120.51,
+      -207.87
+     ],
      "world": [
       1.3,
       0,
@@ -2304,10 +3381,11 @@
       0,
       1
      ],
-     "opacity": 0.96
+     "opacity": 0.96,
+     "effectFill": null
     },
     {
-     "t": 2.783,
+     "t": 2.8333,
      "transform": {
       "anchor": [
        -120.510009765625,
@@ -2348,6 +3426,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -120.51,
+      -207.87
+     ],
      "world": [
       1.3,
       0,
@@ -2366,7 +3466,8 @@
       0,
       1
      ],
-     "opacity": 0.96
+     "opacity": 0.96,
+     "effectFill": null
     }
    ]
   },
@@ -2374,6 +3475,7 @@
    "index": 8,
    "name": "▾  STROKE_000",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 2.83333333333333,
    "startTime": 0,
@@ -2384,6 +3486,7 @@
    "shy": false,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -2424,6 +3527,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -2432,7 +3536,7 @@
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        0,
@@ -2456,6 +3560,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      0.7692307692307692,
+      0,
+      0,
+      0,
+      0,
+      0.7692307692307692,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      0,
+      0
+     ],
      "world": [
       1,
       0,
@@ -2474,10 +3600,11 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     },
     {
-     "t": 1.417,
+     "t": 1.4167,
      "transform": {
       "anchor": [
        0,
@@ -2501,6 +3628,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      0.7692307692307692,
+      0,
+      0,
+      0,
+      0,
+      0.7692307692307692,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      0,
+      0
+     ],
      "world": [
       1,
       0,
@@ -2519,10 +3668,11 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     },
     {
-     "t": 2.783,
+     "t": 2.8333,
      "transform": {
       "anchor": [
        0,
@@ -2546,6 +3696,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      0.7692307692307692,
+      0,
+      0,
+      0,
+      0,
+      0.7692307692307692,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      0,
+      0
+     ],
      "world": [
       1,
       0,
@@ -2564,7 +3736,8 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     }
    ]
   },
@@ -2572,6 +3745,7 @@
    "index": 9,
    "name": "STROKE_000_runs5",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 0.41666666666667,
    "startTime": -0.70833333333333,
@@ -2582,6 +3756,7 @@
    "shy": false,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -2622,6 +3797,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -2698,36 +3874,48 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "shell 0",
        "outline"
-      ]
+      ],
+      "paintScopeKey": "shell 0"
      }
     ],
-    "hash": "3719f09349074513"
+    "hash": "e613f9e842a39c5d"
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        -175.110000610352,
@@ -2768,6 +3956,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -175.11,
+      -262.86
+     ],
      "world": [
       1.3,
       0,
@@ -2786,10 +3996,11 @@
       0,
       1
      ],
-     "opacity": 0.96
+     "opacity": 0.96,
+     "effectFill": null
     },
     {
-     "t": 0.208,
+     "t": 0.2083,
      "transform": {
       "anchor": [
        -175.110000610352,
@@ -2830,6 +4041,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -175.11,
+      -262.86
+     ],
      "world": [
       1.3,
       0,
@@ -2848,10 +4081,11 @@
       0,
       1
      ],
-     "opacity": 0.96
+     "opacity": 0.96,
+     "effectFill": null
     },
     {
-     "t": 0.367,
+     "t": 0.4167,
      "transform": {
       "anchor": [
        -175.110000610352,
@@ -2892,6 +4126,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -175.11,
+      -262.86
+     ],
      "world": [
       1.3,
       0,
@@ -2910,7 +4166,8 @@
       0,
       1
      ],
-     "opacity": 0.96
+     "opacity": 0.96,
+     "effectFill": null
     }
    ]
   },
@@ -2918,6 +4175,7 @@
    "index": 10,
    "name": "STROKE_000_runs8",
    "kind": "shape",
+   "source": "",
    "inPoint": 0.5,
    "outPoint": 0.58333333333333,
    "startTime": -0.83333333333333,
@@ -2928,6 +4186,7 @@
    "shy": false,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -2968,6 +4227,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -3044,32 +4304,44 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "shell 0",
        "outline"
-      ]
+      ],
+      "paintScopeKey": "shell 0"
      }
     ],
-    "hash": "3719f09349074513"
+    "hash": "e613f9e842a39c5d"
    },
    "evals": [
     {
@@ -3114,6 +4386,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -175.11,
+      -262.86
+     ],
      "world": [
       1.3,
       0,
@@ -3132,7 +4426,178 @@
       0,
       1
      ],
-     "opacity": 0.96
+     "opacity": 0.96,
+     "effectFill": null
+    },
+    {
+     "t": 0.5417,
+     "transform": {
+      "anchor": [
+       -175.110000610352,
+       -262.859985351562,
+       0
+      ],
+      "position": [
+       -175.110000610352,
+       -262.859985351562,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -175.11,
+      -262.86
+     ],
+     "world": [
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 0.96,
+     "effectFill": null
+    },
+    {
+     "t": 0.5833,
+     "transform": {
+      "anchor": [
+       -175.110000610352,
+       -262.859985351562,
+       0
+      ],
+      "position": [
+       -175.110000610352,
+       -262.859985351562,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 0.96,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -175.11,
+      -262.86
+     ],
+     "world": [
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 0.96,
+     "effectFill": null
     }
    ]
   },
@@ -3140,6 +4605,7 @@
    "index": 11,
    "name": "STROKE_000_runs10",
    "kind": "shape",
+   "source": "",
    "inPoint": 0.41666666666667,
    "outPoint": 0.5,
    "startTime": -0.83333333333333,
@@ -3150,6 +4616,7 @@
    "shy": false,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -3190,6 +4657,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -3253,37 +4721,61 @@
        ],
        "closed": true
       },
-      "paints": [],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "paints": [
+       {
+        "kind": "stroke",
+        "color": [
+         0,
+         0,
+         0,
+         1
+        ],
+        "opacity": 1,
+        "width": 2
+       }
+      ],
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "shell 0",
        "outline"
-      ]
+      ],
+      "paintScopeKey": "root"
      }
     ],
-    "hash": "b68a8f04412e4d13"
+    "hash": "048c1094bce2b0d2"
    },
    "evals": [
     {
-     "t": 0.41666666666667,
+     "t": 0.4167,
      "transform": {
       "anchor": [
        -175.110000610352,
@@ -3324,6 +4816,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -175.11,
+      -262.86
+     ],
      "world": [
       1.3,
       0,
@@ -3342,7 +4856,178 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
+    },
+    {
+     "t": 0.4583,
+     "transform": {
+      "anchor": [
+       -175.110000610352,
+       -262.859985351562,
+       0
+      ],
+      "position": [
+       -175.110000610352,
+       -262.859985351562,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -175.11,
+      -262.86
+     ],
+     "world": [
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 1,
+     "effectFill": null
+    },
+    {
+     "t": 0.5,
+     "transform": {
+      "anchor": [
+       -175.110000610352,
+       -262.859985351562,
+       0
+      ],
+      "position": [
+       -175.110000610352,
+       -262.859985351562,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -175.11,
+      -262.86
+     ],
+     "world": [
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 1,
+     "effectFill": null
     }
    ]
   },
@@ -3350,6 +5035,7 @@
    "index": 12,
    "name": "STROKE_000_runs11",
    "kind": "shape",
+   "source": "",
    "inPoint": 0.58333333333333,
    "outPoint": 0.625,
    "startTime": -0.79166666666667,
@@ -3360,6 +5046,7 @@
    "shy": false,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -3400,6 +5087,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -3463,37 +5151,61 @@
        ],
        "closed": true
       },
-      "paints": [],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "paints": [
+       {
+        "kind": "stroke",
+        "color": [
+         0,
+         0,
+         0,
+         1
+        ],
+        "opacity": 1,
+        "width": 2
+       }
+      ],
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "shell 0",
        "outline"
-      ]
+      ],
+      "paintScopeKey": "root"
      }
     ],
-    "hash": "b68a8f04412e4d13"
+    "hash": "048c1094bce2b0d2"
    },
    "evals": [
     {
-     "t": 0.58333333333333,
+     "t": 0.5833,
      "transform": {
       "anchor": [
        -175.110000610352,
@@ -3534,6 +5246,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -175.11,
+      -262.86
+     ],
      "world": [
       1.3,
       0,
@@ -3552,7 +5286,178 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
+    },
+    {
+     "t": 0.6042,
+     "transform": {
+      "anchor": [
+       -175.110000610352,
+       -262.859985351562,
+       0
+      ],
+      "position": [
+       -175.110000610352,
+       -262.859985351562,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -175.11,
+      -262.86
+     ],
+     "world": [
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 1,
+     "effectFill": null
+    },
+    {
+     "t": 0.625,
+     "transform": {
+      "anchor": [
+       -175.110000610352,
+       -262.859985351562,
+       0
+      ],
+      "position": [
+       -175.110000610352,
+       -262.859985351562,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -175.11,
+      -262.86
+     ],
+     "world": [
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 1,
+     "effectFill": null
     }
    ]
   },
@@ -3560,6 +5465,7 @@
    "index": 13,
    "name": "STROKE_000_runs9",
    "kind": "shape",
+   "source": "",
    "inPoint": 0.625,
    "outPoint": 2.83333333333333,
    "startTime": -0.875,
@@ -3570,6 +5476,7 @@
    "shy": false,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -3610,6 +5517,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -3686,36 +5594,48 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "shell 0",
        "outline"
-      ]
+      ],
+      "paintScopeKey": "shell 0"
      }
     ],
-    "hash": "3719f09349074513"
+    "hash": "e613f9e842a39c5d"
    },
    "evals": [
     {
-     "t": 0.675,
+     "t": 0.625,
      "transform": {
       "anchor": [
        -175.110000610352,
@@ -3756,6 +5676,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -175.11,
+      -262.86
+     ],
      "world": [
       1.3,
       0,
@@ -3774,10 +5716,11 @@
       0,
       1
      ],
-     "opacity": 0.96
+     "opacity": 0.96,
+     "effectFill": null
     },
     {
-     "t": 1.729,
+     "t": 1.7292,
      "transform": {
       "anchor": [
        -175.110000610352,
@@ -3818,6 +5761,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -175.11,
+      -262.86
+     ],
      "world": [
       1.3,
       0,
@@ -3836,10 +5801,11 @@
       0,
       1
      ],
-     "opacity": 0.96
+     "opacity": 0.96,
+     "effectFill": null
     },
     {
-     "t": 2.783,
+     "t": 2.8333,
      "transform": {
       "anchor": [
        -175.110000610352,
@@ -3880,6 +5846,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -175.11,
+      -262.86
+     ],
      "world": [
       1.3,
       0,
@@ -3898,7 +5886,8 @@
       0,
       1
      ],
-     "opacity": 0.96
+     "opacity": 0.96,
+     "effectFill": null
     }
    ]
   },
@@ -3906,6 +5895,7 @@
    "index": 14,
    "name": "▾  STROKE_001",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 2.83333333333333,
    "startTime": 0,
@@ -3916,6 +5906,7 @@
    "shy": false,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -3956,6 +5947,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -3964,7 +5956,7 @@
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        0,
@@ -3988,6 +5980,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      0.7692307692307692,
+      0,
+      0,
+      0,
+      0,
+      0.7692307692307692,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      0,
+      0
+     ],
      "world": [
       1,
       0,
@@ -4006,10 +6020,11 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     },
     {
-     "t": 1.417,
+     "t": 1.4167,
      "transform": {
       "anchor": [
        0,
@@ -4033,6 +6048,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      0.7692307692307692,
+      0,
+      0,
+      0,
+      0,
+      0.7692307692307692,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      0,
+      0
+     ],
      "world": [
       1,
       0,
@@ -4051,10 +6088,11 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     },
     {
-     "t": 2.783,
+     "t": 2.8333,
      "transform": {
       "anchor": [
        0,
@@ -4078,6 +6116,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      0.7692307692307692,
+      0,
+      0,
+      0,
+      0,
+      0.7692307692307692,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      0,
+      0
+     ],
      "world": [
       1,
       0,
@@ -4096,7 +6156,8 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     }
    ]
   },
@@ -4104,6 +6165,7 @@
    "index": 15,
    "name": "STROKE_001_runs6",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 0.25,
    "startTime": -0.875,
@@ -4114,6 +6176,7 @@
    "shy": false,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -4154,6 +6217,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -4254,36 +6318,48 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "shell 1",
        "outline"
-      ]
+      ],
+      "paintScopeKey": "shell 1"
      }
     ],
-    "hash": "810696f78d172b35"
+    "hash": "11ca3cb39d1bb893"
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        -273.779998779297,
@@ -4324,6 +6400,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -273.78,
+      -218.4
+     ],
      "world": [
       1.3,
       0,
@@ -4342,7 +6440,8 @@
       0,
       1
      ],
-     "opacity": 0.96
+     "opacity": 0.96,
+     "effectFill": null
     },
     {
      "t": 0.125,
@@ -4386,6 +6485,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -273.78,
+      -218.4
+     ],
      "world": [
       1.3,
       0,
@@ -4404,10 +6525,11 @@
       0,
       1
      ],
-     "opacity": 0.96
+     "opacity": 0.96,
+     "effectFill": null
     },
     {
-     "t": 0.2,
+     "t": 0.25,
      "transform": {
       "anchor": [
        -273.779998779297,
@@ -4448,6 +6570,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -273.78,
+      -218.4
+     ],
      "world": [
       1.3,
       0,
@@ -4466,7 +6610,8 @@
       0,
       1
      ],
-     "opacity": 0.96
+     "opacity": 0.96,
+     "effectFill": null
     }
    ]
   },
@@ -4474,6 +6619,7 @@
    "index": 16,
    "name": "STROKE_001_runs9",
    "kind": "shape",
+   "source": "",
    "inPoint": 0.33333333333333,
    "outPoint": 0.41666666666667,
    "startTime": -1,
@@ -4484,6 +6630,7 @@
    "shy": false,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -4524,6 +6671,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -4624,36 +6772,48 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "shell 1",
        "outline"
-      ]
+      ],
+      "paintScopeKey": "shell 1"
      }
     ],
-    "hash": "810696f78d172b35"
+    "hash": "11ca3cb39d1bb893"
    },
    "evals": [
     {
-     "t": 0.33333333333333,
+     "t": 0.3333,
      "transform": {
       "anchor": [
        -273.779998779297,
@@ -4694,6 +6854,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -273.78,
+      -218.4
+     ],
      "world": [
       1.3,
       0,
@@ -4712,7 +6894,178 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
+    },
+    {
+     "t": 0.375,
+     "transform": {
+      "anchor": [
+       -273.779998779297,
+       -218.400024414062,
+       0
+      ],
+      "position": [
+       -273.779998779297,
+       -218.400024414062,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -273.78,
+      -218.4
+     ],
+     "world": [
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 1,
+     "effectFill": null
+    },
+    {
+     "t": 0.4167,
+     "transform": {
+      "anchor": [
+       -273.779998779297,
+       -218.400024414062,
+       0
+      ],
+      "position": [
+       -273.779998779297,
+       -218.400024414062,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -273.78,
+      -218.4
+     ],
+     "world": [
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 1,
+     "effectFill": null
     }
    ]
   },
@@ -4720,6 +7073,7 @@
    "index": 17,
    "name": "STROKE_001_runs11",
    "kind": "shape",
+   "source": "",
    "inPoint": 0.25,
    "outPoint": 0.33333333333333,
    "startTime": -1,
@@ -4730,6 +7084,7 @@
    "shy": false,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -4770,6 +7125,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -4870,32 +7226,44 @@
         "width": 2
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "shell 1",
        "outline"
-      ]
+      ],
+      "paintScopeKey": "shell 1"
      }
     ],
-    "hash": "6e4bc654401d57d6"
+    "hash": "770a8b994a2a0394"
    },
    "evals": [
     {
@@ -4940,6 +7308,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -273.78,
+      -218.4
+     ],
      "world": [
       1.3,
       0,
@@ -4958,7 +7348,178 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
+    },
+    {
+     "t": 0.2917,
+     "transform": {
+      "anchor": [
+       -273.779998779297,
+       -218.400024414062,
+       0
+      ],
+      "position": [
+       -273.779998779297,
+       -218.400024414062,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -273.78,
+      -218.4
+     ],
+     "world": [
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 1,
+     "effectFill": null
+    },
+    {
+     "t": 0.3333,
+     "transform": {
+      "anchor": [
+       -273.779998779297,
+       -218.400024414062,
+       0
+      ],
+      "position": [
+       -273.779998779297,
+       -218.400024414062,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -273.78,
+      -218.4
+     ],
+     "world": [
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 1,
+     "effectFill": null
     }
    ]
   },
@@ -4966,6 +7527,7 @@
    "index": 18,
    "name": "STROKE_001_runs12",
    "kind": "shape",
+   "source": "",
    "inPoint": 0.41666666666667,
    "outPoint": 0.45833333333333,
    "startTime": -1,
@@ -4976,6 +7538,7 @@
    "shy": false,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -5016,6 +7579,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -5116,36 +7680,48 @@
         "width": 2
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "shell 1",
        "outline"
-      ]
+      ],
+      "paintScopeKey": "shell 1"
      }
     ],
-    "hash": "6e4bc654401d57d6"
+    "hash": "770a8b994a2a0394"
    },
    "evals": [
     {
-     "t": 0.41666666666667,
+     "t": 0.4167,
      "transform": {
       "anchor": [
        -273.779998779297,
@@ -5186,6 +7762,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -273.78,
+      -218.4
+     ],
      "world": [
       1.3,
       0,
@@ -5204,7 +7802,178 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
+    },
+    {
+     "t": 0.4375,
+     "transform": {
+      "anchor": [
+       -273.779998779297,
+       -218.400024414062,
+       0
+      ],
+      "position": [
+       -273.779998779297,
+       -218.400024414062,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -273.78,
+      -218.4
+     ],
+     "world": [
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 1,
+     "effectFill": null
+    },
+    {
+     "t": 0.4583,
+     "transform": {
+      "anchor": [
+       -273.779998779297,
+       -218.400024414062,
+       0
+      ],
+      "position": [
+       -273.779998779297,
+       -218.400024414062,
+       0
+      ],
+      "scale": [
+       100,
+       100,
+       100
+      ],
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "opacity": 1,
+      "separatedPosition": false
+     },
+     "relToParent": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -273.78,
+      -218.4
+     ],
+     "world": [
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1.3,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      540,
+      540,
+      0,
+      1
+     ],
+     "opacity": 1,
+     "effectFill": null
     }
    ]
   },
@@ -5212,6 +7981,7 @@
    "index": 19,
    "name": "STROKE_001_runs10",
    "kind": "shape",
+   "source": "",
    "inPoint": 0.45833333333333,
    "outPoint": 2.83333333333333,
    "startTime": -1.04166666666667,
@@ -5222,6 +7992,7 @@
    "shy": false,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -5262,6 +8033,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -5362,36 +8134,48 @@
         "fillRule": "nonzero"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "shell 1",
        "outline"
-      ]
+      ],
+      "paintScopeKey": "shell 1"
      }
     ],
-    "hash": "810696f78d172b35"
+    "hash": "11ca3cb39d1bb893"
    },
    "evals": [
     {
-     "t": 0.508,
+     "t": 0.4583,
      "transform": {
       "anchor": [
        -273.779998779297,
@@ -5432,6 +8216,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -273.78,
+      -218.4
+     ],
      "world": [
       1.3,
       0,
@@ -5450,10 +8256,11 @@
       0,
       1
      ],
-     "opacity": 0.96
+     "opacity": 0.96,
+     "effectFill": null
     },
     {
-     "t": 1.646,
+     "t": 1.6458,
      "transform": {
       "anchor": [
        -273.779998779297,
@@ -5494,6 +8301,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -273.78,
+      -218.4
+     ],
      "world": [
       1.3,
       0,
@@ -5512,10 +8341,11 @@
       0,
       1
      ],
-     "opacity": 0.96
+     "opacity": 0.96,
+     "effectFill": null
     },
     {
-     "t": 2.783,
+     "t": 2.8333,
      "transform": {
       "anchor": [
        -273.779998779297,
@@ -5556,6 +8386,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      -273.78,
+      -218.4
+     ],
      "world": [
       1.3,
       0,
@@ -5574,7 +8426,8 @@
       0,
       1
      ],
-     "opacity": 0.96
+     "opacity": 0.96,
+     "effectFill": null
     }
    ]
   },
@@ -5582,6 +8435,7 @@
    "index": 20,
    "name": "Ae_Restro merged shape",
    "kind": "shape",
+   "source": "",
    "inPoint": 0,
    "outPoint": 2.83333333333333,
    "startTime": 0.08333333333333,
@@ -5592,6 +8446,7 @@
    "shy": false,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -5632,6 +8487,7 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": {
@@ -10376,29 +13232,41 @@
         "fillRule": "evenodd"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "merged geometry",
        "outline 0"
-      ]
+      ],
+      "paintScopeKey": "merged geometry"
      },
      {
       "name": "outline 1",
@@ -10532,29 +13400,41 @@
         "fillRule": "evenodd"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "merged geometry",
        "outline 1"
-      ]
+      ],
+      "paintScopeKey": "merged geometry"
      },
      {
       "name": "outline 2",
@@ -10628,29 +13508,41 @@
         "fillRule": "evenodd"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "merged geometry",
        "outline 2"
-      ]
+      ],
+      "paintScopeKey": "merged geometry"
      },
      {
       "name": "outline 3",
@@ -10724,29 +13616,41 @@
         "fillRule": "evenodd"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "merged geometry",
        "outline 3"
-      ]
+      ],
+      "paintScopeKey": "merged geometry"
      },
      {
       "name": "outline 4",
@@ -10820,29 +13724,41 @@
         "fillRule": "evenodd"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "merged geometry",
        "outline 4"
-      ]
+      ],
+      "paintScopeKey": "merged geometry"
      },
      {
       "name": "outline 5",
@@ -11744,36 +14660,48 @@
         "fillRule": "evenodd"
        }
       ],
-      "transform": {
-       "anchor": [
-        0,
-        0
-       ],
-       "position": [
-        0,
-        0
-       ],
-       "scale": [
-        100,
-        100
-       ],
-       "skew": 0,
-       "skewAxis": 0,
-       "rotation": 0,
-       "opacity": 1
-      },
+      "groupTransforms": [
+       {
+        "anchor": [
+         0,
+         0
+        ],
+        "position": [
+         0,
+         0
+        ],
+        "scale": [
+         100,
+         100
+        ],
+        "skew": 0,
+        "skewAxis": 0,
+        "rotation": 0,
+        "opacity": 1
+       }
+      ],
+      "localMatrix": [
+       1,
+       0,
+       0,
+       1,
+       0,
+       0
+      ],
+      "opacity": 1,
       "transformRaw": "",
       "groupPath": [
        "merged geometry",
        "outline 5"
-      ]
+      ],
+      "paintScopeKey": "merged geometry"
      }
     ],
-    "hash": "74b348e22dcb02ae"
+    "hash": "bebf572607fde754"
    },
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        1.56002402305603,
@@ -11814,6 +14742,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1.56,
+      20.2802
+     ],
      "world": [
       1.3,
       0,
@@ -11832,10 +14782,11 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     },
     {
-     "t": 1.417,
+     "t": 1.4167,
      "transform": {
       "anchor": [
        1.56002402305603,
@@ -11876,6 +14827,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1.56,
+      20.2802
+     ],
      "world": [
       1.3,
       0,
@@ -11894,10 +14867,11 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     },
     {
-     "t": 2.783,
+     "t": 2.8333,
      "transform": {
       "anchor": [
        1.56002402305603,
@@ -11938,6 +14912,28 @@
       0,
       1
      ],
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      1.56,
+      20.2802
+     ],
      "world": [
       1.3,
       0,
@@ -11956,7 +14952,8 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     }
    ]
   }

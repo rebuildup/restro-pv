@@ -2,10 +2,15 @@
 
 > ← [設計パッケージ目次へ戻る](./README.md)
 > 参照図版: [06-motion-curves-and-vectors.png](./diagrams/06-motion-curves-and-vectors.png) ／ [08-per-stroke-choreography.png](./diagrams/08-per-stroke-choreography.png)
+> 状態基準オニオンスキン: [「解」runs4 実測](./diagrams/motion-kai-runs4-onion.png) ／ [「筆」STEP 4 実測](./diagrams/motion-fude-onion.png) ／ [Scene A2 新設計](./diagrams/motion-kai-designed-a2-onion.png)
 
 | モーション解析基礎（AEP実測データ） | 場面別モーション文法・筆画間相互作用図 |
 |---|---|
 | ![モーション設計根拠図](./diagrams/06-motion-curves-and-vectors.png) | ![場面別筆画インタラクション図](./diagrams/08-per-stroke-choreography.png) |
+
+| 「解」runs4 状態基準オニオンスキン | 「筆」STEP 4 式駆動オニオンスキン | Scene A2 新設計（開門ホールド→流出） |
+|---|---|---|
+| ![runs4 状態基準オニオンスキン](./diagrams/motion-kai-runs4-onion.png) | ![筆 状態基準オニオンスキン](./diagrams/motion-fude-onion.png) | ![Scene A2 新設計オニオンスキン](./diagrams/motion-kai-designed-a2-onion.png) |
 
 ---
 
@@ -24,7 +29,7 @@
 
 ### 1.2 `runs4` の運動軸拘束と個別ピボット実測値
 
-> **`[回収事実 / 実測値]`（2026-11 訂正）** 以下の `runs4` 16層のうち `STROKE_*` 14層は**グリフ筆画ではなくプロキシ図形**（4〜13 頂点の矩形/台形）である。記述する Δ・回転・アンカーは**プロキシ要素自体の実測運動**であり、A2 の運動グラフィックとしては有効な一次データだが「解の各筆画がこのように動く」という意味ではない。「解」の実グリフ形状は `merged shape` 2層（計211頂点）と `解` テキスト層が担い、**一画分解データは存在しない**。機械可読データ：[`data/kai-stroke-runs-2d.composition.json`](./data/kai-stroke-runs-2d.composition.json) 他。実形状オニオンスキン図：[`diagrams/motion-kai-runs4-onion.svg`](./diagrams/motion-kai-runs4-onion.svg)（Null3 ローカル空間・時刻別半透明重ね＋アンカー軌道）。
+> **`[回収事実 / 実測値]`（2026-11 再検証訂正）** `runs4` 16層は**全層が「解」グリフに属する実 Restro 分解要素**（直線4頂点画9本＋3次ベジェ曲線画5本＋未分解 `merged shape` 2層）である（旧「プロキシ図形」記載を撤回、詳細は [03-assets-catalog.md §3](./03-assets-catalog.md)）。機械可読データ：[`data/kai-stroke-runs-2d.composition.json`](./data/kai-stroke-runs-2d.composition.json) 他。状態基準オニオンスキン：[`diagrams/motion-kai-runs4-onion.png`](./diagrams/motion-kai-runs4-onion.png)（[SVG](./diagrams/motion-kai-runs4-onion.svg)）— 均等サンプリングを廃止し、`f0 (0.000s 初発)`・`f3 (0.125s 最大加速付近)`・`f9 (0.375s ピーク停止, influence=0.01%)`・`f21 (0.875s 長余韻収束中)`・`f45 (1.875s 完全定着)` の5状態を重ねて形状と時間の対応を可視化。
 
 `[回収事実 / 実測値]` `runs4` 16層（`14 STROKE_*` + `2 merged`）は一律の放射拡散ではなく、形状から割り当てられた役割で動いている：
 - **アンカー静止基準**: **`STROKE_016_runs4` (`[239]`, `Δ=(0,0), rot=0°`)** は微動だにしない中心軸（不動の基準画）として固定。
@@ -58,6 +63,9 @@
   3. **周辺副筆画・回転画 (`000..014`)**: `003/007` は右へ、`004/010` は左安全帯 **`x ≥ 480` の手前で止める限界幅** まで逃がす。`002/005` は下端または交差支点ピボットで外向きスイングし、`016` 中心域へ絶対に被らない。
   4. **未分解残存層 (`[244], [249]` merged shape)**: 独立分離したかのような過大な回転・分裂演出を掛けず、一体輪郭ブロックとして自然追従・退避させ、素材の真実性を偽らない。
 - **A3 連続接続（`f80..101`）**: 再び元の漢字へ戻って終わりにせず、開いた緊張状態のまま `bunkai` 空間傾き（`X=-20°, Y=+22°`）に乗って画群全体が上方向へ加速流出し、同時に左カラム開閉（`f93..108`）と Scene B「筆」下部せり出しを同じ上向きベクトルの流れで接続する。
+- **新設計オニオンスキン＆局所実現可能性検証（[`tools/design/verify-local-motion.ts`](../../tools/design/verify-local-motion.ts)）**:
+  - 状態基準図：[`diagrams/motion-kai-designed-a2-onion.png`](./diagrams/motion-kai-designed-a2-onion.png)（[SVG](./diagrams/motion-kai-designed-a2-onion.svg)）— `f45 (A1接続)` → `f56 (開門＋左安全停止)` → `f66 (ホールド＋赤016露出)` → `f84 (A3上方離脱)` の重要状態と `x=480 Safe Stage Edge` を可視化。
+  - **実空間数値検証（[`verification/local-motion-check.json`](./verification/local-motion-check.json)）**: 3D カメラ投影＋左安全帯との干渉を検証した結果、ホールド時刻における `015` 下端（`y=385.4`）と `017` 上端（`y=905.6`）の縦開門窓は **`clearOpeningWindowHeightPx = 520.2px`**（視認閾値 `>120px` を十分確保）となり、一方の左向き退避画 `004` は元 `runs4` の `Δx = -72` のままでは 3D 投影後の左端が `x = 446.7px` へ達して左安全帯 `x = 460` を侵犯するため、**`Δx = -28` クランプにより `minScreenX = 490.4px`（`x ≥ 480` 厳守）** と定量補正した。
 
 ### 3.2 Scene B（`f101..f191`）：工程蓄積（静）→ 13画解放（動）の落差
 
@@ -65,7 +73,7 @@
 - **筆画・要素間インタラクション**:
   - `STEP 1..3`（`4.25..7.00s`）では主文字「筆」そのものは **移動させず静止台座として保持** し、走査線 (`scanline`)・延長線 (`extend A/B`)・推定頂点 `29点` と `12緑面`・`300%` 拡大鏡の**解析レイヤーだけが累積加算**される。
   - `t = 7.142s`（`STEP 4` 開示直後）に、それまで静止して解析されていた「筆」13画が **初めて立体的に 13個のベクトルへ分離移動** し（[fude-strokes-exploded.png](./assets/fude-strokes-exploded.png)）、`S09..S12` 横画群が等差間隔 `dy={-5, +2, +8, +14}` で美しく開くことで、「推定結果＝独立編集できる 13 の筆画」を身体的に理解させる。
-  - **実測オニオンスキン（2026-11 追加）**: [`diagrams/motion-fude-onion.svg`](./diagrams/motion-fude-onion.svg) — comp_01 の実筆画形状を comp 時間 `0.1/1.0/2.0/3.0/3.6s` で半透明重ねし、各画アンカーの軌道を破線で併記。組み上がり検証値は [`verification/assembly-metrics.json`](./verification/assembly-metrics.json)（実筆画和集合 vs `FUDE outline base` の正規化 IoU ≈ 0.75、全時刻で安定）。
+  - **状態基準実測オニオンスキン（2026-11 刷新）**: [`diagrams/motion-fude-onion.png`](./diagrams/motion-fude-onion.png)（[SVG](./diagrams/motion-fude-onion.svg)）— 旧版が参照していた `01-Baseline`（CTI 焼き込みにより `t=0` でも `IoU = 0.7310` で静止凍結していたコンポ）から無変位正本 **`06-PV glyph`（[`data/pv-glyph-fude.composition.json`](./data/pv-glyph-fude.composition.json), rest `IoU = 0.9998`）**＋実式 `easeOut(7.142..7.611s)` へ切り替え、`7.142s (u=0.00 解放開始)`・`7.200s (easeOut≈0.52 立ち上がり)`・`7.350s (easeOut≈0.87 減速展開)`・`7.611s (u=1.00 ピーク完了)` の4状態をベクトル注釈付きで検証。[`verification/assembly-metrics.json`](./verification/assembly-metrics.json) 参照。
 
 ### 3.3 Scene C（`f191..f281`）：3作例の独立運動文法（差別化設計）
 

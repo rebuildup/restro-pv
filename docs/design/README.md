@@ -31,9 +31,9 @@
 | [04-structural-timesheet.md](./04-structural-timesheet.md) | **D. 全体構造変化のタイムシート** | 全 480f / 20s / 128 BPM、左カラムの中央集合↔上下分離の連続遷移（Title→Explain→End）、右ステージ全場面の因果連鎖 | [03-structural-timesheet.png](./diagrams/03-structural-timesheet.png) |
 | [05-cards-and-sheets.md](./05-cards-and-sheets.md) | **E. カード／シート系表現** | B アコーディオン運動とZ順（`P19..23` × `300%` レンズ導出）、C 3層分離＋3作例の個別構造・運動、D 2系統因果窓 | [04-accordion-and-cards.png](./diagrams/04-accordion-and-cards.png) |
 | [06-recordings-audit.md](./06-recordings-audit.md) | **F. 個別の録画素材監査** | 既存録画 6本（`ae-decompose-ops` 他・`wu-d-live`）の解像度・UI 実態・可否判定と、D 再収録・見切れ解消の具体仕様 | [05-recordings-audit-sheet.png](./diagrams/05-recordings-audit-sheet.png) |
-| [07-motion-design.md](./07-motion-design.md) | **G. モーション・筆画相互作用設計** | `runs4` 一次分析＋場面別曲線文法（A2交差抜き・B静→動解放・C3態・E呼吸収束）、筆画別役割と衝突回避・反単調性基準 | [06-motion-curves-and-vectors.png](./diagrams/06-motion-curves-and-vectors.png), [08-per-stroke-choreography.png](./diagrams/08-per-stroke-choreography.png) |
-| [08-quality-assurance.md](./08-quality-assurance.md) | **品質保証・受入基準** | 対象ごとの計算/構造検証 vs 視覚/時間人間レビューの分離、上位規則→子変換導出確認、Chrome復元検査・完了ゲート | [08-quality-assurance.md](./08-quality-assurance.md) |
-| [data/README.md](./data/README.md) | **機械可読コンポジションデータ** | 個別素材↔元コンポ空間の対応を JSON 化（座標・変換・親子・行列・重なり・形状同一性）。`STROKE_*`＝プロキシ図形の実測訂正を含む | `data/*.composition.json`（9件）, `verification/assembly-metrics.json` |
+| [07-motion-design.md](./07-motion-design.md) | **G. モーション・筆画相互作用設計** | `runs4` 一次分析＋場面別曲線文法（A2交差抜き・B静→動解放・C3態・E呼吸収束）、状態基準オニオンスキン3種・A2局所実現性数値検証 | [06-motion-curves-and-vectors.png](./diagrams/06-motion-curves-and-vectors.png), [08-per-stroke-choreography.png](./diagrams/08-per-stroke-choreography.png), [motion-kai-designed-a2-onion.png](./diagrams/motion-kai-designed-a2-onion.png) |
+| [08-quality-assurance.md](./08-quality-assurance.md) | **品質保証・受入基準** | 対象ごとの計算/構造検証 vs 視覚/時間人間レビューの分離、同一空間組み上がり IoU・3D投影・4層リグ不変量検査・完了ゲート | [assembly-metrics.json](./verification/assembly-metrics.json), [local-motion-check.json](./verification/local-motion-check.json) |
+| [data/README.md](./data/README.md) | **機械可読コンポジションデータ** | 個別素材↔元コンポ空間の対応を JSON 化（式・`effects`・ネストベクター・基準空間変換 `toReferenceSpace` 保持）。「解」16層＋`06-PV glyph` rest 正本収録 | `data/*.composition.json`（10件）, `verification/assembly-metrics.json` |
 
 ---
 
@@ -67,8 +67,11 @@
 | [06-motion-curves-and-vectors.svg](./diagrams/06-motion-curves-and-vectors.svg) / [PNG](./diagrams/06-motion-curves-and-vectors.png) | [07-motion-design.md](./07-motion-design.md) | 巨大「解」非対称イージング曲線・`runs4` 14画変位量・`Baseline` 放射ベクトル |
 | [07-chrome-reconciliation.svg](./diagrams/07-chrome-reconciliation.svg) / [PNG](./diagrams/07-chrome-reconciliation.png) | [02-layout-and-grid.md §5](./02-layout-and-grid.md) | Issue #30＋元AEP 左開閉構造 vs 現行 Remotion（`Chrome/LeftCopy/masterPatch`）差分と最小復元範囲 |
 | [08-per-stroke-choreography.svg](./diagrams/08-per-stroke-choreography.svg) / [PNG](./diagrams/08-per-stroke-choreography.png) | [07-motion-design.md §3](./07-motion-design.md) | 場面別（A1/A2/B/C01..03/E）の運動曲線・筆画役割分化・衝突回避ルール |
-| [motion-kai-runs4-onion.svg](./diagrams/motion-kai-runs4-onion.svg) | [07-motion-design.md §1.2](./07-motion-design.md) | 「解」runs4 実形状オニオンスキン（Null3 ローカル空間・実測キーフレーム）＋アンカー軌道 |
-| [motion-fude-onion.svg](./diagrams/motion-fude-onion.svg) | [07-motion-design.md §3.2](./07-motion-design.md) | 「筆」実筆画13画のオニオンスキン＋軌道（実測） |
+| [motion-kai-runs4-onion.svg](./diagrams/motion-kai-runs4-onion.svg) / [PNG](./diagrams/motion-kai-runs4-onion.png) | [07-motion-design.md §1.2](./07-motion-design.md) | 「解」`runs4` 状態基準オニオンスキン（`f0/f3/f9ピーク/f21/f45定着`）＋アンカー軌道 |
+| [motion-fude-onion.svg](./diagrams/motion-fude-onion.svg) / [PNG](./diagrams/motion-fude-onion.png) | [07-motion-design.md §3.2](./07-motion-design.md) | 「筆」`06-PV glyph` × 式 `easeOut(7.142..7.611s)` 状態基準オニオンスキン |
+| [motion-kai-designed-a2-onion.svg](./diagrams/motion-kai-designed-a2-onion.svg) / [PNG](./diagrams/motion-kai-designed-a2-onion.png) | [07-motion-design.md §3.1](./07-motion-design.md) | 新設計 Scene A2 交差開門ホールド→赤016露出→A3流出オニオンスキン（`x=480` 安全線付） |
+| [3d-projection-check.png](./verification/3d-projection-check.png) | [02-layout-and-grid.md §3](./02-layout-and-grid.md) | 確定サムネ `samune-v1-master.png` への 3D 格子＋`runs4` 投影照合（`hitRate=0.618`） |
+| [fude-rest-diff.png](./verification/fude-rest-diff.png) / [kai diff](./verification/kai-runs4-vs-zoom-diff.png) | [data/README.md](./data/README.md) | 同一非クリップ空間での rest 一致差分（筆 `0.9998` / 解excl.ク `0.9999`） |
 
 > **個別単体アセット一式（54点）**: `docs/design/assets/individual/`（`logo/`, `chrome/`, `kai/`, `fude/`, `scene-b/`, `scene-c-d-e/`）に各要素のクリーン透過 SVG ＋ PNG および [manifest.json](./assets/individual/manifest.json) を格納。一覧・個別リンクは [03-assets-catalog.md](./03-assets-catalog.md) を参照。
 

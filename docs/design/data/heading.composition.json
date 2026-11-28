@@ -1,4 +1,8 @@
 {
+ "schema": "restro-pv/composition@2",
+ "generatedAt": "2026-11-28T02:55:09.413Z",
+ "generatedBy": "tools/design/export-compositions.ts",
+ "canonicalSource": "pv/generated/*.ts dumps -> derived authoritative design JSON (preserves expressions, effects, nested group matrices, and reference-space matrices).",
  "id": "heading",
  "title": "Heading typography (43-Heading)",
  "comp": {
@@ -6,7 +10,8 @@
   "exportName": "comp_43",
   "width": 416,
   "height": 66,
-  "duration": 20
+  "duration": 20,
+  "frameRate": 24
  },
  "layerIndices": [
   1,
@@ -15,12 +20,13 @@
  "space": {
   "kind": "comp"
  },
- "notes": "Real text layers (ZenKakuGothicAntique-Bold etc.). SVG previews under assets/individual/chrome are RECONSTRUCTIONS for layout reference only — this JSON is the authoritative export.",
+ "notes": "Authoritative text layer dump (ZenKakuGothicAntique-Bold 32pt). SVG previews under assets/individual/chrome are browser font layout references.",
  "elements": [
   {
    "index": 1,
    "name": "文字の輪郭から、 筆画ごとのシェイプへ。",
    "kind": "text",
+   "source": "",
    "inPoint": 0,
    "outPoint": 20,
    "startTime": 0,
@@ -31,6 +37,7 @@
    "shy": false,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -71,9 +78,11 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": {
     "text": "文字の輪郭から、\r筆画ごとのシェイプへ。",
+    "font": "ZenKakuGothicAntique-Bold",
     "fontFamily": "Zen Kaku Gothic Antique",
     "fontStyle": "Bold",
     "fontSize": 32,
@@ -92,7 +101,7 @@
    "shapes": null,
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        0.80000001192093,
@@ -116,6 +125,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      0.98,
+      0,
+      0,
+      0,
+      0,
+      0.98,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -0.7840000116825113,
+      26.5305604934692,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      0,
+      0
+     ],
      "world": [
       0.98,
       0,
@@ -134,7 +165,8 @@
       0,
       1
      ],
-     "opacity": 0.9
+     "opacity": 0.9,
+     "effectFill": null
     },
     {
      "t": 10,
@@ -161,6 +193,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      0.98,
+      0,
+      0,
+      0,
+      0,
+      0.98,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -0.7840000116825113,
+      26.5305604934692,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      0,
+      0
+     ],
      "world": [
       0.98,
       0,
@@ -179,10 +233,11 @@
       0,
       1
      ],
-     "opacity": 0.9
+     "opacity": 0.9,
+     "effectFill": null
     },
     {
-     "t": 19.95,
+     "t": 20,
      "transform": {
       "anchor": [
        0.80000001192093,
@@ -206,6 +261,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      0.98,
+      0,
+      0,
+      0,
+      0,
+      0.98,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -0.7840000116825113,
+      26.5305604934692,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      0,
+      0
+     ],
      "world": [
       0.98,
       0,
@@ -224,7 +301,8 @@
       0,
       1
      ],
-     "opacity": 0.9
+     "opacity": 0.9,
+     "effectFill": null
     }
    ]
   },
@@ -243,6 +321,7 @@
    "shy": false,
    "hasExpression": false,
    "transform": {
+    "separatedPosition": false,
     "props": [
      {
       "matchName": "ADBE Anchor Point",
@@ -283,12 +362,13 @@
      }
     ]
    },
+   "effects": [],
    "masks": [],
    "text": null,
    "shapes": null,
    "evals": [
     {
-     "t": 0.05,
+     "t": 0,
      "transform": {
       "anchor": [
        1500,
@@ -312,6 +392,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -1292,
+      -1467,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      208,
+      33
+     ],
      "world": [
       1,
       0,
@@ -330,7 +432,8 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     },
     {
      "t": 10,
@@ -357,6 +460,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -1292,
+      -1467,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      208,
+      33
+     ],
      "world": [
       1,
       0,
@@ -375,10 +500,11 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     },
     {
-     "t": 19.95,
+     "t": 20,
      "transform": {
       "anchor": [
        1500,
@@ -402,6 +528,28 @@
       "separatedPosition": false
      },
      "relToParent": null,
+     "toReferenceSpace": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -1292,
+      -1467,
+      0,
+      1
+     ],
+     "anchorInReferenceSpace": [
+      208,
+      33
+     ],
      "world": [
       1,
       0,
@@ -420,7 +568,8 @@
       0,
       1
      ],
-     "opacity": 1
+     "opacity": 1,
+     "effectFill": null
     }
    ]
   }

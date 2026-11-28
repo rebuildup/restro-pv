@@ -1,7 +1,7 @@
 # B. 構造レイアウト設計（グリッド・親リグ・3D空間・確定境界）
 
 > ← [設計パッケージ目次へ戻る](./README.md)
-> 参照図版: [layout-kg-grid-overlay.png](./assets/layout-kg-grid-overlay.png) ／ [02-layout-parent-rig.png](./diagrams/02-layout-parent-rig.png) ／ [background-grid-plane.png](./assets/background-grid-plane.png)
+> 参照図版: [layout-kg-grid-overlay.png](./assets/layout-kg-grid-overlay.png) ／ [02-layout-parent-rig.png](./diagrams/02-layout-parent-rig.png) ／ [background-grid-plane.png](./assets/background-grid-plane.png) ／ [3d-projection-check.png](./verification/3d-projection-check.png)
 
 | グリッド＆`P`ノード実測オーバレイ | 親子変換リグ＆空間構造図 |
 |---|---|
@@ -21,7 +21,7 @@
    - `[20..160]` に配置された `P 1`〜`P 23` の Null はすべて **`Anchor Point = [50, 50, 0]`**、**`Scale = [12, 12, 100]`** を持つ。
    - 100×100px の Null を `12%` に縮めると **正確に `12 × 12px` のガター交差点正方形**になる。
    - 各 `P n` は4つの子 Null（位置・アンカー `[0,0]`/`[100,0]`/`[0,100]`/`[100,100]`）を持ち、親 `P` 中心から **`±6px` 離れた4つの隣接セル角座標**（左列端 `x=32` や右列端 `x=448.33` 等）へ厳密スナップするアンカーとして機能する。
-   - **`[導出・推定]` スケール打ち消し法則**: `Scale=12%` の `P` 階層下に `Logo [18]` や `Heading [15]` を直接ペアレントしたため、子コンポ側では **`Scale = [833.3333, 833.3333, 100]`**（$= 100 / 0.12$）を指定して実寸（`100%`）を復元している。後続実装ではこの二重スケールを世界行列として解釈するか、論理座標に正規化して扱う必要がある。
+   - **`[導出・推定]` スケール打ち消し法則**: `Scale=12%` の `P` 階層下に `Logo [18]` や `Heading [15]` を直接ペアレントしたため、子コンポ側では **`Scale = [833.3333, 833.3333, 100]`**（$= 100 / 0.12$）を指定して実寸（`100%`）を復元している。新規リグ設計（後述 **§6**）では `12% / 833%` の二重結合を解消し、`1:1` 純粋アンカー階層へ分離再構成する。
 
 ---
 
@@ -49,7 +49,7 @@
 
 ![3D Perspective Grid Plane](./assets/background-grid-plane.png)
 
-> **`[回収事実 / 実測値]`（2026-11 訂正）** `background-grid-plane.svg/.png` は旧版の手描き遠近図（左右反転）を廃止し、`05-master.ts [257]` の実パラメータ（`Position=[540,540,+245]`, `Y Rotation=+20°`, Grid `Anchor=[540,540]`, `Width=54`, `Border=2`, `#303030`）を `worldMatrix`＋ピンホールカメラ行列（`video/src/ae/layer.tsx` と同一：eye `[540,540,-1500]`, `fov=40`, `up=[0,-1,0]`）で全格子線を解析投影した実幾何書き出しへ置き換えた。検証：画面上の縦格子線間隔は左→右へ `26px→84px` と単調増加し、**右側が手前**（確定サムネイル・元AEPと整合）。`+z` はカメラから遠ざかる方向（カメラは `z=-1500` から `+z` へ注視）であり、`Y Rotation=+20°` はレイヤー右端を `-z`（カメラ側）へ倒す。再生成：`bun tools/design/render-grid.ts`。
+> **`[回収事実 / 実測値]`（2026-11 訂正・サムネ実照合済）** `background-grid-plane.svg/.png` は旧版の手描き遠近図（左右反転）を廃止し、`05-master.ts [257]` の実パラメータ（`Position=[540,540,+245]`, `Y Rotation=+20°`, Grid `Anchor=[540,540]`, `Width=54`, `Border=2`, `#303030`）を `worldMatrix`＋ピンホールカメラ行列（`video/src/ae/layer.tsx` と同一：eye `[540,540,-1500]`, `fov=40`, `up=[0,-1,0]`）で全格子線を解析投影した実幾何書き出しへ置き換えた。検証：画面上の縦格子線間隔は左→右へ `26.0px→83.9px` と単調増加し、**右側が手前**（確定サムネイル・元AEPと整合）。[`tools/design/verify-3d-space.ts`](../../tools/design/verify-3d-space.ts) で確定サムネイル（`assets/images/samune-v1-master.png`）へ同一カメラ行列を重畳照合した結果は [`verification/3d-projection-check.png`](./verification/3d-projection-check.png) に保存済み（`runs4EdgeHitRateOnInk = 0.618`, `gridIntersectionHitRate = 0.3582`）。再生成：`bun tools/design/render-grid.ts`。
 
 `[回収事実 / 実測値]`＋`[導出・推定]` 右側コンテンツ設計で絶対に混同してはならない空間規則：
 
@@ -107,3 +107,20 @@
 | **`SceneA2.tsx` / `SceneB.tsx`** 色定数 | 赤アクセントに `#d64520`（朱色系）を使用 | `samune-v1-master.png` / `46-Logo.ts` 実測 **`#e51515`** | **色修正対象**。ブランド整合のため `#e51515` へ統一する |
 | **`masterPatch.ts` L330–420** `HERO_SHIFT (+130)` 等 | `239..254` を `+130px` シフトし左カラム侵入を回避（A1 beat 一致に影響） | `PvLeftGuard` が `x < 460` を防護しつつ、A1 (`beat-001..004`) の構図バランスを保持 | **要検証対象**。`HERO_SHIFT` は確定左保護を壊さない前提で、`beat-001..004` の視覚基準と左右安全帯（`x=460..480`）の両立値を検証のうえ最小値化する |
 | **`masterPatch.ts` L520–565** `B/C/D/E_HIDDEN` | 右ステージ系コンポ（`PV reel C`, `PV ops`, `PV end`, B タブ/カード, A2 残骸）を非表示化し `Stage.tsx` 側で代替描画 | 元 AEP の問題箇所（C 同文字反復、D 4窓分散、E 左衝突等）を含む | **維持＋中身刷新対象**。`Stage.tsx` 境界を保つためこれら右ステージ乗っ取り機構自体は維持し、`SceneA2..SceneE` の中身を本設計パッケージ（05/06/07）へ刷新する |
+
+---
+
+## 6. 4層分離リグ再設計（元 AEP `P 12%` 結合からの構造刷新）`[理想的表現構想]`
+
+元 AEP の `P n (Scale=12%)` × `833.33%` 相殺ハックおよび `Linked Quad` の密結合をそのまま次期 Remotion 実装へ持ち込まず、表現設計上の自由度（例：左開閉カーブ変更、Scene B 660px アコーディオン、Scene A2 安全境界付き交差抜け）を壊さずに上位→下位へ導出できるよう、リグ構造を次の4層へ分離定義する（[02-layout-parent-rig.png](./diagrams/02-layout-parent-rig.png) 下段参照）。
+
+| 階層 | 責務（単一関心事） | 入出力・契約 | 元 AEP からの分離・刷新点 |
+|---|---|---|---|
+| **L1. `GridRef`（参照格子）** | `1080×1080` 上の 12列×24行スロット座標と安全帯定数を純粋値として供給 | Col `0..4` (`x=32..448.33`), Safety (`460..480`), Col `6..11` (`w=502`) | ハードコード pixel (`top: 648/706` 等) を禁止し、全座標を論理グリッド参照から算出 |
+| **L2. `AnchorRig (1:1)`（純粋骨格・開閉）** | `Scale=[1,1]` の純粋平行移動・矩形境界のみを計算（`openProgress ∈ [0..1]`） | `Logo(y=435↔280)`, `Heading(746↔901)`, `descMatte(h=27↔337)` | **`12% / 833.33%` の二重スケール逆転を完全廃止**。子要素の描画線幅・サイズを親変位から独立 |
+| **L3. `LocalStageSpace`（場面別局所空間）** | 右ステージ内の各シーン固有空間変換・投影制約を担う | A: 3D(`Z=-96, Y=+20°`) / B・D: 2D(`w=502`) / C: 3作例独立空間 | `1:4` 曲線や `55.6%` 縮小など単一場面定数が隣接場面へ漏洩するのを防止 |
+| **L4. `SemanticDeps`（意味的依存関係）** | 表現因果に基づく「原因要素→追従要素」制約を宣言的に解決 | A2: `015↑/017↓` 開門窓→赤 `016` 露出 / B: `activeTab`→`660px` 不変 / D: 主窓→副図解 | 無意味な階層ペアレントに頼らず、意図の1箇所変更が全従属へ一貫伝播 |
+
+- **局所運動とリグ不変量の定量検証（[`tools/design/verify-local-motion.ts`](../../tools/design/verify-local-motion.ts) → [`verification/local-motion-check.json`](./verification/local-motion-check.json)）**:
+  - **左カラム開閉掃引（`openProgress ∈ {0, 0.25, 0.5, 0.75, 1.0}`）**: 全5点で `allRigStatesValid: true`（`gapBetweenLogoAndHeading = 51..361px`、`matteVisibleHeight = 27..337px`、上下衝突ゼロ）。
+  - **Scene A2 右ステージ境界と開門検証**: 3D カメラ投影上で `015/017` ホールド時の縦開門隙間が **`520.2px`**（視認閾値 `>120px`）に達し、左方向へ逃げる `STROKE_004` の変位を元 `-72px` から **`-28px` へクランプ**することで右限界端が `x = 446.7px`（違反）→ **`490.4px`（`x ≥ 460/480` 安全確保）** へ収まることを確認済み。

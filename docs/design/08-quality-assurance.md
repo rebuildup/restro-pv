@@ -10,8 +10,8 @@
 | 検証対象 | 分類 | 具体的な検査手段（自動・計算可能） | 視覚・時間レビュー必須項目（実出力確認） |
 |---|---|---|---|
 | **A. テーマトークン・色役割** | `[計算検証]` ＋ `[目視]` | • ソース/出力 HEX（`#f7f7f7`, `#e51515`, `#ff3b30` 等）の定数定義チェック<br>• B 限定トークン（緑・青・黄）が C/E で誤参照されていないか構文検査 | • 白地背景 `#f7f7f7` 上で文字・枠線・Grid（`#303030`）・`PV ops` 枠が潰れず十分なコントラストを持つか |
-| **B. 確定レイアウト・左境界** | `[計算検証]` | • `tests/pv-layout-contract.test.ts`（合成順・層フィルタ・import 境界）<br>• `bun tools/verify-layout.ts`（`f0,12,60,108,156,228,324,420,468` の左領域 `x<455` SSIM `≥ 0.999`） | • `3.875→4.50s`・`15.50→16.167s` の開閉区間で左要素と右ステージの重なり／干渉が起きないか |
-| **C. 実筆画・ブランド素材整合** | `[計算検証]` ＋ `[出自検証]` | • `tests/stroke-contract.test.ts`（`Baseline 13画` / `bunkai runs4` の有限座標・非縮退 bbox）<br>• `Logo` レイヤーが `SceneA2/C/E` の作例筆画へ混入していないか静的検査 | • `解`・`筆`・新規文字の形状欠損や輪郭はみ出しクリップがないか<br>• A2 で「交差の裏から連続縦画が抜ける」ことが一目で判るか |
+| **B. 確定レイアウト・左境界・4層リグ** | `[計算検証]` | • `tests/pv-layout-contract.test.ts`（合成順・層フィルタ・import 境界）<br>• `tools/design/verify-local-motion.ts`（L2 4層分離リグ `openProgress ∈ [0..1]` 掃引 `allRigStatesValid: true`、`x ≥ 480` 安全検証） | • `3.875→4.50s`・`15.50→16.167s` の開閉区間で左要素と右ステージの重なり／干渉が起きないか |
+| **C. 実筆画・ブランド素材・再構成** | `[計算検証]` ＋ `[出自検証]` | • `tests/stroke-contract.test.ts`（`Baseline 13画` / `bunkai runs4` の有限座標・非縮退 bbox）<br>• `tools/design/verify-assembly.ts`（JSON＋個別 SVG からの同一空間非クリップ再構成：`06-PV glyph IoU=0.9998`、`kai` excl.ク `IoU=0.9999`、全54SVG非ゼロ描画） | • `解`・`筆`・新規文字の形状欠損や輪郭はみ出しクリップがないか<br>• A2 で「交差の裏から連続縦画が抜ける」開門窓（`520.2px`）が一目で判るか |
 | **D. 全体タイムシート・音同期** | `[時間・視覚レビュー]` | • シーン区間（`f0, 45, 90, 101, 191, 281, 371, 480`）のギャップゼロ検査 | • 実音声（`drums-and-somps-...mp3`）と合わせた再生で、拍アタック着地・情報読了時間（特に E の `>2s` 静止）が快適か |
 | **E. カード／シート／窓枠** | `[計算導出]` ＋ `[視覚]` | • `STEP 1..4` タブ座標および窓枠クリップ矩形の算出値が左右安全帯 (`x≥480`) 内に収まるか（導出チェック §2 参照）<br>• C 3作例で `55.56%` のような不正縮小係数が再混入していないか | • B の累積タブと展開スロット内テキスト／拡大鏡が衝突しないか<br>• C の3作例が視覚的に異なる3世界（白タイポ／3D暗空間等）として成立し、前作残像が残らないか |
 | **F. 実操作録画（Scene D）** | `[視覚・因果レビュー]` | • 使用録画の解像度・FPS（`24fps` 以上推奨）・トリム範囲が尺以上あるかの事前チェック | • **「テキスト/シェイプ → `Decompose` クリック/完了 → `STROKE_*` 展開・編集」の因果が同一コンポで途切れず読めるか**<br>• パネル見切れ・市松白低視認・無関係エラーバー表示がないか |
@@ -29,8 +29,10 @@
 2. **Scene B アコーディオン展開高さ不変則（[05-cards-and-sheets.md §1](./05-cards-and-sheets.md)）**:
    - 上段タブ数 $k \in \{1..4\}$ に対し、稼働スロット高さ $= 967 - (191 + 38 \times (4 - 1)) \approx 660\text{px}$ が不変に保たれ、`Divider` が常に上位境界 $+27\text{px}$ に位置すること。また `LENS` 元円 (`140px`) × `3.0` (`300%`) = 拡大円 (`420px`) の倍率整合が維持されること。
 3. **3D パース面と焦点距離（[02-layout-and-grid.md §3](./02-layout-and-grid.md)）**:
-   - `grid-solid`（`Z=+245`）に対する `runs4` 文字面（`Z=-96`）の奥行き差 `341px`（$f=1500\text{px}$ 時拡大比 $\approx 1500+245 : 1500-96 = 1.24\times$）が A1 参照フレーム（[beat-001.png](../../verification/beats/beat-001.png)）と視覚一致すること。
-4. **確定 Chrome 復元時の乖離解消チェック（[02-layout-and-grid.md §5](./02-layout-and-grid.md)／[07-chrome-reconciliation.png](./diagrams/07-chrome-reconciliation.png)）**:
+   - `grid-solid`（`Z=+245`）に対する `runs4` 文字面（`Z=-96`）の奥行き差 `341px`（$f=1500\text{px}$ 時拡大比 $\approx 1500+245 : 1500-96 = 1.24\times$）と右＝手前遠近が、確定サムネイル重畳照合 [`verification/3d-projection-check.png`](./verification/3d-projection-check.png)（`runs4EdgeHitRateOnInk = 0.618`, 格子幅 `26.0→83.9px`）および A1 参照フレーム（[beat-001.png](../../verification/beats/beat-001.png)）と視覚一致すること。
+4. **状態基準モーション検証（[`verification/local-motion-check.json`](./verification/local-motion-check.json)／[`diagrams/motion-kai-designed-a2-onion.png`](./diagrams/motion-kai-designed-a2-onion.png)）**:
+   - 均等時刻サンプリングではなく、ピーク変位（`f9`）・開門ホールド（`f56..76`）・式駆動 `easeOut(7.142..7.611s)` の状態基準で生成し、`015/017` 開門隙 **`520.2px`** かつ `004` クランプ後 **`minScreenX = 490.4px`（`x ≥ 480` 安全）** を数値確認すること（なお `01-Baseline` 単体 `t=0` の `IoU=0.7310` は CTI 式焼き込みによる未解消オフセットとして `06-PV glyph` と峻別記録済）。
+5. **確定 Chrome 復元時の乖離解消チェック（[02-layout-and-grid.md §5](./02-layout-and-grid.md)／[07-chrome-reconciliation.png](./diagrams/07-chrome-reconciliation.png)）**:
    - `f420..f479`（Scene E 後半）において `Ae.png`・`AFTER EFFECTS PLUGIN`・`Logo`・`Heading` が消去されずに `Title/End` 姿勢（`y=435 / 746`）へ帰着していること。
    - `LeftCopy.tsx` 固定座標 `top: 648 / 706` による二重描画・D/E 衝突が解消され、`#d64520` が `#e51515` に統一されていること。
 

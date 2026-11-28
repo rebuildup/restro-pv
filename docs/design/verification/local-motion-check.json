@@ -1,0 +1,95 @@
+{
+  "checkedAt": "2026-11-28T02:56:48.814Z",
+  "rigApertureSweep": [
+    {
+      "openProgress": 0,
+      "logoTopBottom": [
+        435,
+        695
+      ],
+      "headingTopBottom": [
+        746,
+        812
+      ],
+      "gapBetweenLogoAndHeading": 51,
+      "matteVisibleHeight": 27,
+      "noOverlapValid": true
+    },
+    {
+      "openProgress": 0.25,
+      "logoTopBottom": [
+        396.25,
+        656.25
+      ],
+      "headingTopBottom": [
+        784.75,
+        850.75
+      ],
+      "gapBetweenLogoAndHeading": 128.5,
+      "matteVisibleHeight": 104.5,
+      "noOverlapValid": true
+    },
+    {
+      "openProgress": 0.5,
+      "logoTopBottom": [
+        357.5,
+        617.5
+      ],
+      "headingTopBottom": [
+        823.5,
+        889.5
+      ],
+      "gapBetweenLogoAndHeading": 206,
+      "matteVisibleHeight": 182,
+      "noOverlapValid": true
+    },
+    {
+      "openProgress": 0.75,
+      "logoTopBottom": [
+        318.75,
+        578.75
+      ],
+      "headingTopBottom": [
+        862.25,
+        928.25
+      ],
+      "gapBetweenLogoAndHeading": 283.5,
+      "matteVisibleHeight": 259.5,
+      "noOverlapValid": true
+    },
+    {
+      "openProgress": 1,
+      "logoTopBottom": [
+        280,
+        540
+      ],
+      "headingTopBottom": [
+        901,
+        967
+      ],
+      "gapBetweenLogoAndHeading": 361,
+      "matteVisibleHeight": 337,
+      "noOverlapValid": true
+    }
+  ],
+  "allRigStatesValid": true,
+  "sceneA2CrossingFeasibility": {
+    "spineS16ScreenY": [
+      481.8,
+      958.7
+    ],
+    "upperGateS15ScreenY_atHold": [
+      289.8,
+      385.4
+    ],
+    "lowerGateS17ScreenY_atHold": [
+      905.6,
+      1017.2
+    ],
+    "clearOpeningWindowHeightPx": 520.2,
+    "openingExceeds120pxForClearExposure": true,
+    "leftStrokeS04_minScreenX_origDeltaNeg72": 446.7,
+    "leftStrokeS04_minScreenX_clampedDeltaNeg28": 490.4,
+    "clearsLeftColumnMaxX460": true
+  }
+}

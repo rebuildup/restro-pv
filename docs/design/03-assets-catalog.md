@@ -35,18 +35,18 @@
 
 ---
 
-## 3. 実 Restro 筆画出力素材（「解」プロキシ群＋元輪郭 ＆「筆」全13画・中間7層）
+## 3. 実 Restro 筆画出力素材（「解」全16層・元輪郭 ＆「筆」全13画・中間7層）
 
-> **`[導出・推定]`** Restro プラグインが実際にベクターアウトラインから分解・生成した一次素材は、現在リポジトリ内に **「解」（`bunkai` / `kai-zoom`）と「筆」（`Baseline` / `STEP1..4`）の2文字のみ** が存在する。
+> **`[導出・推定]`** Restro プラグインが実際にベクターアウトラインから分解・生成した一次素材は、現在リポジトリ内に **「解」（`bunkai` / `kai-zoom`）と「筆」（`Baseline` / `06-PV glyph` / `STEP1..4`）の2文字のみ** が存在する。
 >
-> **`[回収事実 / 実測値]`（2026-11 訂正）** 「解」の `STROKE_*` レイヤー群は**グリフの筆画形状ではない**。パス実測で全て 4〜13 頂点の矩形／台形プロキシ図形（A1/A2/A3 の運動グラフィック要素）であり、「解」自体の一画分解データは AEP 内に存在しない。実グリフ形状は `Ae_Restro merged shape` 層（95〜487 頂点）と `解` テキスト層が担う。「筆」側は `FUDE S01..S13` が実筆画分解（9〜92 頂点）であり、この点は正しい。機械可読な全構成データは [`data/*.composition.json`](./data/README.md) を正本とする。
+> **`[回収事実 / 実測値]`（2026-11 再検証訂正）** `02-bunkai.ts` / `05-master.ts runs4` の `STROKE_*` 14層および未分解 `merged shape` 2層（全16層）は**いずれも実「解」グリフに属する正統な Restro 出力形状**である。直画ゴシック部 9層（`000,003,004,005,007,010,015,016,017`）が4頂点四辺形なのは直線画ゆえの正常表現であり、`001,002,006,011,014` の5層には実測 **12〜22 頂点の3次ベジェ曲線ハンドル** が存在する（`data/kai-stroke-runs-2d.composition.json` 参照）。一時記録されていた「プロキシ図形」分類は誤りとして撤回した。
+>
+> **`[回収事実 / 実測値]` `kai-zoom [20]` との整合証明**: `04-kai-zoom.ts [20]` は `Null 4`（130%ズーム）空間における「解」の一体輪郭（外周＋「角」内部4孔）から **左上の「ク」3画（`STROKE_000/001/002`）を意図的に差し引いた切り欠きベース**（上重ねレイヤー `[3..19]` の「ク」拡大アニメ用）である。同一ズーム空間での非クロップ検証（[`verification/assembly-metrics.json`](./verification/assembly-metrics.json)）により、全16層合算で `recallOfOutline = 0.9999`（`IoU = 0.8865`）、左上「ク」3画を除く 13層で **`IoU = 0.9999`**（`onlyAssembledPx = 23`, `onlyOutlinePx = 20`）が確認された。
 
 ### 3.1 「解」（Giant Kai：元輪郭＋`runs4` 16レイヤー個別単体書き出し）
 
-> 以下の表で `STROKE_*` と記す16層のうち14層は**プロキシ図形**（矩形/台形）であり、グリフ筆画ではない。「役割・特性」列の運動記述（Δ・回転・開門）は**プロキシ要素自体の実測運動**として有効だが、「文字の筆画がこう動く」という意味ではない。実形状の組み上がり検証は [`verification/assembly-metrics.json`](./verification/assembly-metrics.json) を参照。
-
-- 全体確認図：[kai-original-outline.png](./assets/kai-original-outline.png) ／ [kai-strokes-exploded.png](./assets/kai-strokes-exploded.png)
-- 独立単体（透過・タイトクロップ）：[元一体輪郭 PNG](./assets/individual/kai/kai-outline-merged.png) ([SVG](./assets/individual/kai/kai-outline-merged.svg), `995×936`) ／ [16層 rest組み上がり PNG](./assets/individual/kai/kai-runs4-assembled.png) ([SVG](./assets/individual/kai/kai-runs4-assembled.svg), `847×841`)
+- 全体確認図：[kai-original-outline.png](./assets/kai-original-outline.png)（複合パス `evenodd` で「角」4孔抜き反映済）／ [kai-strokes-exploded.png](./assets/kai-strokes-exploded.png) ／ [差分検証図](./verification/kai-runs4-vs-zoom-diff.png)
+- 独立単体（透過・タイトクロップ）：[元一体輪郭 PNG](./assets/individual/kai/kai-outline-merged.png) ([SVG](./assets/individual/kai/kai-outline-merged.svg), `991×932` / 4孔抜き済) ／ [16層 rest組み上がり PNG](./assets/individual/kai/kai-runs4-assembled.png) ([SVG](./assets/individual/kai/kai-runs4-assembled.svg), `847×841`)
 
 | # | master / bunkai 層 | 個別単体ファイル（SVG / PNG・寸法） | 役割・特性 |
 |---|---|---|---|
@@ -67,9 +67,13 @@
 | 15 | `[253]` / `[35]` `STROKE_000_runs4` | [SVG](./assets/individual/kai/kai-15-STROKE_000_runs4.svg) / [PNG](./assets/individual/kai/kai-15-STROKE_000_runs4.png) (`163×93`) | 垂直 Y 限定（Δ=(0,-45)） |
 | 16 | `[254]` / `[36]` `STROKE_001_runs5` | [SVG](./assets/individual/kai/kai-16-STROKE_001_runs5.svg) / [PNG](./assets/individual/kai/kai-16-STROKE_001_runs5.png) (`151×337`) | 角左肩（Δ=(+40,-90), rot=+12°） |
 
-### 3.2 「筆」（Baseline 13画＆元輪郭）＋ Scene B 中間7データ個別書き出し
+### 3.2 「筆」（`06-PV glyph` 正止Rest＋`Baseline` 13画＆元輪郭）＋ Scene B 中間7データ個別書き出し
 
-- 全体比較図：[fude-original-outline.png](./assets/fude-original-outline.png) ／ [fude-strokes-exploded.png](./assets/fude-strokes-exploded.png) ／ [step1-4-intermediates.png](./assets/step1-4-intermediates.png)
+> **`[回収事実 / 実測値]`（rest 組み上がり IoU 検証・`01-Baseline` 差異の原因特定）**
+> - **rest ポーズ正本（[`data/pv-glyph-fude.composition.json`](./data/pv-glyph-fude.composition.json) / `06-PV glyph.ts`, `1400×1080`）**: 同一コンポ空間（クロップ・拡縮補正一切なし）で `S01..S13` を結合すると、`FUDE outline base` に対し **`IoU = 0.9998`**（`onlyAssembledPx = 26`, `onlyOutlinePx = 32`）で完全一致する（[`fude-rest-diff.png`](./verification/fude-rest-diff.png)）。
+> - **`01-Baseline.ts` における `IoU = 0.7310`（1080クリップ時 `0.7423`）の原因**: `01-Baseline.ts` は AEP ダンプ時の再生時刻（CTI）における式適用後の散開変位（`≈ 0.7278 × m[k]`、例 `S01` で `[-18.92, +7.28]`）が `Position.value` に焼き込まれた状態で保存されており、`t = 0` でも元輪郭から既にずれている（未解消のまま正本注記として区別保存）。また元 `1080×1080` コンポの右端（`x = 1080..1290`）がはみ出しクリップされていたことも併せて確認した。
+
+- 全体比較図：[fude-original-outline.png](./assets/fude-original-outline.png) ／ [fude-strokes-exploded.png](./assets/fude-strokes-exploded.png) ／ [step1-4-intermediates.png](./assets/step1-4-intermediates.png) ／ [rest 一致検証図](./verification/fude-rest-diff.png)
 - 独立単体・輪郭系：[base outline PNG](./assets/individual/fude/fude-outline-base.png) ([SVG](./assets/individual/fude/fude-outline-base.svg), `733×742`) ／ [inset outline PNG](./assets/individual/fude/fude-outline-inset.png) ([SVG](./assets/individual/fude/fude-outline-inset.svg), `733×742`) ／ [13画組み上がり PNG](./assets/individual/fude/fude-13-assembled.png) ([SVG](./assets/individual/fude/fude-13-assembled.svg), `771×759`)
 
 | 対象 | 個別ファイル群（SVG / PNG・寸法） | 出典・備考 |
