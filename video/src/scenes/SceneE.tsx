@@ -48,10 +48,10 @@ const T0 = 371 / 24; // 15.4583 — first E frame
 
 // --- hero ---
 const HERO_IN: [number, number] = [15.46, 15.78];
-const HERO_OUT: [number, number] = [17.28, 17.58];
+const HERO_OUT: [number, number] = [17.34, 17.64];
 
 // --- end card ---
-const CARD_IN = 17.7;
+const CARD_IN = 17.8125;
 // The confirmed stage column starts at x=546 (grid column 6) — the CTA
 // is aligned to it rather than to an arbitrary offset, and the card's
 // top edge sits on the confirmed row boundary (row 10 = 468).
